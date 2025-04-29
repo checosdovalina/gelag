@@ -14,7 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { authorize } = app.locals;
   
   // User routes
-  app.get("/api/users", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.get("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const users = await storage.getAllUsers();
       // Remove passwords from response
@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/users", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const userData = insertUserSchema.parse(req.body);
       
@@ -64,7 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.put("/api/users/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id);
       if (isNaN(userId)) {
@@ -139,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/form-templates", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.post("/api/form-templates", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const templateData = insertFormTemplateSchema.parse(req.body);
       
@@ -167,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/form-templates/:id", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const templateId = parseInt(req.params.id);
       if (isNaN(templateId)) {

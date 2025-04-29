@@ -4,6 +4,7 @@ import { z } from "zod";
 
 // User role types
 export enum UserRole {
+  SUPERADMIN = "superadmin",
   ADMIN = "admin",
   PRODUCTION = "produccion",
   QUALITY = "calidad",
