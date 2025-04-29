@@ -341,13 +341,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const filePath = req.file.path;
         let parsedData;
+        let formTemplateData;
         
-        // Parse file based on mimetype
-        if (req.file.mimetype === 'application/pdf') {
-          parsedData = await parsePdfFile(filePath);
-        } else {
-          // Assume it's an Excel file
+        // Solo procesamos archivos Excel por el momento
+        if (req.file.mimetype.includes('spreadsheet') || 
+            req.file.mimetype.includes('excel') || 
+            req.file.mimetype.includes('sheet')) {
+          // Parsear el archivo Excel
           parsedData = await parseExcelFile(filePath);
+          
+          // Importar módulo de parseo de Excel
+          const { 
+            processExcelData, 
+            createFormTemplateFromExcel 
+          } = await import('./excel-parser');
+          
+          // Procesar los datos para extraer metadatos
+          const excelFormData = processExcelData(parsedData);
+          
+          // Crear estructura de plantilla de formulario (para previsualización)
+          formTemplateData = createFormTemplateFromExcel(
+            parsedData, 
+            req.user.department || 'General'
+          );
+        } else if (req.file.mimetype === 'application/pdf') {
+          // PDF parsing no disponible por el momento
+          return res.status(400).json({ 
+            message: "El procesamiento de archivos PDF no está disponible actualmente. Por favor, sube un archivo Excel."
+          });
+        } else {
+          return res.status(400).json({ 
+            message: "Formato de archivo no soportado. Solo se permiten archivos Excel." 
+          });
         }
         
         // Log activity
@@ -365,7 +390,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(200).json({
           fileName: req.file.originalname,
           fileType: req.file.mimetype,
-          data: parsedData
+          data: parsedData,
+          formTemplate: formTemplateData
         });
       } catch (error) {
         // Clean up file in case of error
@@ -376,6 +402,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Error processing file:', error);
         res.status(500).json({ 
           message: "Error al procesar el archivo", 
+          error: error.message 
+        });
+      }
+    }
+  );
+  
+  // Route to create form template from uploaded Excel
+  app.post("/api/import-form-template", authorize([UserRole.SUPERADMIN]), 
+    async (req, res, next) => {
+      try {
+        // Validate request body
+        if (!req.body.excelData || !req.body.template) {
+          return res.status(400).json({ 
+            message: "Se requiere la información del archivo Excel y la plantilla de formulario" 
+          });
+        }
+        
+        // Create form template
+        const templateData = {
+          name: req.body.template.name,
+          description: req.body.template.description,
+          department: req.body.template.department,
+          structure: req.body.template.structure,
+          createdBy: req.user.id,
+          isActive: true
+        };
+        
+        // Save the template to database
+        const template = await storage.createFormTemplate(templateData);
+        
+        // Log activity
+        await storage.createActivityLog({
+          userId: req.user.id,
+          action: "imported",
+          resourceType: "form_template",
+          resourceId: template.id,
+          details: { name: template.name, source: "excel" }
+        });
+        
+        res.status(201).json({
+          success: true,
+          message: "Plantilla de formulario importada correctamente",
+          template
+        });
+      } catch (error) {
+        console.error('Error importing form template:', error);
+        res.status(500).json({ 
+          message: "Error al importar la plantilla de formulario", 
           error: error.message 
         });
       }

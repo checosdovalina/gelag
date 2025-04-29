@@ -1,218 +1,302 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import FileUploadDropzone, { UploadStatus, FileType } from "@/components/file-upload-dropzone";
-import { AlertCircle, FileSpreadsheet } from "lucide-react";
+import FileUploadDropzone, { UploadStatus } from "../file-upload-dropzone";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FormField } from "@shared/schema";
+import { Loader2, Check, AlertTriangle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FormImportProps {
   onImportComplete?: (data: any) => void;
 }
 
 export default function FormImport({ onImportComplete }: FormImportProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { toast } = useToast();
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
   
-  const { toast } = useToast();
-  
+  // Mutación para subir el archivo
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       setUploadStatus("uploading");
       setUploadProgress(10);
       
+      // Crear FormData para enviar el archivo
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
       
-      // Use XMLHttpRequest for progress tracking
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        
-        xhr.upload.addEventListener("progress", (event) => {
-          if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / event.total) * 90) + 10;
-            setUploadProgress(percentComplete);
+      // Simular progreso
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
           }
+          return prev + 10;
         });
-        
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(JSON.parse(xhr.responseText));
-          } else {
-            reject(new Error(xhr.statusText || "Error en la subida"));
-          }
-        };
-        
-        xhr.onerror = () => {
-          reject(new Error("Error de red"));
-        };
-        
-        xhr.open("POST", "/api/upload");
-        xhr.send(formData);
+      }, 500);
+      
+      // Enviar archivo al servidor
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       });
+      
+      clearInterval(progressInterval);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al subir el archivo");
+      }
+      
+      setUploadProgress(100);
+      setUploadStatus("success");
+      
+      return await response.json();
     },
     onSuccess: (data) => {
-      setUploadStatus("success");
-      setUploadProgress(100);
-      toast({
-        title: "Archivo procesado",
-        description: `El archivo ${data.fileName} ha sido procesado correctamente.`,
-      });
+      console.log("Archivo subido con éxito:", data);
       setPreviewData(data);
-      setShowPreviewDialog(true);
-      
-      if (onImportComplete) {
-        onImportComplete(data);
-      }
+      toast({
+        title: "Archivo cargado correctamente",
+        description: "Se ha procesado el archivo Excel con éxito.",
+      });
     },
     onError: (error: Error) => {
+      console.error("Error al subir el archivo:", error);
       setUploadStatus("error");
       toast({
-        title: "Error al subir el archivo",
+        title: "Error al cargar el archivo",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    }
+    },
   });
   
+  // Mutación para crear la plantilla de formulario
+  const createTemplateMutation = useMutation({
+    mutationFn: async () => {
+      if (!previewData || !previewData.formTemplate) {
+        throw new Error("No hay datos de formulario para importar");
+      }
+      
+      const response = await apiRequest(
+        "POST", 
+        "/api/import-form-template", 
+        {
+          excelData: previewData.data,
+          template: previewData.formTemplate
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al importar la plantilla");
+      }
+      
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      console.log("Plantilla importada con éxito:", data);
+      
+      // Actualizar caché de plantillas
+      queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
+      
+      toast({
+        title: "Plantilla importada correctamente",
+        description: "La plantilla ha sido guardada y está lista para su uso.",
+      });
+      
+      // Callback al componente padre
+      if (onImportComplete) {
+        onImportComplete(data.template);
+      }
+      
+      // Limpiar datos
+      setPreviewData(null);
+      setUploadStatus("idle");
+      setUploadProgress(0);
+    },
+    onError: (error: Error) => {
+      console.error("Error al importar la plantilla:", error);
+      toast({
+        title: "Error al importar la plantilla",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Manejar selección de archivos
   const handleFilesSelected = (files: File[]) => {
     if (files.length > 0) {
-      setSelectedFile(files[0]);
+      uploadMutation.mutate(files[0]);
     }
   };
   
-  const handleUpload = () => {
-    if (selectedFile) {
-      uploadMutation.mutate(selectedFile);
-    } else {
-      toast({
-        title: "No hay archivo seleccionado",
-        description: "Por favor, selecciona un archivo Excel o PDF para importar.",
-        variant: "destructive"
-      });
-    }
+  // Manejar la importación del formulario
+  const handleImportForm = () => {
+    createTemplateMutation.mutate();
   };
   
-  const handleClosePreview = () => {
-    setShowPreviewDialog(false);
-    // Reset the state for a new upload
-    setSelectedFile(null);
+  // Resetear el estado para subir otro archivo
+  const handleReset = () => {
+    setPreviewData(null);
     setUploadStatus("idle");
     setUploadProgress(0);
   };
   
-  const renderPreviewContent = () => {
-    if (!previewData) return null;
-    
-    // Solo Excel en esta versión
+  // Renderizar un campo de formulario para previsualización
+  const renderFormField = (field: FormField) => {
     return (
-      <div className="max-h-96 overflow-auto">
-        {previewData.data.map((sheet: any, index: number) => (
-          <div key={index} className="mb-6">
-            <h3 className="font-medium text-md mb-2 flex items-center">
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Hoja: {sheet.sheetName}
-            </h3>
-            {sheet.data.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-muted">
-                      {Object.keys(sheet.data[0]).map((key, idx) => (
-                        <th key={idx} className="border px-2 py-1 text-left text-xs">{key}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sheet.data.slice(0, 10).map((row: any, rowIdx: number) => (
-                      <tr key={rowIdx} className={rowIdx % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                        {Object.values(row).map((cell: any, cellIdx: number) => (
-                          <td key={cellIdx} className="border px-2 py-1 text-xs truncate max-w-xs">
-                            {String(cell)}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Esta hoja no contiene datos.
-                </AlertDescription>
-              </Alert>
-            )}
-            {sheet.data.length > 10 && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Mostrando 10 de {sheet.data.length} filas.
-              </p>
-            )}
+      <div key={field.id} className="mb-4">
+        <div className="font-medium mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</div>
+        <div className="text-muted-foreground text-sm">{field.description}</div>
+        
+        {field.type === "text" && (
+          <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            {field.placeholder || "Entrada de texto"}
           </div>
-        ))}
+        )}
+        
+        {field.type === "textarea" && (
+          <div className="h-20 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            {field.placeholder || "Texto multilínea"}
+          </div>
+        )}
+        
+        {field.type === "select" && (
+          <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            {field.options?.length > 0 
+              ? `Opciones (${field.options.length}): ${field.options.slice(0, 3).map(o => typeof o === "string" ? o : o.label).join(", ")}...` 
+              : "Lista desplegable"}
+          </div>
+        )}
+        
+        {field.type === "multiselect" && (
+          <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            {field.options?.length > 0 
+              ? `Selección múltiple (${field.options.length} opciones)` 
+              : "Selección múltiple"}
+          </div>
+        )}
+        
+        {field.type === "checkbox" && (
+          <div className="h-5 mt-1 flex items-center">
+            <div className="h-4 w-4 rounded border border-input bg-muted-foreground/10 mr-2"></div>
+            <span className="text-sm text-muted-foreground">Casilla de verificación</span>
+          </div>
+        )}
       </div>
     );
   };
   
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Importar Formulario</CardTitle>
+          <CardTitle>Importar Formulario desde Excel</CardTitle>
           <CardDescription>
-            Sube un archivo Excel para importar datos de formularios.
+            Carga un archivo Excel para crear una nueva plantilla de formulario.
+            El sistema analizará el archivo e intentará detectar su estructura automáticamente.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <FileUploadDropzone 
-            onFilesSelected={handleFilesSelected}
-            acceptedFileTypes="excel"
-            maxSizeMB={10}
-            multiple={false}
-            uploadProgress={uploadProgress}
-            uploadStatus={uploadStatus}
-          />
-          {selectedFile && uploadStatus === "idle" && (
-            <div className="mt-4">
-              <p className="text-sm text-center">
-                Archivo seleccionado: <span className="font-medium">{selectedFile.name}</span>
-              </p>
+          {!previewData ? (
+            <FileUploadDropzone
+              onFilesSelected={handleFilesSelected}
+              acceptedFileTypes="excel"
+              uploadStatus={uploadStatus}
+              uploadProgress={uploadProgress}
+              multiple={false}
+            />
+          ) : (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 text-green-600">
+                <Check className="h-5 w-5" />
+                <span>Archivo <strong>{previewData.fileName}</strong> procesado correctamente.</span>
+              </div>
+              
+              <Tabs defaultValue="preview" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="preview">Vista Previa</TabsTrigger>
+                  <TabsTrigger value="data">Datos Detectados</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="preview" className="space-y-4">
+                  <Alert>
+                    <AlertTitle>Previsualización del Formulario</AlertTitle>
+                    <AlertDescription>
+                      Esta es una vista previa de cómo quedará el formulario. Revisa que los campos estén correctos antes de importarlo.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  {previewData.formTemplate ? (
+                    <div className="border rounded-lg p-4">
+                      <h3 className="text-lg font-bold mb-2">{previewData.formTemplate.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">{previewData.formTemplate.description}</p>
+                      
+                      <ScrollArea className="h-[400px] pr-4">
+                        <div className="space-y-6">
+                          {previewData.formTemplate.structure.fields.map((field: FormField) => (
+                            renderFormField(field)
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+                      <p>No se pudo generar una vista previa del formulario.</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="data" className="space-y-4">
+                  <Alert>
+                    <AlertTitle>Metadatos Detectados</AlertTitle>
+                    <AlertDescription>
+                      Información extraída del archivo Excel que se usará para crear el formulario.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <ScrollArea className="h-[400px] border rounded-lg p-4">
+                    <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
+                      {JSON.stringify(previewData, null, 2)}
+                    </pre>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+              
+              <div className="flex justify-between">
+                <Button variant="outline" onClick={handleReset}>
+                  Cargar Otro Archivo
+                </Button>
+                
+                <Button 
+                  onClick={handleImportForm} 
+                  disabled={createTemplateMutation.isPending || !previewData.formTemplate}
+                >
+                  {createTemplateMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Importando...
+                    </>
+                  ) : (
+                    "Importar Formulario"
+                  )}
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button 
-            onClick={handleUpload} 
-            disabled={!selectedFile || uploadStatus === "uploading"}
-          >
-            {uploadStatus === "uploading" ? "Subiendo..." : "Importar Archivo"}
-          </Button>
-        </CardFooter>
       </Card>
-      
-      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Vista previa de los datos importados</DialogTitle>
-            <DialogDescription>
-              A continuación se muestra una vista previa de los datos importados del archivo.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {renderPreviewContent()}
-          
-          <DialogFooter>
-            <Button onClick={handleClosePreview}>Cerrar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 }
