@@ -51,7 +51,7 @@ export default function FormCapture() {
   const [currentEntry, setCurrentEntry] = useState<FormEntry | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
   const [tabValue, setTabValue] = useState("templates");
   const [confirmDialog, setConfirmDialog] = useState(false);
 
