@@ -342,34 +342,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const filePath = req.file.path;
         let parsedData;
         let formTemplateData;
+        let excelFormData;
         
         // Solo procesamos archivos Excel por el momento
         if (req.file.mimetype.includes('spreadsheet') || 
             req.file.mimetype.includes('excel') || 
             req.file.mimetype.includes('sheet')) {
-          // Parsear el archivo Excel
-          parsedData = await parseExcelFile(filePath);
-          
-          // Importar módulo de parseo de Excel
-          const { 
-            processExcelData, 
-            createFormTemplateFromExcel 
-          } = await import('./excel-parser');
-          
-          // Procesar los datos para extraer metadatos
-          const excelFormData = processExcelData(parsedData);
-          
-          // Crear estructura de plantilla de formulario (para previsualización)
-          formTemplateData = createFormTemplateFromExcel(
-            parsedData, 
-            req.user.department || 'General'
-          );
+          try {
+            // Parsear el archivo Excel
+            parsedData = await parseExcelFile(filePath);
+            console.log("Excel file parsed successfully:", parsedData && parsedData.length);
+            
+            // Importar módulo de parseo de Excel
+            const { 
+              processExcelData, 
+              createFormTemplateFromExcel 
+            } = await import('./excel-parser');
+            
+            // Procesar los datos para extraer metadatos
+            excelFormData = processExcelData(parsedData);
+            console.log("Excel data processed successfully:", excelFormData?.title);
+            
+            // Crear estructura de plantilla de formulario (para previsualización)
+            formTemplateData = createFormTemplateFromExcel(
+              parsedData, 
+              req.user.department || 'General'
+            );
+            console.log("Form template created successfully:", formTemplateData?.name);
+          } catch (parseError) {
+            console.error('Error parsing Excel file:', parseError);
+            // Clean up file in case of error
+            cleanupFile(filePath);
+            return res.status(500).json({ 
+              message: "Error al analizar el archivo Excel. Por favor, verifica que sea un formato válido.", 
+              error: parseError.message 
+            });
+          }
         } else if (req.file.mimetype === 'application/pdf') {
           // PDF parsing no disponible por el momento
+          cleanupFile(filePath);
           return res.status(400).json({ 
             message: "El procesamiento de archivos PDF no está disponible actualmente. Por favor, sube un archivo Excel."
           });
         } else {
+          cleanupFile(filePath);
           return res.status(400).json({ 
             message: "Formato de archivo no soportado. Solo se permiten archivos Excel." 
           });
@@ -402,7 +418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Error processing file:', error);
         res.status(500).json({ 
           message: "Error al procesar el archivo", 
-          error: error.message 
+          error: error.message || "Error desconocido" 
         });
       }
     }
