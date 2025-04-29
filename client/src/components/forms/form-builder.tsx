@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
@@ -65,7 +65,10 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     },
   });
 
-  const { fields, append, remove, move } = form.control._formValues.fields;
+  const { fields, append, remove, move } = useFieldArray({
+    control: form.control,
+    name: "fields"
+  });
   
   // Function to add a new field
   const addField = () => {
@@ -95,12 +98,8 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     
     if (sourceIndex === destinationIndex) return;
     
-    // Update form fields order
-    const updatedFields = [...form.getValues().fields];
-    const [removed] = updatedFields.splice(sourceIndex, 1);
-    updatedFields.splice(destinationIndex, 0, removed);
-    
-    form.setValue("fields", updatedFields);
+    // Update form fields order using move provided by useFieldArray
+    move(sourceIndex, destinationIndex);
   };
 
   // Get field icon based on type
@@ -163,7 +162,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                       ref={provided.innerRef}
                       className="space-y-4"
                     >
-                      {form.getValues().fields.map((field, index) => (
+                      {fields.map((field, index) => (
                         <Draggable key={field.id} draggableId={field.id} index={index}>
                           {(provided) => (
                             <Card
@@ -461,7 +460,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => removeField(index)}
-                                      disabled={form.getValues().fields.length <= 1}
+                                      disabled={fields.length <= 1}
                                       className="text-red-500 hover:text-red-700"
                                     >
                                       <Trash2 className="h-4 w-4 mr-1" /> Eliminar Campo
