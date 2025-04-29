@@ -103,7 +103,8 @@ export const fieldTypes = [
   "checkbox",
   "radio",
   "textarea",
-  "table"
+  "table",
+  "evaluationMatrix"
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];
