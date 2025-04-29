@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { FormField } from "@shared/schema";
+import { FormField, FieldType } from "@shared/schema";
 import { Loader2, Check, AlertTriangle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -157,40 +157,68 @@ export default function FormImport({ onImportComplete }: FormImportProps) {
     return (
       <div key={field.id} className="mb-4">
         <div className="font-medium mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</div>
-        <div className="text-muted-foreground text-sm">{field.description}</div>
         
+        {/* Mostrar descripción si existe */}
+        {field.description && (
+          <div className="text-muted-foreground text-sm mb-1">{field.description}</div>
+        )}
+        
+        {/* Campo de texto */}
         {field.type === "text" && (
           <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
             {field.placeholder || "Entrada de texto"}
           </div>
         )}
         
+        {/* Campo de área de texto */}
         {field.type === "textarea" && (
           <div className="h-20 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
             {field.placeholder || "Texto multilínea"}
           </div>
         )}
         
+        {/* Campo de selección */}
         {field.type === "select" && (
           <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
-            {field.options?.length > 0 
-              ? `Opciones (${field.options.length}): ${field.options.slice(0, 3).map(o => typeof o === "string" ? o : o.label).join(", ")}...` 
+            {Array.isArray(field.options) && field.options.length > 0 
+              ? `Opciones (${field.options.length}): ${field.options.slice(0, 3).map(o => {
+                  if (typeof o === "string") return o;
+                  if (typeof o === "object" && o !== null && "label" in o) return o.label;
+                  return "";
+                }).filter(Boolean).join(", ")}...` 
               : "Lista desplegable"}
           </div>
         )}
         
-        {field.type === "multiselect" && (
+        {/* Campo de selección múltiple (considerado como tipo personalizado) */}
+        {(field.type as string) === "multiselect" && (
           <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
-            {field.options?.length > 0 
+            {Array.isArray(field.options) && field.options.length > 0 
               ? `Selección múltiple (${field.options.length} opciones)` 
               : "Selección múltiple"}
           </div>
         )}
         
+        {/* Campo de casilla de verificación */}
         {field.type === "checkbox" && (
           <div className="h-5 mt-1 flex items-center">
             <div className="h-4 w-4 rounded border border-input bg-muted-foreground/10 mr-2"></div>
             <span className="text-sm text-muted-foreground">Casilla de verificación</span>
+          </div>
+        )}
+        
+        {/* Campo de fecha */}
+        {field.type === "date" && (
+          <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            Selector de fecha
+          </div>
+        )}
+        
+        {/* Manejar otros tipos de campos no específicamente implementados */}
+        {!["text", "textarea", "select", "checkbox", "date"].includes(field.type) && 
+          (field.type as string) !== "multiselect" && (
+          <div className="h-10 mt-1 px-3 py-2 rounded-md border border-input bg-muted-foreground/10 text-muted-foreground text-sm">
+            Campo de tipo: {field.type}
           </div>
         )}
       </div>

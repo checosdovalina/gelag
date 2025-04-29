@@ -28,9 +28,10 @@ export default function Sidebar({ className }: SidebarProps) {
   }
 
   const isAdmin = user.role === UserRole.ADMIN;
+  const isSuperAdmin = user.role === UserRole.SUPERADMIN;
   const isProduction = user.role === UserRole.PRODUCTION;
   const isQuality = user.role === UserRole.QUALITY;
-  const canCaptureData = isAdmin || isProduction || isQuality;
+  const canCaptureData = isAdmin || isProduction || isQuality || isSuperAdmin;
 
   const navItems = [
     {
@@ -43,13 +44,19 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Gestión de Usuarios",
       href: "/users",
       icon: <Users className="h-5 w-5" />,
-      show: isAdmin,
+      show: isAdmin || isSuperAdmin,
     },
     {
       title: "Crear Formularios",
       href: "/form-editor",
       icon: <PlusSquare className="h-5 w-5" />,
-      show: isAdmin,
+      show: isAdmin || isSuperAdmin,
+    },
+    {
+      title: "Importar Formularios",
+      href: "/form-import",
+      icon: <FileText className="h-5 w-5" />,
+      show: isSuperAdmin,
     },
     {
       title: "Formularios",
@@ -73,7 +80,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Configuración",
       href: "/settings",
       icon: <Settings className="h-5 w-5" />,
-      show: isAdmin,
+      show: isAdmin || isSuperAdmin,
     },
   ];
 
