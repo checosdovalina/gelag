@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { insertFormTemplateSchema, insertFormEntrySchema, UserRole, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { hashPassword } from "./auth";
+import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -328,6 +329,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // File upload routes
+  app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
+    upload.single('file'), async (req, res, next) => {
+      try {
+        // Check if file exists
+        if (!req.file) {
+          return res.status(400).json({ message: "No se ha proporcionado ningún archivo" });
+        }
+        
+        const filePath = req.file.path;
+        let parsedData;
+        
+        // Parse file based on mimetype
+        if (req.file.mimetype === 'application/pdf') {
+          parsedData = await parsePdfFile(filePath);
+        } else {
+          // Assume it's an Excel file
+          parsedData = await parseExcelFile(filePath);
+        }
+        
+        // Log activity
+        await storage.createActivityLog({
+          userId: req.user.id,
+          action: "uploaded",
+          resourceType: "file",
+          resourceId: 0, // No specific ID for files
+          details: { fileName: req.file.originalname, fileType: req.file.mimetype }
+        });
+        
+        // Clean up the file after processing
+        cleanupFile(filePath);
+        
+        res.status(200).json({
+          fileName: req.file.originalname,
+          fileType: req.file.mimetype,
+          data: parsedData
+        });
+      } catch (error) {
+        // Clean up file in case of error
+        if (req.file) {
+          cleanupFile(req.file.path);
+        }
+        
+        console.error('Error processing file:', error);
+        res.status(500).json({ 
+          message: "Error al procesar el archivo", 
+          error: error.message 
+        });
+      }
+    }
+  );
 
   const httpServer = createServer(app);
   return httpServer;
