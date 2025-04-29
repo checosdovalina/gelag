@@ -77,6 +77,9 @@ export default function FormViewer({
         case "table":
           fieldSchema = z.array(z.record(z.string(), z.any())).optional();
           break;
+        case "evaluationMatrix":
+          fieldSchema = z.record(z.string(), z.string()).optional();
+          break;
         default:
           fieldSchema = z.string().optional();
       }
@@ -115,9 +118,125 @@ export default function FormViewer({
     });
   }, [formTemplate, form]);
   
+  // Renderiza la matriz de evaluación (días x empleados x criterios)
+  const renderEvaluationMatrix = (field: IFormField) => {
+    // Verificar que tenemos los datos necesarios
+    if (!field.employeeNames || !field.criteria || !field.options) {
+      return (
+        <FormItem>
+          <FormLabel>{field.label}</FormLabel>
+          <div className="p-4 border rounded-md bg-muted/50">
+            <p>No se pudieron cargar los datos para la matriz de evaluación.</p>
+          </div>
+        </FormItem>
+      );
+    }
+
+    // Opciones que tenemos para cada celda de evaluación (C, NC, NA)
+    const options = field.options;
+    
+    // Optionally get the value from the form or initialize if not set
+    const formValue = form.getValues()[field.id] || {};
+    
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => {
+          // Inicializa los valores de formField si es necesario
+          if (!formField.value) {
+            const initialValue: any = {};
+            formField.onChange(initialValue);
+          }
+          
+          return (
+            <FormItem className="w-full mb-8">
+              <FormLabel className="text-lg font-bold">
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </FormLabel>
+              
+              <div className="space-y-8 mt-4">
+                {/* Iteramos por cada criterio */}
+                {field.criteria.map((criterion, criterionIndex) => (
+                  <div key={criterionIndex} className="space-y-4">
+                    <h3 className="text-md font-medium border-b pb-2">{criterion}</h3>
+                    
+                    <div className="border rounded-md overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[200px]">Empleado</TableHead>
+                            <TableHead>Lun</TableHead>
+                            <TableHead>Mar</TableHead>
+                            <TableHead>Mié</TableHead>
+                            <TableHead>Jue</TableHead>
+                            <TableHead>Vie</TableHead>
+                            <TableHead>Sáb</TableHead>
+                            <TableHead>Dom</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {field.employeeNames.map((employee, employeeIndex) => (
+                            <TableRow key={employeeIndex}>
+                              <TableCell className="font-medium">{employee}</TableCell>
+                              
+                              {/* Celdas para cada día */}
+                              {["lun", "mar", "mie", "jue", "vie", "sab", "dom"].map((day, dayIndex) => {
+                                const cellId = `${criterionIndex}_${employeeIndex}_${dayIndex}`;
+                                const value = formField.value && formField.value[cellId] 
+                                  ? formField.value[cellId] 
+                                  : "";
+                                
+                                return (
+                                  <TableCell key={dayIndex}>
+                                    <Select
+                                      value={value}
+                                      onValueChange={(newValue) => {
+                                        const updatedData = {
+                                          ...formField.value,
+                                          [cellId]: newValue
+                                        };
+                                        formField.onChange(updatedData);
+                                      }}
+                                      disabled={isReadOnly}
+                                    >
+                                      <SelectTrigger className="w-[80px]">
+                                        <SelectValue placeholder="-" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {options.map((option: any, optionIndex: number) => (
+                                          <SelectItem key={optionIndex} value={option.value}>
+                                            {option.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+    );
+  };
+  
   // Render field based on its type
   const renderField = (field: IFormField) => {
     switch (field.type) {
+      case "evaluationMatrix":
+        return renderEvaluationMatrix(field);
+        
       case "text":
         return (
           <FormField

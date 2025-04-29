@@ -136,6 +136,7 @@ export function extractFormMetadata(data: any[]): Partial<ExcelFormData> {
 
 /**
  * Extrae los nombres de los empleados del formulario de buenas prácticas
+ * Mantiene la estructura exacta como en el Excel original
  */
 export function extractEmployeeNames(data: any[]): string[] {
   const employeeNames: string[] = [];
@@ -149,14 +150,19 @@ export function extractEmployeeNames(data: any[]): string[] {
   // Extraer nombres de empleados (las filas después del encabezado)
   let currentRow = nameHeaderRowIndex + 1;
   while (currentRow < data.length && data[currentRow] && data[currentRow][0]) {
-    employeeNames.push(data[currentRow][0]);
+    // Solo agregamos el nombre si no está vacío
+    if (data[currentRow][0] && typeof data[currentRow][0] === 'string' && data[currentRow][0].trim() !== '') {
+      employeeNames.push(data[currentRow][0]);
+    }
     currentRow++;
     
-    // Si encontramos una fila vacía o un nuevo encabezado, detenemos la extracción
+    // Si encontramos un nuevo encabezado, detenemos la extracción
     if (!data[currentRow] || !data[currentRow][0] || 
-        data[currentRow][0].includes("1.") || 
-        data[currentRow][0].includes("2.") ||
-        data[currentRow][0].includes("APROBADO")) {
+        (typeof data[currentRow][0] === 'string' && (
+          data[currentRow][0].includes("ASPECTOS DE INSPECCIÓN") || 
+          data[currentRow][0].includes("1.") || 
+          data[currentRow][0].includes("APROBADO")
+        ))) {
       break;
     }
   }
@@ -166,24 +172,73 @@ export function extractEmployeeNames(data: any[]): string[] {
 
 /**
  * Extrae los criterios de evaluación del formulario de buenas prácticas
+ * Y preserva la estructura exacta como en el Excel original
  */
 export function extractEvaluationCriteria(data: any[]): string[] {
   const criteria: string[] = [];
   
-  // Buscar filas que contienen criterios numerados (1., 2., etc.)
-  for (let i = 0; i < data.length; i++) {
-    const row = data[i];
-    if (row && row[0] && typeof row[0] === 'string') {
-      if (row[0].match(/^\d+\.\s/) || row[0].includes("zapatos")) {
-        criteria.push(row[0]);
-        
-        // Si el criterio continúa en la siguiente fila (sin número)
-        if (data[i+1] && data[i+1][0] && !data[i+1][0].match(/^\d+\.\s/) && 
-            !data[i+1][0].includes("APROBADO")) {
-          criteria[criteria.length - 1] += " " + data[i+1][0];
+  // Buscar sección que contiene "ASPECTOS DE INSPECCIÓN"
+  const aspectosIndex = data.findIndex(row => 
+    row && row[0] && typeof row[0] === 'string' && 
+    row[0].includes("ASPECTOS DE INSPECCIÓN"));
+
+  if (aspectosIndex === -1) {
+    // Si no encontramos la sección específica, usamos el método anterior
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      if (row && row[0] && typeof row[0] === 'string') {
+        if (row[0].match(/^\d+\.\s/) || row[0].includes("zapatos")) {
+          criteria.push(row[0]);
+          
+          // Si el criterio continúa en la siguiente fila (sin número)
+          if (data[i+1] && data[i+1][0] && !data[i+1][0].match(/^\d+\.\s/) && 
+              !data[i+1][0].includes("APROBADO")) {
+            criteria[criteria.length - 1] += " " + data[i+1][0];
+          }
         }
       }
     }
+    return criteria;
+  }
+
+  // Extraer criterios a partir de la sección encontrada
+  let currentRow = aspectosIndex + 1;
+  while (currentRow < data.length) {
+    const row = data[currentRow];
+    if (row && row[0] && typeof row[0] === 'string') {
+      // Si encontramos "APROBADO", hemos llegado al final de los criterios
+      if (row[0].includes("APROBADO")) {
+        break;
+      }
+      
+      // Si es un punto numerado (1., 2., etc.) o contiene palabras clave de criterios
+      if (row[0].match(/^\d+\.\s/) || 
+          row[0].includes("Uniforme") || 
+          row[0].includes("joyería") || 
+          row[0].includes("Barba") || 
+          row[0].includes("Uñas") || 
+          row[0].includes("maquillaje") || 
+          row[0].includes("equipo de protección")) {
+        
+        let criterio = row[0];
+        currentRow++;
+        
+        // Verificar si el criterio continúa en la siguiente línea
+        while (currentRow < data.length && 
+               data[currentRow] && 
+               data[currentRow][0] && 
+               typeof data[currentRow][0] === 'string' && 
+               !data[currentRow][0].match(/^\d+\.\s/) && 
+               !data[currentRow][0].includes("APROBADO")) {
+          criterio += " " + data[currentRow][0];
+          currentRow++;
+        }
+        
+        criteria.push(criterio);
+        continue; // Continuamos desde el nuevo currentRow
+      }
+    }
+    currentRow++;
   }
   
   return criteria;
@@ -209,6 +264,26 @@ export function convertExcelToFormStructure(sheetData: any[]): FormStructure {
     // Extraer nombres de empleados
     const employeeNames = extractEmployeeNames(sheetData);
     
+    // Extraer criterios de evaluación
+    const criteria = extractEvaluationCriteria(sheetData);
+    
+    // Metadatos del formulario
+    formStructure.fields.push({
+      id: "codigo",
+      type: "text" as FieldType,
+      label: "Código",
+      required: true,
+      defaultValue: metadata.code || "CARE-01-01"
+    });
+    
+    formStructure.fields.push({
+      id: "version",
+      type: "text" as FieldType,
+      label: "Versión",
+      required: true,
+      defaultValue: metadata.version || "1"
+    });
+    
     // Campo para seleccionar semana
     formStructure.fields.push({
       id: "semana",
@@ -233,32 +308,24 @@ export function convertExcelToFormStructure(sheetData: any[]): FormStructure {
       ]
     });
     
-    // Campo para seleccionar empleados (usando los nombres extraídos)
-    if (employeeNames.length > 0) {
+    // Matriz de evaluación (esta será la parte principal del formulario)
+    if (employeeNames.length > 0 && criteria.length > 0) {
       formStructure.fields.push({
-        id: "empleados",
-        type: "multiselect" as FieldType,
-        label: "Empleados a evaluar",
+        id: "evaluationMatrix",
+        type: "evaluationMatrix" as FieldType,
+        label: "Matriz de Evaluación de Buenas Prácticas",
         required: true,
-        options: employeeNames.map(name => ({
-          value: name.trim(),
-          label: name.trim()
-        }))
+        // Datos específicos para la matriz de evaluación
+        employeeNames: employeeNames,
+        criteria: criteria,
+        // Las opciones por defecto para cada celda de la matriz
+        options: [
+          { value: "C", label: "Cumple" },
+          { value: "NC", label: "No Cumple" },
+          { value: "NA", label: "No Aplica" }
+        ]
       });
     }
-    
-    // Extraer criterios de evaluación
-    const criteria = extractEvaluationCriteria(sheetData);
-    
-    // Crear campos para cada criterio
-    criteria.forEach((criterion, index) => {
-      formStructure.fields.push({
-        id: `criterio_${index + 1}`,
-        type: "checkbox" as FieldType,
-        label: criterion,
-        required: true
-      });
-    });
     
     // Campo para comentarios adicionales
     formStructure.fields.push({

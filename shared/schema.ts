@@ -133,6 +133,10 @@ export const formFieldSchema = z.object({
       value: z.string()
     })).optional()
   })).optional(), // For table type fields
+  // Campos específicos para el tipo evaluationMatrix
+  employeeNames: z.array(z.string()).optional(), // Nombres de empleados para la matriz
+  criteria: z.array(z.string()).optional(), // Criterios de evaluación
+  days: z.array(z.string()).optional(), // Días de la semana (opcional)
 });
 
 // Export both the type and the schema
