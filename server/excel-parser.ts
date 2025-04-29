@@ -29,16 +29,47 @@ export interface ExcelFormData {
  */
 export function detectFormType(data: any[]): FormTemplateType {
   // Buscar patrones específicos en los datos
-  const titleRow = data[0] || [];
-  const companyRow = data[1] || [];
+  const titleRow = Array.isArray(data[0]) ? data[0] : [];
+  const companyRow = Array.isArray(data[1]) ? data[1] : [];
   
-  // Revisa si es un formulario de Buenas Prácticas de Manufactura
-  const isBuenasPracticas = 
-    titleRow.some((cell: string) => typeof cell === 'string' && cell.includes('BUENAS PRACTICAS DE PERSONAL')) ||
-    titleRow.some((cell: string) => typeof cell === 'string' && cell.includes('CARE-01-01'));
+  // En caso de que los datos procesados por XLSX vengan en formato de objetos
+  if (!Array.isArray(titleRow) && typeof titleRow === 'object') {
+    // Asumimos genérico para datos en formato de objeto
+    console.log("Formato objeto detectado:", titleRow);
+    return FormTemplateType.GENERIC;
+  }
   
-  if (isBuenasPracticas) {
-    return FormTemplateType.BUENAS_PRACTICAS;
+  // Si el primer elemento es un objeto con propiedades y no un array
+  if (data.length > 0 && !Array.isArray(data[0]) && typeof data[0] === 'object') {
+    // Convertir claves del objeto a un arreglo de strings para buscar
+    const keys = Object.keys(data[0]);
+    const values = Object.values(data[0]).map(v => String(v));
+    
+    // Buscar patrones específicos en las claves y valores
+    const hasBuenasPracticasKey = keys.some(key => key.includes('BUENAS PRACTICAS') || key.includes('CARE-01-01'));
+    const hasBuenasPracticasValue = values.some(val => val.includes('BUENAS PRACTICAS') || val.includes('CARE-01-01'));
+    
+    if (hasBuenasPracticasKey || hasBuenasPracticasValue) {
+      return FormTemplateType.BUENAS_PRACTICAS;
+    }
+    
+    // Si no se reconoce un tipo específico, asume genérico
+    return FormTemplateType.GENERIC;
+  }
+  
+  // Si es un array, continúa con la lógica original
+  try {
+    // Revisa si es un formulario de Buenas Prácticas de Manufactura
+    const isBuenasPracticas = 
+      Array.isArray(titleRow) && 
+      (titleRow.some((cell: any) => typeof cell === 'string' && cell.includes('BUENAS PRACTICAS DE PERSONAL')) ||
+       titleRow.some((cell: any) => typeof cell === 'string' && cell.includes('CARE-01-01')));
+    
+    if (isBuenasPracticas) {
+      return FormTemplateType.BUENAS_PRACTICAS;
+    }
+  } catch (error) {
+    console.error("Error al detectar tipo de formulario:", error);
   }
   
   // Si no se reconoce un tipo específico, asume genérico
@@ -278,35 +309,87 @@ export function convertExcelToFormStructure(sheetData: any[]): FormStructure {
  * Procesa los datos Excel y devuelve una estructura completa con datos y metadatos
  */
 export function processExcelData(sheetsData: any[]): ExcelFormData {
-  // Por ahora, solo procesar la primera hoja
-  const sheetData = sheetsData[0].data;
+  if (!sheetsData || !Array.isArray(sheetsData) || sheetsData.length === 0) {
+    console.error("Datos Excel inválidos:", sheetsData);
+    return {
+      title: "Error al procesar formulario",
+      formFields: [],
+      formType: FormTemplateType.GENERIC,
+      rawData: []
+    };
+  }
   
-  // Detectar el tipo de formulario
-  const formType = detectFormType(sheetData);
+  // Procesar la primera hoja
+  // La estructura puede venir en diferentes formatos según la biblioteca XLSX
+  let sheetData: any[] = [];
   
-  // Extraer metadatos
-  const metadata = extractFormMetadata(sheetData);
+  // Si sheetsData es un array de objetos con propiedad 'data'
+  if (sheetsData[0] && sheetsData[0].data) {
+    sheetData = sheetsData[0].data;
+    console.log("Usando formato: sheetsData[0].data");
+  } 
+  // Si sheetsData es directamente un array de arrays (filas)
+  else if (Array.isArray(sheetsData[0])) {
+    sheetData = sheetsData;
+    console.log("Usando formato: sheetsData");
+  }
+  // Si sheetsData es un objeto con nombres de hojas como claves
+  else if (typeof sheetsData === 'object' && !Array.isArray(sheetsData)) {
+    // Obtener la primera clave (nombre de hoja)
+    const firstSheetName = Object.keys(sheetsData)[0];
+    if (firstSheetName && sheetsData[firstSheetName]) {
+      sheetData = sheetsData[firstSheetName];
+      console.log("Usando formato: sheetsData[sheetName]");
+    }
+  }
   
-  // Extraer nombres de empleados para formularios de buenas prácticas
-  const employeeNames = formType === FormTemplateType.BUENAS_PRACTICAS 
-    ? extractEmployeeNames(sheetData) 
-    : [];
+  // Si no pudimos obtener datos, devolver una estructura vacía
+  if (!sheetData || !Array.isArray(sheetData) || sheetData.length === 0) {
+    console.error("No se pudieron extraer datos de la hoja:", sheetsData);
+    return {
+      title: "Error al procesar formulario",
+      formFields: [],
+      formType: FormTemplateType.GENERIC,
+      rawData: []
+    };
+  }
   
-  // Por ahora, devolvemos una estructura básica
-  return {
-    title: metadata.title || "Formulario sin título",
-    company: metadata.company,
-    address: metadata.address,
-    date: metadata.date,
-    department: metadata.department,
-    documentType: metadata.documentType,
-    version: metadata.version,
-    code: metadata.code,
-    employeeNames,
-    formFields: [], // Aquí podríamos extraer datos específicos si fuera necesario
-    formType,
-    rawData: sheetData
-  };
+  try {
+    // Detectar el tipo de formulario
+    const formType = detectFormType(sheetData);
+    
+    // Extraer metadatos
+    const metadata = extractFormMetadata(sheetData);
+    
+    // Extraer nombres de empleados para formularios de buenas prácticas
+    const employeeNames = formType === FormTemplateType.BUENAS_PRACTICAS 
+      ? extractEmployeeNames(sheetData) 
+      : [];
+    
+    // Devolver estructura con datos procesados
+    return {
+      title: metadata.title || "Formulario sin título",
+      company: metadata.company,
+      address: metadata.address,
+      date: metadata.date,
+      department: metadata.department,
+      documentType: metadata.documentType,
+      version: metadata.version,
+      code: metadata.code,
+      employeeNames,
+      formFields: [], // Aquí podríamos extraer datos específicos si fuera necesario
+      formType,
+      rawData: sheetData
+    };
+  } catch (error) {
+    console.error("Error al procesar datos Excel:", error);
+    return {
+      title: "Error al procesar formulario",
+      formFields: [],
+      formType: FormTemplateType.GENERIC,
+      rawData: sheetData || []
+    };
+  }
 }
 
 /**
@@ -318,18 +401,70 @@ export function createFormTemplateFromExcel(excelData: any[], department: string
   department: string;
   structure: FormStructure;
 } {
-  // Procesar datos para extraer metadatos y detectar el tipo
-  const firstSheet = excelData[0].data;
-  const formType = detectFormType(firstSheet);
-  const metadata = extractFormMetadata(firstSheet);
+  if (!excelData || !Array.isArray(excelData) || excelData.length === 0) {
+    console.error("Datos Excel inválidos al crear plantilla:", excelData);
+    return {
+      name: "Error al procesar formulario",
+      description: "No se pudieron procesar los datos del archivo Excel",
+      department,
+      structure: {
+        title: "Error",
+        fields: []
+      }
+    };
+  }
   
-  // Crear estructura del formulario
-  const formStructure = convertExcelToFormStructure(firstSheet);
+  // Determinar la estructura de los datos de la primera hoja
+  let firstSheet: any[] = [];
   
-  return {
-    name: metadata.title || "Formulario importado",
-    description: `${metadata.code || ""} ${metadata.version || ""} - Formulario importado desde Excel`,
-    department,
-    structure: formStructure
-  };
+  try {
+    // Si es un array de objetos con propiedad 'data'
+    if (excelData[0] && excelData[0].data) {
+      firstSheet = excelData[0].data;
+      console.log("Usando formato para plantilla: excelData[0].data");
+    } 
+    // Si es directamente un array de arrays (filas)
+    else if (Array.isArray(excelData[0])) {
+      firstSheet = excelData;
+      console.log("Usando formato para plantilla: excelData");
+    }
+    // Si es un objeto con nombres de hojas como claves
+    else if (typeof excelData === 'object' && !Array.isArray(excelData)) {
+      // Obtener la primera clave (nombre de hoja)
+      const firstSheetName = Object.keys(excelData)[0];
+      if (firstSheetName && excelData[firstSheetName]) {
+        firstSheet = excelData[firstSheetName];
+        console.log("Usando formato para plantilla: excelData[sheetName]");
+      }
+    }
+    
+    if (!firstSheet || !Array.isArray(firstSheet) || firstSheet.length === 0) {
+      throw new Error("No se pudieron extraer datos de la hoja para crear la plantilla");
+    }
+    
+    // Procesar datos para extraer metadatos y detectar el tipo
+    const formType = detectFormType(firstSheet);
+    const metadata = extractFormMetadata(firstSheet);
+    
+    // Crear estructura del formulario
+    const formStructure = convertExcelToFormStructure(firstSheet);
+    
+    return {
+      name: metadata.title || "Formulario importado",
+      description: `${metadata.code || ""} ${metadata.version || ""} - Formulario importado desde Excel`,
+      department,
+      structure: formStructure
+    };
+  } catch (error) {
+    console.error("Error al crear plantilla de formulario:", error);
+    return {
+      name: "Error al procesar formulario",
+      description: "Ocurrió un error al crear la plantilla del formulario",
+      department,
+      structure: {
+        title: "Error",
+        fields: []
+      }
+    };
+  }
 }
