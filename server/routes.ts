@@ -214,8 +214,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (req.query.department) {
         entries = await storage.getFormEntriesByDepartment(req.query.department as string);
       } else {
-        // Only admins can see all entries without filters
-        if (req.user.role !== UserRole.ADMIN) {
+        // Only superadmins and admins can see all entries without filters
+        if (req.user.role !== UserRole.SUPERADMIN && req.user.role !== UserRole.ADMIN) {
           return res.status(403).json({ message: "No autorizado para ver todas las entradas" });
         }
         
@@ -248,6 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if user has permission to view this entry
       if (
+        req.user.role !== UserRole.SUPERADMIN &&
         req.user.role !== UserRole.ADMIN && 
         entry.createdBy !== req.user.id && 
         entry.department !== req.user.department
@@ -261,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/form-entries", authorize([UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
+  app.post("/api/form-entries", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
     async (req, res, next) => {
       try {
         const entryData = insertFormEntrySchema.parse(req.body);
@@ -301,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Activity log routes
-  app.get("/api/activity", authorize([UserRole.ADMIN]), async (req, res, next) => {
+  app.get("/api/activity", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const activities = await storage.getRecentActivity(limit);
