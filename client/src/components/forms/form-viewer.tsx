@@ -89,8 +89,25 @@ export default function FormViewer({
           fieldSchema = z.array(z.string()).min(1, "Este campo es requerido");
         } else if (field.type === "table") {
           fieldSchema = z.array(z.record(z.string(), z.any())).min(1, "Se requiere al menos una fila");
+        } else if (field.type === "text" || field.type === "textarea") {
+          fieldSchema = z.string().min(1, "Este campo es requerido");
+        } else if (field.type === "evaluationMatrix") {
+          // Para matrices de evaluación, requerimos al menos una entrada en el objeto
+          fieldSchema = z.record(z.string(), z.string()).refine(
+            obj => Object.keys(obj).length > 0,
+            "Este campo es requerido"
+          );
+        } else if (field.type === "select" || field.type === "radio") {
+          fieldSchema = z.string().min(1, "Este campo es requerido");
+        } else if (field.type === "number") {
+          fieldSchema = z.number().or(z.string().transform(val => val ? Number(val) : undefined))
+            .refine(val => val !== undefined, "Este campo es requerido");
+        } else if (field.type === "date") {
+          fieldSchema = z.string().min(1, "Este campo es requerido");
         } else {
-          fieldSchema = fieldSchema.min(1, "Este campo es requerido");
+          // Para otros tipos que no tienen .min()
+          fieldSchema = z.any().refine(val => val !== undefined && val !== null && val !== '', 
+            "Este campo es requerido");
         }
       } else {
         fieldSchema = fieldSchema.optional();
