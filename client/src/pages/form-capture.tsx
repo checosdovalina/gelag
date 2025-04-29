@@ -95,7 +95,7 @@ export default function FormCapture() {
     ? templates.filter(
         (template) =>
           template.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          (departmentFilter
+          (departmentFilter && departmentFilter !== "all"
             ? template.department === departmentFilter
             : true)
       )

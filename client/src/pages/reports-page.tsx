@@ -51,9 +51,9 @@ const COLORS = ["#1976d2", "#f50057", "#ff9800", "#4caf50", "#9c27b0"];
 export default function ReportsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("");
-  const [formFilter, setFormFilter] = useState("");
-  const [userFilter, setUserFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [formFilter, setFormFilter] = useState("all");
+  const [userFilter, setUserFilter] = useState("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [reportType, setReportType] = useState("submissions");
 
@@ -99,13 +99,13 @@ export default function ReportsPage() {
       (entry.userName && entry.userName.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // Department filter
-    const departmentMatches = !departmentFilter || entry.department === departmentFilter;
+    const departmentMatches = !departmentFilter || departmentFilter === "all" || entry.department === departmentFilter;
     
     // Form filter
-    const formMatches = !formFilter || entry.formTemplateId.toString() === formFilter;
+    const formMatches = !formFilter || formFilter === "all" || entry.formTemplateId.toString() === formFilter;
     
     // User filter
-    const userMatches = !userFilter || entry.createdBy.toString() === userFilter;
+    const userMatches = !userFilter || userFilter === "all" || entry.createdBy.toString() === userFilter;
     
     // Date range filter
     const dateMatches = !dateRange || !dateRange.from || 
@@ -395,9 +395,9 @@ export default function ReportsPage() {
                   variant="outline"
                   onClick={() => {
                     setSearchTerm("");
-                    setDepartmentFilter("");
-                    setFormFilter("");
-                    setUserFilter("");
+                    setDepartmentFilter("all");
+                    setFormFilter("all");
+                    setUserFilter("all");
                     setDateRange(undefined);
                   }}
                 >
