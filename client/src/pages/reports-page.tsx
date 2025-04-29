@@ -303,7 +303,7 @@ export default function ReportsPage() {
                     <SelectValue placeholder="Todos los departamentos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los departamentos</SelectItem>
+                    <SelectItem value="all">Todos los departamentos</SelectItem>
                     {Array.from(new Set(processedEntries.map(e => e.department))).map(dept => (
                       <SelectItem key={dept} value={dept || ""}>
                         {dept || "Sin departamento"}
@@ -320,7 +320,7 @@ export default function ReportsPage() {
                     <SelectValue placeholder="Todos los formularios" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los formularios</SelectItem>
+                    <SelectItem value="all">Todos los formularios</SelectItem>
                     {templates?.map(template => (
                       <SelectItem key={template.id} value={template.id.toString()}>
                         {template.name}
@@ -337,7 +337,7 @@ export default function ReportsPage() {
                     <SelectValue placeholder="Todos los usuarios" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los usuarios</SelectItem>
+                    <SelectItem value="all">Todos los usuarios</SelectItem>
                     {users?.map(user => (
                       <SelectItem key={user.id} value={user.id.toString()}>
                         {user.name}

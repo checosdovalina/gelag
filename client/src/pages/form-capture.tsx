@@ -183,7 +183,7 @@ export default function FormCapture() {
                   <SelectValue placeholder="Todos los departamentos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los departamentos</SelectItem>
+                  <SelectItem value="all">Todos los departamentos</SelectItem>
                   {departments.map((dept) => (
                     <SelectItem key={dept} value={dept}>
                       {dept}
