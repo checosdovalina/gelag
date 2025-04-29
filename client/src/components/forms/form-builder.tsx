@@ -1,0 +1,499 @@
+import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Form, FormControl, FormDescription, FormField as UIFormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Plus, 
+  Trash2, 
+  GripVertical, 
+  Type, 
+  Hash, 
+  Calendar, 
+  List, 
+  CheckSquare, 
+  RadioIcon, 
+  AlignLeft, 
+  Table as TableIcon 
+} from "lucide-react";
+import { FieldType, formFieldSchema, formStructureSchema } from "@shared/schema";
+import type { FormField } from "@shared/schema";
+
+interface FormBuilderProps {
+  initialFormData?: z.infer<typeof formStructureSchema>;
+  onSave: (data: z.infer<typeof formStructureSchema>) => void;
+  isLoading?: boolean;
+}
+
+const defaultField: FormField = {
+  id: "",
+  type: "text",
+  label: "",
+  required: false,
+  placeholder: "",
+};
+
+// Options for select/radio/checkbox fields
+const defaultOptions = [
+  { label: "Opción 1", value: "option1" },
+  { label: "Opción 2", value: "option2" },
+];
+
+// Schema for form builder
+const formBuilderSchema = z.object({
+  title: z.string().min(1, "El título es requerido"),
+  fields: z.array(formFieldSchema).min(1, "Se requiere al menos un campo"),
+});
+
+export default function FormBuilder({ initialFormData, onSave, isLoading = false }: FormBuilderProps) {
+  // Initialize form with default values or provided data
+  const form = useForm<z.infer<typeof formBuilderSchema>>({
+    resolver: zodResolver(formBuilderSchema),
+    defaultValues: initialFormData || {
+      title: "",
+      fields: [{ ...defaultField, id: uuidv4() }],
+    },
+  });
+
+  const { fields, append, remove, move } = form.control._formValues.fields;
+  
+  // Function to add a new field
+  const addField = () => {
+    const newField: FormField = {
+      ...defaultField,
+      id: uuidv4(),
+    };
+    append(newField);
+  };
+
+  // Function to remove a field
+  const removeField = (index: number) => {
+    remove(index);
+  };
+
+  // Handle form submission
+  const onSubmit = (data: z.infer<typeof formBuilderSchema>) => {
+    onSave(data);
+  };
+
+  // Handle drag and drop reordering
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
+    
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    
+    if (sourceIndex === destinationIndex) return;
+    
+    // Update form fields order
+    const updatedFields = [...form.getValues().fields];
+    const [removed] = updatedFields.splice(sourceIndex, 1);
+    updatedFields.splice(destinationIndex, 0, removed);
+    
+    form.setValue("fields", updatedFields);
+  };
+
+  // Get field icon based on type
+  const getFieldIcon = (type: FieldType) => {
+    switch (type) {
+      case "text": return <Type className="h-4 w-4" />;
+      case "number": return <Hash className="h-4 w-4" />;
+      case "date": return <Calendar className="h-4 w-4" />;
+      case "select": return <List className="h-4 w-4" />;
+      case "checkbox": return <CheckSquare className="h-4 w-4" />;
+      case "radio": return <RadioIcon className="h-4 w-4" />;
+      case "textarea": return <AlignLeft className="h-4 w-4" />;
+      case "table": return <TableIcon className="h-4 w-4" />;
+      default: return <Type className="h-4 w-4" />;
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <UIFormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Título del Formulario</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ingrese el título del formulario" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Campos del Formulario</h3>
+                <Button 
+                  type="button" 
+                  onClick={addField} 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Agregar Campo
+                </Button>
+              </div>
+
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="fields">
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-4"
+                    >
+                      {form.getValues().fields.map((field, index) => (
+                        <Draggable key={field.id} draggableId={field.id} index={index}>
+                          {(provided) => (
+                            <Card
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className="relative"
+                            >
+                              <div
+                                {...provided.dragHandleProps}
+                                className="absolute left-3 top-3 cursor-move text-gray-400"
+                              >
+                                <GripVertical className="h-5 w-5" />
+                              </div>
+                              <CardContent className="pt-6 pl-10">
+                                <div className="grid gap-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <UIFormField
+                                      control={form.control}
+                                      name={`fields.${index}.label`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Etiqueta</FormLabel>
+                                          <FormControl>
+                                            <Input placeholder="Etiqueta del campo" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+
+                                    <UIFormField
+                                      control={form.control}
+                                      name={`fields.${index}.type`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Tipo</FormLabel>
+                                          <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                          >
+                                            <FormControl>
+                                              <SelectTrigger>
+                                                <SelectValue placeholder="Seleccione un tipo" />
+                                              </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                              <SelectItem value="text">
+                                                <div className="flex items-center">
+                                                  <Type className="h-4 w-4 mr-2" /> Texto
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="number">
+                                                <div className="flex items-center">
+                                                  <Hash className="h-4 w-4 mr-2" /> Número
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="date">
+                                                <div className="flex items-center">
+                                                  <Calendar className="h-4 w-4 mr-2" /> Fecha
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="select">
+                                                <div className="flex items-center">
+                                                  <List className="h-4 w-4 mr-2" /> Lista desplegable
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="checkbox">
+                                                <div className="flex items-center">
+                                                  <CheckSquare className="h-4 w-4 mr-2" /> Casilla de verificación
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="radio">
+                                                <div className="flex items-center">
+                                                  <RadioIcon className="h-4 w-4 mr-2" /> Opción única
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="textarea">
+                                                <div className="flex items-center">
+                                                  <AlignLeft className="h-4 w-4 mr-2" /> Área de texto
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="table">
+                                                <div className="flex items-center">
+                                                  <TableIcon className="h-4 w-4 mr-2" /> Tabla
+                                                </div>
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  {(form.watch(`fields.${index}.type`) === "text" || 
+                                    form.watch(`fields.${index}.type`) === "number" || 
+                                    form.watch(`fields.${index}.type`) === "textarea") && (
+                                    <UIFormField
+                                      control={form.control}
+                                      name={`fields.${index}.placeholder`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Placeholder</FormLabel>
+                                          <FormControl>
+                                            <Input placeholder="Placeholder del campo" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  )}
+
+                                  {(form.watch(`fields.${index}.type`) === "select" || 
+                                   form.watch(`fields.${index}.type`) === "radio" || 
+                                   form.watch(`fields.${index}.type`) === "checkbox") && (
+                                    <div>
+                                      <UIFormField
+                                        control={form.control}
+                                        name={`fields.${index}.options`}
+                                        render={({ field }) => {
+                                          // Initialize options if they don't exist
+                                          if (!field.value) {
+                                            form.setValue(`fields.${index}.options`, defaultOptions);
+                                          }
+                                          
+                                          return (
+                                            <FormItem>
+                                              <FormLabel>Opciones</FormLabel>
+                                              <div className="space-y-2">
+                                                {(field.value || []).map((option, optionIndex) => (
+                                                  <div key={optionIndex} className="flex items-center gap-2">
+                                                    <Input
+                                                      placeholder="Etiqueta"
+                                                      value={option.label}
+                                                      onChange={(e) => {
+                                                        const newOptions = [...(field.value || [])];
+                                                        newOptions[optionIndex].label = e.target.value;
+                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                      }}
+                                                    />
+                                                    <Input
+                                                      placeholder="Valor"
+                                                      value={option.value}
+                                                      onChange={(e) => {
+                                                        const newOptions = [...(field.value || [])];
+                                                        newOptions[optionIndex].value = e.target.value;
+                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                      }}
+                                                    />
+                                                    <Button
+                                                      type="button"
+                                                      variant="ghost"
+                                                      size="icon"
+                                                      onClick={() => {
+                                                        const newOptions = [...(field.value || [])];
+                                                        newOptions.splice(optionIndex, 1);
+                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                      }}
+                                                      disabled={field.value?.length <= 1}
+                                                    >
+                                                      <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                  </div>
+                                                ))}
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    const newOptions = [...(field.value || [])];
+                                                    newOptions.push({ 
+                                                      label: `Opción ${newOptions.length + 1}`, 
+                                                      value: `option${newOptions.length + 1}` 
+                                                    });
+                                                    form.setValue(`fields.${index}.options`, newOptions);
+                                                  }}
+                                                >
+                                                  <Plus className="h-4 w-4 mr-1" /> Agregar Opción
+                                                </Button>
+                                              </div>
+                                              <FormMessage />
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+
+                                  {form.watch(`fields.${index}.type`) === "table" && (
+                                    <div>
+                                      <UIFormField
+                                        control={form.control}
+                                        name={`fields.${index}.columns`}
+                                        render={({ field }) => {
+                                          // Initialize columns if they don't exist
+                                          if (!field.value) {
+                                            form.setValue(`fields.${index}.columns`, [
+                                              { id: uuidv4(), header: "Columna 1", type: "text" },
+                                              { id: uuidv4(), header: "Columna 2", type: "text" }
+                                            ]);
+                                          }
+                                          
+                                          return (
+                                            <FormItem>
+                                              <FormLabel>Columnas de la Tabla</FormLabel>
+                                              <div className="space-y-2">
+                                                {(field.value || []).map((column, colIndex) => (
+                                                  <div key={column.id} className="flex items-center gap-2">
+                                                    <Input
+                                                      placeholder="Encabezado"
+                                                      value={column.header}
+                                                      onChange={(e) => {
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns[colIndex].header = e.target.value;
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
+                                                      }}
+                                                    />
+                                                    <Select
+                                                      value={column.type}
+                                                      onValueChange={(value) => {
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns[colIndex].type = value as "text" | "number" | "select";
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
+                                                      }}
+                                                    >
+                                                      <SelectTrigger className="w-[120px]">
+                                                        <SelectValue placeholder="Tipo" />
+                                                      </SelectTrigger>
+                                                      <SelectContent>
+                                                        <SelectItem value="text">Texto</SelectItem>
+                                                        <SelectItem value="number">Número</SelectItem>
+                                                        <SelectItem value="select">Lista</SelectItem>
+                                                      </SelectContent>
+                                                    </Select>
+                                                    <Button
+                                                      type="button"
+                                                      variant="ghost"
+                                                      size="icon"
+                                                      onClick={() => {
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns.splice(colIndex, 1);
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
+                                                      }}
+                                                      disabled={field.value?.length <= 1}
+                                                    >
+                                                      <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                  </div>
+                                                ))}
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    const newColumns = [...(field.value || [])];
+                                                    newColumns.push({ 
+                                                      id: uuidv4(),
+                                                      header: `Columna ${newColumns.length + 1}`, 
+                                                      type: "text" 
+                                                    });
+                                                    form.setValue(`fields.${index}.columns`, newColumns);
+                                                  }}
+                                                >
+                                                  <Plus className="h-4 w-4 mr-1" /> Agregar Columna
+                                                </Button>
+                                              </div>
+                                              <FormMessage />
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+
+                                  <div className="flex justify-between items-center">
+                                    <div className="flex items-center space-x-2">
+                                      <UIFormField
+                                        control={form.control}
+                                        name={`fields.${index}.required`}
+                                        render={({ field }) => (
+                                          <FormItem className="flex items-center space-x-2">
+                                            <FormControl>
+                                              <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                              />
+                                            </FormControl>
+                                            <FormLabel className="m-0">Campo requerido</FormLabel>
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeField(index)}
+                                      disabled={form.getValues().fields.length <= 1}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" /> Eliminar Campo
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              {form.formState.errors.fields?.message && (
+                <p className="text-sm font-medium text-red-500 mt-2">
+                  {form.formState.errors.fields.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Guardando..." : "Guardar Formulario"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+}
