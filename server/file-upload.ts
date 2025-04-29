@@ -1,14 +1,12 @@
-import * as XLSX from 'xlsx';
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
 import multer from 'multer';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { read, utils } from 'xlsx';
 
-// Get the current file path and directory for ESM compatibility
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Define __dirname equivalent for ESM
+const __dirname = path.resolve();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -53,13 +51,13 @@ export const upload = multer({
 // Function to parse Excel file
 export async function parseExcelFile(filePath: string) {
   try {
-    const workbook = XLSX.readFile(filePath);
+    const workbook = read(filePath, { type: 'file' });
     const sheetNames = workbook.SheetNames;
     
     // Get all sheets data
-    const sheetsData = sheetNames.map(sheetName => {
+    const sheetsData = sheetNames.map((sheetName: string) => {
       const worksheet = workbook.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
+      const data = utils.sheet_to_json(worksheet);
       return {
         sheetName,
         data

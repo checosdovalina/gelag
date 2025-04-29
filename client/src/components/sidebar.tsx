@@ -113,20 +113,19 @@ export default function Sidebar({ className }: SidebarProps) {
             .filter((item) => item.show)
             .map((item) => (
               <li key={item.href} className="mt-1">
-                <Link href={item.href}>
-                  <a
-                    className={cn(
-                      "flex items-center space-x-3 p-3 rounded-md hover:bg-neutral-100",
-                      location === item.href && "bg-blue-50 border-l-4 border-primary"
-                    )}
-                  >
-                    <span className={cn("text-primary", location === item.href ? "text-primary" : "text-gray-500")}>
-                      {item.icon}
-                    </span>
-                    <span className={cn(location === item.href ? "font-medium" : "")}>
-                      {item.title}
-                    </span>
-                  </a>
+                <Link 
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-3 p-3 rounded-md hover:bg-neutral-100",
+                    location === item.href && "bg-blue-50 border-l-4 border-primary"
+                  )}
+                >
+                  <span className={cn("text-primary", location === item.href ? "text-primary" : "text-gray-500")}>
+                    {item.icon}
+                  </span>
+                  <span className={cn(location === item.href ? "font-medium" : "")}>
+                    {item.title}
+                  </span>
                 </Link>
               </li>
             ))}

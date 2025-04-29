@@ -112,13 +112,17 @@ export const formFieldSchema = z.object({
   id: z.string(),
   type: z.enum(fieldTypes),
   label: z.string(),
+  description: z.string().optional(),
   required: z.boolean().default(false),
   placeholder: z.string().optional(),
   defaultValue: z.any().optional(),
-  options: z.array(z.object({
-    label: z.string(),
-    value: z.string()
-  })).optional(),
+  options: z.array(z.union([
+    z.string(),
+    z.object({
+      label: z.string(),
+      value: z.string()
+    })
+  ])).optional(),
   columns: z.array(z.object({
     id: z.string(),
     header: z.string(),
