@@ -168,6 +168,14 @@ export default function ReportsPage() {
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [customPersonnelFilter, setCustomPersonnelFilter] = useState<string>("");
   
+  // Mapeo entre nombres legibles de columnas y sus IDs internos
+  const [columnMapping, setColumnMapping] = useState<Record<string, string>>({
+    "Formulario": "formName",
+    "Departamento": "department",
+    "Usuario": "userName",
+    "Fecha": "createdAt"
+  });
+  
   // Estados para manejo de reportes guardados
   const [saveReportDialogOpen, setSaveReportDialogOpen] = useState(false);
   const [loadReportDialogOpen, setLoadReportDialogOpen] = useState(false);
