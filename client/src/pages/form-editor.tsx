@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
-import { FormStructure, formStructureSchema } from "@shared/schema";
+import { FormStructure, formStructureSchema, UserRole } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { ArrowLeft, Save, AlertTriangle } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import FormBuilder from "@/components/forms/form-builder";
 import FormViewer from "@/components/forms/form-viewer";
@@ -43,10 +44,23 @@ const formMetadataSchema = z.object({
 export default function FormEditor() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("metadata");
   const [formId, setFormId] = useState<number | null>(null);
   const [formStructure, setFormStructure] = useState<FormStructure | null>(null);
   const [isNewForm, setIsNewForm] = useState(true);
+  
+  // Verificar si el usuario tiene permisos para crear/editar formularios (solo SuperAdmin)
+  useEffect(() => {
+    if (user && user.role !== UserRole.SUPERADMIN) {
+      toast({
+        title: "Acceso restringido",
+        description: "Solo los SuperAdministradores pueden crear o editar formularios.",
+        variant: "destructive",
+      });
+      setLocation("/forms");
+    }
+  }, [user, setLocation, toast]);
 
   // Parse query parameters
   useEffect(() => {

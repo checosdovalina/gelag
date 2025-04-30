@@ -42,6 +42,7 @@ export default function FormsPage() {
   const [previewOpen, setPreviewOpen] = useState(false);
   
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
+  const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
 
   // Fetch forms
   const { data: forms, isLoading, refetch } = useQuery<FormTemplate[]>({
@@ -99,7 +100,7 @@ export default function FormsPage() {
               <Eye className="h-4 w-4" />
             </Button>
             
-            {isAdmin && (
+            {isSuperAdmin && (
               <Link href={`/form-editor?id=${form.id}`}>
                 <Button 
                   variant="ghost" 
@@ -179,7 +180,7 @@ export default function FormsPage() {
             />
           </div>
           
-          {isAdmin && (
+          {isSuperAdmin && (
             <Link href="/form-editor">
               <Button className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
@@ -229,7 +230,7 @@ export default function FormsPage() {
                   Cerrar
                 </Button>
                 
-                {isAdmin && (
+                {isSuperAdmin && (
                   <Link href={`/form-editor?id=${selectedForm.id}`}>
                     <Button>
                       <PenSquare className="mr-2 h-4 w-4" />

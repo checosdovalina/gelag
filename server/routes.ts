@@ -140,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/form-templates", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.post("/api/form-templates", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
       // Primero añadimos el createdBy al objeto para que pase la validación
       const dataToValidate = {
@@ -173,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
       const templateId = parseInt(req.params.id);
       if (isNaN(templateId)) {

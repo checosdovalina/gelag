@@ -351,18 +351,16 @@ export default function ReportsPage() {
       </head>
       <body>
         <div class="header">
-          <div class="logo-container">
-            <img src="${window.location.origin}/src/assets/gelag-logo.png" class="logo" alt="GELAG Logo">
-            <div>
-              <h1>Reporte de Formularios</h1>
-              <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}</p>
-            </div>
+          <div>
+            <h1 style="color: #E3174B;">GELAG S.A DE C.V.</h1>
+            <h2>Reporte de Formularios</h2>
+            <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</p>
           </div>
           <div class="company-info">
             <p><strong>GELAG S.A DE C.V.</strong></p>
