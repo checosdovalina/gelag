@@ -144,6 +144,13 @@ const formatFieldName = (fieldId: string): string => {
 // Diccionario global para almacenar mapeos de displayName
 const displayNameMap: Record<string, string> = {};
 
+// Esquema para el formulario de guardado de reportes
+const saveReportSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
+  description: z.string().optional(),
+  isPublic: z.boolean().default(false)
+});
+
 export default function ReportsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
@@ -159,6 +166,22 @@ export default function ReportsPage() {
   const [customColumns, setCustomColumns] = useState<string[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [customPersonnelFilter, setCustomPersonnelFilter] = useState<string>("");
+  
+  // Estados para manejo de reportes guardados
+  const [saveReportDialogOpen, setSaveReportDialogOpen] = useState(false);
+  const [loadReportDialogOpen, setLoadReportDialogOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<SavedReport | null>(null);
+  const [isEditingReport, setIsEditingReport] = useState(false);
+
+  // Formulario para guardar reportes
+  const saveReportForm = useForm<z.infer<typeof saveReportSchema>>({
+    resolver: zodResolver(saveReportSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      isPublic: false
+    }
+  });
 
   // Fetch form entries for reports
   const { data: entriesData, isLoading: isLoadingEntries } = useQuery<FormEntry[]>({
@@ -173,6 +196,82 @@ export default function ReportsPage() {
   // Fetch users for filter
   const { data: users, isLoading: isLoadingUsers } = useQuery<User[]>({
     queryKey: ["/api/users"],
+  });
+  
+  // Fetch saved reports
+  const { data: savedReports, isLoading: isLoadingSavedReports } = useQuery<SavedReport[]>({
+    queryKey: ["/api/saved-reports"],
+  });
+
+  // Mutations for saved reports
+  const createReportMutation = useMutation({
+    mutationFn: async (reportData: any) => {
+      const res = await apiRequest("POST", "/api/saved-reports", reportData);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reporte guardado",
+        description: "El reporte personalizado se ha guardado correctamente",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-reports"] });
+      setSaveReportDialogOpen(false);
+      saveReportForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error al guardar el reporte",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateReportMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: any }) => {
+      const res = await apiRequest("PUT", `/api/saved-reports/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reporte actualizado",
+        description: "El reporte personalizado se ha actualizado correctamente",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-reports"] });
+      setSaveReportDialogOpen(false);
+      setIsEditingReport(false);
+      setSelectedReport(null);
+      saveReportForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error al actualizar el reporte",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteReportMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/saved-reports/${id}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reporte eliminado",
+        description: "El reporte personalizado se ha eliminado correctamente",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-reports"] });
+      setLoadReportDialogOpen(false);
+      setSelectedReport(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error al eliminar el reporte",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   });
 
   // Process entries with template and user information
@@ -726,6 +825,105 @@ export default function ReportsPage() {
   // Format a date to YYYY-MM-DD string
   const formatDateString = (date: Date) => {
     return format(date, "yyyy-MM-dd");
+  };
+  
+  // Limpiar filtros
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setDepartmentFilter("all");
+    setFormFilter("all");
+    setUserFilter("all");
+    setDateRange(undefined);
+    setCustomReport(false);
+    setCustomColumns([]);
+    setCustomPersonnelFilter("");
+  };
+  
+  // Abrir diálogo para guardar un reporte
+  const handleSaveReport = () => {
+    saveReportForm.reset({
+      name: "",
+      description: "",
+      isPublic: false
+    });
+    setIsEditingReport(false);
+    setSaveReportDialogOpen(true);
+  };
+
+  // Guardar un reporte
+  const handleSubmitSaveReport = (data: z.infer<typeof saveReportSchema>) => {
+    const reportConfig = {
+      name: data.name,
+      description: data.description || "",
+      isPublic: data.isPublic,
+      configuration: {
+        searchTerm,
+        departmentFilter,
+        formFilter,
+        userFilter,
+        dateRange,
+        customReport,
+        customColumns,
+        customPersonnelFilter
+      }
+    };
+
+    if (isEditingReport && selectedReport) {
+      updateReportMutation.mutate({
+        id: selectedReport.id,
+        data: reportConfig
+      });
+    } else {
+      createReportMutation.mutate(reportConfig);
+    }
+  };
+
+  // Eliminar un reporte
+  const handleDeleteReport = () => {
+    if (selectedReport) {
+      if (window.confirm(`¿Está seguro de eliminar el reporte "${selectedReport.name}"?`)) {
+        deleteReportMutation.mutate(selectedReport.id);
+      }
+    }
+  };
+
+  // Cargar un reporte guardado
+  const handleLoadReport = (report: SavedReport) => {
+    setSelectedReport(report);
+    
+    // Aplicar configuración del reporte
+    const config = report.configuration;
+    if (config) {
+      setSearchTerm(config.searchTerm || "");
+      setDepartmentFilter(config.departmentFilter || "all");
+      setFormFilter(config.formFilter || "all");
+      setUserFilter(config.userFilter || "all");
+      setDateRange(config.dateRange);
+      setCustomReport(config.customReport || false);
+      
+      if (config.customColumns) {
+        setCustomColumns(config.customColumns);
+      }
+      
+      if (config.customPersonnelFilter) {
+        setCustomPersonnelFilter(config.customPersonnelFilter);
+      }
+    }
+    
+    setLoadReportDialogOpen(false);
+  };
+
+  // Editar un reporte guardado
+  const handleEditReport = () => {
+    if (selectedReport) {
+      saveReportForm.reset({
+        name: selectedReport.name,
+        description: selectedReport.description || "",
+        isPublic: selectedReport.isPublic
+      });
+      setIsEditingReport(true);
+      setSaveReportDialogOpen(true);
+    }
   };
 
   // Submissions by date (last 7 days)

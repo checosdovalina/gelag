@@ -1,4 +1,11 @@
-import { users, type User, type InsertUser, formTemplates, FormTemplate, InsertFormTemplate, formEntries, FormEntry, InsertFormEntry, activityLogs, ActivityLog, InsertActivityLog, UserRole } from "@shared/schema";
+import { 
+  users, type User, type InsertUser, 
+  formTemplates, FormTemplate, InsertFormTemplate, 
+  formEntries, FormEntry, InsertFormEntry, 
+  activityLogs, ActivityLog, InsertActivityLog,
+  savedReports, SavedReport, InsertSavedReport,
+  UserRole 
+} from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
@@ -43,6 +50,13 @@ export interface IStorage {
   getFormEntriesByTemplate(templateId: number): Promise<FormEntry[]>;
   getFormEntriesByUser(userId: number): Promise<FormEntry[]>;
   getFormEntriesByDepartment(department: string): Promise<FormEntry[]>;
+  
+  // Saved report methods
+  getSavedReport(id: number): Promise<SavedReport | undefined>;
+  getSavedReports(): Promise<SavedReport[]>;
+  createSavedReport(report: InsertSavedReport): Promise<SavedReport>;
+  updateSavedReport(id: number, data: Partial<InsertSavedReport>): Promise<SavedReport | undefined>;
+  deleteSavedReport(id: number): Promise<void>;
   
   // Activity log methods
   createActivityLog(log: InsertActivityLog): Promise<ActivityLog>;
@@ -172,6 +186,39 @@ export class DatabaseStorage implements IStorage {
       .from(activityLogs)
       .orderBy(desc(activityLogs.timestamp))
       .limit(limit);
+  }
+
+  // Saved Report methods
+  async getSavedReport(id: number): Promise<SavedReport | undefined> {
+    const [report] = await db.select().from(savedReports).where(eq(savedReports.id, id));
+    return report;
+  }
+
+  async getSavedReports(): Promise<SavedReport[]> {
+    return await db.select().from(savedReports);
+  }
+
+  async createSavedReport(report: InsertSavedReport): Promise<SavedReport> {
+    const [newReport] = await db.insert(savedReports).values(report).returning();
+    return newReport;
+  }
+
+  async updateSavedReport(id: number, data: Partial<InsertSavedReport>): Promise<SavedReport | undefined> {
+    const [updatedReport] = await db
+      .update(savedReports)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(savedReports.id, id))
+      .returning();
+    return updatedReport;
+  }
+
+  async deleteSavedReport(id: number): Promise<void> {
+    await db
+      .delete(savedReports)
+      .where(eq(savedReports.id, id));
   }
 }
 
