@@ -547,7 +547,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/saved-reports/:id", async (req, res, next) => {
+  app.patch("/api/saved-reports/:id", async (req, res, next) => {
     try {
       if (!req.user) {
         return res.status(401).json({ message: "No autenticado" });

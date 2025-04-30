@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -878,11 +879,13 @@ export default function ReportsPage() {
     }
   };
 
-  // Eliminar un reporte
+  // Función para eliminar reportes
   const handleDeleteReport = () => {
     if (selectedReport) {
       if (window.confirm(`¿Está seguro de eliminar el reporte "${selectedReport.name}"?`)) {
         deleteReportMutation.mutate(selectedReport.id);
+        setSelectedReport(null);
+        setLoadReportDialogOpen(false);
       }
     }
   };
@@ -892,13 +895,22 @@ export default function ReportsPage() {
     setSelectedReport(report);
     
     // Aplicar configuración del reporte
-    const config = report.configuration;
+    const config = report.configuration as any;
     if (config) {
       setSearchTerm(config.searchTerm || "");
       setDepartmentFilter(config.departmentFilter || "all");
       setFormFilter(config.formFilter || "all");
       setUserFilter(config.userFilter || "all");
-      setDateRange(config.dateRange);
+      if (config.dateRange) {
+        // Convertir fechas de string a objetos Date
+        const dateRange: DateRange = {
+          from: config.dateRange.from ? new Date(config.dateRange.from) : undefined,
+          to: config.dateRange.to ? new Date(config.dateRange.to) : undefined
+        };
+        setDateRange(dateRange);
+      } else {
+        setDateRange(undefined);
+      }
       setCustomReport(config.customReport || false);
       
       if (config.customColumns) {
@@ -910,6 +922,11 @@ export default function ReportsPage() {
       }
     }
     
+    toast({
+      title: "Reporte cargado",
+      description: `Se ha cargado el reporte "${report.name}"`,
+    });
+    
     setLoadReportDialogOpen(false);
   };
 
@@ -919,13 +936,13 @@ export default function ReportsPage() {
       saveReportForm.reset({
         name: selectedReport.name,
         description: selectedReport.description || "",
-        isPublic: selectedReport.isPublic
+        isPublic: selectedReport.isPublic || false
       });
       setIsEditingReport(true);
       setSaveReportDialogOpen(true);
     }
   };
-
+  
   // Submissions by date (last 7 days)
   const getDateRangeData = () => {
     const now = new Date();
