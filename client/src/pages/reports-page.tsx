@@ -16,7 +16,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Tab, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 
 interface FormEntry {
@@ -56,6 +56,9 @@ export default function ReportsPage() {
   const [userFilter, setUserFilter] = useState("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [reportType, setReportType] = useState("submissions");
+  const [selectedFormTemplate, setSelectedFormTemplate] = useState<FormTemplate | null>(null);
+  const [showDetailReport, setShowDetailReport] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<FormEntry | null>(null);
 
   // Fetch form entries for reports
   const { data: entriesData, isLoading: isLoadingEntries } = useQuery<FormEntry[]>({
@@ -144,11 +147,28 @@ export default function ReportsPage() {
     },
     {
       id: "actions",
+      header: "Acciones",
       cell: ({ row }) => {
         const entry = row.original;
         
         return (
           <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => handleViewDetailReport(entry)}
+              title="Ver reporte por formulario"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => handleViewEntryDetails(entry)}
+              title="Ver detalle de entrada"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
             <Button 
               variant="ghost" 
               size="icon"
@@ -162,6 +182,28 @@ export default function ReportsPage() {
       },
     },
   ];
+  
+  // Mostrar reporte detallado de un formulario específico
+  const handleViewDetailReport = (entry: FormEntry) => {
+    const template = templates?.find(t => t.id === entry.formTemplateId);
+    if (template) {
+      setSelectedFormTemplate(template);
+      // Filtrar entradas por este tipo de formulario
+      setFormFilter(template.id.toString());
+      setShowDetailReport(true);
+    } else {
+      toast({
+        title: "Error",
+        description: "No se pudo encontrar la plantilla para esta entrada",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Ver detalles de una entrada específica
+  const handleViewEntryDetails = (entry: FormEntry) => {
+    setSelectedEntry(entry);
+  };
 
   // Handle export
   const handleExport = (entry: FormEntry, format: "pdf" | "excel") => {
@@ -417,29 +459,149 @@ export default function ReportsPage() {
           
           {/* Submissions Tab */}
           <TabsContent value="submissions">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Entradas de Formularios</CardTitle>
-                <div className="flex space-x-2">
-                  <Button variant="outline" onClick={() => handleExportAll("excel")}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Excel
-                  </Button>
-                  <Button variant="outline" onClick={() => handleExportAll("pdf")}>
-                    <Download className="mr-2 h-4 w-4" />
-                    PDF
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  columns={columns}
-                  data={filteredEntries}
-                  searchPlaceholder="Filtrar entradas..."
-                  searchColumn="formName"
-                />
-              </CardContent>
-            </Card>
+            {showDetailReport && selectedFormTemplate ? (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Reporte Detallado: {selectedFormTemplate.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Departamento: {selectedFormTemplate.department}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => {
+                      setShowDetailReport(false);
+                      setSelectedFormTemplate(null);
+                      setFormFilter("all");
+                    }}>
+                      Volver
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExportAll("excel")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Excel
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExportAll("pdf")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      PDF
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Resumen del formulario */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Total de entradas</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-3xl font-bold">
+                          {filteredEntries.length}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Usuarios únicos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-3xl font-bold">
+                          {new Set(filteredEntries.map(e => e.createdBy)).size}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Última entrada</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-lg">
+                          {filteredEntries.length > 0 
+                            ? new Date(Math.max(...filteredEntries.map(e => new Date(e.createdAt).getTime())))
+                                .toLocaleDateString("es-ES", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                })
+                            : "N/A"
+                          }
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  {/* Gráfico de entradas por día */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Entradas por día</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart
+                            data={getDateRangeData()}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis allowDecimals={false} />
+                            <Tooltip />
+                            <Legend />
+                            <Line 
+                              type="monotone" 
+                              dataKey="count" 
+                              name="Entradas" 
+                              stroke="#1976d2" 
+                              activeDot={{ r: 8 }} 
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Tabla detallada de entradas */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Detalle de Entradas</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <DataTable
+                        columns={columns}
+                        data={filteredEntries}
+                        searchPlaceholder="Filtrar entradas..."
+                        searchColumn="userName"
+                      />
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Entradas de Formularios</CardTitle>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => handleExportAll("excel")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Excel
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExportAll("pdf")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      PDF
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <DataTable
+                    columns={columns}
+                    data={filteredEntries}
+                    searchPlaceholder="Filtrar entradas..."
+                    searchColumn="formName"
+                  />
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
           
           {/* Analytics Tab */}
