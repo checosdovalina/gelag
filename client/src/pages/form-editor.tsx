@@ -20,6 +20,19 @@ import MainLayout from "@/layouts/main-layout";
 import FormBuilder from "@/components/forms/form-builder";
 import FormViewer from "@/components/forms/form-viewer";
 
+// Define la interfaz para el formulario
+interface FormTemplate {
+  id: number;
+  name: string;
+  description: string;
+  department: string;
+  structure: FormStructure;
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
 // Form metadata schema
 const formMetadataSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -56,7 +69,7 @@ export default function FormEditor() {
   });
 
   // Fetch form data if editing an existing form
-  const { data: formData, isLoading: isLoadingForm, error } = useQuery({
+  const { data: formData, isLoading: isLoadingForm, error } = useQuery<FormTemplate>({
     queryKey: [`/api/form-templates/${formId}`],
     enabled: formId !== null,
   });
