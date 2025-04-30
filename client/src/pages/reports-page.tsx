@@ -37,6 +37,26 @@ interface FormTemplate {
   id: number;
   name: string;
   department: string;
+  structure: {
+    title: string;
+    fields: {
+      id: string;
+      type: string;
+      label: string;
+      displayName?: string;
+      [key: string]: any;
+    }[];
+    sections?: {
+      title: string;
+      fields: {
+        id: string;
+        type: string;
+        label: string;
+        displayName?: string;
+        [key: string]: any;
+      }[];
+    }[];
+  };
 }
 
 interface User {
@@ -51,6 +71,11 @@ const COLORS = ["#1976d2", "#f50057", "#ff9800", "#4caf50", "#9c27b0"];
 
 // Función para convertir IDs de campo a nombres legibles
 const formatFieldName = (fieldId: string): string => {
+  // Primero, verificar si existe un displayName personalizado en el diccionario
+  if (displayNameMap[fieldId]) {
+    return displayNameMap[fieldId];
+  }
+  
   // Patrones comunes para mejorar la legibilidad
   if (fieldId === "formName") return "Formulario";
   if (fieldId === "userName") return "Usuario";
@@ -109,6 +134,9 @@ const formatFieldName = (fieldId: string): string => {
   return name;
 };
 
+// Diccionario global para almacenar mapeos de displayName
+const displayNameMap: Record<string, string> = {};
+
 export default function ReportsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,7 +160,7 @@ export default function ReportsPage() {
 
   // Fetch form templates for filter
   const { data: templates, isLoading: isLoadingTemplates } = useQuery<FormTemplate[]>({
-    queryKey: ["/api/form-templates"],
+    queryKey: ["/api/form-templates"]
   });
 
   // Fetch users for filter
@@ -143,6 +171,41 @@ export default function ReportsPage() {
   // Process entries with template and user information
   const [processedEntries, setProcessedEntries] = useState<FormEntry[]>([]);
 
+  // Efecto para extraer los displayNames de los formularios
+  useEffect(() => {
+    if (templates) {
+      // Limpiar el diccionario antes de comenzar
+      for (const key in displayNameMap) {
+        delete displayNameMap[key];
+      }
+      
+      // Extraer displayNames de todos los formularios
+      templates.forEach(template => {
+        if (template.structure?.fields) {
+          template.structure.fields.forEach(field => {
+            if (field.displayName && field.id) {
+              displayNameMap[field.id] = field.displayName;
+            }
+          });
+          
+          // También procesar campos en secciones si existen
+          if (template.structure.sections) {
+            template.structure.sections.forEach(section => {
+              section.fields.forEach(field => {
+                if (field.displayName && field.id) {
+                  displayNameMap[field.id] = field.displayName;
+                }
+              });
+            });
+          }
+        }
+      });
+      
+      console.log("DisplayNames cargados:", displayNameMap);
+    }
+  }, [templates]);
+
+  // Procesar entradas con información de plantilla y usuario
   useEffect(() => {
     if (entriesData && templates && users) {
       const processed = entriesData.map(entry => {
