@@ -56,10 +56,22 @@ export default function FormEditor() {
   });
 
   // Fetch form data if editing an existing form
-  const { data: formData, isLoading: isLoadingForm } = useQuery({
+  const { data: formData, isLoading: isLoadingForm, error } = useQuery({
     queryKey: [`/api/form-templates/${formId}`],
     enabled: formId !== null,
   });
+  
+  // Log errors for debugging purposes
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching form template:", error);
+      toast({
+        title: "Error al cargar el formulario",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   // Update form fields when data is loaded
   useEffect(() => {

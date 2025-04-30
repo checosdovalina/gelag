@@ -41,7 +41,7 @@ export default function FormsPage() {
   const [formData, setFormData] = useState<any>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   
-  const isAdmin = user?.role === UserRole.ADMIN;
+  const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
 
   // Fetch forms
   const { data: forms, isLoading, refetch } = useQuery<FormTemplate[]>({
