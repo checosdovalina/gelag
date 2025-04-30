@@ -78,7 +78,11 @@ export default function FormCapture() {
         title: "Datos guardados",
         description: "Los datos del formulario han sido guardados exitosamente",
       });
+      // Reseteamos el estado completo para que se pueda abrir uno nuevo
       setIsFormOpen(false);
+      setSelectedTemplate(null);
+      setCurrentEntry(null);
+      // Invalidamos las consultas para actualizar la lista
       queryClient.invalidateQueries({ queryKey: ["/api/form-entries"] });
     },
     onError: (error: Error) => {

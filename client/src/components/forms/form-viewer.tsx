@@ -126,6 +126,11 @@ export default function FormViewer({
     mode: "onChange",
   });
   
+  // Reset form when template or initialData changes
+  useEffect(() => {
+    form.reset(initialData || {});
+  }, [form, initialData, formTemplate.title]);
+  
   // Handle table fields initialization
   useEffect(() => {
     formTemplate.fields.forEach((field) => {
