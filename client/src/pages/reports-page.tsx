@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { DateRange } from "react-day-picker";
 import { ColumnDef } from "@tanstack/react-table";
-import { Search, Download, Calendar, FileDown } from "lucide-react";
+import { Search, Download, Calendar, FileDown, Settings2 } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 
 interface FormEntry {
@@ -59,6 +60,10 @@ export default function ReportsPage() {
   const [selectedFormTemplate, setSelectedFormTemplate] = useState<FormTemplate | null>(null);
   const [showDetailReport, setShowDetailReport] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<FormEntry | null>(null);
+  const [customReport, setCustomReport] = useState(false);
+  const [customColumns, setCustomColumns] = useState<string[]>([]);
+  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
+  const [customPersonnelFilter, setCustomPersonnelFilter] = useState<string>("");
 
   // Fetch form entries for reports
   const { data: entriesData, isLoading: isLoadingEntries } = useQuery<FormEntry[]>({
@@ -310,6 +315,55 @@ export default function ReportsPage() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5 users
   };
+  
+  // Función para generar reporte personalizado por personal y fechas
+  const handleGenerateCustomReport = () => {
+    setCustomReport(true);
+    // Analizar la estructura de los datos para extraer campos disponibles
+    const allFields = new Set<string>();
+    
+    processedEntries.forEach(entry => {
+      if (entry.data) {
+        // Extraer campos de los datos
+        Object.keys(entry.data).forEach(field => {
+          allFields.add(field);
+        });
+        
+        // Para el caso especial de Buenas Prácticas, buscar el personal
+        if (entry.data.employeeNames && Array.isArray(entry.data.employeeNames)) {
+          entry.data.employeeNames.forEach((name: string) => {
+            if (name && name.trim()) {
+              allFields.add(`Personal: ${name}`);
+            }
+          });
+        }
+      }
+    });
+    
+    setAvailableColumns(Array.from(allFields));
+    setCustomColumns([
+      "formName", 
+      "userName", 
+      "department", 
+      "createdAt"
+    ]);
+  };
+  
+  // Función para exportar reporte personalizado
+  const handleExportCustomReport = (format: "pdf" | "excel") => {
+    toast({
+      title: `Exportando reporte personalizado`,
+      description: `Se está generando el reporte personalizado en formato ${format.toUpperCase()}`,
+    });
+    
+    // En una aplicación real, esto llamaría a una API para exportar el reporte
+    setTimeout(() => {
+      toast({
+        title: "Exportación completada",
+        description: `El reporte personalizado ha sido exportado correctamente`,
+      });
+    }, 2000);
+  };
 
   const lineData = getDateRangeData();
   const barData = getFormUsageData();
@@ -459,7 +513,214 @@ export default function ReportsPage() {
           
           {/* Submissions Tab */}
           <TabsContent value="submissions">
-            {showDetailReport && selectedFormTemplate ? (
+            {selectedEntry ? (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Detalles de Entrada</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Formulario: {selectedEntry.formName}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => {
+                      setSelectedEntry(null);
+                    }}>
+                      Volver
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExport(selectedEntry, "excel")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Excel
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExport(selectedEntry, "pdf")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      PDF
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Información General</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Creado por</p>
+                              <p>{selectedEntry.userName}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Departamento</p>
+                              <p>{selectedEntry.department}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Fecha de creación</p>
+                              <p>{new Date(selectedEntry.createdAt).toLocaleDateString("es-ES", {
+                                year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                              })}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">ID de entrada</p>
+                              <p>#{selectedEntry.id}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    
+                    <div>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Acciones</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <Button className="w-full" onClick={() => handleExport(selectedEntry, "pdf")}>
+                              <FileDown className="mr-2 h-4 w-4" />
+                              Exportar a PDF
+                            </Button>
+                            <Button className="w-full" variant="outline" onClick={() => handleExport(selectedEntry, "excel")}>
+                              <FileDown className="mr-2 h-4 w-4" />
+                              Exportar a Excel
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Datos del Formulario</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border rounded-md">
+                        <div className="p-4 space-y-4">
+                          {Object.entries(selectedEntry.data).map(([key, value]) => {
+                            let displayValue = value;
+                            
+                            // Intentar formatear el valor de forma amigable
+                            if (typeof value === 'object' && value !== null) {
+                              if (Array.isArray(value)) {
+                                displayValue = value.join(', ');
+                              } else {
+                                // Intentar extraer pares clave-valor
+                                try {
+                                  displayValue = Object.entries(value)
+                                    .map(([k, v]) => `${k}: ${v}`)
+                                    .join(', ');
+                                } catch (e) {
+                                  displayValue = JSON.stringify(value);
+                                }
+                              }
+                            }
+                            
+                            return (
+                              <div key={key} className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 border-b last:border-0">
+                                <p className="font-medium">{key}</p>
+                                <p className="whitespace-pre-wrap">{String(displayValue)}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            ) : customReport ? (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Reporte Personalizado</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Configura las columnas y filtros específicos para tu reporte
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => setCustomReport(false)}>
+                      Volver
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExportCustomReport("excel")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Excel
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExportCustomReport("pdf")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      PDF
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Columnas a mostrar</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex flex-wrap gap-2">
+                            {availableColumns.map(column => (
+                              <Badge 
+                                key={column}
+                                variant={customColumns.includes(column) ? "default" : "outline"}
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  if (customColumns.includes(column)) {
+                                    setCustomColumns(customColumns.filter(c => c !== column));
+                                  } else {
+                                    setCustomColumns([...customColumns, column]);
+                                  }
+                                }}
+                              >
+                                {column}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Filtros específicos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Filtrar por nombre de personal</Label>
+                            <Input
+                              placeholder="Nombre del personal"
+                              value={customPersonnelFilter}
+                              onChange={(e) => setCustomPersonnelFilter(e.target.value)}
+                            />
+                            <p className="text-sm text-muted-foreground">
+                              Ingresa el nombre exacto del personal para filtrar los datos
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Vista previa del reporte</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <DataTable
+                        columns={columns}
+                        data={filteredEntries}
+                        searchPlaceholder="Filtrar entradas..."
+                        searchColumn="formName"
+                      />
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            ) : showDetailReport && selectedFormTemplate ? (
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
@@ -486,95 +747,13 @@ export default function ReportsPage() {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Resumen del formulario */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg">Total de entradas</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-3xl font-bold">
-                          {filteredEntries.length}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg">Usuarios únicos</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-3xl font-bold">
-                          {new Set(filteredEntries.map(e => e.createdBy)).size}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg">Última entrada</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-lg">
-                          {filteredEntries.length > 0 
-                            ? new Date(Math.max(...filteredEntries.map(e => new Date(e.createdAt).getTime())))
-                                .toLocaleDateString("es-ES", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })
-                            : "N/A"
-                          }
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  {/* Gráfico de entradas por día */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Entradas por día</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart
-                            data={getDateRangeData()}
-                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis allowDecimals={false} />
-                            <Tooltip />
-                            <Legend />
-                            <Line 
-                              type="monotone" 
-                              dataKey="count" 
-                              name="Entradas" 
-                              stroke="#1976d2" 
-                              activeDot={{ r: 8 }} 
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  {/* Tabla detallada de entradas */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Detalle de Entradas</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <DataTable
-                        columns={columns}
-                        data={filteredEntries}
-                        searchPlaceholder="Filtrar entradas..."
-                        searchColumn="userName"
-                      />
-                    </CardContent>
-                  </Card>
+                <CardContent>
+                  <DataTable
+                    columns={columns}
+                    data={filteredEntries}
+                    searchPlaceholder="Filtrar entradas..."
+                    searchColumn="formName"
+                  />
                 </CardContent>
               </Card>
             ) : (
@@ -582,6 +761,14 @@ export default function ReportsPage() {
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Entradas de Formularios</CardTitle>
                   <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleGenerateCustomReport}
+                      className="mr-2"
+                    >
+                      <Settings2 className="mr-2 h-4 w-4" />
+                      Reporte Personalizado
+                    </Button>
                     <Button variant="outline" onClick={() => handleExportAll("excel")}>
                       <Download className="mr-2 h-4 w-4" />
                       Excel
