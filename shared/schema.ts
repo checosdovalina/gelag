@@ -47,6 +47,26 @@ export const insertFormTemplateSchema = createInsertSchema(formTemplates).omit({
   updatedAt: true
 });
 
+// Saved Report schemas
+export const savedReports = pgTable("saved_reports", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  filters: json("filters").notNull(), // JSON with filter configuration
+  columns: json("columns").notNull(), // Selected columns for the report
+  sortConfig: json("sort_config"), // Sort configuration
+  createdBy: integer("created_by").notNull(), // User ID of creator
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  isPublic: boolean("is_public").default(false), // Whether this report is visible to all users
+});
+
+export const insertSavedReportSchema = createInsertSchema(savedReports).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
 // Form data schema (completed forms)
 export const formEntries = pgTable("form_entries", {
   id: serial("id").primaryKey(),
@@ -88,6 +108,9 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type FormTemplate = typeof formTemplates.$inferSelect;
 export type InsertFormTemplate = z.infer<typeof insertFormTemplateSchema>;
 
+export type SavedReport = typeof savedReports.$inferSelect;
+export type InsertSavedReport = z.infer<typeof insertSavedReportSchema>;
+
 export type FormEntry = typeof formEntries.$inferSelect;
 export type InsertFormEntry = z.infer<typeof insertFormEntrySchema>;
 
@@ -115,6 +138,8 @@ export const formFieldSchema = z.object({
   label: z.string(),
   // Campo para personalizar el nombre de visualización en reportes
   displayName: z.string().optional(),
+  // Campo para ordenar campos en los reportes
+  displayOrder: z.number().optional(),
   description: z.string().optional(),
   required: z.boolean().default(false),
   placeholder: z.string().optional(),

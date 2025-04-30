@@ -212,6 +212,31 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                         </FormItem>
                                       )}
                                     />
+                                    
+                                    <UIFormField
+                                      control={form.control}
+                                      name={`fields.${index}.displayOrder`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Orden en Reportes</FormLabel>
+                                          <FormControl>
+                                            <Input 
+                                              type="number" 
+                                              placeholder="Ej: 1, 2, 3..." 
+                                              {...field} 
+                                              value={field.value === undefined ? '' : field.value}
+                                              onChange={(e) => {
+                                                const value = e.target.value === '' ? undefined : parseInt(e.target.value);
+                                                field.onChange(value);
+                                              }}
+                                            />
+                                          </FormControl>
+                                          <FormDescription>
+                                            Posición del campo en los reportes (menor número = aparece primero)
+                                          </FormDescription>
+                                        </FormItem>
+                                      )}
+                                    />
 
                                     <UIFormField
                                       control={form.control}
