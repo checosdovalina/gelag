@@ -47,6 +47,9 @@ export default function FormsPage() {
   const { data: forms, isLoading, refetch } = useQuery<FormTemplate[]>({
     queryKey: ["/api/form-templates"],
     enabled: !!user,
+    staleTime: 0, // No caché, siempre actualizar al montar
+    refetchOnWindowFocus: true, // Actualizar al volver a la ventana
+    refetchOnMount: true, // Actualizar al montar el componente
   });
 
   // Define columns for data table
@@ -122,6 +125,13 @@ export default function FormsPage() {
     },
   ];
 
+  // Forzar recarga al montar el componente
+  useEffect(() => {
+    if (user) {
+      refetch();
+    }
+  }, [refetch, user]);
+  
   // Filter forms based on search term
   const filteredForms = forms
     ? forms.filter(
