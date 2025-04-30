@@ -192,6 +192,26 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                         </FormItem>
                                       )}
                                     />
+                                    
+                                    <UIFormField
+                                      control={form.control}
+                                      name={`fields.${index}.displayName`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Nombre para Reportes</FormLabel>
+                                          <FormControl>
+                                            <Input 
+                                              placeholder="Ej: Nombre Empleado, Departamento" 
+                                              {...field} 
+                                              value={field.value || ''}
+                                            />
+                                          </FormControl>
+                                          <FormDescription>
+                                            Nombre personalizado que aparecerá en los reportes
+                                          </FormDescription>
+                                        </FormItem>
+                                      )}
+                                    />
 
                                     <UIFormField
                                       control={form.control}

@@ -113,6 +113,8 @@ export const formFieldSchema = z.object({
   id: z.string(),
   type: z.enum(fieldTypes),
   label: z.string(),
+  // Campo para personalizar el nombre de visualización en reportes
+  displayName: z.string().optional(),
   description: z.string().optional(),
   required: z.boolean().default(false),
   placeholder: z.string().optional(),
@@ -128,6 +130,7 @@ export const formFieldSchema = z.object({
     id: z.string(),
     header: z.string(),
     type: z.enum(["text", "number", "select"]),
+    displayName: z.string().optional(), // Nombre de visualización para columnas
     options: z.array(z.object({
       label: z.string(),
       value: z.string()
