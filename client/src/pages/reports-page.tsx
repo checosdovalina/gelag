@@ -57,6 +57,42 @@ const formatFieldName = (fieldId: string): string => {
   if (fieldId === "department") return "Departamento";
   if (fieldId === "createdAt") return "Fecha";
   
+  // Mapeo específico para campos conocidos
+  const fieldMap: Record<string, string> = {
+    "4376dffa-7b7e-45a4-b778-faee18b31cb7": "Código del formulario",
+    "225b5b89-c8cf-4643-9845-17396a65e6ad": "Versión",
+    "df7f3a71-2aa4-4d2a-b085-d34737106574": "Fecha de implementación",
+    "5c66f802-76fb-43c2-a843-3b66bc388587": "Departamento",
+    "8c52633c-7a08-4872-86b7-d6c7de760dc7": "Estado",
+    "bada3df5-070b-4665-8674-a6c39e2a6e3c": "Tipo de registro",
+    "7b2378c2-b301-4b7d-93e4-9dd3838b7a61": "Responsable",
+    "8422e8ad-6d0d-4478-86b9-7663957fdc55": "Requisitos",
+    "23a2a2ba-0120-4efb-afc1-0095ed1d9647": "Observaciones",
+    "employeeNames": "Nombres de Personal",
+    "criteria": "Criterios de Evaluación",
+    "title": "Título",
+    "company": "Empresa",
+    "address": "Dirección",
+    "date": "Fecha",
+    "documentType": "Tipo de Documento",
+    "version": "Versión",
+    "code": "Código",
+    "NA": "No Aplica",
+    "SD": "Sin Datos",
+    "CARE-01-01": "Código del Formulario"
+  };
+  
+  // Verificar si existe en el mapeo
+  if (fieldMap[fieldId]) {
+    return fieldMap[fieldId];
+  }
+  
+  // Detectar códigos UUID o códigos hexadecimales largos 
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(fieldId) || 
+      /^[0-9a-f]{32}$/i.test(fieldId)) {
+    return "Campo " + fieldId.substring(0, 8);
+  }
+  
   // Eliminar caracteres no deseados en IDs
   let name = fieldId.replace(/[0-9a-f]{32}/g, "");
   
@@ -64,12 +100,13 @@ const formatFieldName = (fieldId: string): string => {
   name = name.replace(/([A-Z])/g, " $1")
     .replace(/^./, str => str.toUpperCase())
     .trim();
+    
+  // Si después de procesar queda vacío, usar el original
+  if (!name.trim()) {
+    return fieldId;
+  }
   
-  // Para campos específicos de buenas prácticas
-  if (name === "Employee Names") return "Nombres de Personal";
-  if (name === "Criteria") return "Criterios de Evaluación";
-  
-  return name || fieldId; // Si todo falla, usar el ID original
+  return name;
 };
 
 export default function ReportsPage() {
@@ -930,9 +967,12 @@ export default function ReportsPage() {
                               }
                             }
                             
+                            // Obtener un nombre legible para la clave
+                            const readableKey = formatFieldName(key);
+                            
                             return (
                               <div key={key} className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 border-b last:border-0">
-                                <p className="font-medium">{key}</p>
+                                <p className="font-medium">{readableKey}</p>
                                 <p className="whitespace-pre-wrap">{String(displayValue)}</p>
                               </div>
                             );
