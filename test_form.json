@@ -1,0 +1,23 @@
+{
+  "name": "Formulario de prueba",
+  "description": "Formulario creado para pruebas",
+  "department": "Calidad",
+  "structure": {
+    "title": "Formulario de Prueba",
+    "fields": [
+      {
+        "id": "campo1",
+        "type": "text",
+        "label": "Campo 1",
+        "required": true
+      },
+      {
+        "id": "campo2",
+        "type": "textarea",
+        "label": "Campo 2",
+        "required": false
+      }
+    ]
+  },
+  "isActive": true
+}

@@ -142,10 +142,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/form-templates", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
-      const templateData = insertFormTemplateSchema.parse(req.body);
+      // Primero añadimos el createdBy al objeto para que pase la validación
+      const dataToValidate = {
+        ...req.body,
+        createdBy: req.user.id
+      };
       
-      // Set creator ID from logged in user
-      templateData.createdBy = req.user.id;
+      // Ahora validamos los datos completos
+      const templateData = insertFormTemplateSchema.parse(dataToValidate);
       
       // Create template
       const template = await storage.createFormTemplate(templateData);
@@ -161,6 +165,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(template);
     } catch (error) {
+      console.error("Error al crear formulario:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Datos inválidos", details: error.errors });
       }
@@ -195,6 +200,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedTemplate);
     } catch (error) {
+      console.error("Error al actualizar formulario:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+      }
       next(error);
     }
   });
