@@ -990,6 +990,23 @@ export default function ReportsPage() {
   return (
     <MainLayout title="Reportes">
       <div className="space-y-6">
+        {/* Botones para guardar/cargar reportes */}
+        <div className="flex justify-end space-x-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setLoadReportDialogOpen(true)}
+          >
+            <FolderOpen className="h-4 w-4 mr-2" />
+            Cargar reporte guardado
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={handleSaveReport}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Guardar reporte actual
+          </Button>
+        </div>
         {/* Filters */}
         <Card>
           <CardHeader>
@@ -1595,6 +1612,151 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Diálogo para guardar reporte */}
+      <Dialog open={saveReportDialogOpen} onOpenChange={setSaveReportDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{isEditingReport ? "Editar reporte guardado" : "Guardar configuración de reporte"}</DialogTitle>
+            <DialogDescription>
+              Guarda la configuración actual del reporte para utilizarla más tarde.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...saveReportForm}>
+            <form onSubmit={saveReportForm.handleSubmit(handleSubmitSaveReport)} className="space-y-4">
+              <FormField
+                control={saveReportForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nombre del reporte" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={saveReportForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción (opcional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Descripción breve" {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={saveReportForm.control}
+                name="isPublic"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel>Público</FormLabel>
+                      <FormDescription>
+                        Permite que otros usuarios vean este reporte guardado
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setSaveReportDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  {isEditingReport ? "Actualizar" : "Guardar"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Diálogo para cargar reporte guardado */}
+      <Dialog open={loadReportDialogOpen} onOpenChange={setLoadReportDialogOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>Reportes guardados</DialogTitle>
+            <DialogDescription>
+              Selecciona un reporte guardado para cargarlo
+            </DialogDescription>
+          </DialogHeader>
+          
+          {isLoadingSavedReports ? (
+            <div className="flex justify-center py-8">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            </div>
+          ) : !savedReports || savedReports.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-muted-foreground">No hay reportes guardados</p>
+            </div>
+          ) : (
+            <div className="max-h-[400px] overflow-auto pr-2">
+              {savedReports.map(report => (
+                <Card key={report.id} className="mb-3">
+                  <CardHeader className="p-4 pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{report.name}</CardTitle>
+                      <div className="flex space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleLoadReport(report)}
+                          title="Cargar reporte"
+                        >
+                          <FolderOpen className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedReport(report);
+                            handleEditReport();
+                          }}
+                          title="Editar reporte"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedReport(report);
+                            handleDeleteReport();
+                          }}
+                          title="Eliminar reporte"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-2">
+                    {report.description && (
+                      <p className="text-sm text-muted-foreground mb-2">{report.description}</p>
+                    )}
+                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                      <span>Creado: {new Date(report.createdAt || "").toLocaleDateString("es-ES")}</span>
+                      {report.isPublic && <Badge variant="outline">Público</Badge>}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }

@@ -52,9 +52,7 @@ export const savedReports = pgTable("saved_reports", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  filters: json("filters").notNull(), // JSON with filter configuration
-  columns: json("columns").notNull(), // Selected columns for the report
-  sortConfig: json("sort_config"), // Sort configuration
+  configuration: json("configuration").notNull(), // JSON with complete report configuration
   createdBy: integer("created_by").notNull(), // User ID of creator
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
