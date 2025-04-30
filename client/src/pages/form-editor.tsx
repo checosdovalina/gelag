@@ -84,8 +84,14 @@ export default function FormEditor() {
         title: "Formulario creado",
         description: "El formulario ha sido creado exitosamente",
       });
+      // Invalidar la caché de consultas para asegurar que se muestran todos los formularios
       queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
-      setLocation("/forms");
+      // Forzar la recarga de datos antes de navegar
+      queryClient.refetchQueries({ queryKey: ["/api/form-templates"] });
+      // Redirigir a la página de formularios después de un breve retraso para permitir la recarga
+      setTimeout(() => {
+        setLocation("/forms");
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -109,7 +115,12 @@ export default function FormEditor() {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
       queryClient.invalidateQueries({ queryKey: [`/api/form-templates/${formId}`] });
-      setLocation("/forms");
+      // Forzar la recarga de datos antes de navegar
+      queryClient.refetchQueries({ queryKey: ["/api/form-templates"] });
+      // Redirigir después de un breve retraso para permitir la recarga
+      setTimeout(() => {
+        setLocation("/forms");
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
