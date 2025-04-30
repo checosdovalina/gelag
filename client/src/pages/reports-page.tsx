@@ -49,6 +49,29 @@ interface User {
 // Colors for charts
 const COLORS = ["#1976d2", "#f50057", "#ff9800", "#4caf50", "#9c27b0"];
 
+// Función para convertir IDs de campo a nombres legibles
+const formatFieldName = (fieldId: string): string => {
+  // Patrones comunes para mejorar la legibilidad
+  if (fieldId === "formName") return "Formulario";
+  if (fieldId === "userName") return "Usuario";
+  if (fieldId === "department") return "Departamento";
+  if (fieldId === "createdAt") return "Fecha";
+  
+  // Eliminar caracteres no deseados en IDs
+  let name = fieldId.replace(/[0-9a-f]{32}/g, "");
+  
+  // Convertir camelCase a palabras espaciadas
+  name = name.replace(/([A-Z])/g, " $1")
+    .replace(/^./, str => str.toUpperCase())
+    .trim();
+  
+  // Para campos específicos de buenas prácticas
+  if (name === "Employee Names") return "Nombres de Personal";
+  if (name === "Criteria") return "Criterios de Evaluación";
+  
+  return name || fieldId; // Si todo falla, usar el ID original
+};
+
 export default function ReportsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
@@ -322,11 +345,19 @@ export default function ReportsPage() {
     // Analizar la estructura de los datos para extraer campos disponibles
     const allFields = new Set<string>();
     
+    // Añadir campos estándar básicos con nombres legibles
+    allFields.add("Formulario");
+    allFields.add("Departamento");
+    allFields.add("Usuario");
+    allFields.add("Fecha");
+    
     processedEntries.forEach(entry => {
       if (entry.data) {
-        // Extraer campos de los datos
+        // Extraer campos de los datos con nombres más legibles
         Object.keys(entry.data).forEach(field => {
-          allFields.add(field);
+          // Convertir IDs a nombres más legibles
+          const readableName = formatFieldName(field);
+          allFields.add(readableName);
         });
         
         // Para el caso especial de Buenas Prácticas, buscar el personal
@@ -342,10 +373,10 @@ export default function ReportsPage() {
     
     setAvailableColumns(Array.from(allFields));
     setCustomColumns([
-      "formName", 
-      "userName", 
-      "department", 
-      "createdAt"
+      "Formulario", 
+      "Usuario", 
+      "Departamento", 
+      "Fecha"
     ]);
   };
   
@@ -488,6 +519,18 @@ export default function ReportsPage() {
               
               <div className="flex items-end space-x-2">
                 <Button 
+                  variant="default"
+                  className="bg-primary"
+                  onClick={() => {
+                    toast({
+                      title: "Filtros aplicados",
+                      description: "Los datos han sido actualizados según los filtros seleccionados",
+                    });
+                  }}
+                >
+                  Procesar filtros
+                </Button>
+                <Button 
                   variant="outline"
                   onClick={() => {
                     setSearchTerm("");
@@ -495,6 +538,10 @@ export default function ReportsPage() {
                     setFormFilter("all");
                     setUserFilter("all");
                     setDateRange(undefined);
+                    toast({
+                      title: "Filtros limpiados",
+                      description: "Se han restablecido todos los filtros",
+                    });
                   }}
                 >
                   Limpiar filtros
