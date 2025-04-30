@@ -10,6 +10,20 @@ import { ArrowLeft, AlertTriangle } from "lucide-react";
 
 export default function FormImportPage() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
+  // Verificar si el usuario tiene permisos para importar formularios (solo SuperAdmin)
+  useEffect(() => {
+    if (user && user.role !== UserRole.SUPERADMIN) {
+      toast({
+        title: "Acceso restringido",
+        description: "Solo los SuperAdministradores pueden importar formularios.",
+        variant: "destructive",
+      });
+      setLocation("/forms");
+    }
+  }, [user, setLocation, toast]);
 
   const handleImportComplete = (data: any) => {
     // Navegar a la página de formularios después de importar exitosamente
