@@ -2,7 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertFormTemplateSchema, insertFormEntrySchema, UserRole, insertUserSchema } from "@shared/schema";
+import { 
+  insertFormTemplateSchema, 
+  insertFormEntrySchema, 
+  UserRole, 
+  insertUserSchema,
+  insertSavedReportSchema
+} from "@shared/schema";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
@@ -481,6 +487,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   );
+
+  // Rutas para reportes guardados
+  app.get("/api/saved-reports", async (req, res, next) => {
+    try {
+      const reports = await storage.getSavedReports();
+      res.json(reports);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/saved-reports/:id", async (req, res, next) => {
+    try {
+      const reportId = parseInt(req.params.id);
+      if (isNaN(reportId)) {
+        return res.status(400).json({ message: "ID de reporte inválido" });
+      }
+      
+      const report = await storage.getSavedReport(reportId);
+      if (!report) {
+        return res.status(404).json({ message: "Reporte no encontrado" });
+      }
+      
+      res.json(report);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/saved-reports", async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
+      const reportData = insertSavedReportSchema.parse({
+        ...req.body,
+        createdBy: req.user.id
+      });
+      
+      const report = await storage.createSavedReport(reportData);
+      
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "created",
+        resourceType: "saved_report",
+        resourceId: report.id,
+        details: { name: report.name }
+      });
+      
+      res.status(201).json(report);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.put("/api/saved-reports/:id", async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
+      const reportId = parseInt(req.params.id);
+      if (isNaN(reportId)) {
+        return res.status(400).json({ message: "ID de reporte inválido" });
+      }
+      
+      // Check if report exists
+      const existingReport = await storage.getSavedReport(reportId);
+      if (!existingReport) {
+        return res.status(404).json({ message: "Reporte no encontrado" });
+      }
+      
+      // Verify ownership or admin privileges
+      if (existingReport.createdBy !== req.user.id && req.user.role !== UserRole.SUPERADMIN && req.user.role !== UserRole.ADMIN) {
+        return res.status(403).json({ message: "No autorizado para editar este reporte" });
+      }
+      
+      // Update report
+      const updatedReport = await storage.updateSavedReport(reportId, req.body);
+      
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "updated",
+        resourceType: "saved_report",
+        resourceId: reportId,
+        details: { name: existingReport.name }
+      });
+      
+      res.json(updatedReport);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/saved-reports/:id", async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
+      const reportId = parseInt(req.params.id);
+      if (isNaN(reportId)) {
+        return res.status(400).json({ message: "ID de reporte inválido" });
+      }
+      
+      // Check if report exists
+      const existingReport = await storage.getSavedReport(reportId);
+      if (!existingReport) {
+        return res.status(404).json({ message: "Reporte no encontrado" });
+      }
+      
+      // Verify ownership or admin privileges
+      if (existingReport.createdBy !== req.user.id && req.user.role !== UserRole.SUPERADMIN && req.user.role !== UserRole.ADMIN) {
+        return res.status(403).json({ message: "No autorizado para eliminar este reporte" });
+      }
+      
+      // Delete report
+      await storage.deleteSavedReport(reportId);
+      
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "deleted",
+        resourceType: "saved_report",
+        resourceId: reportId,
+        details: { name: existingReport.name }
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
