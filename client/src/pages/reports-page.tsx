@@ -343,17 +343,35 @@ export default function ReportsPage() {
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
           th { background-color: #f2f2f2; }
           tr:nth-child(even) { background-color: #f9f9f9; }
+          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+          .company-info { text-align: right; font-size: 12px; color: #666; }
+          .logo-container { display: flex; align-items: center; }
+          .logo { height: 40px; margin-right: 10px; }
         </style>
       </head>
       <body>
-        <h1>Reporte de Formularios</h1>
-        <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })}</p>
+        <div class="header">
+          <div class="logo-container">
+            <img src="${window.location.origin}/src/assets/gelag-logo.png" class="logo" alt="GELAG Logo">
+            <div>
+              <h1>Reporte de Formularios</h1>
+              <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</p>
+            </div>
+          </div>
+          <div class="company-info">
+            <p><strong>GELAG S.A DE C.V.</strong></p>
+            <p>BLVD. SANTA RITA #842</p>
+            <p>PARQUE INDUSTRIAL SANTA RITA</p>
+            <p>GOMEZ PALACIO, DGO.</p>
+          </div>
+        </div>
+        <hr>
         <table>
           <thead>
             <tr>

@@ -14,6 +14,7 @@ import {
   PlusSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import gelagLogo from '@/assets/gelag-logo.png';
 
 interface SidebarProps {
   className?: string;
@@ -50,7 +51,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Crear Formularios",
       href: "/form-editor",
       icon: <PlusSquare className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin,
+      show: isSuperAdmin,
     },
     {
       title: "Importar Formularios",
@@ -90,9 +91,9 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <aside className={cn("flex flex-col w-64 bg-white shadow-md z-10", className)}>
-      <div className="p-4 bg-primary text-white flex items-center space-x-2">
-        <FileText className="h-5 w-5" />
-        <h1 className="text-xl font-medium">FormCapture</h1>
+      <div className="p-4 bg-white flex flex-col items-center justify-center">
+        <img src={gelagLogo} alt="GELAG Logo" className="h-10 mb-2" />
+        <h1 className="text-lg font-medium text-primary">GELAG S.A DE C.V.</h1>
       </div>
       
       <div className="p-4 bg-neutral-50">
