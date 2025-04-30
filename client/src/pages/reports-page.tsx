@@ -233,36 +233,359 @@ export default function ReportsPage() {
     setSelectedEntry(entry);
   };
 
+  // Generar contenido CSV para Excel
+  const generateCSV = (entries: FormEntry[], selectedColumns?: string[]) => {
+    // Determinar las columnas a incluir
+    const columnsToInclude = selectedColumns || ["formName", "userName", "department", "createdAt"];
+    
+    // Crear encabezados
+    const headers = columnsToInclude.map(col => {
+      // Usar nombres legibles para encabezados
+      return formatFieldName(col);
+    }).join(',');
+    
+    // Crear filas de datos
+    const rows = entries.map(entry => {
+      return columnsToInclude.map(col => {
+        let value = "";
+        
+        // Manejar columnas estándar
+        if (col === "formName" || col === "Formulario") {
+          value = entry.formName || "";
+        } else if (col === "userName" || col === "Usuario") {
+          value = entry.userName || "";
+        } else if (col === "department" || col === "Departamento") {
+          value = entry.department || "";
+        } else if (col === "createdAt" || col === "Fecha") {
+          value = new Date(entry.createdAt).toLocaleString("es-ES");
+        } else if (col.startsWith("Personal: ") && entry.data?.employeeNames) {
+          // Para campos de personal específicos
+          const personnelName = col.replace("Personal: ", "");
+          value = entry.data.employeeNames.includes(personnelName) ? "Sí" : "No";
+        } else {
+          // Buscar en data si existe
+          const fieldKey = Object.keys(entry.data || {}).find(
+            key => formatFieldName(key) === col
+          );
+          
+          if (fieldKey && entry.data) {
+            value = typeof entry.data[fieldKey] === 'object' 
+              ? JSON.stringify(entry.data[fieldKey]) 
+              : String(entry.data[fieldKey]);
+          }
+        }
+        
+        // Escapar comillas y encerrar en comillas si contiene comas
+        if (value.includes('"')) {
+          value = value.replace(/"/g, '""');
+        }
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          value = `"${value}"`;
+        }
+        
+        return value;
+      }).join(',');
+    }).join('\n');
+    
+    return `${headers}\n${rows}`;
+  };
+  
+  // Generar HTML para PDF
+  const generateHTML = (entries: FormEntry[], selectedColumns?: string[]) => {
+    // Determinar las columnas a incluir
+    const columnsToInclude = selectedColumns || ["formName", "userName", "department", "createdAt"];
+    
+    // Crear tabla HTML
+    let htmlContent = `
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h1 { color: #333; }
+          table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          tr:nth-child(even) { background-color: #f9f9f9; }
+        </style>
+      </head>
+      <body>
+        <h1>Reporte de Formularios</h1>
+        <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</p>
+        <table>
+          <thead>
+            <tr>
+    `;
+    
+    // Encabezados
+    columnsToInclude.forEach(col => {
+      htmlContent += `<th>${formatFieldName(col)}</th>`;
+    });
+    
+    htmlContent += `
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    
+    // Filas de datos
+    entries.forEach(entry => {
+      htmlContent += '<tr>';
+      
+      columnsToInclude.forEach(col => {
+        let value = "";
+        
+        // Manejar columnas estándar
+        if (col === "formName" || col === "Formulario") {
+          value = entry.formName || "";
+        } else if (col === "userName" || col === "Usuario") {
+          value = entry.userName || "";
+        } else if (col === "department" || col === "Departamento") {
+          value = entry.department || "";
+        } else if (col === "createdAt" || col === "Fecha") {
+          value = new Date(entry.createdAt).toLocaleString("es-ES");
+        } else if (col.startsWith("Personal: ") && entry.data?.employeeNames) {
+          // Para campos de personal específicos
+          const personnelName = col.replace("Personal: ", "");
+          value = entry.data.employeeNames.includes(personnelName) ? "Sí" : "No";
+        } else {
+          // Buscar en data si existe
+          const fieldKey = Object.keys(entry.data || {}).find(
+            key => formatFieldName(key) === col
+          );
+          
+          if (fieldKey && entry.data) {
+            if (typeof entry.data[fieldKey] === 'object') {
+              value = JSON.stringify(entry.data[fieldKey]);
+            } else {
+              value = String(entry.data[fieldKey]);
+            }
+          }
+        }
+        
+        htmlContent += `<td>${value}</td>`;
+      });
+      
+      htmlContent += '</tr>';
+    });
+    
+    htmlContent += `
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+    
+    return htmlContent;
+  };
+  
+  // Descargar archivo
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+  
+  // Mostrar vista previa de PDF
+  const showPDFPreview = (htmlContent: string) => {
+    const previewWindow = window.open('', '_blank');
+    if (previewWindow) {
+      previewWindow.document.write(htmlContent);
+      previewWindow.document.close();
+    } else {
+      toast({
+        title: "Error",
+        description: "El navegador ha bloqueado la ventana emergente. Asegúrate de permitir ventanas emergentes para esta aplicación.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Handle export
   const handleExport = (entry: FormEntry, format: "pdf" | "excel") => {
     toast({
-      title: `Exportando entrada`,
-      description: `La entrada está siendo exportada a ${format.toUpperCase()}`,
+      title: `Preparando exportación`,
+      description: `Preparando los datos para exportar a ${format.toUpperCase()}`,
     });
     
-    // In a real application, this would make an API call to export the entry
-    setTimeout(() => {
+    // Exportar solo la entrada seleccionada como un array de una entrada
+    if (format === "excel") {
+      const csvContent = generateCSV([entry]);
+      const filename = `entrada_formulario_${entry.id}_${format}_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      // Descargar el archivo
+      downloadFile(csvContent, filename, "text/csv;charset=utf-8");
+      
       toast({
         title: "Exportación completada",
-        description: `La entrada ha sido exportada correctamente`,
+        description: "El archivo CSV ha sido generado y descargado correctamente",
       });
-    }, 1500);
+    } else {
+      // Generar contenido HTML para PDF
+      const htmlContent = generateHTML([entry]);
+      
+      // Mostrar vista previa antes de descargar
+      showPDFPreview(htmlContent);
+      
+      toast({
+        title: "Vista previa generada",
+        description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+      });
+    }
   };
 
   // Export all results
   const handleExportAll = (format: "pdf" | "excel") => {
+    if (filteredEntries.length === 0) {
+      toast({
+        title: "No hay datos para exportar",
+        description: "No hay entradas que coincidan con los filtros actuales.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     toast({
-      title: `Exportando resultados`,
-      description: `Se están exportando ${filteredEntries.length} entradas a ${format.toUpperCase()}`,
+      title: `Preparando exportación`,
+      description: `Exportando ${filteredEntries.length} entradas a ${format.toUpperCase()}`,
     });
     
-    // In a real application, this would make an API call to export all entries
-    setTimeout(() => {
+    if (format === "excel") {
+      const csvContent = generateCSV(filteredEntries);
+      const filename = `reporte_formularios_${format}_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      // Descargar el archivo
+      downloadFile(csvContent, filename, "text/csv;charset=utf-8");
+      
       toast({
         title: "Exportación completada",
-        description: `${filteredEntries.length} entradas han sido exportadas correctamente`,
+        description: `Se han exportado ${filteredEntries.length} entradas a CSV correctamente`,
       });
-    }, 2000);
+    } else {
+      // Generar contenido HTML para PDF
+      const htmlContent = generateHTML(filteredEntries);
+      
+      // Mostrar vista previa antes de descargar
+      showPDFPreview(htmlContent);
+      
+      toast({
+        title: "Vista previa generada",
+        description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+      });
+    }
+  };
+  
+  // Función para generar reporte personalizado por personal y fechas
+  const handleGenerateCustomReport = () => {
+    setCustomReport(true);
+    // Analizar la estructura de los datos para extraer campos disponibles
+    const allFields = new Set<string>();
+    
+    // Añadir campos estándar básicos con nombres legibles
+    allFields.add("Formulario");
+    allFields.add("Departamento");
+    allFields.add("Usuario");
+    allFields.add("Fecha");
+    
+    processedEntries.forEach(entry => {
+      if (entry.data) {
+        // Extraer campos de los datos con nombres más legibles
+        Object.keys(entry.data).forEach(field => {
+          // Convertir IDs a nombres más legibles
+          const readableName = formatFieldName(field);
+          allFields.add(readableName);
+        });
+        
+        // Para el caso especial de Buenas Prácticas, buscar el personal
+        if (entry.data.employeeNames && Array.isArray(entry.data.employeeNames)) {
+          entry.data.employeeNames.forEach((name: string) => {
+            if (name && name.trim()) {
+              allFields.add(`Personal: ${name}`);
+            }
+          });
+        }
+      }
+    });
+    
+    setAvailableColumns(Array.from(allFields));
+    setCustomColumns([
+      "Formulario", 
+      "Usuario", 
+      "Departamento", 
+      "Fecha"
+    ]);
+  };
+  
+  // Exportar reporte personalizado
+  const handleExportCustomReport = (format: "pdf" | "excel") => {
+    if (filteredEntries.length === 0) {
+      toast({
+        title: "No hay datos para exportar",
+        description: "No hay entradas que coincidan con los filtros actuales.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (customColumns.length === 0) {
+      toast({
+        title: "No hay columnas seleccionadas",
+        description: "Debes seleccionar al menos una columna para generar el reporte.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: `Preparando exportación personalizada`,
+      description: `Exportando reporte personalizado a ${format.toUpperCase()}`,
+    });
+    
+    // Filtrar los datos por nombre de personal si está configurado
+    let reportEntries = [...filteredEntries];
+    if (customPersonnelFilter) {
+      reportEntries = reportEntries.filter(entry => {
+        if (!entry.data?.employeeNames) return false;
+        return entry.data.employeeNames.some((name: string) => 
+          name.toLowerCase().includes(customPersonnelFilter.toLowerCase())
+        );
+      });
+    }
+    
+    if (format === "excel") {
+      const csvContent = generateCSV(reportEntries, customColumns);
+      const filename = `reporte_personalizado_${format}_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      // Descargar el archivo
+      downloadFile(csvContent, filename, "text/csv;charset=utf-8");
+      
+      toast({
+        title: "Exportación completada",
+        description: `Se ha generado tu reporte personalizado con ${reportEntries.length} entradas y ${customColumns.length} columnas`,
+      });
+    } else {
+      // Generar contenido HTML para PDF
+      const htmlContent = generateHTML(reportEntries, customColumns);
+      
+      // Mostrar vista previa antes de descargar
+      showPDFPreview(htmlContent);
+      
+      toast({
+        title: "Vista previa generada",
+        description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+      });
+    }
   };
 
   // Prepare chart data
@@ -337,63 +660,6 @@ export default function ReportsPage() {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5 users
-  };
-  
-  // Función para generar reporte personalizado por personal y fechas
-  const handleGenerateCustomReport = () => {
-    setCustomReport(true);
-    // Analizar la estructura de los datos para extraer campos disponibles
-    const allFields = new Set<string>();
-    
-    // Añadir campos estándar básicos con nombres legibles
-    allFields.add("Formulario");
-    allFields.add("Departamento");
-    allFields.add("Usuario");
-    allFields.add("Fecha");
-    
-    processedEntries.forEach(entry => {
-      if (entry.data) {
-        // Extraer campos de los datos con nombres más legibles
-        Object.keys(entry.data).forEach(field => {
-          // Convertir IDs a nombres más legibles
-          const readableName = formatFieldName(field);
-          allFields.add(readableName);
-        });
-        
-        // Para el caso especial de Buenas Prácticas, buscar el personal
-        if (entry.data.employeeNames && Array.isArray(entry.data.employeeNames)) {
-          entry.data.employeeNames.forEach((name: string) => {
-            if (name && name.trim()) {
-              allFields.add(`Personal: ${name}`);
-            }
-          });
-        }
-      }
-    });
-    
-    setAvailableColumns(Array.from(allFields));
-    setCustomColumns([
-      "Formulario", 
-      "Usuario", 
-      "Departamento", 
-      "Fecha"
-    ]);
-  };
-  
-  // Función para exportar reporte personalizado
-  const handleExportCustomReport = (format: "pdf" | "excel") => {
-    toast({
-      title: `Exportando reporte personalizado`,
-      description: `Se está generando el reporte personalizado en formato ${format.toUpperCase()}`,
-    });
-    
-    // En una aplicación real, esto llamaría a una API para exportar el reporte
-    setTimeout(() => {
-      toast({
-        title: "Exportación completada",
-        description: `El reporte personalizado ha sido exportado correctamente`,
-      });
-    }, 2000);
   };
 
   const lineData = getDateRangeData();
@@ -705,15 +971,23 @@ export default function ReportsPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg">Columnas a mostrar</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          Selecciona las columnas que deseas incluir en el reporte personalizado
+                        </p>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
                           <div className="flex flex-wrap gap-2">
-                            {availableColumns.map(column => (
+                            {availableColumns.sort().map(column => (
                               <Badge 
                                 key={column}
                                 variant={customColumns.includes(column) ? "default" : "outline"}
-                                className="cursor-pointer"
+                                className={cn(
+                                  "cursor-pointer text-sm py-1.5 px-3",
+                                  customColumns.includes(column) 
+                                    ? "bg-primary hover:bg-primary/90" 
+                                    : "hover:bg-secondary"
+                                )}
                                 onClick={() => {
                                   if (customColumns.includes(column)) {
                                     setCustomColumns(customColumns.filter(c => c !== column));
@@ -723,8 +997,30 @@ export default function ReportsPage() {
                                 }}
                               >
                                 {column}
+                                {customColumns.includes(column) && (
+                                  <span className="ml-1.5">✓</span>
+                                )}
                               </Badge>
                             ))}
+                          </div>
+                          <div className="mt-4">
+                            <p className="text-sm font-medium mb-2">Columnas seleccionadas: {customColumns.length}</p>
+                            <div className="flex justify-end space-x-2">
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCustomColumns([])}
+                              >
+                                Limpiar selección
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCustomColumns(Array.from(availableColumns))}
+                              >
+                                Seleccionar todas
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -753,8 +1049,20 @@ export default function ReportsPage() {
                   </div>
                   
                   <Card>
-                    <CardHeader>
+                    <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle>Vista previa del reporte</CardTitle>
+                      <Button 
+                        variant="default"
+                        className="bg-primary"
+                        onClick={() => {
+                          toast({
+                            title: "Reporte actualizado",
+                            description: "Los datos se han filtrado según los criterios seleccionados",
+                          });
+                        }}
+                      >
+                        Procesar reporte
+                      </Button>
                     </CardHeader>
                     <CardContent>
                       <DataTable
