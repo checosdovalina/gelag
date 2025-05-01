@@ -489,11 +489,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if user has permission to view this entry
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
       if (
-        req.user.role !== UserRole.SUPERADMIN &&
-        req.user.role !== UserRole.ADMIN && 
-        entry.createdBy !== req.user.id && 
-        entry.department !== req.user.department
+        req.user?.role !== UserRole.SUPERADMIN &&
+        req.user?.role !== UserRole.ADMIN && 
+        entry.createdBy !== req.user?.id && 
+        entry.department !== req.user?.department
       ) {
         return res.status(403).json({ message: "No autorizado para ver esta entrada" });
       }
