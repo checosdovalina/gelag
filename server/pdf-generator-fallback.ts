@@ -286,6 +286,17 @@ function generatePDFContent(
             }
           } else if (Array.isArray(fieldValue)) {
             fieldValue = fieldValue.join(', ');
+          } else if (field.type === 'buenas-practicas-option') {
+            // Caso especial para formularios de buenas prácticas
+            if (fieldValue === 'APROBADO') {
+              fieldValue = 'APROBADO';
+            } else if (fieldValue === 'NO APROBADO') {
+              fieldValue = 'NO APROBADO';
+            } else if (fieldValue === 'NO APLICA') {
+              fieldValue = 'NO APLICA';
+            } else {
+              fieldValue = fieldValue || '';
+            }
           } else if (fieldValue === null || fieldValue === undefined) {
             fieldValue = '';
           }
