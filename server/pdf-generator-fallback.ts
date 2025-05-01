@@ -67,36 +67,42 @@ function generatePDFContent(
   // Departamento
   const department = entry.department || 'N/A';
   
-  // Encabezado con el logo estilizado como texto - al estilo de la imagen de referencia
+  // Encabezado simple como en la nueva imagen de referencia
   const pageWidth = doc.page.width;
+  const pageCenter = pageWidth / 2;
   
-  // Logo GELAG en el lado izquierdo
-  doc.fontSize(14).font('Helvetica-Bold').fillColor('#e3014f')
-     .text('GELAG S.A DE C.V.', 50, 40);
+  // Título del documento centrado en la parte superior (BUENAS PRACTICAS DE PERSONAL 2)
+  doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold')
+     .text(template.name.toUpperCase(), 50, 40, { 
+       align: 'center',
+       width: pageWidth - 100
+     });
   
-  // Dirección de la empresa en el lado derecho, texto pequeño y alineado a la derecha
-  doc.fontSize(8).font('Helvetica').fillColor('#333333')
-     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA,\nGOMEZ PALACIO, DGO.', 
-       pageWidth - 50, 40, {
-         align: 'right',
-         width: 200
+  // Dirección de la empresa debajo del título (como en la imagen de referencia)
+  doc.fontSize(10).font('Helvetica').fillColor('#000000')
+     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+       50, 65, {
+         align: 'center',
+         width: pageWidth - 100
        });
-  
-  // Línea separadora completa
-  const startX = 50;
-  const endX = doc.page.width - 50;
-  const lineY = 70;
-  doc.moveTo(startX, lineY)
-     .lineTo(endX, lineY)
-     .lineWidth(0.5)
-     .stroke();
   
   doc.moveDown(0.5);
   
-  // Título del documento (como en la imagen de referencia - "Reporte de Formularios")
-  doc.fillColor('#000000').fontSize(11).font('Helvetica-Bold')
-     .text('Reporte de Formularios: ' + template.name, 50, lineY + 15);
-     
+  // Título del documento en mayúsculas y alineado a la derecha (como en la imagen de referencia)
+  doc.fillColor('#000000').fontSize(14).font('Helvetica-Bold')
+     .text(template.name.toUpperCase(), pageWidth - 50, lineY + 10, { 
+       align: 'right',
+       width: 300
+     });
+  
+  // Dirección de la empresa debajo del título (como en la imagen de referencia)
+  doc.fontSize(8).font('Helvetica').fillColor('#333333')
+     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA,\nGOMEZ PALACIO, DGO.', 
+       pageWidth - 50, lineY + 40, {
+         align: 'right',
+         width: 300
+       });
+  
   // Fecha de generación (como en la imagen de referencia)
   const currentDate = new Date();
   // Función para obtener el nombre del mes
@@ -188,11 +194,26 @@ function generatePDFContent(
         doc.moveDown(0.5);
       }
       
-      // Encabezado de sección con un estilo distintivo
-      doc.fontSize(11).font('Helvetica-Bold').fillColor('#000')
-         .text(sectionName, { align: 'left' });
+      // Encabezado de sección con un estilo distintivo - como en la imagen de referencia (texto central con líneas a los lados)
+      // Dibujar línea separadora antes del título de sección
+      const sectionY = doc.y + 10;
+      const sectionLineWidth = 400;
+      const sectionTitleWidth = 120;
+      const sectionTitleX = pageWidth / 2 - sectionTitleWidth / 2;
+      
+      doc.moveTo(60, sectionY)
+         .lineTo(sectionTitleX - 10, sectionY)
+         .stroke();
          
-      doc.moveDown(0.5);
+      doc.moveTo(sectionTitleX + sectionTitleWidth + 10, sectionY)
+         .lineTo(pageWidth - 60, sectionY)
+         .stroke();
+      
+      // Título de sección en mayúsculas centrado
+      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+         .text(sectionName.toUpperCase(), sectionTitleX, sectionY - 6, { width: sectionTitleWidth, align: 'center' });
+         
+      doc.moveDown(1);
       doc.fillColor('#000000'); // Restaurar color
       
       // Definir columnas y márgenes para imitar el diseño de la imagen
@@ -317,21 +338,37 @@ function generatePDFContent(
     const pageWidth = doc.page.width;
     const pageCenter = pageWidth / 2;
     
-    // Encabezado de firma con estilo simple (como en la imagen de referencia)
-    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
-       .text('Firma', { align: 'center' });
-    doc.moveDown(0.5);
+    // Encabezado de firma con estilo como en la imagen de referencia
+    // Dibujar línea separadora antes del título de sección "FIRMA DEL DOCUMENTO"
+    const sectionY = doc.y + 10;
+    const sectionLineWidth = 400;
+    const sectionTitleWidth = 200;
+    const sectionTitleX = pageWidth / 2 - sectionTitleWidth / 2;
     
-    // Dibujar un recuadro para la firma - estilo más sencillo
-    const signatureBoxWidth = 250;
-    const signatureBoxHeight = 80;
+    doc.moveTo(60, sectionY)
+       .lineTo(sectionTitleX - 10, sectionY)
+       .stroke();
+       
+    doc.moveTo(sectionTitleX + sectionTitleWidth + 10, sectionY)
+       .lineTo(pageWidth - 60, sectionY)
+       .stroke();
+    
+    // Título "FIRMA DEL DOCUMENTO" en mayúsculas centrado
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+       .text('FIRMA DEL DOCUMENTO', sectionTitleX, sectionY - 6, { width: sectionTitleWidth, align: 'center' });
+       
+    doc.moveDown(1);
+    
+    // Dibujar un recuadro para la firma con fondo ligeramente rosado como en la imagen
+    const signatureBoxWidth = 350;
+    const signatureBoxHeight = 120;
     const signatureBoxX = pageCenter - (signatureBoxWidth / 2);
     const signatureBoxY = doc.y;
     
-    // Dibujar un recuadro simple para la firma
+    // Dibujar un recuadro con fondo de color muy claro (rosado)
     doc.rect(signatureBoxX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
-       .lineWidth(0.5)
-       .stroke();
+       .fillOpacity(0.05)
+       .fillAndStroke('#ffeeee', '#cccccc');
        
     try {
       // Intentar añadir la imagen de firma
@@ -366,20 +403,62 @@ function generatePDFContent(
         });
     }
     
+    // Restaurar la opacidad después de dibujar el recuadro
+    doc.fillOpacity(1);
+    
+    // Centrar la firma dentro del recuadro
+    try {
+      // Intentar añadir la imagen de firma
+      if (entry.signature && entry.signature.startsWith('data:image')) {
+        // Extraer la parte de base64 de la data URL
+        const base64Data = entry.signature.split(',')[1];
+        if (base64Data) {
+          // Convertir a buffer
+          const signatureBuffer = Buffer.from(base64Data, 'base64');
+          
+          // Dimensiones óptimas para la firma
+          const signatureWidth = 200;
+          const signatureX = pageCenter - (signatureWidth / 2);
+          const signatureY = signatureBoxY + 10; // Ajuste para centrar verticalmente
+          
+          // Añadir la firma al PDF, centrada dentro del recuadro
+          doc.image(signatureBuffer, signatureX, signatureY, {
+            width: signatureWidth,
+            height: signatureBoxHeight - 20,
+            align: 'center',
+            valign: 'center'
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error al mostrar la firma:", error);
+    }
+    
     // Movernos al final del recuadro
     doc.y = signatureBoxY + signatureBoxHeight + 15;
     
-    // Información sobre la firma - en formato "firmado por: nombre" como en la imagen
-    doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold')
-       .text('Firmado por: ', { continued: true, align: 'center' })
-       .font('Helvetica')
-       .text(`${entry.signedBy ? creator?.name || `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
+    // Información del firmante en formato similar a la imagen de referencia
+    doc.fillColor('#000000');
     
+    // Texto de "Firmado por" y la fecha en dos columnas
+    const firmadoPorX = pageCenter - 100;
+    const fechaFirmaX = pageCenter + 20;
+    
+    // Columna izquierda: Firmado por
+    doc.fontSize(9).font('Helvetica-Bold')
+       .text('Firmado por:', firmadoPorX, doc.y);
+    doc.font('Helvetica')
+       .text(`${entry.signedBy ? creator?.name || `Usuario ID: ${entry.signedBy}` : creatorName}`, 
+          firmadoPorX, doc.y);
+    
+    // Columna derecha: Fecha de firma (en la misma línea)
     if (entry.signedAt) {
+      // Posicionar en la misma altura que "Firmado por"
       doc.fontSize(9).font('Helvetica-Bold')
-         .text('Fecha de firma: ', { continued: true, align: 'center' })
-         .font('Helvetica')
-         .text(`${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, { align: 'center' });
+         .text('Fecha de firma:', fechaFirmaX, doc.y - doc.currentLineHeight());
+      doc.font('Helvetica')
+         .text(`${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, 
+            fechaFirmaX, doc.y);
     }
   }
   
