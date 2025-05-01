@@ -289,17 +289,33 @@ export default function ReportsPage() {
   // Efecto para extraer los displayNames de los formularios
   useEffect(() => {
     if (templates) {
-      // Limpiar el diccionario antes de comenzar
-      for (const key in displayNameMap) {
-        delete displayNameMap[key];
-      }
+      // Crear un nuevo objeto para almacenar los displayNames
+      const newDisplayNameMap: Record<string, string> = {};
       
       // Extraer displayNames de todos los formularios
       templates.forEach(template => {
+        console.log(`Procesando template: ${template.name}`, template.structure);
+        
         if (template.structure?.fields) {
           template.structure.fields.forEach(field => {
+            // Usar console.log para depuración
+            console.log(`Campo: ${field.id}`, { 
+              label: field.label, 
+              displayName: field.displayName,
+              type: field.type 
+            });
+            
             if (field.displayName && field.id) {
-              displayNameMap[field.id] = field.displayName;
+              newDisplayNameMap[field.id] = field.displayName;
+              // También almacenar un mapeo directo de UUID a displayName
+              // para ser usado en exportaciones y reportes
+              setColumnMapping(prevMapping => {
+                const newMapping = { ...prevMapping };
+                if (field.displayName && typeof field.displayName === 'string') {
+                  newMapping[field.displayName] = field.id;
+                }
+                return newMapping;
+              });
             }
           });
           
@@ -307,8 +323,22 @@ export default function ReportsPage() {
           if (template.structure.sections) {
             template.structure.sections.forEach(section => {
               section.fields.forEach(field => {
+                console.log(`Campo en sección: ${field.id}`, {
+                  label: field.label,
+                  displayName: field.displayName,
+                  type: field.type
+                });
+                
                 if (field.displayName && field.id) {
-                  displayNameMap[field.id] = field.displayName;
+                  newDisplayNameMap[field.id] = field.displayName;
+                  // También actualizar el columnMapping
+                  setColumnMapping(prevMapping => {
+                    const newMapping = { ...prevMapping };
+                    if (field.displayName && typeof field.displayName === 'string') {
+                      newMapping[field.displayName] = field.id;
+                    }
+                    return newMapping;
+                  });
                 }
               });
             });
@@ -316,7 +346,17 @@ export default function ReportsPage() {
         }
       });
       
-      console.log("DisplayNames cargados:", displayNameMap);
+      // Actualizar el diccionario global
+      for (const key in displayNameMap) {
+        delete displayNameMap[key];
+      }
+      
+      // Copiar los valores al displayNameMap global
+      Object.keys(newDisplayNameMap).forEach(key => {
+        displayNameMap[key] = newDisplayNameMap[key];
+      });
+      
+      console.log("DisplayNames cargados:", newDisplayNameMap);
     }
   }, [templates]);
 
@@ -739,8 +779,10 @@ export default function ReportsPage() {
     // Analizar la estructura de los datos para extraer campos disponibles
     const allFields = new Set<string>();
     
-    // Crear un nuevo mapeo de columnas
+    // Crear un nuevo mapeo de columnas basado en el estado actual
+    // pero añadiendo los campos estándar por si acaso
     const newColumnMapping: Record<string, string> = {
+      ...columnMapping,
       "Formulario": "formName",
       "Departamento": "department",
       "Usuario": "userName",
@@ -753,26 +795,78 @@ export default function ReportsPage() {
     allFields.add("Usuario");
     allFields.add("Fecha");
     
+    // Recorrer todas las plantillas para extraer campos y sus displayNames
+    if (templates) {
+      templates.forEach(template => {
+        // Procesar campos en la raíz de la estructura
+        if (template.structure?.fields) {
+          template.structure.fields.forEach(field => {
+            if (field.displayName && field.id) {
+              // Usar el displayName como nombre de columna
+              allFields.add(field.displayName);
+              newColumnMapping[field.displayName] = field.id;
+            } else if (field.label && field.id) {
+              // Si no hay displayName, usar la etiqueta
+              allFields.add(field.label);
+              newColumnMapping[field.label] = field.id;
+            }
+          });
+        }
+        
+        // Procesar campos en secciones si existen
+        if (template.structure?.sections) {
+          template.structure.sections.forEach(section => {
+            if (section.fields) {
+              section.fields.forEach(field => {
+                if (field.displayName && field.id) {
+                  // Usar el displayName como nombre de columna
+                  allFields.add(field.displayName);
+                  newColumnMapping[field.displayName] = field.id;
+                } else if (field.label && field.id) {
+                  // Si no hay displayName, usar la etiqueta
+                  allFields.add(field.label);
+                  newColumnMapping[field.label] = field.id;
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Ahora procesar los datos para campos que podrían no estar en la estructura
     processedEntries.forEach(entry => {
       if (entry.data) {
         // Extraer campos de los datos con nombres más legibles
         Object.keys(entry.data).forEach(field => {
-          // Intentar usar displayName si existe, o formatear el nombre
-          let displayName = "";
-          
-          if (displayNameMap[field]) {
-            // Usar displayName personalizado si existe
-            displayName = displayNameMap[field];
-          } else {
-            // Usar la función de formateo como respaldo
-            displayName = formatFieldName(field);
+          // Comprobar si el campo ya está en el mapeo por su ID
+          let alreadyMapped = false;
+          for (const [displayName, id] of Object.entries(newColumnMapping)) {
+            if (id === field) {
+              alreadyMapped = true;
+              break;
+            }
           }
           
-          // Guardar el mapeo entre el nombre legible y el ID interno
-          newColumnMapping[displayName] = field;
-          
-          // Añadir a campos disponibles
-          allFields.add(displayName);
+          // Si el campo no está en el mapeo, añadirlo
+          if (!alreadyMapped) {
+            // Intentar usar displayName si existe, o formatear el nombre
+            let displayName = "";
+            
+            if (displayNameMap[field]) {
+              // Usar displayName personalizado si existe
+              displayName = displayNameMap[field];
+            } else {
+              // Usar la función de formateo como respaldo
+              displayName = formatFieldName(field);
+            }
+            
+            // Guardar el mapeo entre el nombre legible y el ID interno
+            newColumnMapping[displayName] = field;
+            
+            // Añadir a campos disponibles
+            allFields.add(displayName);
+          }
         });
         
         // Para el caso especial de Buenas Prácticas, buscar el personal
