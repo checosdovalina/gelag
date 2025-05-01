@@ -13,6 +13,8 @@ export async function generatePDFFallback(
   return new Promise((resolve, reject) => {
     try {
       console.log("Generando PDF para formulario (usando fallback):", template.name);
+      // Depuración para ver qué valores tienen los campos
+      console.log("Datos del formulario para depuración:", JSON.stringify(entry.data, null, 2));
       
       // Crear un buffer para almacenar el PDF
       const chunks: Buffer[] = [];
@@ -225,7 +227,7 @@ function generatePDFContent(
           }
         } else if (Array.isArray(fieldValue)) {
           fieldValue = fieldValue.join(', ');
-        } else if (field.type === 'buenas-practicas-option') {
+        } else if (field.type === 'buenas-practicas-option' || field.id.includes('checkbox-group')) {
           // Caso especial para formularios de buenas prácticas
           if (fieldValue === 'APROBADO') {
             fieldValue = 'APROBADO';
@@ -234,7 +236,17 @@ function generatePDFContent(
           } else if (fieldValue === 'NO APLICA') {
             fieldValue = 'NO APLICA';
           } else {
-            fieldValue = fieldValue || '';
+            // Tratamos de detectar si el valor es un estado específico
+            const lowercaseValue = String(fieldValue).toLowerCase();
+            if (lowercaseValue.includes('aprobado') && !lowercaseValue.includes('no')) {
+              fieldValue = 'APROBADO';
+            } else if (lowercaseValue.includes('no') && lowercaseValue.includes('aprobado')) {
+              fieldValue = 'NO APROBADO';
+            } else if (lowercaseValue.includes('no') && lowercaseValue.includes('aplica')) {
+              fieldValue = 'NO APLICA';
+            } else {
+              fieldValue = fieldValue || '';
+            }
           }
         } else if (fieldValue === null || fieldValue === undefined) {
           fieldValue = '';
@@ -286,7 +298,7 @@ function generatePDFContent(
             }
           } else if (Array.isArray(fieldValue)) {
             fieldValue = fieldValue.join(', ');
-          } else if (field.type === 'buenas-practicas-option') {
+          } else if (field.type === 'buenas-practicas-option' || field.id.includes('checkbox-group')) {
             // Caso especial para formularios de buenas prácticas
             if (fieldValue === 'APROBADO') {
               fieldValue = 'APROBADO';
@@ -295,7 +307,17 @@ function generatePDFContent(
             } else if (fieldValue === 'NO APLICA') {
               fieldValue = 'NO APLICA';
             } else {
-              fieldValue = fieldValue || '';
+              // Tratamos de detectar si el valor es un estado específico
+              const lowercaseValue = String(fieldValue).toLowerCase();
+              if (lowercaseValue.includes('aprobado') && !lowercaseValue.includes('no')) {
+                fieldValue = 'APROBADO';
+              } else if (lowercaseValue.includes('no') && lowercaseValue.includes('aprobado')) {
+                fieldValue = 'NO APROBADO';
+              } else if (lowercaseValue.includes('no') && lowercaseValue.includes('aplica')) {
+                fieldValue = 'NO APLICA';
+              } else {
+                fieldValue = fieldValue || '';
+              }
             }
           } else if (fieldValue === null || fieldValue === undefined) {
             fieldValue = '';
