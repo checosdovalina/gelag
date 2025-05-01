@@ -453,32 +453,38 @@ export default function ReportsPage() {
     // Determinar las columnas a incluir
     const columnsToInclude = selectedColumns || ["formName", "userName", "department", "createdAt"];
     
-    // Crear encabezados
-    const headers = columnsToInclude.map(col => {
-      // Usar nombres legibles para encabezados
-      return formatFieldName(col);
-    }).join(',');
+    // Crear encabezados (los nombres de columna ya son legibles)
+    const headers = columnsToInclude.join(',');
     
     // Crear filas de datos
     const rows = entries.map(entry => {
       return columnsToInclude.map(col => {
         let value = "";
         
+        // Obtener el ID del campo desde el mapeo de columnas
+        const fieldId = columnMapping[col] || col;
+        
         // Manejar columnas estándar
-        if (col === "formName" || col === "Formulario") {
+        if (fieldId === "formName" || col === "Formulario") {
           value = entry.formName || "";
-        } else if (col === "userName" || col === "Usuario") {
+        } else if (fieldId === "userName" || col === "Usuario") {
           value = entry.userName || "";
-        } else if (col === "department" || col === "Departamento") {
+        } else if (fieldId === "department" || col === "Departamento") {
           value = entry.department || "";
-        } else if (col === "createdAt" || col === "Fecha") {
+        } else if (fieldId === "createdAt" || col === "Fecha") {
           value = new Date(entry.createdAt).toLocaleString("es-ES");
         } else if (col.startsWith("Personal: ") && entry.data?.employeeNames) {
           // Para campos de personal específicos
           const personnelName = col.replace("Personal: ", "");
           value = entry.data.employeeNames.includes(personnelName) ? "Sí" : "No";
+        } else if (entry.data && entry.data[fieldId] !== undefined) {
+          // Si existe el campo exacto en los datos, usarlo directamente
+          value = typeof entry.data[fieldId] === 'object' 
+            ? JSON.stringify(entry.data[fieldId]) 
+            : String(entry.data[fieldId]);
         } else {
-          // Buscar en data si existe
+          // Intentar buscar en data si no existe un mapeo directo
+          // Este es un caso de respaldo en caso de que el mapeo no esté completo
           const fieldKey = Object.keys(entry.data || {}).find(
             key => formatFieldName(key) === col
           );
@@ -491,10 +497,10 @@ export default function ReportsPage() {
         }
         
         // Escapar comillas y encerrar en comillas si contiene comas
-        if (value.includes('"')) {
+        if (value && value.includes('"')) {
           value = value.replace(/"/g, '""');
         }
-        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+        if (value && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
           value = `"${value}"`;
         }
         
@@ -553,9 +559,9 @@ export default function ReportsPage() {
             <tr>
     `;
     
-    // Encabezados
+    // Encabezados - usar los nombres legibles directamente
     columnsToInclude.forEach(col => {
-      htmlContent += `<th>${formatFieldName(col)}</th>`;
+      htmlContent += `<th>${col}</th>`;
     });
     
     htmlContent += `
@@ -571,21 +577,31 @@ export default function ReportsPage() {
       columnsToInclude.forEach(col => {
         let value = "";
         
+        // Obtener el ID del campo desde el mapeo de columnas
+        const fieldId = columnMapping[col] || col;
+        
         // Manejar columnas estándar
-        if (col === "formName" || col === "Formulario") {
+        if (fieldId === "formName" || col === "Formulario") {
           value = entry.formName || "";
-        } else if (col === "userName" || col === "Usuario") {
+        } else if (fieldId === "userName" || col === "Usuario") {
           value = entry.userName || "";
-        } else if (col === "department" || col === "Departamento") {
+        } else if (fieldId === "department" || col === "Departamento") {
           value = entry.department || "";
-        } else if (col === "createdAt" || col === "Fecha") {
+        } else if (fieldId === "createdAt" || col === "Fecha") {
           value = new Date(entry.createdAt).toLocaleString("es-ES");
         } else if (col.startsWith("Personal: ") && entry.data?.employeeNames) {
           // Para campos de personal específicos
           const personnelName = col.replace("Personal: ", "");
           value = entry.data.employeeNames.includes(personnelName) ? "Sí" : "No";
+        } else if (entry.data && entry.data[fieldId] !== undefined) {
+          // Si existe el campo exacto en los datos, usarlo directamente
+          if (typeof entry.data[fieldId] === 'object') {
+            value = JSON.stringify(entry.data[fieldId]);
+          } else {
+            value = String(entry.data[fieldId]);
+          }
         } else {
-          // Buscar en data si existe
+          // Caso de respaldo: Buscar en data si no existe un mapeo directo
           const fieldKey = Object.keys(entry.data || {}).find(
             key => formatFieldName(key) === col
           );
@@ -723,6 +739,14 @@ export default function ReportsPage() {
     // Analizar la estructura de los datos para extraer campos disponibles
     const allFields = new Set<string>();
     
+    // Crear un nuevo mapeo de columnas
+    const newColumnMapping: Record<string, string> = {
+      "Formulario": "formName",
+      "Departamento": "department",
+      "Usuario": "userName",
+      "Fecha": "createdAt"
+    };
+    
     // Añadir campos estándar básicos con nombres legibles
     allFields.add("Formulario");
     allFields.add("Departamento");
@@ -733,21 +757,40 @@ export default function ReportsPage() {
       if (entry.data) {
         // Extraer campos de los datos con nombres más legibles
         Object.keys(entry.data).forEach(field => {
-          // Convertir IDs a nombres más legibles
-          const readableName = formatFieldName(field);
-          allFields.add(readableName);
+          // Intentar usar displayName si existe, o formatear el nombre
+          let displayName = "";
+          
+          if (displayNameMap[field]) {
+            // Usar displayName personalizado si existe
+            displayName = displayNameMap[field];
+          } else {
+            // Usar la función de formateo como respaldo
+            displayName = formatFieldName(field);
+          }
+          
+          // Guardar el mapeo entre el nombre legible y el ID interno
+          newColumnMapping[displayName] = field;
+          
+          // Añadir a campos disponibles
+          allFields.add(displayName);
         });
         
         // Para el caso especial de Buenas Prácticas, buscar el personal
         if (entry.data.employeeNames && Array.isArray(entry.data.employeeNames)) {
           entry.data.employeeNames.forEach((name: string) => {
             if (name && name.trim()) {
-              allFields.add(`Personal: ${name}`);
+              const fieldName = `Personal: ${name}`;
+              newColumnMapping[fieldName] = fieldName;
+              allFields.add(fieldName);
             }
           });
         }
       }
     });
+    
+    // Actualizar el mapeo de columnas para usar en exportaciones
+    setColumnMapping(newColumnMapping);
+    console.log("Mapeo de columnas actualizado:", newColumnMapping);
     
     setAvailableColumns(Array.from(allFields));
     setCustomColumns([
