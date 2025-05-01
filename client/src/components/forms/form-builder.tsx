@@ -39,6 +39,8 @@ const defaultField: FormField = {
   id: "",
   type: "text",
   label: "",
+  displayName: "",  // Añadimos el campo displayName para que se incluya en el formulario
+  displayOrder: 0,  // Y también displayOrder para controlar el orden en reportes
   required: false,
   placeholder: "",
 };
