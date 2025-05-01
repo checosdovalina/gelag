@@ -132,10 +132,13 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Realizar una copia profunda de los datos para evitar problemas de referencia
+    // Manejamos la fecha updatedAt de forma especial para evitar problemas con la serialización
     const updateData = JSON.parse(JSON.stringify({
-      ...data,
-      updatedAt: new Date()
+      ...data
     }));
+    
+    // Añadimos la fecha después de la serialización para evitar problemas con toISOString
+    updateData.updatedAt = new Date();
     
     // Verificar si hay estructura y campos
     if (updateData.structure && updateData.structure.fields) {
@@ -146,10 +149,17 @@ export class DatabaseStorage implements IStorage {
       console.log("\n=== COMPARACIÓN CON CAMPOS ORIGINALES ===\n");
       
       const originalMap = new Map();
-      if (existingTemplate.structure && existingTemplate.structure.fields) {
+      // Verificamos si structure existe y tiene campos
+      if (existingTemplate.structure && 
+          typeof existingTemplate.structure === 'object' && 
+          existingTemplate.structure.fields && 
+          Array.isArray(existingTemplate.structure.fields)) {
+        
         existingTemplate.structure.fields.forEach((field: any) => {
           originalMap.set(field.id, field);
         });
+      } else {
+        console.log("ADVERTENCIA: La estructura original no tiene campos o no es un objeto válido");
       }
       
       // Verificar cada campo individualmente
@@ -198,11 +208,19 @@ export class DatabaseStorage implements IStorage {
     
     // Verificación posterior
     const verifiedTemplate = await this.getFormTemplate(id);
-    if (verifiedTemplate && verifiedTemplate.structure && verifiedTemplate.structure.fields) {
-      console.log("\n=== VERIFICACIÓN POSTERIOR A ACTUALIZACIÓN ===\n");
+    console.log("\n=== VERIFICACIÓN POSTERIOR A ACTUALIZACIÓN ===\n");
+    
+    if (verifiedTemplate && verifiedTemplate.structure && 
+        typeof verifiedTemplate.structure === 'object' && 
+        verifiedTemplate.structure.fields && 
+        Array.isArray(verifiedTemplate.structure.fields)) {
+        
       verifiedTemplate.structure.fields.forEach((field: any, idx: number) => {
         console.log(`Campo #${idx} verificado - ID: ${field.id}, DisplayName: ${field.displayName}`);
       });
+    } else {
+      console.log("ADVERTENCIA: La estructura verificada no tiene campos o no es un objeto válido");
+      console.log("Estructura verificada:", JSON.stringify(verifiedTemplate?.structure || {}));
     }
     
     return updatedTemplate;
@@ -281,12 +299,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSavedReport(id: number, data: Partial<InsertSavedReport>): Promise<SavedReport | undefined> {
+    // Usamos el mismo patrón para evitar problemas con las fechas
+    const updateData = JSON.parse(JSON.stringify(data));
+    updateData.updatedAt = new Date();
+    
     const [updatedReport] = await db
       .update(savedReports)
-      .set({
-        ...data,
-        updatedAt: new Date()
-      })
+      .set(updateData)
       .where(eq(savedReports.id, id))
       .returning();
     return updatedReport;
