@@ -41,6 +41,7 @@ export interface IStorage {
   getFormTemplate(id: number): Promise<FormTemplate | undefined>;
   createFormTemplate(template: InsertFormTemplate): Promise<FormTemplate>;
   updateFormTemplate(id: number, data: Partial<InsertFormTemplate>): Promise<FormTemplate | undefined>;
+  deleteFormTemplate(id: number): Promise<void>;
   getAllFormTemplates(): Promise<FormTemplate[]>;
   getFormTemplatesByDepartment(department: string): Promise<FormTemplate[]>;
   
@@ -48,6 +49,7 @@ export interface IStorage {
   getFormEntry(id: number): Promise<FormEntry | undefined>;
   createFormEntry(entry: InsertFormEntry): Promise<FormEntry>;
   updateFormEntry(id: number, data: Partial<any>): Promise<FormEntry | undefined>;
+  deleteFormEntry(id: number): Promise<void>;
   getFormEntriesByTemplate(templateId: number): Promise<FormEntry[]>;
   getFormEntriesByUser(userId: number): Promise<FormEntry[]>;
   getFormEntriesByDepartment(department: string): Promise<FormEntry[]>;
@@ -309,6 +311,12 @@ export class DatabaseStorage implements IStorage {
       .from(formTemplates)
       .where(eq(formTemplates.department, department));
   }
+  
+  async deleteFormTemplate(id: number): Promise<void> {
+    await db
+      .delete(formTemplates)
+      .where(eq(formTemplates.id, id));
+  }
 
   // Form entry methods
   async getFormEntry(id: number): Promise<FormEntry | undefined> {
@@ -347,6 +355,12 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(formEntries)
       .orderBy(desc(formEntries.createdAt));
+  }
+  
+  async deleteFormEntry(id: number): Promise<void> {
+    await db
+      .delete(formEntries)
+      .where(eq(formEntries.id, id));
   }
   
   async updateFormEntry(id: number, data: Partial<any>): Promise<FormEntry | undefined> {
