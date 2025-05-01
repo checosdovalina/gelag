@@ -74,7 +74,12 @@ export const formEntries = pgTable("form_entries", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   department: text("department"),
-  status: text("status").default("completed"),
+  status: text("status").default("draft"), // "draft", "signed", "approved", "rejected"
+  signature: text("signature"), // Base64 encoded signature image
+  signedBy: integer("signed_by"), // User ID who signed the form
+  signedAt: timestamp("signed_at"), // When the form was signed
+  approvedBy: integer("approved_by"), // User ID who approved the form (if applicable)
+  approvedAt: timestamp("approved_at"), // When the form was approved (if applicable)
 });
 
 export const insertFormEntrySchema = createInsertSchema(formEntries).omit({

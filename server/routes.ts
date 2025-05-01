@@ -520,6 +520,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Set creator ID from logged in user
         entryData.createdBy = req.user.id;
         
+        // Set default status to draft
+        entryData.status = "draft";
+        
         // Check if form template exists
         const template = await storage.getFormTemplate(entryData.formTemplateId);
         if (!template) {
