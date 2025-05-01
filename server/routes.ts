@@ -215,14 +215,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.structure && req.body.structure.fields) {
         req.body.structure.fields = req.body.structure.fields.map(field => {
           // Asegurar que cada campo tenga displayName (si no lo tiene, usar label)
-          if (!field.displayName) {
+          if (!field.displayName && field.displayName !== '') {
             field.displayName = field.label;
           }
+          
+          // Convertir displayName a string explícitamente
+          field.displayName = String(field.displayName);
           
           // Asegurar que cada campo tenga displayOrder
           if (field.displayOrder === undefined) {
             field.displayOrder = 0;
           }
+          
+          // Convertir displayOrder a número explícitamente
+          field.displayOrder = Number(field.displayOrder);
           
           return field;
         });

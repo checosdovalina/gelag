@@ -243,12 +243,14 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               {...field} 
                                               value={field.value || ''}
                                               onChange={(e) => {
-                                                field.onChange(e.target.value);
-                                                // Aseguramos que el valor se actualice en el objeto del formulario
-                                                const updatedFields = [...form.getValues().fields];
-                                                updatedFields[index].displayName = e.target.value;
-                                                form.setValue('fields', updatedFields);
-                                                console.log(`DisplayName para campo ${index} actualizado:`, e.target.value);
+                                                const newValue = e.target.value;
+                                                // Actualizar directamente utilizando la API de React Hook Form
+                                                form.setValue(`fields.${index}.displayName`, newValue, {
+                                                  shouldValidate: true,
+                                                  shouldDirty: true,
+                                                  shouldTouch: true
+                                                });
+                                                console.log(`DisplayName para campo ${index} actualizado:`, newValue);
                                               }}
                                             />
                                           </FormControl>
@@ -273,11 +275,12 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               value={field.value === undefined ? '' : field.value}
                                               onChange={(e) => {
                                                 const value = e.target.value === '' ? undefined : parseInt(e.target.value);
-                                                field.onChange(value);
-                                                // Aseguramos que el valor se actualice en el objeto del formulario
-                                                const updatedFields = [...form.getValues().fields];
-                                                updatedFields[index].displayOrder = value;
-                                                form.setValue('fields', updatedFields);
+                                                // Actualizar directamente utilizando la API de React Hook Form
+                                                form.setValue(`fields.${index}.displayOrder`, value, {
+                                                  shouldValidate: true,
+                                                  shouldDirty: true,
+                                                  shouldTouch: true
+                                                });
                                                 console.log(`DisplayOrder para campo ${index} actualizado:`, value);
                                               }}
                                             />
