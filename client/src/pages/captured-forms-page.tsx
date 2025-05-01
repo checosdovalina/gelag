@@ -210,8 +210,7 @@ export default function CapturedFormsPage() {
       const response = await apiRequest(
         "GET",
         `/api/form-entries/${entry.id}/export?format=${format}`,
-        null,
-        { responseType: "blob" }
+        null
       );
       
       // Create a URL for the blob response
