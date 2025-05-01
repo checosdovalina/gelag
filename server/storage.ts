@@ -353,11 +353,30 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
     
-    // Realizar una copia profunda de los datos para evitar problemas de referencia
-    const updateData = JSON.parse(JSON.stringify({
+    // Preparar los datos para actualización
+    const updateData: any = {
       ...data,
       updatedAt: new Date()
-    }));
+    };
+    
+    // Convertir cadenas de fecha a objetos Date
+    if (updateData.signedAt && !(updateData.signedAt instanceof Date)) {
+      try {
+        updateData.signedAt = new Date();
+      } catch (e) {
+        console.error("Error al convertir signedAt a fecha:", e);
+        delete updateData.signedAt;
+      }
+    }
+    
+    if (updateData.approvedAt && !(updateData.approvedAt instanceof Date)) {
+      try {
+        updateData.approvedAt = new Date();
+      } catch (e) {
+        console.error("Error al convertir approvedAt a fecha:", e);
+        delete updateData.approvedAt;
+      }
+    }
     
     console.log("Datos de actualización:", updateData);
     
