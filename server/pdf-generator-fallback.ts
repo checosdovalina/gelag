@@ -67,63 +67,49 @@ function generatePDFContent(
   // Departamento
   const department = entry.department || 'N/A';
   
-  // Encabezado con el logo estilizado como texto
-  // Usamos un rojo similar al logo de GELAG
+  // Encabezado con el logo estilizado como texto - al estilo de la imagen de referencia
   const pageWidth = doc.page.width;
-  const pageCenter = pageWidth / 2;
   
-  // Logo GELAG posicionado a la izquierda del centro para dejar espacio para "S.A. DE C.V."
-  doc.fontSize(34).font('Helvetica-Bold').fillColor('#e3014f')
-     .text('gelag', pageCenter - 60, 50, { align: 'center' });
+  // Logo GELAG en el lado izquierdo
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#e3014f')
+     .text('GELAG S.A DE C.V.', 50, 40);
   
-  // Añadimos un círculo pequeño (®) como en el logo, ajustado a la posición correcta
-  doc.fontSize(10).fillColor('#e3014f')
-     .text('®', pageCenter + 10, 50);
-  
-  // S.A. DE C.V. a la derecha del logotipo
-  doc.fontSize(11).font('Helvetica').fillColor('#333333')
-     .text('S.A. DE C.V.', pageCenter + 30, 65);
+  // Dirección de la empresa en el lado derecho, texto pequeño y alineado a la derecha
+  doc.fontSize(8).font('Helvetica').fillColor('#333333')
+     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA,\nGOMEZ PALACIO, DGO.', 
+       pageWidth - 50, 40, {
+         align: 'right',
+         width: 200
+       });
   
   // Línea separadora completa
   const startX = 50;
   const endX = doc.page.width - 50;
-  const lineY = 85;
+  const lineY = 70;
   doc.moveTo(startX, lineY)
      .lineTo(endX, lineY)
-     .lineWidth(1)
+     .lineWidth(0.5)
      .stroke();
   
-  doc.moveDown(1);
+  doc.moveDown(0.5);
   
-  // Título del formulario (alineado a la derecha como en la imagen de referencia)
-  doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
-     .text(template.name, pageCenter + 60, 100, { 
-       align: 'right',
-       width: pageWidth / 2 - 60
-     });
+  // Título del documento (como en la imagen de referencia - "Reporte de Formularios")
+  doc.fillColor('#000000').fontSize(11).font('Helvetica-Bold')
+     .text('Reporte de Formularios: ' + template.name, 50, lineY + 15);
      
-  // Número 2 (si existe en el título)
-  if (template.name.includes('2')) {
-    const titleWithoutNumber = template.name.replace('2', '').trim();
-    
-    doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
-      .text(titleWithoutNumber, pageCenter + 60, 100, { 
-        align: 'right',
-        width: pageWidth / 2 - 60,
-        continued: false
-      });
-      
-    doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
-      .text('2', pageCenter + pageWidth/2 - 70, 100);
+  // Fecha de generación (como en la imagen de referencia)
+  const currentDate = new Date();
+  // Función para obtener el nombre del mes
+  function getMonthName(month: number): string {
+    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    return monthNames[month];
   }
   
-  // Dirección de la empresa (formato más compacto y reducido, alineado a la derecha)
-  doc.fontSize(7).font('Helvetica')
-     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-       pageCenter + 60, 120, { 
-         align: 'right',
-         width: pageWidth / 2 - 60
-       });
+  const formattedDate = `Fecha de generación: ${currentDate.getDate()} de ${getMonthName(currentDate.getMonth())} de ${currentDate.getFullYear()}, ${currentDate.getHours()}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+  
+  doc.fillColor('#000000').fontSize(10).font('Helvetica')
+     .text(formattedDate, 50, lineY + 30);
        
   doc.moveDown(1.5);
   
