@@ -200,7 +200,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
+      console.log("\n\n==================================================");
       console.log("=== ACTUALIZACIÓN DE FORMULARIO INICIADA ===");
+      console.log("==================================================\n");
+      
       // Log completo del cuerpo de la solicitud para depuración
       console.log("Datos recibidos:", JSON.stringify(req.body, null, 2));
       
@@ -215,7 +218,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Plantilla no encontrada" });
       }
       
-      console.log("Estructura original:", JSON.stringify(existingTemplate.structure, null, 2));
+      console.log("\n=== COMPARACIÓN DE ESTRUCTURAS ===\n");
+      console.log("FORMULARIO ID:", templateId);
+      console.log("NOMBRE:", existingTemplate.name);
+      
+      // Verificación de IDs coincidentes entre las estructuras original y nueva
+      const originalFields = existingTemplate.structure?.fields || [];
+      const newFields = req.body.structure?.fields || [];
+      
+      console.log("NÚMERO DE CAMPOS - Original:", originalFields.length, "Nueva:", newFields.length);
+      
+      // Mapeo de IDs para facilitar la búsqueda
+      const originalFieldsMap = new Map();
+      originalFields.forEach((field: any) => {
+        originalFieldsMap.set(field.id, field);
+      });
+      
+      // Verificar cambios específicos en displayName
+      console.log("\n=== CAMBIOS EN DISPLAYNAME ===\n");
+      newFields.forEach((newField: any, idx: number) => {
+        const originalField = originalFieldsMap.get(newField.id);
+        if (originalField) {
+          // Comprobar si displayName ha cambiado
+          if (originalField.displayName !== newField.displayName) {
+            console.log(`Campo #${idx} - ID: ${newField.id}`);
+            console.log(`  Label: ${newField.label}`);
+            console.log(`  DisplayName ORIGINAL: ${originalField.displayName}`);
+            console.log(`  DisplayName NUEVO: ${newField.displayName}`);
+            console.log(`  CAMBIO DETECTADO: SÍ`);
+          }
+        } else {
+          console.log(`ADVERTENCIA: Campo nuevo no encontrado en original - ID: ${newField.id}`);
+        }
+      });
       
       // Procesamos la estructura para asegurar que todos los campos tengan displayName y displayOrder
       if (req.body.structure && req.body.structure.fields) {

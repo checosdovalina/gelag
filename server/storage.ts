@@ -124,6 +124,13 @@ export class DatabaseStorage implements IStorage {
     console.log("=== MÉTODO updateFormTemplate ===");
     console.log("ID del formulario a actualizar:", id);
     
+    // Primero obtenemos la plantilla existente para compararla
+    const existingTemplate = await this.getFormTemplate(id);
+    if (!existingTemplate) {
+      console.error("No se encontró la plantilla con ID:", id);
+      return undefined;
+    }
+    
     // Realizar una copia profunda de los datos para evitar problemas de referencia
     const updateData = JSON.parse(JSON.stringify({
       ...data,
@@ -132,31 +139,71 @@ export class DatabaseStorage implements IStorage {
     
     // Verificar si hay estructura y campos
     if (updateData.structure && updateData.structure.fields) {
+      console.log("\n=== PROCESAMIENTO DE CAMPOS PREVIO A GUARDAR ===\n");
       console.log("Número de campos en la estructura:", updateData.structure.fields.length);
       
+      // Comparar con el original para debugging
+      console.log("\n=== COMPARACIÓN CON CAMPOS ORIGINALES ===\n");
+      
+      const originalMap = new Map();
+      if (existingTemplate.structure && existingTemplate.structure.fields) {
+        existingTemplate.structure.fields.forEach((field: any) => {
+          originalMap.set(field.id, field);
+        });
+      }
+      
       // Verificar cada campo individualmente
-      updateData.structure.fields.forEach((field: any, idx: number) => {
-        console.log(`Verificando campo #${idx} antes de guardar:`, 
-          `ID: ${field.id}, `,
-          `Label: ${field.label}, `,
-          `DisplayName: ${field.displayName || '[Sin valor]'}, `,
-          `DisplayOrder: ${field.displayOrder || 0}`
-        );
+      updateData.structure.fields = updateData.structure.fields.map((field: any) => {
+        const originalField = originalMap.get(field.id);
+        
+        // Guardar nombre para reporte (displayName) y preservarlo
+        let displayNameToSave = field.displayName;
+        
+        // Si hay un valor nuevo, mantenerlo
+        if (displayNameToSave !== originalField?.displayName) {
+          console.log(`Campo con ID ${field.id} tiene un displayName modificado:`, 
+            `Original: "${originalField?.displayName || '[Sin valor]'}", Nuevo: "${displayNameToSave || '[Sin valor]'}"`);
+        }
         
         // Asegurar que displayName sea string y displayOrder sea número
-        field.displayName = String(field.displayName || field.label || '');
-        field.displayOrder = Number(field.displayOrder || 0);
+        displayNameToSave = String(displayNameToSave || field.label || '');
+        const displayOrderToSave = Number(field.displayOrder || 0);
+        
+        return {
+          ...field,
+          displayName: displayNameToSave,
+          displayOrder: displayOrderToSave
+        };
+      });
+      
+      // Log final de todos los campos
+      console.log("\n=== CAMPOS FINALES A GUARDAR ===\n");
+      updateData.structure.fields.forEach((field: any, idx: number) => {
+        console.log(`Campo #${idx} - ID: ${field.id}`);
+        console.log(`  Label: ${field.label}`);
+        console.log(`  DisplayName: ${field.displayName}`);
+        console.log(`  DisplayOrder: ${field.displayOrder}`);
       });
     }
     
     // Ejecutar la actualización
+    console.log("\n=== GUARDANDO EN BASE DE DATOS ===\n");
     const [updatedTemplate] = await db
       .update(formTemplates)
       .set(updateData)
       .where(eq(formTemplates.id, id))
       .returning();
     
-    console.log("Plantilla actualizada exitosamente");
+    console.log("\n=== PLANTILLA ACTUALIZADA EXITOSAMENTE ===\n");
+    
+    // Verificación posterior
+    const verifiedTemplate = await this.getFormTemplate(id);
+    if (verifiedTemplate && verifiedTemplate.structure && verifiedTemplate.structure.fields) {
+      console.log("\n=== VERIFICACIÓN POSTERIOR A ACTUALIZACIÓN ===\n");
+      verifiedTemplate.structure.fields.forEach((field: any, idx: number) => {
+        console.log(`Campo #${idx} verificado - ID: ${field.id}, DisplayName: ${field.displayName}`);
+      });
+    }
     
     return updatedTemplate;
   }
