@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   CheckSquare,
-  PlusSquare
+  PlusSquare,
+  ClipboardCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import gelagLogo from '@/assets/gelag-logo.png';
@@ -70,6 +71,12 @@ export default function Sidebar({ className }: SidebarProps) {
       href: "/form-capture",
       icon: <PenLine className="h-5 w-5" />,
       show: canCaptureData,
+    },
+    {
+      title: "Formularios Capturados",
+      href: "/captured-forms",
+      icon: <ClipboardCheck className="h-5 w-5" />,
+      show: true,
     },
     {
       title: "Reportes",

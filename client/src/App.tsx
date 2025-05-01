@@ -46,6 +46,7 @@ function Router() {
         allowedRoles={[UserRole.SUPERADMIN]} 
       />
       <ProtectedRoute path="/reports" component={ReportsPage} />
+      <ProtectedRoute path="/captured-forms" component={CapturedFormsPage} />
       <ProtectedRoute 
         path="/settings" 
         component={SettingsPage} 
