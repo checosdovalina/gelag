@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, PenSquare, FileDown, Search, Plus } from "lucide-react";
+import { Eye, PenSquare, FileDown, Search, Plus, Trash2, AlertCircle } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { UserRole } from "@shared/schema";
@@ -16,10 +16,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter
+  DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import FormViewer from "@/components/forms/form-viewer";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface FormTemplate {
   id: number;
@@ -40,6 +52,10 @@ export default function FormsPage() {
   const [selectedForm, setSelectedForm] = useState<FormTemplate | null>(null);
   const [formData, setFormData] = useState<any>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [formToDelete, setFormToDelete] = useState<FormTemplate | null>(null);
+  const [deleteErrorDialogOpen, setDeleteErrorDialogOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
   const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
@@ -51,6 +67,48 @@ export default function FormsPage() {
     staleTime: 0, // No caché, siempre actualizar al montar
     refetchOnWindowFocus: true, // Actualizar al volver a la ventana
     refetchOnMount: true, // Actualizar al montar el componente
+  });
+  
+  // Mutation para eliminar formularios
+  const deleteFormMutation = useMutation({
+    mutationFn: async (formId: number) => {
+      const response = await apiRequest('DELETE', `/api/form-templates/${formId}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar el formulario');
+      }
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Formulario eliminado",
+        description: "El formulario ha sido eliminado correctamente",
+      });
+      
+      // Cerrar el diálogo y actualizar la lista
+      setDeleteDialogOpen(false);
+      setFormToDelete(null);
+      
+      // Actualizar la lista de formularios
+      queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
+    },
+    onError: (error: Error) => {
+      console.error("Error al eliminar formulario:", error);
+      
+      // Si el error es porque hay entradas asociadas, mostramos diálogo específico
+      if (error.message.includes("tiene entradas asociadas")) {
+        setDeleteError(error.message);
+        setDeleteErrorDialogOpen(true);
+      } else {
+        toast({
+          title: "Error al eliminar",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      
+      setDeleteDialogOpen(false);
+    }
   });
 
   // Define columns for data table
@@ -101,15 +159,27 @@ export default function FormsPage() {
             </Button>
             
             {isSuperAdmin && (
-              <Link href={`/form-editor?id=${form.id}`}>
+              <>
+                <Link href={`/form-editor?id=${form.id}`}>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    title="Editar formulario"
+                  >
+                    <PenSquare className="h-4 w-4" />
+                  </Button>
+                </Link>
+                
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  title="Editar formulario"
+                  onClick={() => handleDeleteForm(form)}
+                  title="Eliminar formulario"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
                 >
-                  <PenSquare className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
-              </Link>
+              </>
             )}
             
             <Button 
@@ -163,6 +233,24 @@ export default function FormsPage() {
         description: `El formulario ${form.name} ha sido exportado correctamente`,
       });
     }, 1500);
+  };
+  
+  // Funciones para manejar la eliminación de formularios
+  const handleDeleteForm = (form: FormTemplate) => {
+    setFormToDelete(form);
+    setDeleteDialogOpen(true);
+  };
+  
+  const confirmDeleteForm = () => {
+    if (formToDelete) {
+      deleteFormMutation.mutate(formToDelete.id);
+    }
+  };
+  
+  const closeDeleteErrorDialog = () => {
+    setDeleteErrorDialogOpen(false);
+    setDeleteError("");
+    setFormToDelete(null);
   };
 
   return (
@@ -244,6 +332,66 @@ export default function FormsPage() {
           </Dialog>
         )}
       </div>
+      
+      {/* Diálogo de confirmación para eliminar formulario */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Está seguro de eliminar este formulario?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. {formToDelete?.name && (
+                <>
+                  El formulario <span className="font-medium">{formToDelete.name}</span> y toda su configuración serán eliminados permanentemente.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setFormToDelete(null);
+              }}
+              disabled={deleteFormMutation.isPending}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteForm}
+              className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+              disabled={deleteFormMutation.isPending}
+            >
+              {deleteFormMutation.isPending ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Eliminando...
+                </>
+              ) : "Eliminar formulario"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      {/* Diálogo de error al eliminar */}
+      <Dialog open={deleteErrorDialogOpen} onOpenChange={setDeleteErrorDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-red-500">
+              <AlertCircle className="h-5 w-5 mr-2" />
+              No se puede eliminar el formulario
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>{deleteError}</p>
+            <p className="mt-2">Debe eliminar las entradas asociadas antes de eliminar este formulario.</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={closeDeleteErrorDialog}>Entendido</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
