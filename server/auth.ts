@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -28,6 +28,22 @@ export async function comparePasswords(supplied: string, stored: string) {
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
+
+// Middleware para autorizar roles específicos
+export const authorize = (roles: UserRole[] = []) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
+    
+    // Si no se especifican roles, permitir a todos los usuarios autenticados
+    if (roles.length > 0 && !roles.includes(req.user!.role as UserRole)) {
+      return res.status(403).json({ message: "No autorizado" });
+    }
+    
+    next();
+  };
+};
 
 export function setupAuth(app: Express) {
   // Setup session
@@ -169,21 +185,5 @@ export function setupAuth(app: Express) {
     res.json(userWithoutPassword);
   });
 
-  // Authorization middleware
-  const authorize = (roles: UserRole[]) => {
-    return (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "No autenticado" });
-      }
-      
-      if (!roles.includes(req.user.role as UserRole)) {
-        return res.status(403).json({ message: "No autorizado" });
-      }
-      
-      next();
-    };
-  };
-
-  // Export the authorize middleware
-  app.locals.authorize = authorize;
+  // No need to export through app.locals anymore
 }

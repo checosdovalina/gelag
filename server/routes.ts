@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { setupAuth } from "./auth";
+import { setupAuth, authorize } from "./auth";
 import { storage } from "./storage";
 import { 
   insertFormTemplateSchema, 
@@ -19,9 +19,6 @@ import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
-  
-  // Get authorize middleware from app locals
-  const { authorize } = app.locals;
   
   // User routes
   app.get("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
