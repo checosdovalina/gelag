@@ -67,22 +67,31 @@ function generatePDFContent(
   // Departamento
   const department = entry.department || 'N/A';
   
-  // Encabezado con el logo
-  try {
-    const logoPath = path.join(process.cwd(), 'public', 'images', 'gelag_logo.svg');
-    if (fs.existsSync(logoPath)) {
-      // Añadir el logo al PDF (centrado)
-      doc.image(logoPath, {
-        fit: [200, 60],
-        align: 'center'
-      });
-      doc.moveDown(1);
-    }
-  } catch (error) {
-    console.error("Error al cargar el logo:", error);
-  }
-
-  doc.fontSize(16).font('Helvetica-Bold').text(template.name, { align: 'center' });
+  // Encabezado con el logo estilizado como texto
+  // Usamos un rojo similar al logo de GELAG
+  doc.fontSize(32).font('Helvetica-Bold').fillColor('#e3014f').text('gelag', { align: 'center' });
+  
+  // Añadimos un círculo pequeño (®) como en el logo
+  const pageWidth = doc.page.width;
+  const pageCenter = pageWidth / 2;
+  doc.fontSize(10).fillColor('#e3014f').text('®', pageCenter + 80, doc.y - 25);
+  
+  doc.fontSize(12).font('Helvetica').fillColor('#333333').text('S.A. DE C.V.', { align: 'center' });
+  doc.moveDown(0.5);
+  
+  // Línea separadora
+  const startX = 50;
+  const endX = doc.page.width - 50;
+  const lineY = doc.y + 5;
+  doc.moveTo(startX, lineY)
+     .lineTo(endX, lineY)
+     .lineWidth(1)
+     .stroke();
+  
+  doc.moveDown(1);
+  
+  // Título del formulario
+  doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold').text(template.name, { align: 'center' });
   doc.fontSize(10).font('Helvetica').text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', { align: 'center' });
   doc.moveDown(2);
   
@@ -163,7 +172,15 @@ function generatePDFContent(
   // Firma si existe
   if (entry.signature) {
     doc.moveDown(1);
+    
+    // Crear una sección centrada para la firma
+    // Calculamos el centro de la página
+    const pageWidth = doc.page.width;
+    const pageCenter = pageWidth / 2;
+    
+    // Encabezado de firma centrado
     doc.fontSize(12).font('Helvetica-Bold').text('Firma', { align: 'center' });
+    doc.moveDown(0.5);
     
     try {
       // Intentar añadir la imagen de firma
@@ -174,20 +191,27 @@ function generatePDFContent(
           // Convertir a buffer
           const signatureBuffer = Buffer.from(base64Data, 'base64');
           
-          // Añadir la firma al PDF
-          doc.image(signatureBuffer, {
-            fit: [200, 100],
-            align: 'center'
+          // Calculamos las dimensiones para la firma
+          const signatureWidth = 200;
+          const signatureX = pageCenter - (signatureWidth / 2);
+          
+          // Añadir la firma al PDF, perfectamente centrada
+          doc.image(signatureBuffer, signatureX, doc.y, {
+            width: signatureWidth
           });
-          doc.moveDown(0.5);
+          
+          // Añadir espacio después de la firma
+          doc.moveDown(1.5);
         }
       }
     } catch (error) {
       console.error("Error al mostrar la firma:", error);
       // Si falla, mostramos texto alternativo
       doc.fontSize(10).font('Helvetica').text('Documento firmado electrónicamente', { align: 'center' });
+      doc.moveDown(0.5);
     }
     
+    // Información de la firma centrada
     doc.fontSize(10).font('Helvetica').text(`Firmado por: ${entry.signedBy ? `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
     
     if (entry.signedAt) {
