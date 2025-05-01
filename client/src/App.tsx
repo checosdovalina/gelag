@@ -45,7 +45,11 @@ function Router() {
         component={FormImportPage} 
         allowedRoles={[UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute path="/reports" component={ReportsPage} />
+      <ProtectedRoute 
+        path="/reports" 
+        component={ReportsPage} 
+        allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.VIEWER]} 
+      />
       <ProtectedRoute path="/captured-forms" component={CapturedFormsPage} />
       <ProtectedRoute 
         path="/settings" 
