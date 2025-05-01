@@ -32,9 +32,10 @@ export default function MobileNav({ className }: MobileNavProps) {
   }
 
   const isAdmin = user.role === UserRole.ADMIN;
+  const isSuperAdmin = user.role === UserRole.SUPERADMIN;
   const isProduction = user.role === UserRole.PRODUCTION;
   const isQuality = user.role === UserRole.QUALITY;
-  const canCaptureData = isAdmin || isProduction || isQuality;
+  const canCaptureData = isAdmin || isSuperAdmin || isProduction || isQuality;
 
   const navItems = [
     {
@@ -47,13 +48,13 @@ export default function MobileNav({ className }: MobileNavProps) {
       title: "Gestión de Usuarios",
       href: "/users",
       icon: <Users className="h-5 w-5" />,
-      show: isAdmin,
+      show: isAdmin || isSuperAdmin,
     },
     {
       title: "Crear Formularios",
       href: "/form-editor",
       icon: <PlusSquare className="h-5 w-5" />,
-      show: isAdmin,
+      show: isSuperAdmin,
     },
     {
       title: "Formularios",
@@ -71,13 +72,13 @@ export default function MobileNav({ className }: MobileNavProps) {
       title: "Reportes",
       href: "/reports",
       icon: <BarChart3 className="h-5 w-5" />,
-      show: true,
+      show: isAdmin || user.role === UserRole.SUPERADMIN || user.role === UserRole.VIEWER,
     },
     {
       title: "Configuración",
       href: "/settings",
       icon: <Settings className="h-5 w-5" />,
-      show: isAdmin,
+      show: isAdmin || isSuperAdmin,
     },
   ];
 
