@@ -445,6 +445,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Eliminar plantilla de formulario (sólo SuperAdmin)
+  app.delete("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      // Verificar si el formulario existe
+      const template = await storage.getFormTemplate(id);
+      if (!template) {
+        return res.status(404).json({ message: "Formulario no encontrado" });
+      }
+      
+      // Verificar si hay entradas asociadas a este formulario
+      const entries = await storage.getFormEntriesByTemplate(id);
+      if (entries && entries.length > 0) {
+        return res.status(400).json({ 
+          message: "No se puede eliminar el formulario porque tiene entradas asociadas", 
+          count: entries.length 
+        });
+      }
+      
+      // Eliminar formulario
+      await storage.deleteFormTemplate(id);
+      
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "deleted",
+        resourceType: "form_template",
+        resourceId: id,
+        details: { name: template.name }
+      });
+      
+      res.json({ message: "Formulario eliminado correctamente" });
+    } catch (error) {
+      console.error("Error al eliminar formulario:", error);
+      next(error);
+    }
+  });
 
   // Form entry routes
   app.get("/api/form-entries", async (req, res, next) => {
@@ -549,6 +591,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   );
+  
+  // Eliminar entrada de formulario (sólo SuperAdmin)
+  app.delete("/api/form-entries/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      
+      // Verificar si la entrada existe
+      const entry = await storage.getFormEntry(id);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Eliminar entrada
+      await storage.deleteFormEntry(id);
+      
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "deleted",
+        resourceType: "form_entry",
+        resourceId: id,
+        details: { formTemplateId: entry.formTemplateId }
+      });
+      
+      res.json({ message: "Entrada de formulario eliminada correctamente" });
+    } catch (error) {
+      console.error("Error al eliminar entrada de formulario:", error);
+      next(error);
+    }
+  });
 
   // Activity log routes
   app.get("/api/activity", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
