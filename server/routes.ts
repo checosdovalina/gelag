@@ -154,6 +154,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdBy: req.user.id
       };
       
+      // Procesamos la estructura para asegurar que todos los campos tengan displayName y displayOrder
+      if (dataToValidate.structure && dataToValidate.structure.fields) {
+        dataToValidate.structure.fields = dataToValidate.structure.fields.map(field => {
+          // Asegurar que cada campo tenga displayName (si no lo tiene, usar label)
+          if (!field.displayName) {
+            field.displayName = field.label;
+          }
+          
+          // Asegurar que cada campo tenga displayOrder
+          if (field.displayOrder === undefined) {
+            field.displayOrder = 0;
+          }
+          
+          return field;
+        });
+        
+        console.log("Campos del formulario nuevo procesados para guardar:", dataToValidate.structure.fields);
+      }
+      
       // Ahora validamos los datos completos
       const templateData = insertFormTemplateSchema.parse(dataToValidate);
       
@@ -190,6 +209,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingTemplate = await storage.getFormTemplate(templateId);
       if (!existingTemplate) {
         return res.status(404).json({ message: "Plantilla no encontrada" });
+      }
+      
+      // Procesamos la estructura para asegurar que todos los campos tengan displayName y displayOrder
+      if (req.body.structure && req.body.structure.fields) {
+        req.body.structure.fields = req.body.structure.fields.map(field => {
+          // Asegurar que cada campo tenga displayName (si no lo tiene, usar label)
+          if (!field.displayName) {
+            field.displayName = field.label;
+          }
+          
+          // Asegurar que cada campo tenga displayOrder
+          if (field.displayOrder === undefined) {
+            field.displayOrder = 0;
+          }
+          
+          return field;
+        });
+        
+        console.log("Campos del formulario procesados para guardar:", req.body.structure.fields);
       }
       
       // Update template

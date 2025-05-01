@@ -196,7 +196,30 @@ export default function FormEditor() {
 
   // Handle form structure save
   const handleStructureSave = (structureData: FormStructure) => {
-    setFormStructure(structureData);
+    // Verificar que cada campo tenga displayName y displayOrder
+    const processedFields = structureData.fields.map(field => {
+      // Si no tiene displayName, usar el label
+      if (!field.displayName) {
+        field.displayName = field.label;
+      }
+      
+      // Si no tiene displayOrder, asignar un valor por defecto
+      if (field.displayOrder === undefined) {
+        field.displayOrder = 0;
+      }
+      
+      return field;
+    });
+    
+    // Actualizar los datos con los campos procesados
+    const processedStructure = {
+      ...structureData,
+      fields: processedFields
+    };
+    
+    console.log("Estructura procesada para guardar:", processedStructure);
+    
+    setFormStructure(processedStructure);
     setActiveTab("preview");
     toast({
       title: "Estructura guardada",
