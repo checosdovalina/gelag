@@ -399,6 +399,7 @@ export default function FormEditor() {
                     formTemplate={formStructure}
                     onSubmit={() => {}}
                     isReadOnly={true}
+                    formId={formId ? parseInt(formId) : undefined}
                   />
                 </CardContent>
               </Card>
