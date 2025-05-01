@@ -124,6 +124,29 @@ export default function FormViewer({
         // Actualizamos directamente con la estructura recibida del servidor
         setUpdatedFormTemplate(updatedTemplate.structure);
         
+        // También actualizamos el estado inicial para reflejar los cambios
+        const updatedFields = [...formTemplate.fields];
+        const fieldIndex = updatedFields.findIndex(f => f.id === fieldId);
+        
+        if (fieldIndex !== -1) {
+          // Actualizamos el campo en la copia local
+          updatedFields[fieldIndex] = {
+            ...updatedFields[fieldIndex],
+            displayName: newDisplayName
+          };
+          
+          // Actualizamos formTemplate
+          const updatedFormTemplate = {
+            ...formTemplate,
+            fields: updatedFields
+          };
+          
+          // Esta línea forzará la actualización de la interfaz
+          // NOTA: Esto es un poco hacky ya que formTemplate viene de props,
+          // pero necesitamos forzar la actualización
+          (formTemplate as any).fields = updatedFields;
+        }
+        
         // Verificamos que el campo se haya actualizado correctamente
         const updatedField = updatedTemplate.structure.fields?.find(
           (f: any) => f.id === fieldId
@@ -136,6 +159,10 @@ export default function FormViewer({
             console.warn(`Enviado: "${newDisplayName}", Recibido: "${updatedField.displayName}"`);
           }
         }
+        
+        // Recargar el modal para mostrar los cambios actualizados
+        setIsFieldNameEditorOpen(false);
+        setTimeout(() => setIsFieldNameEditorOpen(true), 10);
         
         return true;
       } else {
