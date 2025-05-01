@@ -222,6 +222,7 @@ export default function FormsPage() {
                   isReadOnly={true}
                   onSubmit={() => {}}
                   onExport={(format) => handleExportForm(selectedForm, format)}
+                  formId={selectedForm.id}
                 />
               </div>
               

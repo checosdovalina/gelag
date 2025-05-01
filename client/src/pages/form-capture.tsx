@@ -336,6 +336,7 @@ export default function FormCapture() {
                 onSubmit={handleFormSubmit}
                 isReadOnly={!!currentEntry}
                 isLoading={createEntryMutation.isPending}
+                formId={selectedTemplate.id}
               />
             </div>
             
