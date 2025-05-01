@@ -198,6 +198,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Nuevo endpoint para actualizar sólo el displayName de un campo específico
+  app.patch("/api/form-templates/:id/field/:fieldId/display-name", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+    try {
+      console.log("\n\n==================================================");
+      console.log("=== ACTUALIZACIÓN DE DISPLAYNAME DE CAMPO ===");
+      console.log("==================================================\n");
+      
+      const templateId = parseInt(req.params.id);
+      const fieldId = req.params.fieldId;
+      const { displayName } = req.body;
+      
+      if (isNaN(templateId) || !fieldId) {
+        return res.status(400).json({ message: "Parámetros inválidos" });
+      }
+      
+      console.log(`Actualizando campo ${fieldId} del formulario ${templateId}`);
+      console.log(`Nuevo displayName: "${displayName}"`);
+      
+      // Obtener el formulario actual
+      const existingTemplate = await storage.getFormTemplate(templateId);
+      if (!existingTemplate) {
+        return res.status(404).json({ message: "Plantilla no encontrada" });
+      }
+      
+      // Comprobar que el campo existe
+      if (!existingTemplate.structure || !existingTemplate.structure.fields) {
+        return res.status(400).json({ message: "El formulario no tiene estructura de campos" });
+      }
+      
+      // Realizar una copia profunda para evitar problemas de referencia
+      const updatedStructure = JSON.parse(JSON.stringify(existingTemplate.structure));
+      
+      // Buscar el campo y actualizar su displayName
+      let fieldFound = false;
+      for (let i = 0; i < updatedStructure.fields.length; i++) {
+        if (updatedStructure.fields[i].id === fieldId) {
+          const oldValue = updatedStructure.fields[i].displayName;
+          updatedStructure.fields[i].displayName = displayName;
+          fieldFound = true;
+          console.log(`Campo encontrado en posición ${i}. Valor anterior: "${oldValue}", Nuevo valor: "${displayName}"`);
+          break;
+        }
+      }
+      
+      if (!fieldFound) {
+        return res.status(404).json({ message: "Campo no encontrado en el formulario" });
+      }
+      
+      // Actualizar solo la estructura del formulario
+      const result = await storage.updateFormStructure(templateId, updatedStructure);
+      
+      if (!result) {
+        return res.status(500).json({ message: "Error al actualizar el campo" });
+      }
+      
+      // Log de actividad
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "updated_field",
+        resourceType: "form_template",
+        resourceId: templateId,
+        details: { fieldId, displayName }
+      });
+      
+      // Retornar respuesta exitosa
+      res.json({ 
+        success: true,
+        message: "Campo actualizado correctamente",
+        fieldId,
+        displayName
+      });
+    } catch (error) {
+      console.error("Error al actualizar campo:", error);
+      next(error);
+    }
+  });
+
   app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
       console.log("\n\n==================================================");
