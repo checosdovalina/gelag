@@ -86,36 +86,11 @@ function generatePDFContent(
          width: pageWidth - 100
        });
   
-  doc.moveDown(0.5);
+  // Espacio después del título y dirección
+  const lineY = 100;
   
-  // Título del documento en mayúsculas y alineado a la derecha (como en la imagen de referencia)
-  doc.fillColor('#000000').fontSize(14).font('Helvetica-Bold')
-     .text(template.name.toUpperCase(), pageWidth - 50, lineY + 10, { 
-       align: 'right',
-       width: 300
-     });
-  
-  // Dirección de la empresa debajo del título (como en la imagen de referencia)
-  doc.fontSize(8).font('Helvetica').fillColor('#333333')
-     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA,\nGOMEZ PALACIO, DGO.', 
-       pageWidth - 50, lineY + 40, {
-         align: 'right',
-         width: 300
-       });
-  
-  // Fecha de generación (como en la imagen de referencia)
-  const currentDate = new Date();
-  // Función para obtener el nombre del mes
-  function getMonthName(month: number): string {
-    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-                        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    return monthNames[month];
-  }
-  
-  const formattedDate = `Fecha de generación: ${currentDate.getDate()} de ${getMonthName(currentDate.getMonth())} de ${currentDate.getFullYear()}, ${currentDate.getHours()}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
-  
-  doc.fillColor('#000000').fontSize(10).font('Helvetica')
-     .text(formattedDate, 50, lineY + 30);
+  // Información principal: columnas para folio, fecha, creado por, etc.
+  const infoY = lineY + 20;
        
   doc.moveDown(1.5);
   
@@ -338,38 +313,27 @@ function generatePDFContent(
     const pageWidth = doc.page.width;
     const pageCenter = pageWidth / 2;
     
-    // Encabezado de firma con estilo como en la imagen de referencia
-    // Dibujar línea separadora antes del título de sección "FIRMA DEL DOCUMENTO"
-    const sectionY = doc.y + 10;
-    const sectionLineWidth = 400;
-    const sectionTitleWidth = 200;
-    const sectionTitleX = pageWidth / 2 - sectionTitleWidth / 2;
-    
-    doc.moveTo(60, sectionY)
-       .lineTo(sectionTitleX - 10, sectionY)
-       .stroke();
-       
-    doc.moveTo(sectionTitleX + sectionTitleWidth + 10, sectionY)
-       .lineTo(pageWidth - 60, sectionY)
-       .stroke();
-    
-    // Título "FIRMA DEL DOCUMENTO" en mayúsculas centrado
+    // Título simple "Firma" como en la imagen de referencia
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
-       .text('FIRMA DEL DOCUMENTO', sectionTitleX, sectionY - 6, { width: sectionTitleWidth, align: 'center' });
+       .text('Firma', { align: 'center' });
        
-    doc.moveDown(1);
+    doc.moveDown(0.5);
     
-    // Dibujar un recuadro para la firma con fondo ligeramente rosado como en la imagen
-    const signatureBoxWidth = 350;
-    const signatureBoxHeight = 120;
+    // Dibujar un recuadro simple para la firma como en la imagen de referencia
+    const signatureBoxWidth = 300;
+    const signatureBoxHeight = 80;
     const signatureBoxX = pageCenter - (signatureBoxWidth / 2);
     const signatureBoxY = doc.y;
     
-    // Dibujar un recuadro con fondo de color muy claro (rosado)
+    // Dibujar un recuadro simple con borde gris claro
     doc.rect(signatureBoxX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
-       .fillOpacity(0.05)
-       .fillAndStroke('#ffeeee', '#cccccc');
+       .lineWidth(0.5)
+       .stroke('#999999');
        
+    // Restaurar la opacidad para asegurarnos
+    doc.fillOpacity(1);
+    
+    // Centrar la firma dentro del recuadro
     try {
       // Intentar añadir la imagen de firma
       if (entry.signature && entry.signature.startsWith('data:image')) {
@@ -380,7 +344,7 @@ function generatePDFContent(
           const signatureBuffer = Buffer.from(base64Data, 'base64');
           
           // Dimensiones óptimas para la firma
-          const signatureWidth = 160;
+          const signatureWidth = 180;
           const signatureX = pageCenter - (signatureWidth / 2);
           const signatureY = signatureBoxY + 5; // Ajuste para centrar verticalmente
           
@@ -396,42 +360,11 @@ function generatePDFContent(
     } catch (error) {
       console.error("Error al mostrar la firma:", error);
       // Si falla, mostramos texto alternativo
-      doc.fontSize(9).font('Helvetica').text('Firmado', 
-        signatureBoxX + 30, signatureBoxY + 30, { 
-          width: signatureBoxWidth - 60,
+      doc.fontSize(9).font('Helvetica').text('Documento firmado electrónicamente', 
+        signatureBoxX + 50, signatureBoxY + 30, { 
+          width: signatureBoxWidth - 100,
           align: 'center' 
         });
-    }
-    
-    // Restaurar la opacidad después de dibujar el recuadro
-    doc.fillOpacity(1);
-    
-    // Centrar la firma dentro del recuadro
-    try {
-      // Intentar añadir la imagen de firma
-      if (entry.signature && entry.signature.startsWith('data:image')) {
-        // Extraer la parte de base64 de la data URL
-        const base64Data = entry.signature.split(',')[1];
-        if (base64Data) {
-          // Convertir a buffer
-          const signatureBuffer = Buffer.from(base64Data, 'base64');
-          
-          // Dimensiones óptimas para la firma
-          const signatureWidth = 200;
-          const signatureX = pageCenter - (signatureWidth / 2);
-          const signatureY = signatureBoxY + 10; // Ajuste para centrar verticalmente
-          
-          // Añadir la firma al PDF, centrada dentro del recuadro
-          doc.image(signatureBuffer, signatureX, signatureY, {
-            width: signatureWidth,
-            height: signatureBoxHeight - 20,
-            align: 'center',
-            valign: 'center'
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error al mostrar la firma:", error);
     }
     
     // Movernos al final del recuadro
@@ -462,7 +395,7 @@ function generatePDFContent(
     }
   }
   
-  // Pie de página mejorado
+  // Pie de página como en la imagen de referencia
   // Siempre colocamos el pie de página en la parte inferior de la página actual
   doc.moveDown(2);
   const bottomPos = doc.page.height - 40;
@@ -470,34 +403,23 @@ function generatePDFContent(
   // Guardar la posición actual del cursor
   const currentPos = doc.y;
   
-  // Dibujar una línea separadora en la parte inferior
-  const footerLineY = bottomPos - 20;
-  doc.moveTo(50, footerLineY)
-     .lineTo(doc.page.width - 50, footerLineY)
-     .lineWidth(0.5)
-     .strokeColor('#cccccc')
-     .stroke();
-     
-  // Restaurar el color original
-  doc.fillColor('#666666');
-  
   // Texto del pie de página
-  doc.fontSize(7).font('Helvetica')
+  doc.fontSize(8).font('Helvetica').fillColor('#333333')
      .text(
-       `Documento generado por el sistema de gestión de formularios`,
-       50, footerLineY + 5, 
+       `Documento generado automáticamente por el sistema de captura de formularios.`,
+       50, bottomPos - 20, 
        { align: 'center', width: doc.page.width - 100 }
      );
      
-  doc.fontSize(7).font('Helvetica')
+  doc.fontSize(8).font('Helvetica')
      .text(
        `© ${new Date().getFullYear()} GELAG S.A DE C.V. - Todos los derechos reservados`,
-       50, footerLineY + 15, 
+       50, bottomPos - 10, 
        { align: 'center', width: doc.page.width - 100 }
      );
      
   // Restaurar la posición del cursor solo si no hemos avanzado demasiado
-  if (currentPos < footerLineY - 50) {
+  if (currentPos < bottomPos - 50) {
     doc.y = currentPos;
   }
 }
