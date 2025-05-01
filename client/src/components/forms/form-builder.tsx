@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,13 +58,31 @@ const formBuilderSchema = z.object({
 });
 
 export default function FormBuilder({ initialFormData, onSave, isLoading = false }: FormBuilderProps) {
-  // Initialize form with default values or provided data
+  // Inicializar formulario con valores por defecto o datos proporcionados
+  const processedFormData = useMemo(() => {
+    if (!initialFormData) {
+      return {
+        title: "",
+        fields: [{ ...defaultField, id: uuidv4() }],
+      };
+    }
+    
+    // Asegurarnos de que todos los campos tengan displayName y displayOrder
+    const processedFields = initialFormData.fields.map(field => ({
+      ...field,
+      displayName: field.displayName || field.label || "",
+      displayOrder: field.displayOrder !== undefined ? field.displayOrder : 0
+    }));
+    
+    return {
+      ...initialFormData,
+      fields: processedFields
+    };
+  }, [initialFormData]);
+  
   const form = useForm<z.infer<typeof formBuilderSchema>>({
     resolver: zodResolver(formBuilderSchema),
-    defaultValues: initialFormData || {
-      title: "",
-      fields: [{ ...defaultField, id: uuidv4() }],
-    },
+    defaultValues: processedFormData
   });
 
   const { fields, append, remove, move } = useFieldArray({

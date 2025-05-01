@@ -199,20 +199,23 @@ export default function FormEditor() {
     // Verificar que cada campo tenga displayName y displayOrder
     const processedFields = structureData.fields.map(field => {
       // Si no tiene displayName, usar el label
-      if (!field.displayName || field.displayName === '') {
-        field.displayName = field.label;
+      let displayNameValue: string;
+      if (!field.displayName && field.displayName !== '') {
+        displayNameValue = String(field.label || '');
+      } else {
+        displayNameValue = String(field.displayName || '');
       }
       
       // Si no tiene displayOrder, asignar un valor por defecto
-      if (field.displayOrder === undefined || field.displayOrder === null) {
-        field.displayOrder = 0;
-      }
+      const displayOrderValue = field.displayOrder !== undefined && field.displayOrder !== null
+        ? Number(field.displayOrder)
+        : 0;
       
       // Asegurarse de que todos los campos sean del tipo esperado
       return {
         ...field,
-        displayName: String(field.displayName),
-        displayOrder: Number(field.displayOrder)
+        displayName: displayNameValue,
+        displayOrder: displayOrderValue
       };
     });
     
@@ -231,6 +234,9 @@ export default function FormEditor() {
       console.log(`  DisplayName: ${field.displayName}`);
       console.log(`  DisplayOrder: ${field.displayOrder}`);
     });
+    
+    // Usamos JSON.stringify para asegurarnos de que los campos se serialicen correctamente
+    console.log('JSON de la estructura:', JSON.stringify(processedStructure, null, 2));
     
     setFormStructure(processedStructure);
     setActiveTab("preview");
