@@ -493,7 +493,7 @@ export default function ReportsPage() {
     // Determinar las columnas a incluir
     const columnsToInclude = selectedColumns || ["formName", "userName", "department", "createdAt"];
     
-    // Crear encabezados (los nombres de columna ya son legibles)
+    // Usar los nombres de columna como encabezados (ya son los nombres legibles personalizados)
     const headers = columnsToInclude.join(',');
     
     // Crear filas de datos
@@ -518,7 +518,7 @@ export default function ReportsPage() {
           const personnelName = col.replace("Personal: ", "");
           value = entry.data.employeeNames.includes(personnelName) ? "Sí" : "No";
         } else if (entry.data && entry.data[fieldId] !== undefined) {
-          // Si existe el campo exacto en los datos, usarlo directamente
+          // Si existe el campo exacto en los datos usando su ID, usarlo directamente
           value = typeof entry.data[fieldId] === 'object' 
             ? JSON.stringify(entry.data[fieldId]) 
             : String(entry.data[fieldId]);
@@ -526,7 +526,7 @@ export default function ReportsPage() {
           // Intentar buscar en data si no existe un mapeo directo
           // Este es un caso de respaldo en caso de que el mapeo no esté completo
           const fieldKey = Object.keys(entry.data || {}).find(
-            key => formatFieldName(key) === col
+            key => formatFieldName(key) === col || displayNameMap[key] === col
           );
           
           if (fieldKey && entry.data) {
@@ -643,7 +643,7 @@ export default function ReportsPage() {
         } else {
           // Caso de respaldo: Buscar en data si no existe un mapeo directo
           const fieldKey = Object.keys(entry.data || {}).find(
-            key => formatFieldName(key) === col
+            key => formatFieldName(key) === col || displayNameMap[key] === col
           );
           
           if (fieldKey && entry.data) {
