@@ -151,10 +151,13 @@ export class DatabaseStorage implements IStorage {
       }
       
       // Actualizar sólo la estructura, manteniendo los demás campos sin cambios
+      // Forzamos una conversión a texto y luego a JSON para asegurar que se guarde correctamente
+      const structureJSON = JSON.stringify(cleanStructure);
+      
       await db
         .update(formTemplates)
         .set({
-          structure: cleanStructure,
+          structure: JSON.parse(structureJSON),
           updatedAt: new Date()
         })
         .where(eq(formTemplates.id, id));
