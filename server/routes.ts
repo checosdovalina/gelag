@@ -200,6 +200,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
+      console.log("=== ACTUALIZACIÓN DE FORMULARIO INICIADA ===");
+      // Log completo del cuerpo de la solicitud para depuración
+      console.log("Datos recibidos:", JSON.stringify(req.body, null, 2));
+      
       const templateId = parseInt(req.params.id);
       if (isNaN(templateId)) {
         return res.status(400).json({ message: "ID de plantilla inválido" });
@@ -211,16 +215,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Plantilla no encontrada" });
       }
       
+      console.log("Estructura original:", JSON.stringify(existingTemplate.structure, null, 2));
+      
       // Procesamos la estructura para asegurar que todos los campos tengan displayName y displayOrder
       if (req.body.structure && req.body.structure.fields) {
+        console.log("Procesando campos del formulario...");
+        
+        // Registro previo a la modificación para cada campo
+        req.body.structure.fields.forEach((field, idx) => {
+          console.log(`Campo #${idx} antes de procesar:`, 
+            `ID: ${field.id}, `,
+            `Label: ${field.label}, `,
+            `DisplayName: ${field.displayName}, `,
+            `DisplayOrder: ${field.displayOrder}`
+          );
+        });
+        
         req.body.structure.fields = req.body.structure.fields.map(field => {
+          // Guardar valores originales para logging
+          const originalDisplayName = field.displayName;
+          
           // Asegurar que cada campo tenga displayName (si no lo tiene, usar label)
-          if (!field.displayName && field.displayName !== '') {
+          if (field.displayName === undefined || (field.displayName === '' && field.label)) {
             field.displayName = field.label;
           }
           
           // Convertir displayName a string explícitamente
-          field.displayName = String(field.displayName);
+          field.displayName = String(field.displayName || '');
           
           // Asegurar que cada campo tenga displayOrder
           if (field.displayOrder === undefined) {
@@ -230,10 +251,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Convertir displayOrder a número explícitamente
           field.displayOrder = Number(field.displayOrder);
           
+          console.log(`Campo procesado - ID: ${field.id}`, 
+            `DisplayName Original: ${originalDisplayName}, `,
+            `DisplayName Final: ${field.displayName}`
+          );
+          
           return field;
         });
         
-        console.log("Campos del formulario procesados para guardar:", req.body.structure.fields);
+        console.log("Estructura final a guardar:", JSON.stringify(req.body.structure, null, 2));
       }
       
       // Update template

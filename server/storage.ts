@@ -120,14 +120,44 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateFormTemplate(id: number, data: Partial<InsertFormTemplate>): Promise<FormTemplate | undefined> {
+    // Log debugging
+    console.log("=== MÉTODO updateFormTemplate ===");
+    console.log("ID del formulario a actualizar:", id);
+    
+    // Realizar una copia profunda de los datos para evitar problemas de referencia
+    const updateData = JSON.parse(JSON.stringify({
+      ...data,
+      updatedAt: new Date()
+    }));
+    
+    // Verificar si hay estructura y campos
+    if (updateData.structure && updateData.structure.fields) {
+      console.log("Número de campos en la estructura:", updateData.structure.fields.length);
+      
+      // Verificar cada campo individualmente
+      updateData.structure.fields.forEach((field: any, idx: number) => {
+        console.log(`Verificando campo #${idx} antes de guardar:`, 
+          `ID: ${field.id}, `,
+          `Label: ${field.label}, `,
+          `DisplayName: ${field.displayName || '[Sin valor]'}, `,
+          `DisplayOrder: ${field.displayOrder || 0}`
+        );
+        
+        // Asegurar que displayName sea string y displayOrder sea número
+        field.displayName = String(field.displayName || field.label || '');
+        field.displayOrder = Number(field.displayOrder || 0);
+      });
+    }
+    
+    // Ejecutar la actualización
     const [updatedTemplate] = await db
       .update(formTemplates)
-      .set({
-        ...data,
-        updatedAt: new Date()
-      })
+      .set(updateData)
       .where(eq(formTemplates.id, id))
       .returning();
+    
+    console.log("Plantilla actualizada exitosamente");
+    
     return updatedTemplate;
   }
 
