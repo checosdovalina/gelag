@@ -1025,20 +1025,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generar el archivo según el formato solicitado
       if (format === "pdf") {
         try {
-          // Importar el generador de PDF
-          const { generatePDF } = await import('./pdf-generator');
-          
-          // Generar el PDF con la información del formulario
-          const pdfBuffer = await generatePDF(entry, template, creator);
-          
-          // Configurar la respuesta y enviar el PDF
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename="formulario_${template.name}_${entryId}.pdf"`);
-          res.send(pdfBuffer);
+          try {
+            // Primero intentar con Puppeteer
+            console.log("Intentando generar PDF con Puppeteer...");
+            const { generatePDF } = await import('./pdf-generator');
+            
+            // Generar el PDF con la información del formulario
+            const pdfBuffer = await generatePDF(entry, template, creator);
+            
+            // Configurar la respuesta y enviar el PDF
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="formulario_${template.name}_${entryId}.pdf"`);
+            res.send(pdfBuffer);
+          } catch (puppeteerError) {
+            // Si falla Puppeteer, intentar con PDFKit como alternativa
+            console.error("Error con Puppeteer, usando alternativa PDFKit:", puppeteerError);
+            const { generatePDFFallback } = await import('./pdf-generator-fallback');
+            
+            // Generar el PDF usando la alternativa
+            const pdfBuffer = await generatePDFFallback(entry, template, creator);
+            
+            // Configurar la respuesta y enviar el PDF
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="formulario_${template.name}_${entryId}.pdf"`);
+            res.send(pdfBuffer);
+          }
         } catch (error) {
-          console.error("Error al generar PDF:", error);
+          console.error("Error al generar PDF (todos los métodos fallaron):", error);
           return res.status(500).json({ 
-            message: "Error al generar el PDF", 
+            message: "Error al generar el PDF. Por favor, inténtelo de nuevo más tarde.", 
             error: error instanceof Error ? error.message : String(error) 
           });
         }

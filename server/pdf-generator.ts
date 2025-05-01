@@ -11,10 +11,18 @@ export async function generatePDF(
   try {
     console.log("Generando PDF para formulario:", template.name);
     
-    // Lanzar navegador en modo headless
+    // Lanzar navegador en modo headless con configuración para Replit
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--font-render-hinting=none'
+      ],
+      ignoreHTTPSErrors: true
     });
     const page = await browser.newPage();
     
