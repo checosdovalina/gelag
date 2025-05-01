@@ -77,6 +77,8 @@ export default function FormViewer({
     }
     
     try {
+      console.log(`Actualizando campo ${fieldId} a "${newDisplayName}"`);
+      
       // Llamar a la API para actualizar el nombre del campo
       const response = await fetch(`/api/form-templates/${formId}/field/${fieldId}/display-name`, {
         method: 'PATCH',
@@ -90,18 +92,36 @@ export default function FormViewer({
         throw new Error('Error al actualizar el nombre del campo');
       }
       
-      // Actualizar el estado local para reflejar el cambio inmediatamente
+      const responseData = await response.json();
+      console.log("Respuesta del servidor:", responseData);
+      
+      // Después de actualizar, cargar el formulario actualizado para reflejar los cambios
+      const templateResponse = await fetch(`/api/form-templates/${formId}`);
+      if (!templateResponse.ok) {
+        throw new Error("No se pudo cargar el formulario actualizado");
+      }
+      
+      const updatedTemplate = await templateResponse.json();
+      console.log("Plantilla actualizada:", updatedTemplate);
+      
+      // Actualizar el estado local con la plantilla actualizada
+      if (updatedTemplate && updatedTemplate.structure) {
+        setUpdatedFormTemplate(updatedTemplate.structure);
+      }
+      
+      // Actualizar el estado local para reflejar el cambio inmediatamente (respaldo)
       const updatedFields = updatedFormTemplate.fields.map(field => {
         if (field.id === fieldId) {
+          console.log(`Actualizando campo en estado local: ${field.id}, nuevo displayName: "${newDisplayName}"`);
           return { ...field, displayName: newDisplayName };
         }
         return field;
       });
       
-      setUpdatedFormTemplate({
-        ...updatedFormTemplate,
+      setUpdatedFormTemplate(prevState => ({
+        ...prevState,
         fields: updatedFields
-      });
+      }));
       
       toast({
         title: "Campo actualizado",
