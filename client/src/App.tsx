@@ -18,6 +18,7 @@ import FormImportPage from "@/pages/form-import-page";
 import ReportsPage from "@/pages/reports-page";
 import UsersPage from "@/pages/users-page";
 import SettingsPage from "@/pages/settings-page";
+import CapturedFormsPage from "@/pages/captured-forms-page";
 
 function Router() {
   return (

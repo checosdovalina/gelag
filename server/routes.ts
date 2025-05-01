@@ -868,6 +868,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta para actualizar el estado de un formulario (firmar, aprobar, etc.)
+  app.patch("/api/form-entries/:id/status", authorize(), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+      
+      // Validar los datos de entrada
+      if (!req.body.status) {
+        return res.status(400).json({ message: "Se requiere un estado válido" });
+      }
+      
+      // Obtener la entrada actual
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Verificar permisos (solo el creador o administradores pueden actualizar)
+      if (entry.createdBy !== req.user!.id && req.user!.role !== UserRole.SUPERADMIN && req.user!.role !== UserRole.ADMIN) {
+        return res.status(403).json({ message: "No autorizado para actualizar esta entrada" });
+      }
+      
+      // Preparar datos de actualización
+      const updateData: Partial<any> = {
+        status: req.body.status
+      };
+      
+      // Si hay firma, actualizar datos de firma
+      if (req.body.signature && req.body.status === "signed") {
+        updateData.signature = req.body.signature;
+        updateData.signedBy = req.user!.id;
+        updateData.signedAt = new Date();
+      }
+      
+      // Actualizar la entrada
+      const updatedEntry = await storage.updateFormEntry(entryId, updateData);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user!.id,
+        action: req.body.status === "signed" ? "signed" : "updated",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { status: req.body.status }
+      });
+      
+      res.json(updatedEntry);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  // Exportar formulario a PDF o Excel
+  app.get("/api/form-entries/:id/export", authorize(), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+      
+      // Validar formato de exportación
+      const format = req.query.format as string || "pdf";
+      if (format !== "pdf" && format !== "excel") {
+        return res.status(400).json({ message: "Formato de exportación inválido. Use 'pdf' o 'excel'" });
+      }
+      
+      // Obtener la entrada
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Obtener la plantilla asociada
+      const template = await storage.getFormTemplate(entry.formTemplateId);
+      if (!template) {
+        return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
+      }
+      
+      // Verificar permisos para ver esta entrada
+      if (
+        req.user!.role !== UserRole.SUPERADMIN &&
+        req.user!.role !== UserRole.ADMIN && 
+        entry.createdBy !== req.user!.id && 
+        entry.department !== req.user!.department
+      ) {
+        return res.status(403).json({ message: "No autorizado para exportar esta entrada" });
+      }
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user!.id,
+        action: "exported",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { format, formName: template.name }
+      });
+      
+      // Por ahora, devolvemos un archivo vacío como ejemplo
+      // En una implementación real, generarías el PDF o Excel aquí
+      if (format === "pdf") {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_${entryId}.pdf"`);
+        // Aquí se generaría el PDF real
+        res.send("PDF placeholder");
+      } else {
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_${entryId}.xlsx"`);
+        // Aquí se generaría el Excel real
+        res.send("Excel placeholder");
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

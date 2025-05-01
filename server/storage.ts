@@ -47,6 +47,7 @@ export interface IStorage {
   // Form entry methods
   getFormEntry(id: number): Promise<FormEntry | undefined>;
   createFormEntry(entry: InsertFormEntry): Promise<FormEntry>;
+  updateFormEntry(id: number, data: Partial<any>): Promise<FormEntry | undefined>;
   getFormEntriesByTemplate(templateId: number): Promise<FormEntry[]>;
   getFormEntriesByUser(userId: number): Promise<FormEntry[]>;
   getFormEntriesByDepartment(department: string): Promise<FormEntry[]>;
@@ -338,6 +339,42 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(formEntries)
       .where(eq(formEntries.department, department));
+  }
+  
+  async updateFormEntry(id: number, data: Partial<any>): Promise<FormEntry | undefined> {
+    // Log debugging
+    console.log("=== MÉTODO updateFormEntry ===");
+    console.log("ID del formulario a actualizar:", id);
+    
+    // Primero obtenemos la entrada existente para verificar que existe
+    const existingEntry = await this.getFormEntry(id);
+    if (!existingEntry) {
+      console.error("No se encontró la entrada con ID:", id);
+      return undefined;
+    }
+    
+    // Realizar una copia profunda de los datos para evitar problemas de referencia
+    const updateData = JSON.parse(JSON.stringify({
+      ...data,
+      updatedAt: new Date()
+    }));
+    
+    console.log("Datos de actualización:", updateData);
+    
+    // Ejecutar la actualización
+    try {
+      const [updatedEntry] = await db
+        .update(formEntries)
+        .set(updateData)
+        .where(eq(formEntries.id, id))
+        .returning();
+      
+      console.log("Entrada actualizada exitosamente");
+      return updatedEntry;
+    } catch (error) {
+      console.error("Error al actualizar entrada:", error);
+      throw error;
+    }
   }
 
   // Activity log methods
