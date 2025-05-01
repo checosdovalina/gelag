@@ -51,8 +51,8 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
   // Save the signature as a data URL
   const handleSave = () => {
     if (sigCanvas.current && !isEmpty) {
-      // Trim whitespace and get data URL
-      const signatureDataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
+      // Get data URL from the canvas
+      const signatureDataUrl = sigCanvas.current.toDataURL("image/png");
       onSave(signatureDataUrl);
     }
   };
