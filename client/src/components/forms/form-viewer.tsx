@@ -44,6 +44,7 @@ interface FormViewerProps {
   isReadOnly?: boolean;
   isLoading?: boolean;
   allowEditDisplayNames?: boolean;
+  formId?: number;
 }
 
 export default function FormViewer({
@@ -54,6 +55,7 @@ export default function FormViewer({
   isReadOnly = false,
   isLoading = false,
   allowEditDisplayNames = false,
+  formId
 }: FormViewerProps) {
   // Para edición de nombres de campos
   const [isFieldNameEditorOpen, setIsFieldNameEditorOpen] = useState(false);
@@ -64,10 +66,10 @@ export default function FormViewer({
   
   // Función para actualizar el displayName de un campo y guardar los cambios
   const handleFieldNameUpdate = async (fieldId: string, newDisplayName: string): Promise<boolean> => {
-    // Encuentra el formulario y el ID del formulario
-    const formId = parseInt(window.location.pathname.split("/forms/")[1]);
+    // Usar el formId proporcionado en props o extraerlo de la URL como fallback
+    const currentFormId = formId || parseInt(window.location.pathname.split("/forms/")[1]);
     
-    if (isNaN(formId)) {
+    if (isNaN(currentFormId) || currentFormId <= 0) {
       toast({
         title: "Error",
         description: "No se pudo determinar el ID del formulario",
@@ -78,7 +80,7 @@ export default function FormViewer({
     
     try {
       console.log(`\n===== ACTUALIZANDO CAMPO =====`);
-      console.log(`FormID: ${formId}`);
+      console.log(`FormID: ${currentFormId}`);
       console.log(`FieldID: ${fieldId}`);
       console.log(`Nuevo DisplayName: "${newDisplayName}"`);
       console.log(`===============================\n`);
@@ -91,7 +93,7 @@ export default function FormViewer({
       }
       
       // Llamar a la API para actualizar el nombre del campo
-      const response = await fetch(`/api/form-templates/${formId}/field/${fieldId}/display-name`, {
+      const response = await fetch(`/api/form-templates/${currentFormId}/field/${fieldId}/display-name`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +111,7 @@ export default function FormViewer({
       console.log("Respuesta del servidor:", responseData);
       
       // Después de actualizar, cargar el formulario actualizado para reflejar los cambios
-      const templateResponse = await fetch(`/api/form-templates/${formId}`);
+      const templateResponse = await fetch(`/api/form-templates/${currentFormId}`);
       if (!templateResponse.ok) {
         throw new Error("No se pudo cargar el formulario actualizado");
       }
