@@ -1,6 +1,8 @@
 import PDFDocument from 'pdfkit';
 import { FormEntry, FormTemplate } from '@shared/schema';
 import { User } from '@shared/schema';
+import fs from 'fs';
+import path from 'path';
 
 // Función para generar un PDF utilizando PDFKit como fallback cuando Puppeteer no funciona
 export async function generatePDFFallback(
@@ -66,6 +68,20 @@ function generatePDFContent(
   const department = entry.department || 'N/A';
   
   // Encabezado con el logo
+  try {
+    const logoPath = path.join(process.cwd(), 'public', 'images', 'gelag_logo.svg');
+    if (fs.existsSync(logoPath)) {
+      // Añadir el logo al PDF (centrado)
+      doc.image(logoPath, {
+        fit: [200, 60],
+        align: 'center'
+      });
+      doc.moveDown(1);
+    }
+  } catch (error) {
+    console.error("Error al cargar el logo:", error);
+  }
+
   doc.fontSize(16).font('Helvetica-Bold').text(template.name, { align: 'center' });
   doc.fontSize(10).font('Helvetica').text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', { align: 'center' });
   doc.moveDown(2);
@@ -149,10 +165,30 @@ function generatePDFContent(
     doc.moveDown(1);
     doc.fontSize(12).font('Helvetica-Bold').text('Firma', { align: 'center' });
     
-    // No podemos mostrar la imagen de firma directamente ya que está en formato data URL
-    // pero indicamos que hay una firma
-    doc.fontSize(10).font('Helvetica').text('Documento firmado electrónicamente', { align: 'center' });
-    doc.text(`Firmado por: ${entry.signedBy ? `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
+    try {
+      // Intentar añadir la imagen de firma
+      if (entry.signature && entry.signature.startsWith('data:image')) {
+        // Extraer la parte de base64 de la data URL
+        const base64Data = entry.signature.split(',')[1];
+        if (base64Data) {
+          // Convertir a buffer
+          const signatureBuffer = Buffer.from(base64Data, 'base64');
+          
+          // Añadir la firma al PDF
+          doc.image(signatureBuffer, {
+            fit: [200, 100],
+            align: 'center'
+          });
+          doc.moveDown(0.5);
+        }
+      }
+    } catch (error) {
+      console.error("Error al mostrar la firma:", error);
+      // Si falla, mostramos texto alternativo
+      doc.fontSize(10).font('Helvetica').text('Documento firmado electrónicamente', { align: 'center' });
+    }
+    
+    doc.fontSize(10).font('Helvetica').text(`Firmado por: ${entry.signedBy ? `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
     
     if (entry.signedAt) {
       doc.text(`Fecha de firma: ${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, { align: 'center' });
