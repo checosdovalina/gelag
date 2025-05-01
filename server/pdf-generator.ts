@@ -36,11 +36,14 @@ export async function generatePDF(
       }
     });
     
+    // Asegurar que el resultado es un Buffer para Node.js
+    const nodeBuffer = Buffer.from(pdfBuffer);
+    
     // Cerrar el navegador
     await browser.close();
     
     console.log("PDF generado correctamente");
-    return pdfBuffer;
+    return nodeBuffer;
   } catch (error) {
     console.error("Error al generar PDF:", error);
     throw error;
