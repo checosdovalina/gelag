@@ -18,12 +18,22 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
-import { Loader2, Save, Download, FileDown, FilePen } from "lucide-react";
+import { Loader2, Save, Download, FileDown, FilePen, Pencil } from "lucide-react";
 import { FormStructure } from "@shared/schema";
 import type { FormField as IFormField } from "@shared/schema";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import FieldDisplayNameEditor from "./field-display-name-editor";
+import { useToast } from "@/hooks/use-toast";
 
 interface FormViewerProps {
   formTemplate: FormStructure;
@@ -42,6 +52,12 @@ export default function FormViewer({
   isReadOnly = false,
   isLoading = false,
 }: FormViewerProps) {
+  // Para edición de nombres de campos
+  const [isFieldNameEditorOpen, setIsFieldNameEditorOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<IFormField | null>(null);
+  const [updatedFormTemplate, setUpdatedFormTemplate] = useState<FormStructure>(formTemplate);
+  const { toast } = useToast();
+  
   // Create a dynamic validation schema based on the form structure
   const [validationSchema, setValidationSchema] = useState<z.ZodTypeAny>(z.object({}));
   

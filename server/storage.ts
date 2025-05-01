@@ -119,6 +119,74 @@ export class DatabaseStorage implements IStorage {
     return newTemplate;
   }
 
+  // Método especial para actualizar solamente la estructura de un formulario
+  async updateFormStructure(id: number, structure: any): Promise<boolean> {
+    console.log("=== MÉTODO updateFormStructure ===");
+    console.log("ID del formulario a actualizar:", id);
+    
+    try {
+      // Obtenemos la plantilla existente para verificar que existe
+      const existingTemplate = await this.getFormTemplate(id);
+      if (!existingTemplate) {
+        console.error("No se encontró la plantilla con ID:", id);
+        return false;
+      }
+      
+      // Serializar y deserializar para evitar problemas de referencia
+      const cleanStructure = JSON.parse(JSON.stringify(structure));
+      
+      console.log("\n=== ESTRUCTURA A GUARDAR ===\n");
+      if (cleanStructure.fields && Array.isArray(cleanStructure.fields)) {
+        cleanStructure.fields.forEach((field: any, idx: number) => {
+          // Asegurar que cada campo tenga displayName como string
+          field.displayName = String(field.displayName || field.label || '');
+          
+          // Asegurar que displayOrder sea un número
+          field.displayOrder = Number(field.displayOrder || 0);
+          
+          console.log(`Campo #${idx} - ID: ${field.id}`);
+          console.log(`  Label: ${field.label}`);
+          console.log(`  DisplayName: ${field.displayName}`);
+        });
+      }
+      
+      // Actualizar sólo la estructura, manteniendo los demás campos sin cambios
+      await db
+        .update(formTemplates)
+        .set({
+          structure: cleanStructure,
+          updatedAt: new Date()
+        })
+        .where(eq(formTemplates.id, id));
+      
+      console.log("\n=== ESTRUCTURA ACTUALIZADA EXITOSAMENTE ===\n");
+      
+      // Verificar que se guardó correctamente
+      const verifiedTemplate = await this.getFormTemplate(id);
+      if (verifiedTemplate && verifiedTemplate.structure) {
+        console.log("Verificación exitosa de cambios en estructura");
+        
+        // Mostrar campos actualizados
+        if (typeof verifiedTemplate.structure === 'object' && 
+            verifiedTemplate.structure.fields && 
+            Array.isArray(verifiedTemplate.structure.fields)) {
+          
+          verifiedTemplate.structure.fields.forEach((field: any, idx: number) => {
+            console.log(`Campo ${idx} verificado - ID: ${field.id}, DisplayName: ${field.displayName}`);
+          });
+        }
+        
+        return true;
+      } else {
+        console.error("Error de verificación: No se pudo obtener la estructura actualizada");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar estructura:", error);
+      return false;
+    }
+  }
+
   async updateFormTemplate(id: number, data: Partial<InsertFormTemplate>): Promise<FormTemplate | undefined> {
     // Log debugging
     console.log("=== MÉTODO updateFormTemplate ===");

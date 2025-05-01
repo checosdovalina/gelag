@@ -256,21 +256,27 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                         <FormItem>
                                           <FormLabel>Nombre para Reportes</FormLabel>
                                           <FormControl>
-                                            <Input 
-                                              placeholder="Ej: Nombre Empleado, Departamento" 
-                                              {...field} 
-                                              value={field.value || ''}
-                                              onChange={(e) => {
-                                                const newValue = e.target.value;
-                                                // Actualizar directamente utilizando la API de React Hook Form
-                                                form.setValue(`fields.${index}.displayName`, newValue, {
-                                                  shouldValidate: true,
-                                                  shouldDirty: true,
-                                                  shouldTouch: true
-                                                });
-                                                console.log(`DisplayName para campo ${index} actualizado:`, newValue);
-                                              }}
-                                            />
+                                            <div className="space-y-1">
+                                              <Input 
+                                                placeholder="Ej: Nombre Empleado, Departamento" 
+                                                {...field} 
+                                                value={field.value || ''}
+                                                onChange={(e) => {
+                                                  const newValue = e.target.value;
+                                                  // Actualizar directamente utilizando la API de React Hook Form
+                                                  form.setValue(`fields.${index}.displayName`, newValue, {
+                                                    shouldValidate: true,
+                                                    shouldDirty: true,
+                                                    shouldTouch: true
+                                                  });
+                                                  console.log(`DisplayName para campo ${index} actualizado:`, newValue);
+                                                }}
+                                              />
+                                              <div className="text-xs text-muted-foreground">
+                                                <span className="text-amber-600 font-medium">Importante:</span> Si tiene problemas para guardar este campo, 
+                                                utilice la opción "Editar nombres" en la vista previa del formulario.
+                                              </div>
+                                            </div>
                                           </FormControl>
                                           <FormDescription>
                                             Nombre personalizado que aparecerá en los reportes
