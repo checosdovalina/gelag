@@ -95,49 +95,84 @@ function generatePDFContent(
   
   doc.moveDown(1);
   
-  // Título del formulario (centrado y con mayor tamaño)
-  doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold').text(template.name, { align: 'center' });
-  doc.moveDown(0.5);
+  // Título del formulario (alineado a la derecha como en la imagen de referencia)
+  doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
+     .text(template.name, pageCenter + 60, 100, { 
+       align: 'right',
+       width: pageWidth / 2 - 60
+     });
+     
+  // Número 2 (si existe en el título)
+  if (template.name.includes('2')) {
+    const titleWithoutNumber = template.name.replace('2', '').trim();
+    
+    doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
+      .text(titleWithoutNumber, pageCenter + 60, 100, { 
+        align: 'right',
+        width: pageWidth / 2 - 60,
+        continued: false
+      });
+      
+    doc.fillColor('#000000').fontSize(16).font('Helvetica-Bold')
+      .text('2', pageCenter + pageWidth/2 - 70, 100);
+  }
   
-  // Dirección de la empresa (formato más compacto y reducido)
-  doc.fontSize(8).font('Helvetica').text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', { align: 'center' });
-  doc.moveDown(1);
+  // Dirección de la empresa (formato más compacto y reducido, alineado a la derecha)
+  doc.fontSize(7).font('Helvetica')
+     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842,\nPARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+       pageCenter + 60, 120, { 
+         align: 'right',
+         width: pageWidth / 2 - 60
+       });
+       
+  doc.moveDown(1.5);
   
-  // Organización de la información en un formato más tabular
+  // Organización de la información como en la imagen de referencia
   const currentY = doc.y; // Guardamos la posición actual
   
-  // Lado izquierdo - Información básica
+  // Lado izquierdo - Información básica en formato doble columna
+  const leftLabelColumn = 50;
+  const leftValueColumn = 90;
+  
   doc.fontSize(10).font('Helvetica-Bold');
-  doc.text('Folio:', 50, currentY);
-  doc.font('Helvetica').text(`${entry.id}`, 90, currentY);
+  doc.text('Folio:', leftLabelColumn, currentY);
+  doc.font('Helvetica').text(`${entry.id}`, leftValueColumn, currentY);
   
-  doc.font('Helvetica-Bold').text('Fecha:', 50, currentY + 15);
-  doc.font('Helvetica').text(`${createdAt}`, 90, currentY + 15);
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.text('Fecha:', leftLabelColumn, currentY + 20);
+  doc.font('Helvetica').text(`${createdAt}`, leftValueColumn, currentY + 20);
   
-  // Lado derecho - Información adicional
-  const rightColumnX = pageWidth / 2 + 20;
+  // Información adicional (lado derecho) 
+  const rightLabelColumn = pageWidth / 2;
+  const rightValueColumn = rightLabelColumn + 110;
   
-  doc.font('Helvetica-Bold').text('Creado por:', rightColumnX, currentY);
-  doc.font('Helvetica').text(`${creatorName}`, rightColumnX + 80, currentY);
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.text('Creado por:', rightLabelColumn, currentY);
+  doc.font('Helvetica').text(`${creatorName}`, rightValueColumn, currentY);
   
-  doc.font('Helvetica-Bold').text('Departamento:', rightColumnX, currentY + 15);
-  doc.font('Helvetica').text(`${department}`, rightColumnX + 80, currentY + 15);
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.text('Departamento:', rightLabelColumn, currentY + 20);
+  doc.font('Helvetica').text(`${department}`, rightValueColumn, currentY + 20);
   
-  // Estado - centrado y con formato distintivo
-  doc.y = currentY + 40;
-  doc.font('Helvetica-Bold').text('Estado:', 50, doc.y);
+  // Estado - en su propia fila, con el estilo adecuado al estado (debajo)
+  doc.y = currentY + 40; 
   
-  // Resaltar el estado con un color según el valor
+  // Etiqueta "Estado:" en negrita
+  doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
+     .text('Estado:', leftLabelColumn, doc.y);
+  
+  // El valor del estado con el color correspondiente
   let statusColor = '#000000';
   switch(entry.status) {
-    case 'draft': statusColor = '#888888'; break;      // Gris para borrador
+    case 'draft': statusColor = '#666666'; break;      // Gris para borrador
     case 'signed': statusColor = '#0066cc'; break;     // Azul para firmado
-    case 'approved': statusColor = '#008800'; break;   // Verde para aprobado
+    case 'approved': statusColor = '#009933'; break;   // Verde para aprobado
     case 'rejected': statusColor = '#cc0000'; break;   // Rojo para rechazado
   }
   
+  // Aplicar el color adecuado pero mantener la negrita
   doc.fillColor(statusColor).font('Helvetica-Bold')
-     .text(`${getStatusLabel(entry.status)}`, 100, doc.y);
+     .text(`${getStatusLabel(entry.status)}`, leftValueColumn, doc.y);
   
   // Restaurar color por defecto
   doc.fillColor('#000000');
@@ -168,41 +203,37 @@ function generatePDFContent(
       }
       
       // Encabezado de sección con un estilo distintivo
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#e3014f')
-         .text(sectionName.toUpperCase(), { align: 'left' });
-      
-      // Línea separadora para la sección
-      const sectionLineY = doc.y + 2;
-      doc.moveTo(50, sectionLineY)
-         .lineTo(doc.page.width/2, sectionLineY)
-         .lineWidth(0.5)
-         .stroke();
-      
-      doc.moveDown(1);
+      doc.fontSize(11).font('Helvetica-Bold').fillColor('#000')
+         .text(sectionName, { align: 'left' });
+         
+      doc.moveDown(0.5);
       doc.fillColor('#000000'); // Restaurar color
       
-      // Definir tamaño de columnas para formato de tabla
-      const leftColumnWidth = 150;
-      const rightColumnWidth = doc.page.width - 250;
-      const startX = 60;
+      // Definir columnas y márgenes para imitar el diseño de la imagen
+      const colWidth = (doc.page.width - 120) / 2;
+      const colPadding = 15;
+      const col1X = 60;
+      const col2X = col1X + colWidth + colPadding;
       
-      // Iterar sobre los campos
-      sections[sectionName].forEach((field, fieldIndex) => {
+      // Iterar sobre los campos - aquí hacemos la distribución en 2 columnas
+      const fieldsInSection = sections[sectionName];
+      const middleIndex = Math.ceil(fieldsInSection.length / 2);
+      
+      // Primera columna
+      let currentY = doc.y;
+      fieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
         const fieldId = field.id;
         const fieldLabel = field.displayName || field.label;
         let fieldValue = entry.data[fieldId];
         
         // Convertir el valor según el tipo de campo
         if (field.type === 'select' || field.type === 'radio') {
-          // Si es un select o radio, puede ser un objeto con value y label
           if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
             fieldValue = fieldValue.label;
           }
         } else if (field.type === 'checkbox') {
-          // Si es un checkbox, convertir booleano a Sí/No
           fieldValue = fieldValue ? 'Sí' : 'No';
         } else if (field.type === 'date') {
-          // Formatear fechas
           if (fieldValue) {
             try {
               fieldValue = new Date(fieldValue).toLocaleDateString('es-MX');
@@ -211,35 +242,76 @@ function generatePDFContent(
             }
           }
         } else if (Array.isArray(fieldValue)) {
-          // Si es un array (por ejemplo, multiselect)
           fieldValue = fieldValue.join(', ');
         } else if (fieldValue === null || fieldValue === undefined) {
           fieldValue = '';
         }
         
-        // Usar fondo alternado para mejorar legibilidad (efecto cebra)
-        const useGrayBg = fieldIndex % 2 === 1;
-        if (useGrayBg) {
-          const fieldY = doc.y;
-          doc.rect(startX - 10, fieldY - 2, doc.page.width - 100, 16)
-             .fillOpacity(0.05)
-             .fillAndStroke('#f0f0f0', '#f0f0f0');
-          doc.fillOpacity(1);
-        }
+        // Determinar posición Y para cada campo
+        const fieldY = currentY + (fieldIndex * 15); 
         
-        // Formato mejorado para campos y valores (en dos columnas)
+        // Etiqueta en negrita
         doc.fontSize(9).font('Helvetica-Bold')
-           .text(`${fieldLabel}:`, startX, doc.y, { 
-              width: leftColumnWidth, 
-              continued: false
-           });
-        
-        // Valor en la misma línea pero en segunda columna
-        doc.fontSize(9).font('Helvetica')
-           .text(`${fieldValue}`, startX + leftColumnWidth, doc.y - 12, { 
-              width: rightColumnWidth
-           });
+          .text(`${fieldLabel}:`, col1X, fieldY, { continued: true });
+          
+        // Valor a continuación
+        doc.font('Helvetica')
+          .text(` ${fieldValue}`);
+          
+        // Actualizar posición Y para próximo campo si es el último elemento
+        if (fieldIndex === middleIndex - 1) {
+          currentY = doc.y;
+        }
       });
+      
+      // Reiniciar la posición Y para la segunda columna
+      doc.y = currentY - ((middleIndex - 1) * 15);
+      
+      // Segunda columna (si hay campos suficientes)
+      if (fieldsInSection.length > middleIndex) {
+        const startY = doc.y;
+        
+        fieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
+          const fieldId = field.id;
+          const fieldLabel = field.displayName || field.label;
+          let fieldValue = entry.data[fieldId];
+          
+          // Convertir el valor según el tipo de campo
+          if (field.type === 'select' || field.type === 'radio') {
+            if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
+              fieldValue = fieldValue.label;
+            }
+          } else if (field.type === 'checkbox') {
+            fieldValue = fieldValue ? 'Sí' : 'No';
+          } else if (field.type === 'date') {
+            if (fieldValue) {
+              try {
+                fieldValue = new Date(fieldValue).toLocaleDateString('es-MX');
+              } catch (e) {
+                console.error("Error al formatear fecha:", e);
+              }
+            }
+          } else if (Array.isArray(fieldValue)) {
+            fieldValue = fieldValue.join(', ');
+          } else if (fieldValue === null || fieldValue === undefined) {
+            fieldValue = '';
+          }
+          
+          // Calcular posición Y basada en el índice
+          const fieldY = startY + (fieldIndex * 15);
+          
+          // Etiqueta en negrita
+          doc.fontSize(9).font('Helvetica-Bold')
+            .text(`${fieldLabel}:`, col2X, fieldY, { continued: true });
+            
+          // Valor a continuación
+          doc.font('Helvetica')
+            .text(` ${fieldValue}`);
+        });
+      }
+      
+      // Avanzar a la siguiente sección
+      doc.y = Math.max(doc.y, currentY) + 10;
       
       doc.moveDown(1.5);
     });
@@ -259,25 +331,22 @@ function generatePDFContent(
     const pageWidth = doc.page.width;
     const pageCenter = pageWidth / 2;
     
-    // Encabezado de firma con estilo distintivo
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#444444')
-       .text('FIRMA DEL DOCUMENTO', { align: 'center' });
+    // Encabezado de firma con estilo simple (como en la imagen de referencia)
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+       .text('Firma', { align: 'center' });
     doc.moveDown(0.5);
     
-    // Dibujar un recuadro para la firma
-    const signatureBoxWidth = 300;
-    const signatureBoxHeight = 120;
+    // Dibujar un recuadro para la firma - estilo más sencillo
+    const signatureBoxWidth = 250;
+    const signatureBoxHeight = 80;
     const signatureBoxX = pageCenter - (signatureBoxWidth / 2);
     const signatureBoxY = doc.y;
     
-    // Fondo ligero para el área de firma
+    // Dibujar un recuadro simple para la firma
     doc.rect(signatureBoxX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
-       .fillOpacity(0.05)
-       .fillAndStroke('#e3014f', '#cccccc');
-    
-    // Restaurar opacidad
-    doc.fillOpacity(1);
-    
+       .lineWidth(0.5)
+       .stroke();
+       
     try {
       // Intentar añadir la imagen de firma
       if (entry.signature && entry.signature.startsWith('data:image')) {
@@ -288,40 +357,43 @@ function generatePDFContent(
           const signatureBuffer = Buffer.from(base64Data, 'base64');
           
           // Dimensiones óptimas para la firma
-          const signatureWidth = 200;
+          const signatureWidth = 160;
           const signatureX = pageCenter - (signatureWidth / 2);
-          const signatureY = signatureBoxY + 10; // Ajuste para centrar verticalmente
+          const signatureY = signatureBoxY + 5; // Ajuste para centrar verticalmente
           
           // Añadir la firma al PDF, centrada dentro del recuadro
           doc.image(signatureBuffer, signatureX, signatureY, {
-            width: signatureWidth
+            width: signatureWidth,
+            height: signatureBoxHeight - 10,
+            align: 'center',
+            valign: 'center'
           });
         }
       }
     } catch (error) {
       console.error("Error al mostrar la firma:", error);
       // Si falla, mostramos texto alternativo
-      doc.fontSize(10).font('Helvetica').text('Documento firmado electrónicamente', 
-        signatureBoxX + 40, signatureBoxY + 50, { 
-          width: signatureBoxWidth - 80,
+      doc.fontSize(9).font('Helvetica').text('Firmado', 
+        signatureBoxX + 30, signatureBoxY + 30, { 
+          width: signatureBoxWidth - 60,
           align: 'center' 
         });
     }
     
     // Movernos al final del recuadro
-    doc.y = signatureBoxY + signatureBoxHeight + 10;
+    doc.y = signatureBoxY + signatureBoxHeight + 15;
     
-    // Información sobre la firma
-    doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold')
-       .text('Firmado por:', { continued: true, align: 'center' })
+    // Información sobre la firma - en formato "firmado por: nombre" como en la imagen
+    doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold')
+       .text('Firmado por: ', { continued: true, align: 'center' })
        .font('Helvetica')
-       .text(` ${entry.signedBy ? creator?.name || `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
+       .text(`${entry.signedBy ? creator?.name || `Usuario ID: ${entry.signedBy}` : creatorName}`, { align: 'center' });
     
     if (entry.signedAt) {
-      doc.fontSize(10).font('Helvetica-Bold')
-         .text('Fecha de firma:', { continued: true, align: 'center' })
+      doc.fontSize(9).font('Helvetica-Bold')
+         .text('Fecha de firma: ', { continued: true, align: 'center' })
          .font('Helvetica')
-         .text(` ${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, { align: 'center' });
+         .text(`${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, { align: 'center' });
     }
   }
   
