@@ -724,10 +724,11 @@ export default function FormViewer({
                       <div key={field.id} className="grid gap-2">
                         <h3 className="font-medium text-sm text-slate-700">{field.label}</h3>
                         <FieldDisplayNameEditor
-                          formId={parseInt(window.location.pathname.split("/forms/")[1]) || 0}
+                          formId={formId || 0}
                           fieldId={field.id}
                           currentDisplayName={field.displayName || field.label}
                           fieldLabel={field.label}
+                          onUpdate={handleFieldNameUpdate}
                         />
                       </div>
                     ))}
