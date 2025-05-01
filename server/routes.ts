@@ -461,16 +461,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (req.query.department) {
         entries = await storage.getFormEntriesByDepartment(req.query.department as string);
       } else {
-        // Only superadmins and admins can see all entries without filters
-        if (req.user.role !== UserRole.SUPERADMIN && req.user.role !== UserRole.ADMIN) {
-          return res.status(403).json({ message: "No autorizado para ver todas las entradas" });
-        }
-        
-        // Get entries by user's department if not admin
-        if (req.user.role === UserRole.PRODUCTION || req.user.role === UserRole.QUALITY) {
-          entries = await storage.getFormEntriesByDepartment(req.user.department);
+        // Usuarios con rol SUPERADMIN o ADMIN pueden ver todos los formularios
+        if (req.user.role === UserRole.SUPERADMIN || req.user.role === UserRole.ADMIN) {
+          entries = await storage.getAllFormEntries();
         } else {
-          // For viewers, only show entries they created
+          // Para roles de PRODUCTION, QUALITY y VIEWER solo se muestran los formularios que ellos crearon
           entries = await storage.getFormEntriesByUser(req.user.id);
         }
       }
