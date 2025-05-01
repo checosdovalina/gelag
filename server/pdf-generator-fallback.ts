@@ -1,7 +1,6 @@
 import PDFDocument from 'pdfkit';
 import { FormEntry, FormTemplate } from '@shared/schema';
 import { User } from '@shared/schema';
-import '../types/pdfkit'; // Importar las definiciones de tipos
 
 // Función para generar un PDF utilizando PDFKit como fallback cuando Puppeteer no funciona
 export async function generatePDFFallback(
@@ -52,7 +51,7 @@ export async function generatePDFFallback(
 
 // Función para generar el contenido del PDF
 function generatePDFContent(
-  doc: PDFKit.PDFDocument, 
+  doc: any, // Usar any en lugar de PDFKit.PDFDocument para evitar errores de tipado
   entry: FormEntry, 
   template: FormTemplate, 
   creator?: User
