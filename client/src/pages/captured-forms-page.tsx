@@ -29,7 +29,9 @@ import {
   CalendarIcon, 
   FileDown, 
   Filter, 
-  UserCircle2 
+  UserCircle2,
+  Trash2,
+  AlertCircle
 } from "lucide-react";
 import {
   Dialog,
@@ -38,7 +40,18 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import FormViewer from "@/components/forms/form-viewer";
 import { Badge } from "@/components/ui/badge";
 import { UserRole } from "@shared/schema";
@@ -91,6 +104,12 @@ export default function CapturedFormsPage() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [filtersVisible, setFiltersVisible] = useState(false);
   
+  // Estados para el diálogo de eliminación
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState<FormEntry | null>(null);
+  
+  const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
+  
   // Fetch form entries
   const { data: entries, isLoading: isLoadingEntries, refetch: refetchEntries } = useQuery<FormEntry[]>({
     queryKey: ["/api/form-entries"],
@@ -128,6 +147,42 @@ export default function CapturedFormsPage() {
         description: `No se pudo actualizar el estado: ${error.message}`,
         variant: "destructive"
       });
+    }
+  });
+  
+  // Mutation para eliminar formularios
+  const deleteEntryMutation = useMutation({
+    mutationFn: async (entryId: number) => {
+      const response = await apiRequest('DELETE', `/api/form-entries/${entryId}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar el formulario');
+      }
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Formulario eliminado",
+        description: "El formulario ha sido eliminado correctamente",
+      });
+      
+      // Cerrar el diálogo y actualizar la lista
+      setDeleteDialogOpen(false);
+      setEntryToDelete(null);
+      
+      // Actualizar la lista de formularios
+      queryClient.invalidateQueries({ queryKey: ["/api/form-entries"] });
+    },
+    onError: (error: Error) => {
+      console.error("Error al eliminar formulario:", error);
+      
+      toast({
+        title: "Error al eliminar",
+        description: error.message,
+        variant: "destructive",
+      });
+      
+      setDeleteDialogOpen(false);
     }
   });
   
@@ -274,6 +329,18 @@ export default function CapturedFormsPage() {
   const handleCancelSignature = () => {
     setShowSignaturePad(false);
     setFormToSign(null);
+  };
+  
+  // Funciones para manejar la eliminación de formularios
+  const handleDeleteForm = (entry: FormEntry) => {
+    setEntryToDelete(entry);
+    setDeleteDialogOpen(true);
+  };
+  
+  const confirmDeleteForm = () => {
+    if (entryToDelete) {
+      deleteEntryMutation.mutate(entryToDelete.id);
+    }
   };
   
   // Get user name by ID
