@@ -7,8 +7,11 @@ import {
   insertFormEntrySchema, 
   UserRole, 
   insertUserSchema,
-  insertSavedReportSchema
+  insertSavedReportSchema,
+  formTemplates
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
@@ -198,59 +201,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Nuevo endpoint para actualizar sólo el displayName de un campo específico
+  // Endpoint directo para actualizar campos en formularios
   app.patch("/api/form-templates/:id/field/:fieldId/display-name", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
-      console.log("\n\n==================================================");
-      console.log("=== ACTUALIZACIÓN DE DISPLAYNAME DE CAMPO ===");
-      console.log("==================================================\n");
+      console.log("\n\n=== NUEVO ENDPOINT PARA ACTUALIZAR DISPLAYNAME ===\n");
       
       const templateId = parseInt(req.params.id);
       const fieldId = req.params.fieldId;
       const { displayName } = req.body;
       
       if (isNaN(templateId) || !fieldId) {
+        console.error("Parámetros inválidos:", { templateId, fieldId });
         return res.status(400).json({ message: "Parámetros inválidos" });
       }
       
       console.log(`Actualizando campo ${fieldId} del formulario ${templateId}`);
       console.log(`Nuevo displayName: "${displayName}"`);
       
-      // Obtener el formulario actual
-      const existingTemplate = await storage.getFormTemplate(templateId);
+      // Obtener el formulario actual directamente de la base de datos
+      const [existingTemplate] = await db
+        .select()
+        .from(formTemplates)
+        .where(eq(formTemplates.id, templateId));
+        
       if (!existingTemplate) {
+        console.error(`Plantilla con ID ${templateId} no encontrada`);
         return res.status(404).json({ message: "Plantilla no encontrada" });
       }
       
-      // Comprobar que el campo existe
-      if (!existingTemplate.structure || !existingTemplate.structure.fields) {
-        return res.status(400).json({ message: "El formulario no tiene estructura de campos" });
+      // Verificar que la estructura tenga el formato esperado
+      if (!existingTemplate.structure || typeof existingTemplate.structure !== 'object') {
+        console.error(`Estructura inválida en plantilla ${templateId}:`, existingTemplate.structure);
+        return res.status(400).json({ message: "Estructura de formulario inválida" });
       }
       
-      // Realizar una copia profunda para evitar problemas de referencia
-      const updatedStructure = JSON.parse(JSON.stringify(existingTemplate.structure));
+      // Hacer una copia profunda de la estructura
+      let structure: any;
+      try {
+        structure = JSON.parse(JSON.stringify(existingTemplate.structure));
+      } catch (e) {
+        console.error("Error al parsear estructura:", e);
+        return res.status(500).json({ message: "Error al procesar estructura del formulario" });
+      }
       
-      // Buscar el campo y actualizar su displayName
+      // Asegurar que fields existe y es un array
+      if (!Array.isArray(structure.fields)) {
+        console.error("El campo 'fields' no es un array:", structure.fields);
+        return res.status(400).json({ message: "Estructura de formulario inválida: fields no es un array" });
+      }
+      
+      // Buscar el campo por ID
       let fieldFound = false;
-      for (let i = 0; i < updatedStructure.fields.length; i++) {
-        if (updatedStructure.fields[i].id === fieldId) {
-          const oldValue = updatedStructure.fields[i].displayName;
-          updatedStructure.fields[i].displayName = displayName;
+      for (let i = 0; i < structure.fields.length; i++) {
+        if (structure.fields[i].id === fieldId) {
+          const oldValue = structure.fields[i].displayName;
+          structure.fields[i].displayName = displayName;
           fieldFound = true;
-          console.log(`Campo encontrado en posición ${i}. Valor anterior: "${oldValue}", Nuevo valor: "${displayName}"`);
+          console.log(`Campo encontrado en posición ${i}`);
+          console.log(`  Valor anterior: "${oldValue}"`);
+          console.log(`  Nuevo valor: "${displayName}"`);
           break;
         }
       }
       
       if (!fieldFound) {
+        console.error(`Campo ${fieldId} no encontrado en los ${structure.fields.length} campos del formulario`);
         return res.status(404).json({ message: "Campo no encontrado en el formulario" });
       }
       
-      // Actualizar solo la estructura del formulario
-      const result = await storage.updateFormStructure(templateId, updatedStructure);
+      // Actualizar directamente en la base de datos
+      console.log("\n=== ACTUALIZANDO EN BASE DE DATOS ===\n");
+      await db
+        .update(formTemplates)
+        .set({
+          structure: structure,
+          updatedAt: new Date()
+        })
+        .where(eq(formTemplates.id, templateId));
       
-      if (!result) {
-        return res.status(500).json({ message: "Error al actualizar el campo" });
+      console.log("Actualización completada en base de datos");
+      
+      // Verificar que se guardó correctamente
+      const [verifiedTemplate] = await db
+        .select()
+        .from(formTemplates)
+        .where(eq(formTemplates.id, templateId));
+        
+      if (!verifiedTemplate || !verifiedTemplate.structure) {
+        console.error("No se pudo verificar la actualización");
+        return res.status(500).json({ message: "Error al verificar la actualización" });
+      }
+      
+      // Verificar que el campo se actualizó correctamente
+      let verifiedField;
+      try {
+        const verifiedStructure = typeof verifiedTemplate.structure === 'string' 
+          ? JSON.parse(verifiedTemplate.structure) 
+          : verifiedTemplate.structure;
+          
+        verifiedField = verifiedStructure.fields.find((f: any) => f.id === fieldId);
+        console.log(`Verificación: valor guardado = "${verifiedField?.displayName}"`);
+      } catch (e) {
+        console.error("Error al verificar campo actualizado:", e);
       }
       
       // Log de actividad
@@ -263,15 +315,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Retornar respuesta exitosa
-      res.json({ 
+      res.status(200).json({ 
         success: true,
         message: "Campo actualizado correctamente",
         fieldId,
-        displayName
+        displayName,
+        verified: verifiedField?.displayName === displayName
       });
     } catch (error) {
       console.error("Error al actualizar campo:", error);
-      next(error);
+      res.status(500).json({ message: "Error interno del servidor", error: String(error) });
     }
   });
 

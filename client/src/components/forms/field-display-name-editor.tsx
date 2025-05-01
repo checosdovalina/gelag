@@ -10,7 +10,7 @@ interface FieldDisplayNameEditorProps {
   fieldId: string;
   currentDisplayName: string;
   fieldLabel: string;
-  onUpdate: (fieldId: string, newDisplayName: string) => Promise<boolean>;
+  onUpdate?: (fieldId: string, newDisplayName: string) => Promise<boolean>;
 }
 
 export default function FieldDisplayNameEditor({
@@ -54,8 +54,34 @@ export default function FieldDisplayNameEditor({
       setIsLoading(true);
       console.log(`Actualizando campo ${fieldId} con nuevo displayName: "${displayName}"`);
       
-      // Llamar al método onUpdate del componente padre y esperar su resultado
-      const success = await onUpdate(fieldId, displayName);
+      // Hacer la petición directamente desde este componente
+      const response = await fetch(`/api/form-templates/${formId}/field/${fieldId}/display-name`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ displayName }),
+      });
+      
+      // Usar onUpdate desde las props si existe, de lo contrario, usar nuestra implementación
+      let success = false;
+      
+      if (onUpdate) {
+        success = await onUpdate(fieldId, displayName);
+      } else {
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Error en respuesta del servidor:', errorData);
+          throw new Error(errorData.message || 'Error al actualizar el campo');
+        }
+        
+        const data = await response.json();
+        console.log("Respuesta del servidor:", data);
+        success = data.success;
+        
+        // Recargar la página para actualizar los datos si es necesario
+        // window.location.reload();
+      }
       
       if (success) {
         setIsSuccess(true);
