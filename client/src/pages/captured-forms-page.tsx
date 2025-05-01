@@ -44,6 +44,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserRole } from "@shared/schema";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import SignaturePad from "@/components/forms/signature-pad";
 
 interface FormEntry {
   id: number;
@@ -245,17 +246,34 @@ export default function CapturedFormsPage() {
     }
   };
   
+  // Sign form state
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [formToSign, setFormToSign] = useState<FormEntry | null>(null);
+  
   // Sign a form
   const handleSignForm = (entry: FormEntry) => {
-    // En una aplicación real, aquí implementarías la captura de la firma
-    // Por ahora, simulamos una firma con una imagen base64
-    const mockSignature = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACoCAMAAABt9SM9AAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO8GxYgAAb0jQ/cAAAAASUVORK5CYII=";
-    
-    updateStatusMutation.mutate({
-      entryId: entry.id,
-      status: "signed",
-      signature: mockSignature
-    });
+    setFormToSign(entry);
+    setShowSignaturePad(true);
+  };
+  
+  // Handle signature save
+  const handleSaveSignature = (signatureDataUrl: string) => {
+    if (formToSign) {
+      updateStatusMutation.mutate({
+        entryId: formToSign.id,
+        status: "signed",
+        signature: signatureDataUrl
+      });
+      
+      setShowSignaturePad(false);
+      setFormToSign(null);
+    }
+  };
+  
+  // Handle signature cancel
+  const handleCancelSignature = () => {
+    setShowSignaturePad(false);
+    setFormToSign(null);
   };
   
   // Get user name by ID
@@ -383,6 +401,28 @@ export default function CapturedFormsPage() {
   return (
     <MainLayout title="Formularios Capturados">
       <div className="space-y-6">
+        {/* Signature Pad Modal */}
+        {showSignaturePad && (
+          <Dialog open={showSignaturePad} onOpenChange={setShowSignaturePad}>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Firmar Formulario</DialogTitle>
+                <DialogDescription>
+                  {formToSign && (
+                    <div className="mt-2">
+                      <span className="font-medium">Formulario:</span> {getTemplateName(formToSign.formTemplateId)}
+                    </div>
+                  )}
+                </DialogDescription>
+              </DialogHeader>
+              <SignaturePad 
+                onSave={handleSaveSignature}
+                onCancel={handleCancelSignature}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
+        
         {/* Actions bar */}
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <div className="relative w-full md:w-96">
