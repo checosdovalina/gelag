@@ -35,25 +35,14 @@ export default function FieldDisplayNameEditor({
     try {
       setIsLoading(true);
       
-      // Hacer una petición directa para actualizar solo este campo específico
-      const response = await apiRequest(
-        "PATCH", 
-        `/api/form-templates/${formId}/field/${fieldId}/display-name`,
-        { displayName }
-      );
+      // Notificar al componente padre sobre el cambio
+      // El componente padre se encarga de hacer la petición a la API
+      await onUpdate(fieldId, displayName);
       
-      if (response.ok) {
-        toast({
-          title: "Campo actualizado",
-          description: "El nombre para reportes ha sido actualizado correctamente"
-        });
-        
-        // Notificar al componente padre sobre el cambio
-        onUpdate(fieldId, displayName);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al actualizar el campo");
-      }
+      toast({
+        title: "Campo actualizado",
+        description: "El nombre para reportes ha sido actualizado correctamente"
+      });
     } catch (error) {
       toast({
         title: "Error",

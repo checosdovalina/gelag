@@ -58,6 +58,61 @@ export default function FormViewer({
   const [updatedFormTemplate, setUpdatedFormTemplate] = useState<FormStructure>(formTemplate);
   const { toast } = useToast();
   
+  // Función para actualizar el displayName de un campo y guardar los cambios
+  const handleFieldNameUpdate = async (fieldId: string, newDisplayName: string) => {
+    // Encuentra el formulario y el ID del formulario
+    const formId = parseInt(window.location.pathname.split("/forms/")[1]);
+    
+    if (isNaN(formId)) {
+      toast({
+        title: "Error",
+        description: "No se pudo determinar el ID del formulario",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      // Llamar a la API para actualizar el nombre del campo
+      const response = await fetch(`/api/form-templates/${formId}/field/${fieldId}/display-name`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ displayName: newDisplayName }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al actualizar el nombre del campo');
+      }
+      
+      // Actualizar el estado local para reflejar el cambio inmediatamente
+      const updatedFields = updatedFormTemplate.fields.map(field => {
+        if (field.id === fieldId) {
+          return { ...field, displayName: newDisplayName };
+        }
+        return field;
+      });
+      
+      setUpdatedFormTemplate({
+        ...updatedFormTemplate,
+        fields: updatedFields
+      });
+      
+      toast({
+        title: "Campo actualizado",
+        description: "El nombre para reportes ha sido actualizado correctamente"
+      });
+    } catch (error) {
+      console.error('Error al actualizar el campo:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Error al actualizar el campo",
+        variant: "destructive"
+      });
+    }
+  };
+  
   // Create a dynamic validation schema based on the form structure
   const [validationSchema, setValidationSchema] = useState<z.ZodTypeAny>(z.object({}));
   
@@ -607,8 +662,40 @@ export default function FormViewer({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{formTemplate.title}</CardTitle>
+            {!isReadOnly && (
+              <Dialog open={isFieldNameEditorOpen} onOpenChange={setIsFieldNameEditorOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Editar Nombres
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Editar Nombres para Reportes</DialogTitle>
+                    <DialogDescription>
+                      Configure los nombres que aparecerán en los reportes para cada campo.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4 max-h-[70vh] overflow-auto">
+                    {formTemplate.fields.map((field) => (
+                      <div key={field.id} className="grid gap-2">
+                        <h3 className="font-medium text-sm text-slate-700">{field.label}</h3>
+                        <FieldDisplayNameEditor
+                          formId={parseInt(window.location.pathname.split("/forms/")[1])}
+                          fieldId={field.id}
+                          currentDisplayName={field.displayName || field.label}
+                          fieldLabel={field.label}
+                          onUpdate={handleFieldNameUpdate}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
