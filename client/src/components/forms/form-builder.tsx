@@ -88,7 +88,27 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
 
   // Handle form submission
   const onSubmit = (data: z.infer<typeof formBuilderSchema>) => {
-    onSave(data);
+    // Asegurar que todos los campos tengan sus propiedades completas
+    const fieldsWithDisplayProps = data.fields.map(field => {
+      // Si no tiene displayName, usar el label como valor predeterminado
+      if (!field.displayName) {
+        field.displayName = field.label;
+      }
+      // Asignar displayOrder si no existe
+      if (field.displayOrder === undefined) {
+        field.displayOrder = 0;
+      }
+      return field;
+    });
+    
+    // Enviar los datos actualizados
+    const updatedData = {
+      ...data,
+      fields: fieldsWithDisplayProps
+    };
+    
+    console.log('Enviando formulario con datos:', updatedData);
+    onSave(updatedData);
   };
 
   // Handle drag and drop reordering
@@ -206,6 +226,14 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               placeholder="Ej: Nombre Empleado, Departamento" 
                                               {...field} 
                                               value={field.value || ''}
+                                              onChange={(e) => {
+                                                field.onChange(e.target.value);
+                                                // Aseguramos que el valor se actualice en el objeto del formulario
+                                                const updatedFields = [...form.getValues().fields];
+                                                updatedFields[index].displayName = e.target.value;
+                                                form.setValue('fields', updatedFields);
+                                                console.log(`DisplayName para campo ${index} actualizado:`, e.target.value);
+                                              }}
                                             />
                                           </FormControl>
                                           <FormDescription>
@@ -230,6 +258,11 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               onChange={(e) => {
                                                 const value = e.target.value === '' ? undefined : parseInt(e.target.value);
                                                 field.onChange(value);
+                                                // Aseguramos que el valor se actualice en el objeto del formulario
+                                                const updatedFields = [...form.getValues().fields];
+                                                updatedFields[index].displayOrder = value;
+                                                form.setValue('fields', updatedFields);
+                                                console.log(`DisplayOrder para campo ${index} actualizado:`, value);
                                               }}
                                             />
                                           </FormControl>
