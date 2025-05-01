@@ -63,7 +63,7 @@ export default function FormViewer({
   const { toast } = useToast();
   
   // Función para actualizar el displayName de un campo y guardar los cambios
-  const handleFieldNameUpdate = async (fieldId: string, newDisplayName: string) => {
+  const handleFieldNameUpdate = async (fieldId: string, newDisplayName: string): Promise<boolean> => {
     // Encuentra el formulario y el ID del formulario
     const formId = parseInt(window.location.pathname.split("/forms/")[1]);
     
@@ -73,11 +73,22 @@ export default function FormViewer({
         description: "No se pudo determinar el ID del formulario",
         variant: "destructive"
       });
-      return;
+      return false;
     }
     
     try {
-      console.log(`Actualizando campo ${fieldId} a "${newDisplayName}"`);
+      console.log(`\n===== ACTUALIZANDO CAMPO =====`);
+      console.log(`FormID: ${formId}`);
+      console.log(`FieldID: ${fieldId}`);
+      console.log(`Nuevo DisplayName: "${newDisplayName}"`);
+      console.log(`===============================\n`);
+      
+      // Verificar que el campo existe en el formulario antes de intentar actualizarlo
+      const fieldExists = formTemplate.fields.find(field => field.id === fieldId);
+      if (!fieldExists) {
+        console.error(`El campo con ID ${fieldId} no existe en el formulario`);
+        return false;
+      }
       
       // Llamar a la API para actualizar el nombre del campo
       const response = await fetch(`/api/form-templates/${formId}/field/${fieldId}/display-name`, {
@@ -89,6 +100,8 @@ export default function FormViewer({
       });
       
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error en respuesta del servidor:', errorData);
         throw new Error('Error al actualizar el nombre del campo');
       }
       
@@ -104,29 +117,28 @@ export default function FormViewer({
       const updatedTemplate = await templateResponse.json();
       console.log("Plantilla actualizada:", updatedTemplate);
       
-      // Actualizar el estado local con la plantilla actualizada
+      // Actualizar el estado local con la plantilla actualizada del servidor
       if (updatedTemplate && updatedTemplate.structure) {
+        // Actualizamos directamente con la estructura recibida del servidor
         setUpdatedFormTemplate(updatedTemplate.structure);
-      }
-      
-      // Actualizar el estado local para reflejar el cambio inmediatamente (respaldo)
-      const updatedFields = updatedFormTemplate.fields.map(field => {
-        if (field.id === fieldId) {
-          console.log(`Actualizando campo en estado local: ${field.id}, nuevo displayName: "${newDisplayName}"`);
-          return { ...field, displayName: newDisplayName };
+        
+        // Verificamos que el campo se haya actualizado correctamente
+        const updatedField = updatedTemplate.structure.fields?.find(
+          (f: any) => f.id === fieldId
+        );
+        
+        if (updatedField) {
+          console.log(`Verificación: Campo actualizado en servidor: ${updatedField.displayName}`);
+          if (updatedField.displayName !== newDisplayName) {
+            console.warn(`ADVERTENCIA: El displayName no coincide con el enviado.`);
+            console.warn(`Enviado: "${newDisplayName}", Recibido: "${updatedField.displayName}"`);
+          }
         }
-        return field;
-      });
-      
-      setUpdatedFormTemplate(prevState => ({
-        ...prevState,
-        fields: updatedFields
-      }));
-      
-      toast({
-        title: "Campo actualizado",
-        description: "El nombre para reportes ha sido actualizado correctamente"
-      });
+        
+        return true;
+      } else {
+        throw new Error("La plantilla actualizada no tiene una estructura válida");
+      }
     } catch (error) {
       console.error('Error al actualizar el campo:', error);
       toast({
@@ -134,6 +146,7 @@ export default function FormViewer({
         description: error instanceof Error ? error.message : "Error al actualizar el campo",
         variant: "destructive"
       });
+      return false;
     }
   };
   
