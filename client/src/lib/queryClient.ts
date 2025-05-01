@@ -11,6 +11,7 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  options?: { responseType?: 'blob' }
 ): Promise<Response> {
   const res = await fetch(url, {
     method,

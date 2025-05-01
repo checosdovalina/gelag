@@ -726,6 +726,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
+  // Ruta para actualizar estado de un formulario capturado
+  app.patch("/api/form-entries/:id/status", async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de formulario inválido" });
+      }
+
+      // Verificar si existe el formulario
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Formulario no encontrado" });
+      }
+
+      // Validar datos de estado
+      const { status, signature } = req.body;
+      if (!status) {
+        return res.status(400).json({ message: "Se requiere el estado del formulario" });
+      }
+
+      // Actualizar según el estado
+      const updateData: any = { status };
+      
+      if (status === "signed" && signature) {
+        updateData.signature = signature;
+        updateData.signedBy = req.user?.id;
+        updateData.signedAt = new Date();
+      } else if (status === "approved") {
+        updateData.approvedBy = req.user?.id;
+        updateData.approvedAt = new Date();
+      }
+
+      // Actualizar en la base de datos
+      const updatedEntry = await storage.updateFormEntry(entryId, updateData);
+
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: `${status}`,
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { formTemplateId: entry.formTemplateId }
+      });
+
+      res.json(updatedEntry);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Ruta para exportar un formulario en PDF o Excel
+  app.get("/api/form-entries/:id/export", async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      const format = req.query.format as string || "pdf";
+      
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de formulario inválido" });
+      }
+
+      // Obtener el formulario y su plantilla
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Formulario no encontrado" });
+      }
+      
+      const template = await storage.getFormTemplate(entry.formTemplateId);
+      if (!template) {
+        return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
+      }
+
+      // Generar el archivo según el formato solicitado
+      if (format === "pdf") {
+        // TODO: Implementar generación de PDF
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_${entryId}.pdf"`);
+        // Por ahora enviamos un PDF vacío como placeholder
+        const pdfPlaceholder = Buffer.from("JVBERi0xLjAKJcOkw7PDqgoxIDAgb2JqCjw8L1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvS2lkcyBbMyAwIFJdL0NvdW50IDE+PgplbmRvYmoKMyAwIG9iago8PC9NZWRpYUJveCBbMCAwIDMgM10+PgplbmRvYmoKdHJhaWxlcgo8PC9Sb290IDEgMCBSPj4KJSUFT0YK", "base64");
+        res.send(pdfPlaceholder);
+      } else if (format === "excel") {
+        // TODO: Implementar generación de Excel
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_${entryId}.xlsx"`);
+        // Por ahora enviamos un Excel vacío como placeholder
+        const excelPlaceholder = Buffer.from("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", "base64");
+        res.send(excelPlaceholder);
+      } else {
+        return res.status(400).json({ message: "Formato no válido. Use 'pdf' o 'excel'." });
+      }
+
+      // Registrar actividad de exportación
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "exported",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { format, formTemplateId: entry.formTemplateId }
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // Rutas para reportes guardados
   app.get("/api/saved-reports", async (req, res, next) => {
     try {
