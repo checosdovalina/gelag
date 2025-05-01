@@ -449,6 +449,18 @@ export default function CapturedFormsPage() {
                 <UserCircle2 className="h-4 w-4" />
               </Button>
             )}
+            
+            {isSuperAdmin && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => handleDeleteForm(entry)}
+                title="Eliminar formulario"
+                className="text-red-500 hover:text-red-700 hover:bg-red-100"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -468,6 +480,40 @@ export default function CapturedFormsPage() {
   return (
     <MainLayout title="Formularios Capturados">
       <div className="space-y-6">
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+                Confirmar eliminación
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {entryToDelete && (
+                  <div className="space-y-2">
+                    <p>¿Está seguro que desea eliminar este formulario?</p>
+                    <div className="bg-muted p-3 rounded text-sm">
+                      <p><span className="font-medium">Formulario:</span> {getTemplateName(entryToDelete.formTemplateId)}</p>
+                      <p><span className="font-medium">Creado por:</span> {getUserName(entryToDelete.createdBy)}</p>
+                      <p><span className="font-medium">Fecha:</span> {format(new Date(entryToDelete.createdAt), "dd/MM/yyyy HH:mm", { locale: es })}</p>
+                    </div>
+                    <p className="text-red-500 font-medium">Esta acción no se puede deshacer.</p>
+                  </div>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDeleteForm}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        
         {/* Signature Pad Modal */}
         {showSignaturePad && (
           <Dialog open={showSignaturePad} onOpenChange={setShowSignaturePad}>
