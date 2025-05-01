@@ -19,7 +19,7 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Loader2, Save, Download, FileDown, FilePen, Pencil } from "lucide-react";
-import { FormStructure } from "@shared/schema";
+import { FormStructure, UserRole } from "@shared/schema";
 import type { FormField as IFormField } from "@shared/schema";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import FieldDisplayNameEditor from "./field-display-name-editor";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface FormViewerProps {
   formTemplate: FormStructure;
@@ -42,6 +43,7 @@ interface FormViewerProps {
   onExport?: (format: "pdf" | "excel") => void;
   isReadOnly?: boolean;
   isLoading?: boolean;
+  allowEditDisplayNames?: boolean;
 }
 
 export default function FormViewer({
@@ -51,11 +53,13 @@ export default function FormViewer({
   onExport,
   isReadOnly = false,
   isLoading = false,
+  allowEditDisplayNames = false,
 }: FormViewerProps) {
   // Para edición de nombres de campos
   const [isFieldNameEditorOpen, setIsFieldNameEditorOpen] = useState(false);
   const [selectedField, setSelectedField] = useState<IFormField | null>(null);
   const [updatedFormTemplate, setUpdatedFormTemplate] = useState<FormStructure>(formTemplate);
+  const { user } = useAuth();
   const { toast } = useToast();
   
   // Función para actualizar el displayName de un campo y guardar los cambios
@@ -664,7 +668,8 @@ export default function FormViewer({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{formTemplate.title}</CardTitle>
-            {!isReadOnly && (
+            {/* Mostrar botón "Editar Nombres" si allowEditDisplayNames está activado o si el usuario es SuperAdmin */}
+            {(allowEditDisplayNames || user?.role === UserRole.SUPERADMIN) && (
               <Dialog open={isFieldNameEditorOpen} onOpenChange={setIsFieldNameEditorOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
