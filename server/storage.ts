@@ -51,6 +51,7 @@ export interface IStorage {
   getFormEntriesByTemplate(templateId: number): Promise<FormEntry[]>;
   getFormEntriesByUser(userId: number): Promise<FormEntry[]>;
   getFormEntriesByDepartment(department: string): Promise<FormEntry[]>;
+  getAllFormEntries(): Promise<FormEntry[]>;
   
   // Saved report methods
   getSavedReport(id: number): Promise<SavedReport | undefined>;
@@ -339,6 +340,13 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(formEntries)
       .where(eq(formEntries.department, department));
+  }
+
+  async getAllFormEntries(): Promise<FormEntry[]> {
+    return await db
+      .select()
+      .from(formEntries)
+      .orderBy(desc(formEntries.createdAt));
   }
   
   async updateFormEntry(id: number, data: Partial<any>): Promise<FormEntry | undefined> {
