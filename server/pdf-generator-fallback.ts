@@ -210,13 +210,43 @@ function generatePDFContent(
         const fieldLabel = field.displayName || field.label;
         let fieldValue = entry.data[fieldId];
         
+        // Identificar campos específicos de buenas prácticas por su ID
+        const bpFieldIds = [
+          "3d02e27f-a5e8-4b6b-a8fa-82ee600cf12e",
+          "5bb73f01-5300-42be-985d-06a471027ef8",
+          "03364956-5d2c-4f31-8ad1-302cd9815ecf",
+          "421ff0d4-353f-40a8-a276-7d58d9c7a6ee",
+          "9cf8d32f-44a2-43c6-9e8e-45c099225467",
+          "d3409f51-f132-4881-906a-b7d5cb6c55e4"
+        ];
+        
+        // Manejar específicamente estos campos
+        if (bpFieldIds.includes(fieldId) && Array.isArray(fieldValue) && fieldValue.length > 0) {
+          fieldValue = fieldValue[0]; // Extraer el primer valor del array
+        }
+        
         // Convertir el valor según el tipo de campo
         if (field.type === 'select' || field.type === 'radio') {
           if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
             fieldValue = fieldValue.label;
           }
         } else if (field.type === 'checkbox') {
-          fieldValue = fieldValue ? 'Sí' : 'No';
+          // Los campos de buenas prácticas pueden ser de tipo checkbox pero tienen valores diferentes
+          const bpFieldIds = [
+            "3d02e27f-a5e8-4b6b-a8fa-82ee600cf12e",
+            "5bb73f01-5300-42be-985d-06a471027ef8",
+            "03364956-5d2c-4f31-8ad1-302cd9815ecf",
+            "421ff0d4-353f-40a8-a276-7d58d9c7a6ee",
+            "9cf8d32f-44a2-43c6-9e8e-45c099225467",
+            "d3409f51-f132-4881-906a-b7d5cb6c55e4"
+          ];
+          
+          if (bpFieldIds.includes(fieldId)) {
+            // No convertir a "Sí/No" para campos de buenas prácticas
+            // Ya se habrán manejado arriba
+          } else {
+            fieldValue = fieldValue ? 'Sí' : 'No';
+          }
         } else if (field.type === 'date') {
           if (fieldValue) {
             try {
@@ -294,13 +324,43 @@ function generatePDFContent(
           const fieldLabel = field.displayName || field.label;
           let fieldValue = entry.data[fieldId];
           
+          // Identificar campos específicos de buenas prácticas por su ID
+          const bpFieldIds = [
+            "3d02e27f-a5e8-4b6b-a8fa-82ee600cf12e",
+            "5bb73f01-5300-42be-985d-06a471027ef8",
+            "03364956-5d2c-4f31-8ad1-302cd9815ecf",
+            "421ff0d4-353f-40a8-a276-7d58d9c7a6ee",
+            "9cf8d32f-44a2-43c6-9e8e-45c099225467",
+            "d3409f51-f132-4881-906a-b7d5cb6c55e4"
+          ];
+          
+          // Manejar específicamente estos campos
+          if (bpFieldIds.includes(fieldId) && Array.isArray(fieldValue) && fieldValue.length > 0) {
+            fieldValue = fieldValue[0]; // Extraer el primer valor del array
+          }
+          
           // Convertir el valor según el tipo de campo
           if (field.type === 'select' || field.type === 'radio') {
             if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
               fieldValue = fieldValue.label;
             }
           } else if (field.type === 'checkbox') {
-            fieldValue = fieldValue ? 'Sí' : 'No';
+            // Los campos de buenas prácticas pueden ser de tipo checkbox pero tienen valores diferentes
+            const bpFieldIds = [
+              "3d02e27f-a5e8-4b6b-a8fa-82ee600cf12e",
+              "5bb73f01-5300-42be-985d-06a471027ef8",
+              "03364956-5d2c-4f31-8ad1-302cd9815ecf",
+              "421ff0d4-353f-40a8-a276-7d58d9c7a6ee",
+              "9cf8d32f-44a2-43c6-9e8e-45c099225467",
+              "d3409f51-f132-4881-906a-b7d5cb6c55e4"
+            ];
+            
+            if (bpFieldIds.includes(fieldId)) {
+              // No convertir a "Sí/No" para campos de buenas prácticas
+              // Ya se habrán manejado arriba
+            } else {
+              fieldValue = fieldValue ? 'Sí' : 'No';
+            }
           } else if (field.type === 'date') {
             if (fieldValue) {
               try {
