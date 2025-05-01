@@ -91,14 +91,20 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     // Asegurar que todos los campos tengan sus propiedades completas
     const fieldsWithDisplayProps = data.fields.map(field => {
       // Si no tiene displayName, usar el label como valor predeterminado
-      if (!field.displayName) {
+      if (!field.displayName || field.displayName === '') {
         field.displayName = field.label;
       }
       // Asignar displayOrder si no existe
-      if (field.displayOrder === undefined) {
+      if (field.displayOrder === undefined || field.displayOrder === null) {
         field.displayOrder = 0;
       }
-      return field;
+      
+      // Asegurarse de que todos los campos sean del tipo esperado
+      return {
+        ...field,
+        displayName: String(field.displayName),
+        displayOrder: Number(field.displayOrder)
+      };
     });
     
     // Enviar los datos actualizados
@@ -108,6 +114,16 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     };
     
     console.log('Enviando formulario con datos:', updatedData);
+    
+    // Log detallado para debugging
+    console.log('Campos enviados al servidor:');
+    updatedData.fields.forEach((field, index) => {
+      console.log(`Campo #${index+1} - ID: ${field.id}`);
+      console.log(`  Label: ${field.label}`);
+      console.log(`  DisplayName: ${field.displayName}`);
+      console.log(`  DisplayOrder: ${field.displayOrder}`);
+    });
+    
     onSave(updatedData);
   };
 

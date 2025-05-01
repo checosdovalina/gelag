@@ -199,16 +199,21 @@ export default function FormEditor() {
     // Verificar que cada campo tenga displayName y displayOrder
     const processedFields = structureData.fields.map(field => {
       // Si no tiene displayName, usar el label
-      if (!field.displayName) {
+      if (!field.displayName || field.displayName === '') {
         field.displayName = field.label;
       }
       
       // Si no tiene displayOrder, asignar un valor por defecto
-      if (field.displayOrder === undefined) {
+      if (field.displayOrder === undefined || field.displayOrder === null) {
         field.displayOrder = 0;
       }
       
-      return field;
+      // Asegurarse de que todos los campos sean del tipo esperado
+      return {
+        ...field,
+        displayName: String(field.displayName),
+        displayOrder: Number(field.displayOrder)
+      };
     });
     
     // Actualizar los datos con los campos procesados
@@ -218,6 +223,14 @@ export default function FormEditor() {
     };
     
     console.log("Estructura procesada para guardar:", processedStructure);
+    
+    // Profundo log para debugging
+    processedStructure.fields.forEach((field, index) => {
+      console.log(`Campo #${index+1} - ID: ${field.id}`);
+      console.log(`  Label: ${field.label}`);
+      console.log(`  DisplayName: ${field.displayName}`);
+      console.log(`  DisplayOrder: ${field.displayOrder}`);
+    });
     
     setFormStructure(processedStructure);
     setActiveTab("preview");
