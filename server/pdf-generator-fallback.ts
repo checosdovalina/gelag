@@ -226,7 +226,20 @@ function generatePDFContent(
             }
           }
         } else if (Array.isArray(fieldValue)) {
-          fieldValue = fieldValue.join(', ');
+          // Detectar valores de buenas prácticas en arrays
+          if (fieldValue.length === 1 && typeof fieldValue[0] === 'string') {
+            if (fieldValue[0] === 'APROBADO') {
+              fieldValue = 'APROBADO';
+            } else if (fieldValue[0] === 'NO APROBADO') {
+              fieldValue = 'NO APROBADO';
+            } else if (fieldValue[0] === 'NO APLICA') {
+              fieldValue = 'NO APLICA';
+            } else {
+              fieldValue = fieldValue.join(', ');
+            }
+          } else {
+            fieldValue = fieldValue.join(', ');
+          }
         } else if (field.type === 'buenas-practicas-option' || field.id.includes('checkbox-group')) {
           // Caso especial para formularios de buenas prácticas
           if (fieldValue === 'APROBADO') {
@@ -297,7 +310,20 @@ function generatePDFContent(
               }
             }
           } else if (Array.isArray(fieldValue)) {
-            fieldValue = fieldValue.join(', ');
+            // Detectar valores de buenas prácticas en arrays
+            if (fieldValue.length === 1 && typeof fieldValue[0] === 'string') {
+              if (fieldValue[0] === 'APROBADO') {
+                fieldValue = 'APROBADO';
+              } else if (fieldValue[0] === 'NO APROBADO') {
+                fieldValue = 'NO APROBADO';
+              } else if (fieldValue[0] === 'NO APLICA') {
+                fieldValue = 'NO APLICA';
+              } else {
+                fieldValue = fieldValue.join(', ');
+              }
+            } else {
+              fieldValue = fieldValue.join(', ');
+            }
           } else if (field.type === 'buenas-practicas-option' || field.id.includes('checkbox-group')) {
             // Caso especial para formularios de buenas prácticas
             if (fieldValue === 'APROBADO') {
