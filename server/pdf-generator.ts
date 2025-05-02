@@ -291,9 +291,17 @@ function generateFormHTML(
   }
   
   // Generar el HTML completo con ajustes para evitar superposición en estado
-  // Limpiar el título si contiene "TERMINADO"
+  // Manejo especial para formularios de producto terminado
   let formTitle = template.name;
-  if (formTitle.includes("TERMINADO")) {
+  let isProductoTerminado = false;
+  
+  // Verificar si es un formulario de inspección de producto terminado
+  if (formTitle.includes("PRODUCTO TERMINADO")) {
+    isProductoTerminado = true;
+  }
+  
+  // Para formularios genéricos que contienen "TERMINADO" pero no son de producto
+  if (!isProductoTerminado && formTitle.includes("TERMINADO")) {
     formTitle = formTitle.replace(" TERMINADO", "");
   }
   
@@ -308,8 +316,8 @@ function generateFormHTML(
   if (showStatus) {
     statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
     statusText = statusFromEntry;
-  } else if (formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) {
-    // Si el formulario es de inspección, agregar "TERMINADO" como estado especial
+  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && !isProductoTerminado) {
+    // Si el formulario es de inspección pero no de producto terminado, agregar "TERMINADO" como estado
     showStatus = true;
     statusClass = 'terminated-status';
     statusText = "TERMINADO";

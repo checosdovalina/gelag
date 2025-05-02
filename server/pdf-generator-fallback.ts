@@ -79,18 +79,25 @@ function generatePDFContent(
   // Título del documento centrado en la parte superior con estado al lado si aplica
   doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold');
   
-  // Título principal - Limpiar título si contiene "TERMINADO"
+  // Título original y manejo especial para formularios con "PRODUCTO TERMINADO"
   let formTitle = template.name.toUpperCase();
+  let isProductoTerminado = false;
   
-  // Verificar si el título incluye la palabra "TERMINADO" y removerla
-  if (formTitle.includes("TERMINADO")) {
+  // Verificar si es un formulario de inspección de producto terminado
+  if (formTitle.includes("PRODUCTO TERMINADO")) {
+    isProductoTerminado = true;
+  }
+  
+  // Para formularios genéricos que contienen "TERMINADO" pero no son de producto
+  // Verificar si el título incluye la palabra "TERMINADO" y no es de "PRODUCTO TERMINADO"
+  if (!isProductoTerminado && formTitle.includes("TERMINADO")) {
     formTitle = formTitle.replace(" TERMINADO", "");
   }
   
   // Establecer posición Y inicial para el título
   const titleY = 35;
   
-  // Dibujar título limpio
+  // Dibujar título completo (incluido PRODUCTO TERMINADO)
   doc.text(formTitle, 50, titleY, { 
     align: 'center',
     width: pageWidth - 100
@@ -112,8 +119,8 @@ function generatePDFContent(
         statusText = "APROBADO";
         break;
     }
-  } else if (formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) {
-    // Si el formulario es de inspección, agregar "TERMINADO" como estado especial en negro
+  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && !isProductoTerminado) {
+    // Si el formulario es de inspección pero no es de producto terminado, agregar "TERMINADO" como estado
     showStatus = true;
     statusText = "TERMINADO";
   }
