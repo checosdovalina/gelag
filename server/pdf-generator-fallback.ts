@@ -131,18 +131,10 @@ function generatePDFContent(
     statusText = "TERMINADO";
   }
   
-  // Si hay estado para mostrar, dibujarlo debajo del título
+  // Si hay estado para mostrar, debemos reorganizar los elementos
   if (showStatus) {
-    // Primero agregar la dirección de la empresa debajo del título
-    doc.fontSize(10).font('Helvetica').fillColor('#000000')
-      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-        50, titleY + 25, {
-          align: 'center',
-          width: pageWidth - 100
-        });
-        
-    // Posición del estado (muy abajo del título y debajo de la dirección)
-    const statusY = titleY + 50; // Incrementado para mayor separación
+    // Primero mostrar el estado (FIRMADO o TERMINADO) justo después del título
+    const statusY = titleY + 25; // Justo después del título
     
     // Dibujar estado con su color correspondiente
     doc.fontSize(14).fillColor(headerStatusColor);
@@ -150,6 +142,15 @@ function generatePDFContent(
       align: 'center',
       width: pageWidth - 100
     });
+    
+    // Luego dibujamos la dirección de la empresa DESPUÉS del estado
+    // con mayor separación para evitar solapamientos
+    doc.fontSize(10).font('Helvetica').fillColor('#000000')
+      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+        50, statusY + 25, {
+          align: 'center',
+          width: pageWidth - 100
+        });
     
     // Restablecer color por defecto
     doc.fillColor('#000000');
