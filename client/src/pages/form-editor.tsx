@@ -152,21 +152,37 @@ export default function FormEditor() {
       const res = await apiRequest("POST", "/api/form-templates", data);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      // Log para debugging
+      console.log("Formulario creado exitosamente:", response);
+      
       toast({
         title: "Formulario creado",
         description: "El formulario ha sido creado exitosamente",
       });
-      // Invalidar la caché de consultas para asegurar que se muestran todos los formularios
+      
+      // Primero limpiar completamente la caché del queryClient
+      queryClient.clear();
+      
+      // Luego invalidar específicamente la caché de plantillas de formularios
       queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
-      // Forzar la recarga de datos antes de navegar
-      queryClient.refetchQueries({ queryKey: ["/api/form-templates"] });
-      // Redirigir a la página de formularios después de un breve retraso para permitir la recarga
+      
+      // Forzar refetch para obtener los datos actualizados de inmediato
+      queryClient.refetchQueries({ 
+        queryKey: ["/api/form-templates"],
+        exact: false,
+        type: 'all',
+        stale: true
+      });
+      
+      // Redirigir a la página de formularios después de un retraso mayor para permitir la recarga completa
       setTimeout(() => {
-        setLocation("/forms");
-      }, 500);
+        console.log("Redireccionando a /forms después de crear formulario");
+        window.location.href = "/forms"; // Usamos navegación nativa para forzar recarga completa
+      }, 1000);
     },
     onError: (error: Error) => {
+      console.error("Error al crear formulario:", error);
       toast({
         title: "Error al crear el formulario",
         description: error.message,
@@ -181,21 +197,40 @@ export default function FormEditor() {
       const res = await apiRequest("PUT", `/api/form-templates/${formId}`, data);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      // Log para debugging
+      console.log("Formulario actualizado exitosamente:", response);
+      
       toast({
         title: "Formulario actualizado",
         description: "El formulario ha sido actualizado exitosamente",
       });
+      
+      // Primero limpiar completamente la caché del queryClient
+      queryClient.clear();
+      
+      // Luego invalidar específicamente las cachés relacionadas
       queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/form-templates/${formId}`] });
-      // Forzar la recarga de datos antes de navegar
-      queryClient.refetchQueries({ queryKey: ["/api/form-templates"] });
-      // Redirigir después de un breve retraso para permitir la recarga
+      if (formId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/form-templates/${formId}`] });
+      }
+      
+      // Forzar refetch para obtener los datos actualizados de inmediato
+      queryClient.refetchQueries({ 
+        queryKey: ["/api/form-templates"],
+        exact: false,
+        type: 'all',
+        stale: true
+      });
+      
+      // Redirigir a la página de formularios después de un retraso mayor para permitir la recarga completa
       setTimeout(() => {
-        setLocation("/forms");
-      }, 500);
+        console.log("Redireccionando a /forms después de actualizar formulario");
+        window.location.href = "/forms"; // Usamos navegación nativa para forzar recarga completa
+      }, 1000);
     },
     onError: (error: Error) => {
+      console.error("Error al actualizar formulario:", error);
       toast({
         title: "Error al actualizar el formulario",
         description: error.message,

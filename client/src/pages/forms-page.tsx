@@ -67,7 +67,32 @@ export default function FormsPage() {
     staleTime: 0, // No caché, siempre actualizar al montar
     refetchOnWindowFocus: true, // Actualizar al volver a la ventana
     refetchOnMount: true, // Actualizar al montar el componente
+    refetchInterval: false, // No refrescar automáticamente
   });
+  
+  // Efecto para forzar recarga de formularios cuando el componente se monta
+  useEffect(() => {
+    console.log("FormsPage: Forzando actualización de formularios al montar");
+    
+    // Limpiar caché al montar
+    queryClient.removeQueries({ queryKey: ["/api/form-templates"] });
+    
+    // Recargar datos después de limpiar la caché
+    setTimeout(() => {
+      console.log("FormsPage: Actualizando formularios...");
+      refetch().then(result => {
+        console.log("FormsPage: Formularios actualizados:", result.data);
+      });
+    }, 100);
+    
+    // Configurar un intervalo para mantener actualizada la lista
+    const interval = setInterval(() => {
+      console.log("FormsPage: Refrescando lista de formularios...");
+      refetch();
+    }, 30000); // 30 segundos
+    
+    return () => clearInterval(interval);
+  }, [refetch]);
   
   // Mutation para eliminar formularios
   const deleteFormMutation = useMutation({
