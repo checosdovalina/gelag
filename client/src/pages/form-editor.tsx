@@ -396,6 +396,8 @@ export default function FormEditor() {
                 </CardHeader>
                 <CardContent>
                   <FormViewer
+                    formTitle={form.getValues().name}
+                    formDescription={form.getValues().description}
                     formTemplate={formStructure}
                     onSubmit={() => {}}
                     isReadOnly={true}

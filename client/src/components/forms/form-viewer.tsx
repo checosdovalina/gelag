@@ -38,6 +38,8 @@ import { useAuth } from "@/hooks/use-auth";
 
 interface FormViewerProps {
   formTemplate: FormStructure;
+  formTitle?: string;
+  formDescription?: string;
   initialData?: any;
   onSubmit: (data: any) => void;
   onExport?: (format: "pdf" | "excel") => void;
@@ -49,6 +51,8 @@ interface FormViewerProps {
 
 export default function FormViewer({
   formTemplate,
+  formTitle,
+  formDescription,
   initialData,
   onSubmit,
   onExport,
