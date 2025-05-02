@@ -342,12 +342,13 @@ function generateFormHTML(
   
   if (showStatus) {
     // Con estado (firmado, aprobado o TERMINADO para inspecciones)
+    // Ahora ponemos primero la dirección y luego el estado para evitar solapamiento
     headerContent = `
       <h1>${formTitle}</h1>
-      <div class="status-label ${statusClass}">${statusText}</div>
       <div class="company-info">
         GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
       </div>
+      <div class="status-label ${statusClass}" style="margin-top: 15px;">${statusText}</div>
     `;
   } else {
     // Sin estado especial
