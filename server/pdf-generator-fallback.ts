@@ -73,23 +73,66 @@ function generatePDFContent(
   const pageWidth = doc.page.width;
   const pageCenter = pageWidth / 2;
   
-  // Título del documento centrado en la parte superior (BUENAS PRACTICAS DE PERSONAL 2)
-  doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold')
-     .text(template.name.toUpperCase(), 50, 40, { 
-       align: 'center',
-       width: pageWidth - 100
-     });
+  // Obtener estado para mostrar en el título
+  const statusLabel = getStatusLabel(entry.status).toUpperCase();
   
-  // Dirección de la empresa debajo del título (como en la imagen de referencia)
-  doc.fontSize(10).font('Helvetica').fillColor('#000000')
-     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-       50, 65, {
-         align: 'center',
-         width: pageWidth - 100
-       });
+  // Título del documento centrado en la parte superior con estado al lado si aplica
+  doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold');
   
-  // Espacio después del título y dirección
-  const lineY = 100;
+  // Título principal 
+  if (entry.status === 'signed' || entry.status === 'approved') {
+    // Si está firmado o aprobado, mostrar el título en línea separada del estado
+    doc.text(template.name.toUpperCase(), 50, 35, { 
+      align: 'center',
+      width: pageWidth - 100
+    });
+    
+    // Agregar estado debajo del título, pero no superpuesto
+    let statusColor = '#000000';
+    switch(entry.status) {
+      case 'signed': statusColor = '#0066cc'; break;     // Azul para firmado
+      case 'approved': statusColor = '#009933'; break;   // Verde para aprobado
+    }
+    
+    doc.fontSize(14).fillColor(statusColor);
+    doc.text(statusLabel, 50, 60, { 
+      align: 'center',
+      width: pageWidth - 100
+    });
+    
+    // Restablecer color
+    doc.fillColor('#000000');
+    
+    // Dirección de la empresa debajo del título y estado
+    doc.fontSize(10).font('Helvetica').fillColor('#000000')
+      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+        50, 85, {
+          align: 'center',
+          width: pageWidth - 100
+        });
+  } else {
+    // Para otros estados, mantener el formato original
+    doc.text(template.name.toUpperCase(), 50, 40, { 
+      align: 'center',
+      width: pageWidth - 100
+    });
+    
+    // Dirección de la empresa debajo del título
+    doc.fontSize(10).font('Helvetica').fillColor('#000000')
+      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+        50, 65, {
+          align: 'center',
+          width: pageWidth - 100
+        });
+  }
+  
+  // Espacio después del título y dirección (ajustado según el formato)
+  let lineY = 100;
+  
+  // Si es un formulario firmado o aprobado, ajustar el espacio por el título con estado
+  if (entry.status === 'signed' || entry.status === 'approved') {
+    lineY = 120; // Más espacio para acomodar el estado adicional
+  }
   
   // Información principal: columnas para folio, fecha, creado por, etc.
   const infoY = lineY + 20;

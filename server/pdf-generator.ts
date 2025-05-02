@@ -277,7 +277,48 @@ function generateFormHTML(
     `;
   }
   
-  // Generar el HTML completo
+  // Generar el HTML completo con ajustes para evitar superposición en estado
+  const statusLabel = getStatusLabel(entry.status).toUpperCase();
+  
+  // Determinar clase de estado y formato de encabezado
+  let statusClass = '';
+  let headerContent = '';
+  
+  if (entry.status === 'signed' || entry.status === 'approved') {
+    // Para estados firmados o aprobados, separamos el estado en línea independiente
+    statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
+    headerContent = `
+      <h1>${template.name}</h1>
+      <div class="status-label ${statusClass}">${statusLabel}</div>
+      <div class="company-info">
+        GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
+      </div>
+    `;
+  } else {
+    // Para otros estados, mantener el formato original
+    headerContent = `
+      <h1>${template.name}</h1>
+      <div class="company-info">
+        GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
+      </div>
+    `;
+  }
+  
+  // Agregar estilos para los diferentes estados
+  css += `
+    .signed-status, .approved-status {
+      margin: 5px 0 10px 0;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .signed-status {
+      color: #0066cc;
+    }
+    .approved-status {
+      color: #009933;
+    }
+  `;
+  
   return `
     <!DOCTYPE html>
     <html lang="es">
@@ -289,10 +330,7 @@ function generateFormHTML(
     </head>
     <body>
       <div class="header">
-        <h1>${template.name}</h1>
-        <div class="company-info">
-          GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
-        </div>
+        ${headerContent}
       </div>
       
       <div class="meta-info">
