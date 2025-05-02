@@ -104,22 +104,25 @@ function generatePDFContent(
   });
   
   // Determinar si necesitamos mostrar un estado adicional bajo el título
-  let showStatus = entry.status === 'signed' || entry.status === 'approved';
+  let showStatus = false;
   let headerStatusColor = '#000000';
   let statusText = "";
   
-  if (showStatus) {
-    switch(entry.status) {
-      case 'signed': 
-        headerStatusColor = '#0066cc';
-        statusText = "FIRMADO";
-        break;
-      case 'approved':
-        headerStatusColor = '#009933';
-        statusText = "APROBADO";
-        break;
+  // Si el formulario tiene estado firmado o aprobado, siempre mostrar ese estado
+  // (ignorando cualquier "TERMINADO" en el título)
+  if (entry.status === 'signed' || entry.status === 'approved') {
+    showStatus = true;
+    
+    if (entry.status === 'signed') {
+      headerStatusColor = '#0066cc';
+      statusText = "FIRMADO";
+    } else {
+      headerStatusColor = '#009933';
+      statusText = "APROBADO";
     }
-  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
+  } 
+  // Si NO está firmado/aprobado, entonces considerar si necesitamos mostrar "TERMINADO"
+  else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
              !isProductoTerminado && 
              !formTitle.includes("TERMINADO")) {
     // Solo agregar "TERMINADO" como estado si el formulario es de inspección,

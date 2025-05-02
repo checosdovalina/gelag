@@ -309,14 +309,25 @@ function generateFormHTML(
   const statusFromEntry = getStatusLabel(entry.status).toUpperCase();
   
   // Determinar si necesitamos mostrar un estado especial
-  let showStatus = entry.status === 'signed' || entry.status === 'approved';
+  let showStatus = false;
   let statusClass = '';
   let statusText = "";
   
-  if (showStatus) {
-    statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
-    statusText = statusFromEntry;
-  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
+  // Si el formulario tiene estado firmado o aprobado, siempre mostrar ese estado
+  // (ignorando cualquier "TERMINADO" en el título)
+  if (entry.status === 'signed' || entry.status === 'approved') {
+    showStatus = true;
+    
+    if (entry.status === 'signed') {
+      statusClass = 'signed-status';
+      statusText = "FIRMADO";
+    } else {
+      statusClass = 'approved-status';
+      statusText = "APROBADO";
+    }
+  } 
+  // Si NO está firmado/aprobado, entonces considerar si necesitamos mostrar "TERMINADO"
+  else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
              !isProductoTerminado && 
              !formTitle.includes("TERMINADO")) {
     // Solo agregar "TERMINADO" como estado si el formulario es de inspección,
