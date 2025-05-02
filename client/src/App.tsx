@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -63,6 +64,33 @@ function Router() {
 }
 
 function App() {
+  // Agregar metaetiquetas para optimizar la visualización en dispositivos móviles
+  React.useEffect(() => {
+    // Crear o actualizar la metaetiqueta viewport
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+    
+    if (!viewportMeta) {
+      viewportMeta = document.createElement('meta');
+      viewportMeta.setAttribute('name', 'viewport');
+      document.head.appendChild(viewportMeta);
+    }
+    
+    // Configurar para iPhone y otros dispositivos móviles
+    viewportMeta.setAttribute('content', 
+      'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    
+    // Crear o actualizar metaetiqueta para el color del tema
+    let themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    
+    if (!themeColorMeta) {
+      themeColorMeta = document.createElement('meta');
+      themeColorMeta.setAttribute('name', 'theme-color');
+      document.head.appendChild(themeColorMeta);
+    }
+    
+    themeColorMeta.setAttribute('content', '#2563EB');
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
