@@ -22,6 +22,7 @@ export async function generatePDF(
         '--disable-software-rasterizer',
         '--font-render-hinting=none'
       ],
+      // @ts-ignore - ignoreHTTPSErrors es válido pero no está en los tipos
       ignoreHTTPSErrors: true
     });
     const page = await browser.newPage();
@@ -74,7 +75,7 @@ function generateFormHTML(
   const department = entry.department || 'N/A';
   
   // Generar CSS para el documento
-  const css = `
+  let cssContent = `
     body {
       font-family: 'Arial', sans-serif;
       line-height: 1.6;
@@ -181,6 +182,18 @@ function generateFormHTML(
       color: #777;
       border-top: 1px solid #ddd;
       padding-top: 10px;
+    }
+    
+    .signed-status, .approved-status {
+      margin: 5px 0 10px 0;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .signed-status {
+      color: #0066cc;
+    }
+    .approved-status {
+      color: #009933;
     }
   `;
   
@@ -304,20 +317,7 @@ function generateFormHTML(
     `;
   }
   
-  // Agregar estilos para los diferentes estados
-  css += `
-    .signed-status, .approved-status {
-      margin: 5px 0 10px 0;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .signed-status {
-      color: #0066cc;
-    }
-    .approved-status {
-      color: #009933;
-    }
-  `;
+  // No es necesario agregar más estilos ya que están incluidos en cssContent
   
   return `
     <!DOCTYPE html>
@@ -326,7 +326,7 @@ function generateFormHTML(
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${template.name} - ${entry.id}</title>
-      <style>${css}</style>
+      <style>${cssContent}</style>
     </head>
     <body>
       <div class="header">
