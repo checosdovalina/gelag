@@ -79,48 +79,71 @@ function generatePDFContent(
   // Título del documento centrado en la parte superior con estado al lado si aplica
   doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold');
   
-  // Título principal 
-  if (entry.status === 'signed' || entry.status === 'approved') {
-    // Si está firmado o aprobado, mostrar el título en línea separada del estado
-    doc.text(template.name.toUpperCase(), 50, 35, { 
-      align: 'center',
-      width: pageWidth - 100
-    });
-    
-    // Agregar estado debajo del título, pero no superpuesto
-    let statusColor = '#000000';
+  // Título principal - Limpiar título si contiene "TERMINADO"
+  let formTitle = template.name.toUpperCase();
+  
+  // Verificar si el título incluye la palabra "TERMINADO" y removerla
+  if (formTitle.includes("TERMINADO")) {
+    formTitle = formTitle.replace(" TERMINADO", "");
+  }
+  
+  // Establecer posición Y inicial para el título
+  const titleY = 35;
+  
+  // Dibujar título limpio
+  doc.text(formTitle, 50, titleY, { 
+    align: 'center',
+    width: pageWidth - 100
+  });
+  
+  // Determinar si necesitamos mostrar un estado
+  let showStatus = entry.status === 'signed' || entry.status === 'approved';
+  let headerStatusColor = '#000000';
+  let statusText = "";
+  
+  if (showStatus) {
     switch(entry.status) {
-      case 'signed': statusColor = '#0066cc'; break;     // Azul para firmado
-      case 'approved': statusColor = '#009933'; break;   // Verde para aprobado
+      case 'signed': 
+        headerStatusColor = '#0066cc';
+        statusText = "FIRMADO";
+        break;
+      case 'approved':
+        headerStatusColor = '#009933';
+        statusText = "APROBADO";
+        break;
     }
+  } else if (formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) {
+    // Si el formulario es de inspección, agregar "TERMINADO" como estado especial en negro
+    showStatus = true;
+    statusText = "TERMINADO";
+  }
+  
+  // Si hay estado para mostrar, dibujarlo debajo del título
+  if (showStatus) {
+    // Posición del estado (debajo del título)
+    const statusY = titleY + 25;
     
-    doc.fontSize(14).fillColor(statusColor);
-    doc.text(statusLabel, 50, 60, { 
+    doc.fontSize(14).fillColor(headerStatusColor);
+    doc.text(statusText, 50, statusY, { 
       align: 'center',
       width: pageWidth - 100
     });
     
-    // Restablecer color
+    // Restablecer color y fuente
     doc.fillColor('#000000');
     
     // Dirección de la empresa debajo del título y estado
     doc.fontSize(10).font('Helvetica').fillColor('#000000')
       .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-        50, 85, {
+        50, statusY + 25, {
           align: 'center',
           width: pageWidth - 100
         });
   } else {
-    // Para otros estados, mantener el formato original
-    doc.text(template.name.toUpperCase(), 50, 40, { 
-      align: 'center',
-      width: pageWidth - 100
-    });
-    
-    // Dirección de la empresa debajo del título
+    // Si no hay estado, la dirección va justo debajo del título
     doc.fontSize(10).font('Helvetica').fillColor('#000000')
       .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-        50, 65, {
+        50, titleY + 25, {
           align: 'center',
           width: pageWidth - 100
         });

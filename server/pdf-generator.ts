@@ -291,31 +291,61 @@ function generateFormHTML(
   }
   
   // Generar el HTML completo con ajustes para evitar superposición en estado
-  const statusLabel = getStatusLabel(entry.status).toUpperCase();
+  // Limpiar el título si contiene "TERMINADO"
+  let formTitle = template.name;
+  if (formTitle.includes("TERMINADO")) {
+    formTitle = formTitle.replace(" TERMINADO", "");
+  }
   
-  // Determinar clase de estado y formato de encabezado
+  // Obtener estado para encabezado
+  const statusFromEntry = getStatusLabel(entry.status).toUpperCase();
+  
+  // Determinar si necesitamos mostrar un estado especial
+  let showStatus = entry.status === 'signed' || entry.status === 'approved';
   let statusClass = '';
+  let statusText = "";
+  
+  if (showStatus) {
+    statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
+    statusText = statusFromEntry;
+  } else if (formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) {
+    // Si el formulario es de inspección, agregar "TERMINADO" como estado especial
+    showStatus = true;
+    statusClass = 'terminated-status';
+    statusText = "TERMINADO";
+  }
+  
+  // Generar contenido de encabezado según estado
   let headerContent = '';
   
-  if (entry.status === 'signed' || entry.status === 'approved') {
-    // Para estados firmados o aprobados, separamos el estado en línea independiente
-    statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
+  if (showStatus) {
+    // Con estado (firmado, aprobado o TERMINADO para inspecciones)
     headerContent = `
-      <h1>${template.name}</h1>
-      <div class="status-label ${statusClass}">${statusLabel}</div>
+      <h1>${formTitle}</h1>
+      <div class="status-label ${statusClass}">${statusText}</div>
       <div class="company-info">
         GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
       </div>
     `;
   } else {
-    // Para otros estados, mantener el formato original
+    // Sin estado especial
     headerContent = `
-      <h1>${template.name}</h1>
+      <h1>${formTitle}</h1>
       <div class="company-info">
         GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
       </div>
     `;
   }
+  
+  // Asegurarnos de incluir estilos para el estado "TERMINADO"
+  const terminatedStyle = `
+    .terminated-status {
+      margin: 5px 0 10px 0;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000000;
+    }
+  `;
   
   // No es necesario agregar más estilos ya que están incluidos en cssContent
   
@@ -326,7 +356,7 @@ function generateFormHTML(
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${template.name} - ${entry.id}</title>
-      <style>${cssContent}</style>
+      <style>${cssContent}${terminatedStyle}</style>
     </head>
     <body>
       <div class="header">
