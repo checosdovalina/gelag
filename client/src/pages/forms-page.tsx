@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, PenSquare, FileDown, Search, Plus, Trash2, AlertCircle } from "lucide-react";
+import { Eye, PenSquare, FileDown, Search, Plus, Trash2, AlertCircle, ClipboardCheck } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { UserRole } from "@shared/schema";
@@ -387,8 +387,17 @@ export default function FormsPage() {
             <p>{deleteError}</p>
             <p className="mt-2">Debe eliminar las entradas asociadas antes de eliminar este formulario.</p>
           </div>
-          <DialogFooter>
-            <Button onClick={closeDeleteErrorDialog}>Entendido</Button>
+          <DialogFooter className="flex justify-between">
+            <Button onClick={closeDeleteErrorDialog} variant="outline">Cancelar</Button>
+            <Link href={formToDelete ? `/captured-forms?template=${formToDelete.id}` : "/captured-forms"}>
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={closeDeleteErrorDialog}
+              >
+                <ClipboardCheck className="mr-2 h-4 w-4" />
+                Ver entradas asociadas
+              </Button>
+            </Link>
           </DialogFooter>
         </DialogContent>
       </Dialog>
