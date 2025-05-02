@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -65,7 +65,7 @@ function Router() {
 
 function App() {
   // Agregar metaetiquetas para optimizar la visualización en dispositivos móviles
-  React.useEffect(() => {
+  useEffect(() => {
     // Crear o actualizar la metaetiqueta viewport
     let viewportMeta = document.querySelector('meta[name="viewport"]');
     
