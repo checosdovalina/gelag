@@ -316,8 +316,11 @@ function generateFormHTML(
   if (showStatus) {
     statusClass = entry.status === 'signed' ? 'signed-status' : 'approved-status';
     statusText = statusFromEntry;
-  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && !isProductoTerminado) {
-    // Si el formulario es de inspección pero no de producto terminado, agregar "TERMINADO" como estado
+  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
+             !isProductoTerminado && 
+             !formTitle.includes("TERMINADO")) {
+    // Solo agregar "TERMINADO" como estado si el formulario es de inspección,
+    // no es de producto terminado, y no tiene ya "TERMINADO" en el título
     showStatus = true;
     statusClass = 'terminated-status';
     statusText = "TERMINADO";

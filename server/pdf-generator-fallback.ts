@@ -103,7 +103,7 @@ function generatePDFContent(
     width: pageWidth - 100
   });
   
-  // Determinar si necesitamos mostrar un estado
+  // Determinar si necesitamos mostrar un estado adicional bajo el título
   let showStatus = entry.status === 'signed' || entry.status === 'approved';
   let headerStatusColor = '#000000';
   let statusText = "";
@@ -119,8 +119,11 @@ function generatePDFContent(
         statusText = "APROBADO";
         break;
     }
-  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && !isProductoTerminado) {
-    // Si el formulario es de inspección pero no es de producto terminado, agregar "TERMINADO" como estado
+  } else if ((formTitle.includes("INSPECCION") || formTitle.includes("INSPECCIÓN")) && 
+             !isProductoTerminado && 
+             !formTitle.includes("TERMINADO")) {
+    // Solo agregar "TERMINADO" como estado si el formulario es de inspección,
+    // no es de producto terminado, y no tiene ya "TERMINADO" en el título
     showStatus = true;
     statusText = "TERMINADO";
   }
