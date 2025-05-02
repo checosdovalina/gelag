@@ -733,7 +733,12 @@ export default function FormViewer({
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{formTemplate.title}</CardTitle>
+            <div>
+              <CardTitle>{formTitle || formTemplate.title}</CardTitle>
+              {formDescription && (
+                <p className="text-sm text-muted-foreground mt-1">{formDescription}</p>
+              )}
+            </div>
             {/* Mostrar botón "Editar Nombres" si allowEditDisplayNames está activado o si el usuario es SuperAdmin */}
             {(allowEditDisplayNames || user?.role === UserRole.SUPERADMIN) && (
               <Dialog open={isFieldNameEditorOpen} onOpenChange={setIsFieldNameEditorOpen}>

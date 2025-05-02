@@ -112,6 +112,40 @@ export default function FormEditor() {
     }
   }, [formData, form]);
 
+  // Función para actualizar la vista previa cuando cambian los metadatos
+  const updateFormPreview = () => {
+    if (formStructure) {
+      // Obtener los valores actuales del formulario
+      const formValues = form.getValues();
+      
+      // Clonar la estructura actual y actualizar el título
+      const updatedStructure = {
+        ...formStructure,
+        title: formValues.name || formStructure.title
+      };
+      
+      // Forzar la actualización de la estructura para reflejar los cambios
+      setFormStructure(updatedStructure);
+      
+      // Actualizar también en la vista previa si está activa
+      console.log("Actualizando vista previa con nombre:", formValues.name);
+    }
+  };
+
+  // Observar cambios en los campos de metadatos para actualizar la vista previa en tiempo real
+  useEffect(() => {
+    // Crear suscripción para detectar cambios en el formulario
+    const subscription = form.watch(() => {
+      // Solo actualizar la vista previa si estamos en esa pestaña
+      if (activeTab === "preview") {
+        updateFormPreview();
+      }
+    });
+    
+    // Limpiar suscripción al desmontar
+    return () => subscription.unsubscribe();
+  }, [form, activeTab, formStructure]);
+
   // Create form template mutation
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -276,7 +310,14 @@ export default function FormEditor() {
           </Button>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={(tab) => {
+          // Si estamos cambiando a la pestaña de vista previa, asegurarnos de que se actualicen los metadatos
+          if (tab === "preview" && formStructure) {
+            // Forzar actualización de la vista previa con los datos más recientes
+            setFormStructure({...formStructure});
+          }
+          setActiveTab(tab);
+        }}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="metadata">Metadatos</TabsTrigger>
             <TabsTrigger value="structure">Estructura</TabsTrigger>
@@ -360,7 +401,18 @@ export default function FormEditor() {
                     <div className="flex justify-end">
                       <Button
                         type="button"
-                        onClick={() => setActiveTab("structure")}
+                        onClick={() => {
+                          // Actualizar formStructure con los metadatos actuales antes de cambiar de pestaña
+                          if (formStructure) {
+                            // Clonar la estructura actual y actualizar título
+                            const updatedStructure = {
+                              ...formStructure,
+                              title: form.getValues().name || formStructure.title
+                            };
+                            setFormStructure(updatedStructure);
+                          }
+                          setActiveTab("structure");
+                        }}
                       >
                         Continuar
                       </Button>
