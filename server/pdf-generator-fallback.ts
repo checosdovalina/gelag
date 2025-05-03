@@ -520,8 +520,12 @@ function generatePDFContent(
     const pageCenter = pageWidth / 2;
     
     // Título simple "Firma" como en la imagen de referencia
+    // Centrado exactamente en la posición correspondiente al recuadro
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
-       .text('Firma', { align: 'center' });
+       .text('Firma', 0, doc.y, { 
+          align: 'center',
+          width: pageWidth
+       });
        
     doc.moveDown(0.5);
     

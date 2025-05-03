@@ -278,14 +278,20 @@ function generateFormHTML(
   if (entry.signature) {
     signatureSection = `
       <div class="signature-section">
-        <h3>Firma</h3>
+        <div style="text-align: center; font-weight: bold; margin-bottom: 10px;">Firma</div>
         <div class="signature-container">
           <img class="signature-img" src="${entry.signature}" alt="Firma digital" />
         </div>
-        <div class="signature-name">
-          ${entry.signedBy ? `Usuario ID: ${entry.signedBy}` : creatorName}
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+          <div style="text-align: left;">
+            <strong>Firmado por:</strong><br/>
+            ${entry.signedBy ? `Usuario ID: ${entry.signedBy}` : creatorName}
+          </div>
+          <div style="text-align: right;">
+            <strong>Fecha de firma:</strong><br/>
+            ${entry.signedAt ? new Date(entry.signedAt).toLocaleDateString('es-MX') : ''}
+          </div>
         </div>
-        ${entry.signedAt ? `<div>Fecha de firma: ${new Date(entry.signedAt).toLocaleDateString('es-MX')}</div>` : ''}
       </div>
     `;
   }
