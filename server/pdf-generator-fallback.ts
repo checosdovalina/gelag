@@ -133,7 +133,7 @@ function generatePDFContent(
   
   // El título ya ha sido dibujado, ahora añadimos un espacio vertical mayor
   // independientemente de si hay estado o no
-  const directionY = titleY + 30; // Posición de la dirección
+  const directionY = titleY + 40; // Posición de la dirección con una línea más de separación
   
   // Insertar la dirección de la empresa con margen superior
   doc.fontSize(10).font('Helvetica').fillColor('#000000')
