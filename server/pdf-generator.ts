@@ -341,14 +341,14 @@ function generateFormHTML(
   let headerContent = '';
   
   if (showStatus) {
-    // Con estado (firmado, aprobado o TERMINADO para inspecciones)
-    // Ponemos PRIMERO el título, luego el ESTADO, y al final la dirección
+    // Nuevo formato: Primero el título, luego la dirección de la empresa,
+    // y finalmente el estado FIRMADO/TERMINADO con espacio adicional
     headerContent = `
       <h1>${formTitle}</h1>
-      <div class="status-label ${statusClass}" style="margin-top: 8px; margin-bottom: 8px;">${statusText}</div>
-      <div class="company-info" style="margin-top: 8px;">
+      <div class="company-info" style="margin-top: 10px; margin-bottom: 20px;">
         GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
       </div>
+      <div class="status-label ${statusClass}" style="margin-top: 30px; margin-bottom: 15px; font-size: 16px;">${statusText}</div>
     `;
   } else {
     // Sin estado especial

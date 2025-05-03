@@ -131,37 +131,32 @@ function generatePDFContent(
     statusText = "TERMINADO";
   }
   
-  // Si hay estado para mostrar, debemos reorganizar los elementos
+  // El título ya ha sido dibujado, ahora añadimos un espacio vertical mayor
+  // independientemente de si hay estado o no
+  const directionY = titleY + 30; // Posición de la dirección
+  
+  // Insertar la dirección de la empresa con margen superior
+  doc.fontSize(10).font('Helvetica').fillColor('#000000')
+    .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
+      50, directionY, {
+        align: 'center',
+        width: pageWidth - 100
+      });
+  
+  // Si hay estado para mostrar, añadirlo DEBAJO de la dirección
   if (showStatus) {
-    // Primero mostrar el estado (FIRMADO o TERMINADO) justo después del título
-    const statusY = titleY + 25; // Justo después del título
+    // Posición del estado 2 espacios más abajo
+    const statusY = directionY + 45; // Mayor separación después de la dirección
     
     // Dibujar estado con su color correspondiente
-    doc.fontSize(14).fillColor(headerStatusColor);
+    doc.fontSize(14).font('Helvetica-Bold').fillColor(headerStatusColor);
     doc.text(statusText, 50, statusY, { 
       align: 'center',
       width: pageWidth - 100
     });
     
-    // Luego dibujamos la dirección de la empresa DESPUÉS del estado
-    // con mayor separación para evitar solapamientos
-    doc.fontSize(10).font('Helvetica').fillColor('#000000')
-      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-        50, statusY + 25, {
-          align: 'center',
-          width: pageWidth - 100
-        });
-    
     // Restablecer color por defecto
     doc.fillColor('#000000');
-  } else {
-    // Si no hay estado, la dirección va justo debajo del título
-    doc.fontSize(10).font('Helvetica').fillColor('#000000')
-      .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-        50, titleY + 25, {
-          align: 'center',
-          width: pageWidth - 100
-        });
   }
   
   // Espacio después del título y dirección (ajustado según el formato)
