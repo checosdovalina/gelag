@@ -80,6 +80,21 @@ export const formEntries = pgTable("form_entries", {
   signedAt: timestamp("signed_at"), // When the form was signed
   approvedBy: integer("approved_by"), // User ID who approved the form (if applicable)
   approvedAt: timestamp("approved_at"), // When the form was approved (if applicable)
+  folioNumber: integer("folio_number"), // Consecutive folio number for this template
+});
+
+// Folios counter schema (tracks last folio number used per template)
+export const folioCounters = pgTable("folio_counters", {
+  id: serial("id").primaryKey(),
+  formTemplateId: integer("form_template_id").notNull().unique(), // Reference to form template
+  lastFolioNumber: integer("last_folio_number").notNull().default(0), // Last used folio number
+  prefix: text("prefix"), // Optional prefix for the folio (e.g., "INV-", "QA-")
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFolioCounterSchema = createInsertSchema(folioCounters).omit({
+  id: true,
+  updatedAt: true
 });
 
 export const insertFormEntrySchema = createInsertSchema(formEntries).omit({
@@ -116,6 +131,9 @@ export type InsertSavedReport = z.infer<typeof insertSavedReportSchema>;
 
 export type FormEntry = typeof formEntries.$inferSelect;
 export type InsertFormEntry = z.infer<typeof insertFormEntrySchema>;
+
+export type FolioCounter = typeof folioCounters.$inferSelect;
+export type InsertFolioCounter = z.infer<typeof insertFolioCounterSchema>;
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
