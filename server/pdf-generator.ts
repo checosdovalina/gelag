@@ -394,7 +394,7 @@ function generateFormHTML(
       
       <div class="meta-info">
         <div class="meta-item">
-          <strong>Folio:</strong> ${entry.id}
+          <strong>Folio:</strong> ${entry.folioNumber || entry.id}
         </div>
         <div class="meta-item">
           <strong>Fecha:</strong> ${createdAt}

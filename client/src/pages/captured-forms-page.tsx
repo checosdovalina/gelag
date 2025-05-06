@@ -356,6 +356,15 @@ export default function CapturedFormsPage() {
   // Define table columns
   const columns: ColumnDef<FormEntry>[] = [
     {
+      accessorKey: "folioNumber",
+      header: "Folio",
+      cell: ({ row }) => {
+        const folioNumber = row.getValue("folioNumber");
+        if (!folioNumber) return <div>-</div>;
+        return <div className="font-medium">{folioNumber}</div>;
+      },
+    },
+    {
       accessorKey: "formTemplateId",
       header: "Formulario",
       cell: ({ row }) => <div>{getTemplateName(row.getValue("formTemplateId"))}</div>,
