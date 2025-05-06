@@ -4,6 +4,7 @@ import {
   formEntries, FormEntry, InsertFormEntry, 
   activityLogs, ActivityLog, InsertActivityLog,
   savedReports, SavedReport, InsertSavedReport,
+  folioCounters, FolioCounter, InsertFolioCounter,
   UserRole 
 } from "@shared/schema";
 import session from "express-session";
@@ -65,6 +66,10 @@ export interface IStorage {
   // Activity log methods
   createActivityLog(log: InsertActivityLog): Promise<ActivityLog>;
   getRecentActivity(limit: number): Promise<ActivityLog[]>;
+  
+  // Folio methods
+  getFolioCounter(templateId: number): Promise<FolioCounter | undefined>;
+  getNextFolioNumber(templateId: number): Promise<number>;
   
   // Session store
   sessionStore: session.SessionStore;
@@ -325,7 +330,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createFormEntry(entry: InsertFormEntry): Promise<FormEntry> {
-    const [newEntry] = await db.insert(formEntries).values(entry).returning();
+    // Obtener el siguiente número de folio para este tipo de formulario
+    const nextFolioNumber = await this.getNextFolioNumber(entry.formTemplateId);
+    
+    // Añadir el número de folio a la entrada
+    const entryWithFolio = {
+      ...entry,
+      folioNumber: nextFolioNumber
+    };
+    
+    // Guardar la entrada con el número de folio
+    const [newEntry] = await db.insert(formEntries).values(entryWithFolio).returning();
     return newEntry;
   }
 
@@ -464,6 +479,48 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(savedReports)
       .where(eq(savedReports.id, id));
+  }
+  
+  // Folio methods
+  async getFolioCounter(templateId: number): Promise<FolioCounter | undefined> {
+    const [counter] = await db
+      .select()
+      .from(folioCounters)
+      .where(eq(folioCounters.formTemplateId, templateId));
+    return counter;
+  }
+  
+  async getNextFolioNumber(templateId: number): Promise<number> {
+    // Buscar el contador existente o crear uno nuevo
+    let counter = await this.getFolioCounter(templateId);
+    
+    if (!counter) {
+      // Si no existe, crear un nuevo contador iniciando en 1
+      const [newCounter] = await db
+        .insert(folioCounters)
+        .values({
+          formTemplateId: templateId,
+          lastFolioNumber: 1,
+          updatedAt: new Date()
+        })
+        .returning();
+      
+      return 1; // Devolver el primer número de folio
+    } else {
+      // Incrementar el contador existente
+      const nextFolioNumber = counter.lastFolioNumber + 1;
+      
+      // Actualizar el contador en la base de datos
+      await db
+        .update(folioCounters)
+        .set({
+          lastFolioNumber: nextFolioNumber,
+          updatedAt: new Date()
+        })
+        .where(eq(folioCounters.id, counter.id));
+      
+      return nextFolioNumber;
+    }
   }
 }
 
