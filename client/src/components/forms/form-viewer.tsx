@@ -65,6 +65,7 @@ export default function FormViewer({
   const [isFieldNameEditorOpen, setIsFieldNameEditorOpen] = useState(false);
   const [selectedField, setSelectedField] = useState<IFormField | null>(null);
   const [updatedFormTemplate, setUpdatedFormTemplate] = useState<FormStructure>(formTemplate);
+  const [nextFolioNumber, setNextFolioNumber] = useState<number | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   
@@ -281,6 +282,40 @@ export default function FormViewer({
     });
   }, [formTemplate, form]);
   
+  // Cargar el próximo número de folio cuando el formulario se abre (solo si no es modo lectura)
+  useEffect(() => {
+    const fetchNextFolioNumber = async () => {
+      if (formId && !isReadOnly && !initialData) {
+        try {
+          const response = await fetch(`/api/form-templates/${formId}/next-folio`);
+          if (response.ok) {
+            const data = await response.json();
+            setNextFolioNumber(data.nextFolio);
+            
+            // Automáticamente establecer el valor en cualquier campo identificado como "folio"
+            const folioField = isFolioField();
+            if (folioField) {
+              form.setValue(folioField.id, data.nextFolio.toString());
+            }
+          }
+        } catch (error) {
+          console.error("Error al obtener el próximo número de folio:", error);
+        }
+      }
+    };
+    
+    fetchNextFolioNumber();
+  }, [formId, isReadOnly, initialData, form]);
+  
+  // Función para identificar si un campo es de tipo folio
+  const isFolioField = () => {
+    return formTemplate.fields.find(field => 
+      field.id.toLowerCase() === "folio" || 
+      field.label.toLowerCase() === "folio" ||
+      field.label.toLowerCase().includes("folio")
+    );
+  };
+  
   // Renderiza la matriz de evaluación (días x empleados x criterios)
   const renderEvaluationMatrix = (field: IFormField) => {
     // Verificar que tenemos los datos necesarios
@@ -401,6 +436,11 @@ export default function FormViewer({
         return renderEvaluationMatrix(field);
         
       case "text":
+        // Verificar si este campo es un campo de folio
+        const isFolio = field.id.toLowerCase() === "folio" || 
+                        field.label.toLowerCase() === "folio" ||
+                        field.label.toLowerCase().includes("folio");
+        
         return (
           <FormField
             key={field.id}
@@ -408,15 +448,24 @@ export default function FormViewer({
             name={field.id}
             render={({ field: formField }) => (
               <FormItem>
-                <FormLabel>{field.label} {field.required && <span className="text-red-500">*</span>}</FormLabel>
+                <FormLabel>
+                  {field.label} {field.required && <span className="text-red-500">*</span>}
+                  {isFolio && !isReadOnly && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder={field.placeholder || ""}
                     {...formField}
                     value={formField.value || ""}
-                    disabled={isReadOnly}
+                    disabled={isReadOnly || isFolio}
+                    className={isFolio ? "bg-blue-50 font-medium" : ""}
                   />
                 </FormControl>
+                {isFolio && !isReadOnly && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    El número de folio se asigna automáticamente y es único para este tipo de formulario.
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -424,6 +473,11 @@ export default function FormViewer({
         );
         
       case "number":
+        // Verificar si este campo es un campo de folio
+        const isNumericFolio = field.id.toLowerCase() === "folio" || 
+                               field.label.toLowerCase() === "folio" ||
+                               field.label.toLowerCase().includes("folio");
+        
         return (
           <FormField
             key={field.id}
@@ -431,7 +485,10 @@ export default function FormViewer({
             name={field.id}
             render={({ field: formField }) => (
               <FormItem>
-                <FormLabel>{field.label} {field.required && <span className="text-red-500">*</span>}</FormLabel>
+                <FormLabel>
+                  {field.label} {field.required && <span className="text-red-500">*</span>}
+                  {isNumericFolio && !isReadOnly && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -439,9 +496,15 @@ export default function FormViewer({
                     {...formField}
                     value={formField.value === undefined ? "" : formField.value}
                     onChange={e => formField.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                    disabled={isReadOnly}
+                    disabled={isReadOnly || isNumericFolio}
+                    className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
                   />
                 </FormControl>
+                {isNumericFolio && !isReadOnly && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    El número de folio se asigna automáticamente y es único para este tipo de formulario.
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )}

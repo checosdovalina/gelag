@@ -692,6 +692,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint para obtener el próximo número de folio para un formulario específico
+  app.get("/api/form-templates/:id/next-folio", async (req, res, next) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      if (isNaN(templateId)) {
+        return res.status(400).json({ message: "ID de formulario inválido" });
+      }
+      
+      // Verificar si existe el formulario
+      const template = await storage.getFormTemplate(templateId);
+      if (!template) {
+        return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
+      }
+      
+      // Obtener el próximo número de folio
+      const nextFolio = await storage.getNextFolioNumber(templateId);
+      
+      res.json({ nextFolio });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // File upload routes
   app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
     upload.single('file'), async (req, res, next) => {
