@@ -181,7 +181,7 @@ function generatePDFContent(
   
   doc.fontSize(10).font('Helvetica-Bold');
   doc.text('Folio:', leftLabelColumn, currentY);
-  doc.font('Helvetica').text(`${entry.id}`, leftValueColumn, currentY);
+  doc.font('Helvetica').text(`${entry.folioNumber || entry.id}`, leftValueColumn, currentY);
   
   doc.fontSize(10).font('Helvetica-Bold');
   doc.text('Fecha:', leftLabelColumn, currentY + 20);

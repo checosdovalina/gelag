@@ -655,6 +655,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Ruta de prueba para crear un formulario con folio (solo para desarrollo)
+  app.get("/api/test/create-form-entry", async (req, res, next) => {
+    try {
+      // Solo permitir en entorno de desarrollo
+      if (process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Esta ruta solo está disponible en entorno de desarrollo" });
+      }
+      
+      // Obtener el primer template de formulario disponible
+      const templates = await storage.getAllFormTemplates();
+      if (templates.length === 0) {
+        return res.status(404).json({ message: "No hay plantillas de formularios disponibles" });
+      }
+      
+      const templateId = templates[0].id;
+      
+      // Crear una entrada de formulario de prueba
+      const formEntry = await storage.createFormEntry({
+        formTemplateId: templateId,
+        department: "calidad",
+        createdBy: 7, // Asegúrate de que este usuario existe
+        data: {
+          "campo_prueba": "Valor de prueba",
+          "descripcion": "Formulario de prueba para verificar folios"
+        },
+        status: "draft"
+      });
+      
+      res.json({
+        message: "Formulario creado exitosamente",
+        entry: formEntry
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // File upload routes
   app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
     upload.single('file'), async (req, res, next) => {
