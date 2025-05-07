@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, PenSquare, FileDown, Search, Plus, Trash2, AlertCircle, ClipboardCheck } from "lucide-react";
+import { 
+  Eye, PenSquare, FileDown, Search, Plus, Trash2, AlertCircle, 
+  ClipboardCheck, Copy, Loader2 
+} from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { UserRole } from "@shared/schema";
@@ -135,6 +138,40 @@ export default function FormsPage() {
       setDeleteDialogOpen(false);
     }
   });
+  
+  // Mutation para clonar formularios
+  const cloneFormMutation = useMutation({
+    mutationFn: async (formId: number) => {
+      const response = await apiRequest('POST', `/api/form-templates/${formId}/clone`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al clonar el formulario');
+      }
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Formulario clonado",
+        description: "Se ha creado una copia del formulario correctamente",
+      });
+      
+      // Actualizar la lista de formularios
+      queryClient.invalidateQueries({ queryKey: ["/api/form-templates"] });
+      
+      // Redirigir al editor del nuevo formulario
+      if (data && data.id) {
+        window.location.href = `/form-editor?id=${data.id}`;
+      }
+    },
+    onError: (error: Error) => {
+      console.error("Error al clonar formulario:", error);
+      toast({
+        title: "Error al clonar",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   // Define columns for data table
   const columns: ColumnDef<FormTemplate>[] = [
@@ -194,6 +231,21 @@ export default function FormsPage() {
                     <PenSquare className="h-4 w-4" />
                   </Button>
                 </Link>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleCloneForm(form)}
+                  title="Clonar formulario"
+                  className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                  disabled={cloneFormMutation.isPending}
+                >
+                  {cloneFormMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
                 
                 <Button 
                   variant="ghost" 
@@ -258,6 +310,16 @@ export default function FormsPage() {
         description: `El formulario ${form.name} ha sido exportado correctamente`,
       });
     }, 1500);
+  };
+  
+  // Función para clonar un formulario
+  const handleCloneForm = (form: FormTemplate) => {
+    toast({
+      title: "Clonando formulario",
+      description: `Creando una copia de ${form.name}...`,
+    });
+    
+    cloneFormMutation.mutate(form.id);
   };
   
   // Funciones para manejar la eliminación de formularios
@@ -339,19 +401,44 @@ export default function FormsPage() {
                 />
               </div>
               
-              <DialogFooter>
+              <DialogFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => setPreviewOpen(false)}>
                   Cerrar
                 </Button>
                 
-                {isSuperAdmin && (
-                  <Link href={`/form-editor?id=${selectedForm.id}`}>
-                    <Button>
-                      <PenSquare className="mr-2 h-4 w-4" />
-                      Editar Formulario
-                    </Button>
-                  </Link>
-                )}
+                <div className="flex gap-2">
+                  {isSuperAdmin && (
+                    <>
+                      <Button 
+                        variant="secondary"
+                        onClick={() => {
+                          setPreviewOpen(false);
+                          handleCloneForm(selectedForm);
+                        }}
+                        disabled={cloneFormMutation.isPending}
+                      >
+                        {cloneFormMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Clonando...
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4" />
+                            Clonar
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Link href={`/form-editor?id=${selectedForm.id}`}>
+                        <Button>
+                          <PenSquare className="mr-2 h-4 w-4" />
+                          Editar
+                        </Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
               </DialogFooter>
             </DialogContent>
           </Dialog>

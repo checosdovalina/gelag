@@ -715,6 +715,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint para clonar un formulario existente
+  app.post("/api/form-templates/:id/clone", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      if (isNaN(templateId)) {
+        return res.status(400).json({ message: "ID de formulario inválido" });
+      }
+      
+      // Obtener el formulario original
+      const originalTemplate = await storage.getFormTemplate(templateId);
+      if (!originalTemplate) {
+        return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
+      }
+      
+      // Crear nombre para la copia
+      const newName = `${originalTemplate.name} (Copia)`;
+      
+      // Crear copia del formulario conservando todas sus propiedades
+      const newTemplate = await storage.createFormTemplate({
+        name: newName,
+        description: originalTemplate.description,
+        department: originalTemplate.department,
+        structure: originalTemplate.structure,
+        createdBy: req.user.id,
+        isActive: true
+      });
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "cloned",
+        resourceType: "form_template",
+        resourceId: newTemplate.id,
+        details: { 
+          name: newTemplate.name, 
+          originalId: originalTemplate.id,
+          originalName: originalTemplate.name
+        }
+      });
+      
+      res.status(201).json(newTemplate);
+    } catch (error) {
+      console.error("Error al clonar formulario:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+      }
+      next(error);
+    }
+  });
+  
   // File upload routes
   app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
     upload.single('file'), async (req, res, next) => {
