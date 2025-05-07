@@ -1287,6 +1287,304 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =========== Rutas para gestión de productos ===========
+  // Obtener todos los productos
+  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      let products;
+      // Si se especifica active=true, solo devolver productos activos
+      if (req.query.active === 'true') {
+        products = await storage.getActiveProducts();
+      } else {
+        products = await storage.getAllProducts();
+      }
+      res.json(products);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Obtener un producto por ID
+  app.get("/api/products/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "ID de producto inválido" });
+      }
+      
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Crear un nuevo producto
+  app.post("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      // Validar que el usuario esté autenticado
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
+      // Verificar si el código ya existe
+      const existingProduct = await storage.getProductByCode(req.body.code);
+      if (existingProduct) {
+        return res.status(400).json({ message: "Ya existe un producto con ese código" });
+      }
+      
+      // Agregar el usuario que crea el producto
+      const productData = {
+        ...req.body,
+        createdBy: req.user.id
+      };
+      
+      const newProduct = await storage.createProduct(productData);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "create",
+        resourceType: "product",
+        resourceId: newProduct.id,
+        details: { name: newProduct.name, code: newProduct.code }
+      });
+      
+      res.status(201).json(newProduct);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Actualizar un producto
+  app.put("/api/products/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "ID de producto inválido" });
+      }
+      
+      // Verificar que el producto existe
+      const existingProduct = await storage.getProduct(productId);
+      if (!existingProduct) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      
+      // Si se cambia el código, verificar que no exista otro producto con ese código
+      if (req.body.code && req.body.code !== existingProduct.code) {
+        const productWithCode = await storage.getProductByCode(req.body.code);
+        if (productWithCode && productWithCode.id !== productId) {
+          return res.status(400).json({ message: "Ya existe un producto con ese código" });
+        }
+      }
+      
+      // Actualizar el producto
+      const updatedProduct = await storage.updateProduct(productId, req.body);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "update",
+        resourceType: "product",
+        resourceId: productId,
+        details: { name: updatedProduct?.name, code: updatedProduct?.code }
+      });
+      
+      res.json(updatedProduct);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Eliminar un producto (soft delete)
+  app.delete("/api/products/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "ID de producto inválido" });
+      }
+      
+      // Verificar que el producto existe
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      
+      // Realizar soft delete
+      await storage.deleteProduct(productId);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "delete",
+        resourceType: "product",
+        resourceId: productId,
+        details: { name: product.name, code: product.code }
+      });
+      
+      res.json({ message: "Producto eliminado correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // =========== Rutas para gestión de empleados ===========
+  // Obtener todos los empleados
+  app.get("/api/employees", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      let employees;
+      
+      // Filtrar por departamento si se especifica
+      if (req.query.department) {
+        employees = await storage.getEmployeesByDepartment(req.query.department as string);
+      } 
+      // Filtrar solo empleados activos si se especifica
+      else if (req.query.active === 'true') {
+        employees = await storage.getActiveEmployees();
+      } 
+      // Devolver todos los empleados
+      else {
+        employees = await storage.getAllEmployees();
+      }
+      
+      res.json(employees);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Obtener un empleado por ID
+  app.get("/api/employees/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const employeeId = parseInt(req.params.id);
+      if (isNaN(employeeId)) {
+        return res.status(400).json({ message: "ID de empleado inválido" });
+      }
+      
+      const employee = await storage.getEmployee(employeeId);
+      if (!employee) {
+        return res.status(404).json({ message: "Empleado no encontrado" });
+      }
+      
+      res.json(employee);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Crear un nuevo empleado
+  app.post("/api/employees", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      // Validar que el usuario esté autenticado
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
+      // Verificar si el número de empleado ya existe
+      const existingEmployee = await storage.getEmployeeByEmployeeId(req.body.employeeId);
+      if (existingEmployee) {
+        return res.status(400).json({ message: "Ya existe un empleado con ese número de empleado" });
+      }
+      
+      // Agregar el usuario que crea el empleado
+      const employeeData = {
+        ...req.body,
+        createdBy: req.user.id
+      };
+      
+      const newEmployee = await storage.createEmployee(employeeData);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "create",
+        resourceType: "employee",
+        resourceId: newEmployee.id,
+        details: { name: newEmployee.name, employeeId: newEmployee.employeeId }
+      });
+      
+      res.status(201).json(newEmployee);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Actualizar un empleado
+  app.put("/api/employees/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const employeeId = parseInt(req.params.id);
+      if (isNaN(employeeId)) {
+        return res.status(400).json({ message: "ID de empleado inválido" });
+      }
+      
+      // Verificar que el empleado existe
+      const existingEmployee = await storage.getEmployee(employeeId);
+      if (!existingEmployee) {
+        return res.status(404).json({ message: "Empleado no encontrado" });
+      }
+      
+      // Si se cambia el número de empleado, verificar que no exista otro empleado con ese número
+      if (req.body.employeeId && req.body.employeeId !== existingEmployee.employeeId) {
+        const employeeWithId = await storage.getEmployeeByEmployeeId(req.body.employeeId);
+        if (employeeWithId && employeeWithId.id !== employeeId) {
+          return res.status(400).json({ message: "Ya existe un empleado con ese número de empleado" });
+        }
+      }
+      
+      // Actualizar el empleado
+      const updatedEmployee = await storage.updateEmployee(employeeId, req.body);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "update",
+        resourceType: "employee",
+        resourceId: employeeId,
+        details: { name: updatedEmployee?.name, employeeId: updatedEmployee?.employeeId }
+      });
+      
+      res.json(updatedEmployee);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Eliminar un empleado (soft delete)
+  app.delete("/api/employees/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const employeeId = parseInt(req.params.id);
+      if (isNaN(employeeId)) {
+        return res.status(400).json({ message: "ID de empleado inválido" });
+      }
+      
+      // Verificar que el empleado existe
+      const employee = await storage.getEmployee(employeeId);
+      if (!employee) {
+        return res.status(404).json({ message: "Empleado no encontrado" });
+      }
+      
+      // Realizar soft delete
+      await storage.deleteEmployee(employeeId);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "delete",
+        resourceType: "employee",
+        resourceId: employeeId,
+        details: { name: employee.name, employeeId: employee.employeeId }
+      });
+      
+      res.json({ message: "Empleado eliminado correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
