@@ -124,6 +124,20 @@ async function generatePDFAndSend(
   // Stream del PDF a un archivo
   doc.pipe(fileStream);
   
+  // Añadir logo de GELAG
+  try {
+    const logoPath = path.resolve('./public/assets/gelag-logo.png');
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, {
+        fit: [120, 60],
+        align: 'center'
+      });
+      doc.moveDown();
+    }
+  } catch (logoError) {
+    console.error('Error al añadir logo:', logoError);
+  }
+  
   // Título del documento
   doc.fontSize(16).font('Helvetica-Bold').text(`DATOS HOMOLOGADOS: ${template.name}`, { align: 'center' });
   doc.moveDown();

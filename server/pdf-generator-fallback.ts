@@ -42,6 +42,21 @@ export async function generatePDFFallback(
       });
       
       // Iniciar a generar el PDF
+      try {
+        // Agregar logo de GELAG
+        const logoPath = path.resolve('./public/assets/gelag-logo.png');
+        if (fs.existsSync(logoPath)) {
+          doc.image(logoPath, {
+            fit: [120, 60],
+            align: 'center'
+          });
+          doc.moveDown();
+        }
+      } catch (logoError) {
+        console.error('Error al añadir logo:', logoError);
+      }
+      
+      // Generar el contenido del PDF
       generatePDFContent(doc, entry, template, creator);
       
       // Finalizar el documento
