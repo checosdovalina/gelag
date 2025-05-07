@@ -129,7 +129,7 @@ export function FieldsSelectorModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+      <DialogContent className="max-w-2xl overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Configurar campos visibles</DialogTitle>
           <DialogDescription>
@@ -159,61 +159,64 @@ export function FieldsSelectorModal({
         
         <Separator />
         
-        <ScrollArea className="flex-1 pr-4 pt-2">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="fields-list">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-2"
-                >
-                  {fieldOptions.map((option, index) => (
-                    <Draggable
-                      key={option.id}
-                      draggableId={option.id}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          className={`flex items-center space-x-3 border rounded-md p-3 ${
-                            option.selected ? "bg-white" : "bg-gray-50"
-                          }`}
-                        >
-                          <div {...provided.dragHandleProps}>
-                            <GripVertical className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          
-                          <Checkbox
-                            id={`field-${option.id}`}
-                            checked={option.selected}
-                            onCheckedChange={() => handleToggleField(option.id)}
-                          />
-                          
-                          <label
-                            htmlFor={`field-${option.id}`}
-                            className="flex-1 text-sm font-medium cursor-pointer"
+        {/* Aquí está el cambio clave: establecer una altura fija y asegurar que tiene overflow */}
+        <div className="flex-1 overflow-hidden" style={{ height: "60vh" }}>
+          <ScrollArea className="h-full w-full pr-4">
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="fields-list">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="space-y-2 pb-4"
+                  >
+                    {fieldOptions.map((option, index) => (
+                      <Draggable
+                        key={option.id}
+                        draggableId={option.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`flex items-center space-x-3 border rounded-md p-3 ${
+                              option.selected ? "bg-white" : "bg-gray-50"
+                            }`}
                           >
-                            {option.label}
-                          </label>
-                          
-                          {option.selected ? (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
-                          ) : (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </ScrollArea>
+                            <div {...provided.dragHandleProps}>
+                              <GripVertical className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            
+                            <Checkbox
+                              id={`field-${option.id}`}
+                              checked={option.selected}
+                              onCheckedChange={() => handleToggleField(option.id)}
+                            />
+                            
+                            <label
+                              htmlFor={`field-${option.id}`}
+                              className="flex-1 text-sm font-medium cursor-pointer"
+                            >
+                              {option.label}
+                            </label>
+                            
+                            {option.selected ? (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </ScrollArea>
+        </div>
         
         <DialogFooter className="mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
