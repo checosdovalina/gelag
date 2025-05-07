@@ -543,6 +543,112 @@ export class DatabaseStorage implements IStorage {
       return nextFolioNumber;
     }
   }
+  
+  // Implementación de métodos de productos
+  async getProduct(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product;
+  }
+  
+  async getProductByCode(code: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.code, code));
+    return product;
+  }
+  
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const [newProduct] = await db.insert(products).values(product).returning();
+    return newProduct;
+  }
+  
+  async updateProduct(id: number, data: Partial<InsertProduct>): Promise<Product | undefined> {
+    const updateData = {
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    const [updatedProduct] = await db
+      .update(products)
+      .set(updateData)
+      .where(eq(products.id, id))
+      .returning();
+      
+    return updatedProduct;
+  }
+  
+  async deleteProduct(id: number): Promise<void> {
+    await db
+      .update(products)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(products.id, id));
+  }
+  
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+  
+  async getActiveProducts(): Promise<Product[]> {
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.isActive, true));
+  }
+  
+  // Implementación de métodos de empleados
+  async getEmployee(id: number): Promise<Employee | undefined> {
+    const [employee] = await db.select().from(employees).where(eq(employees.id, id));
+    return employee;
+  }
+  
+  async getEmployeeByEmployeeId(employeeId: string): Promise<Employee | undefined> {
+    const [employee] = await db.select().from(employees).where(eq(employees.employeeId, employeeId));
+    return employee;
+  }
+  
+  async createEmployee(employee: InsertEmployee): Promise<Employee> {
+    const [newEmployee] = await db.insert(employees).values(employee).returning();
+    return newEmployee;
+  }
+  
+  async updateEmployee(id: number, data: Partial<InsertEmployee>): Promise<Employee | undefined> {
+    const updateData = {
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    const [updatedEmployee] = await db
+      .update(employees)
+      .set(updateData)
+      .where(eq(employees.id, id))
+      .returning();
+      
+    return updatedEmployee;
+  }
+  
+  async deleteEmployee(id: number): Promise<void> {
+    await db
+      .update(employees)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(employees.id, id));
+  }
+  
+  async getAllEmployees(): Promise<Employee[]> {
+    return await db.select().from(employees);
+  }
+  
+  async getActiveEmployees(): Promise<Employee[]> {
+    return await db
+      .select()
+      .from(employees)
+      .where(eq(employees.isActive, true));
+  }
+  
+  async getEmployeesByDepartment(department: string): Promise<Employee[]> {
+    return await db
+      .select()
+      .from(employees)
+      .where(eq(employees.department, department))
+      .where(eq(employees.isActive, true));
+  }
 }
 
 // Use DatabaseStorage instead of MemStorage
