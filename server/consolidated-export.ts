@@ -5,9 +5,7 @@ import * as exceljs from 'exceljs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-
-// Importar PDFKit correctamente
-const PDFDocument = require('pdfkit');
+import PDFDocument from 'pdfkit';
 
 /**
  * Función para exportar datos consolidados de múltiples formularios a PDF o Excel
