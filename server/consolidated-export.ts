@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { FormEntry, FormTemplate, User } from '@shared/schema';
 import { storage } from './storage';
 import * as excel from 'exceljs';
-import * as PDFDocument from 'pdfkit';
+// Importar PDFDocument correctamente
+const PDFDocument = require('pdfkit');
 
 /**
  * Función para exportar datos consolidados de múltiples formularios a PDF o Excel
@@ -94,9 +95,12 @@ async function generateConsolidatedPDF(
     }
   });
   
-  // Capturar los datos del PDF en fragmentos
-  const chunks: Buffer[] = [];
-  doc.on('data', chunk => chunks.push(chunk as Buffer));
+  // Configurar las cabeceras de respuesta
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
+  
+  // Reenviar el PDF directamente al navegador
+  doc.pipe(res);
   
   // Título del documento
   doc.fontSize(16).font('Helvetica-Bold').text(`DATOS HOMOLOGADOS: ${template.name}`, { align: 'center' });
@@ -240,14 +244,6 @@ async function generateConsolidatedPDF(
       doc.addPage();
     }
   }
-  
-  // Cuando el documento se complete, enviar la respuesta
-  doc.on('end', () => {
-    const pdfBuffer = Buffer.concat(chunks);
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
-    res.send(pdfBuffer);
-  });
   
   // Finalizar la generación del PDF
   doc.end();
