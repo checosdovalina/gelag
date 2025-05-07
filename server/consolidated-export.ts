@@ -176,15 +176,18 @@ async function generatePDFAndSend(
   // Filtrar y ordenar campos para la tabla basado en la selección del usuario
   let tableFields;
   
-  if (req.body.selectedFields && Array.isArray(req.body.selectedFields)) {
+  // Acceder a la selección de campos desde los parámetros de la función
+  const { selectedFields, fieldOrder } = req.body;
+  
+  if (selectedFields && Array.isArray(selectedFields)) {
     // Si hay campos seleccionados, sólo usar esos
-    tableFields = req.body.selectedFields.filter(fieldId => commonFields.has(fieldId));
+    tableFields = selectedFields.filter((fieldId: string) => commonFields.has(fieldId));
     
     // Ordenar según el orden proporcionado por el usuario
-    if (req.body.fieldOrder && typeof req.body.fieldOrder === 'object') {
-      tableFields.sort((a, b) => {
-        const orderA = req.body.fieldOrder[a] || 9999;
-        const orderB = req.body.fieldOrder[b] || 9999;
+    if (fieldOrder && typeof fieldOrder === 'object') {
+      tableFields.sort((a: string, b: string) => {
+        const orderA = fieldOrder[a] || 9999;
+        const orderB = fieldOrder[b] || 9999;
         return orderA - orderB;
       });
     }
@@ -572,22 +575,39 @@ async function generateExcelAndSend(
     fieldLabels[fieldId] = label;
   });
   
-  // Filtrar y ordenar campos para el detalle
-  const tableFields = Array.from(allFields).sort((a, b) => {
-    // Intentar ordenar por displayOrder si existe
-    if (template.structure && template.structure.fields) {
-      const fieldA = template.structure.fields.find((f: any) => f.id === a);
-      const fieldB = template.structure.fields.find((f: any) => f.id === b);
-      
-      const orderA = fieldA?.displayOrder || 9999;
-      const orderB = fieldB?.displayOrder || 9999;
-      
-      if (orderA !== orderB) return orderA - orderB;
-    }
+  // Filtrar y ordenar campos para el detalle basado en la selección del usuario
+  let tableFields;
+  
+  if (req.body.selectedFields && Array.isArray(req.body.selectedFields)) {
+    // Si hay campos seleccionados, sólo usar esos
+    tableFields = req.body.selectedFields.filter(fieldId => allFields.has(fieldId));
     
-    // Si no hay orden de visualización o es igual, ordenar por etiqueta
-    return fieldLabels[a].localeCompare(fieldLabels[b]);
-  });
+    // Ordenar según el orden proporcionado por el usuario
+    if (req.body.fieldOrder && typeof req.body.fieldOrder === 'object') {
+      tableFields.sort((a, b) => {
+        const orderA = req.body.fieldOrder[a] || 9999;
+        const orderB = req.body.fieldOrder[b] || 9999;
+        return orderA - orderB;
+      });
+    }
+  } else {
+    // Comportamiento por defecto si no hay selección
+    tableFields = Array.from(allFields).sort((a, b) => {
+      // Intentar ordenar por displayOrder si existe
+      if (template.structure && template.structure.fields) {
+        const fieldA = template.structure.fields.find((f: any) => f.id === a);
+        const fieldB = template.structure.fields.find((f: any) => f.id === b);
+        
+        const orderA = fieldA?.displayOrder || 9999;
+        const orderB = fieldB?.displayOrder || 9999;
+        
+        if (orderA !== orderB) return orderA - orderB;
+      }
+      
+      // Si no hay orden de visualización o es igual, ordenar por etiqueta
+      return fieldLabels[a].localeCompare(fieldLabels[b]);
+    });
+  }
   
   // Para cada entrada, mostrar una sección con los datos
   let currentRow = 4;
