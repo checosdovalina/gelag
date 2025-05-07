@@ -31,7 +31,8 @@ import {
   Filter, 
   UserCircle2,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Settings
 } from "lucide-react";
 import {
   Dialog,
@@ -58,6 +59,7 @@ import { UserRole } from "@shared/schema";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import SignaturePad from "@/components/forms/signature-pad";
+import { FieldsSelectorModal } from "@/components/fields-selector-modal";
 
 interface FormEntry {
   id: number;
@@ -110,6 +112,14 @@ export default function CapturedFormsPage() {
   // Estados para el diálogo de eliminación
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<FormEntry | null>(null);
+  
+  // Estados para el selector de campos
+  const [fieldSelectorOpen, setFieldSelectorOpen] = useState(false);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [fieldOrder, setFieldOrder] = useState<Record<string, number>>({});
+  const [templateForFields, setTemplateForFields] = useState<FormTemplate | null>(null);
+  const [entriesToExport, setEntriesToExport] = useState<FormEntry[]>([]);
+  const [exportFormat, setExportFormat] = useState<"pdf" | "excel">("pdf");
   
   const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
   
