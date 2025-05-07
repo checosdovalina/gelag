@@ -470,6 +470,136 @@ export default function CapturedFormsPage() {
     }
   };
   
+  // Manejador para preparar configuración de campos
+  const handleConfigureFields = (entries: FormEntry[], format: "pdf" | "excel") => {
+    // Si no hay entradas seleccionadas
+    if (entries.length === 0) {
+      toast({
+        title: "Sin datos",
+        description: "No hay formularios para exportar",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Verificar que todas las entradas sean del mismo tipo de formulario
+    const firstTemplateId = entries[0].formTemplateId;
+    const allSameTemplate = entries.every(entry => entry.formTemplateId === firstTemplateId);
+    
+    if (!allSameTemplate) {
+      toast({
+        title: "Tipos de formulario mixtos",
+        description: "Solo puedes configurar campos para formularios del mismo tipo",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Buscar la plantilla correspondiente
+    const template = templates?.find(t => t.id === firstTemplateId);
+    if (!template) {
+      toast({
+        title: "Error",
+        description: "No se encontró la plantilla del formulario",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Establecer los datos necesarios para el selector de campos
+    setTemplateForFields(template);
+    setEntriesToExport(entries);
+    setExportFormat(format);
+    
+    // Inicializar campos seleccionados
+    if (template.structure && template.structure.fields) {
+      setSelectedFields(template.structure.fields.map(field => field.id));
+    }
+    
+    // Abrir el modal de selección de campos
+    setFieldSelectorOpen(true);
+  };
+  
+  // Manejador para la selección de campos
+  const handleFieldSelection = (selectedFieldIds: string[], fieldOrdering: Record<string, number>) => {
+    // Guardar la selección y orden de campos
+    setSelectedFields(selectedFieldIds);
+    setFieldOrder(fieldOrdering);
+    
+    // Cerrar el modal y proceder con la exportación
+    setFieldSelectorOpen(false);
+    
+    // Exportar los datos con la configuración de campos
+    exportWithFieldConfig(entriesToExport, templateForFields!, selectedFieldIds, fieldOrdering, exportFormat);
+  };
+  
+  // Función para exportar con configuración de campos
+  const exportWithFieldConfig = async (
+    entries: FormEntry[], 
+    template: FormTemplate,
+    selectedFieldIds: string[],
+    fieldOrdering: Record<string, number>,
+    format: "pdf" | "excel"
+  ) => {
+    try {
+      toast({
+        title: "Preparando datos",
+        description: `Generando ${format === "pdf" ? "PDF" : "Excel"} con campos configurados...`,
+      });
+      
+      // Preparar datos para la API
+      const payload = {
+        templateId: template.id,
+        entryIds: entries.map(entry => entry.id),
+        format,
+        fileName: `Configurado_${template.name.replace(/[^\w\s]/gi, '')}`,
+        selectedFields: selectedFieldIds,
+        fieldOrder: fieldOrdering
+      };
+      
+      // Solicitar la exportación al servidor
+      const response = await apiRequest(
+        "POST",
+        "/api/form-entries/consolidated-export",
+        payload
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error al generar ${format.toUpperCase()}`);
+      }
+      
+      // Descargar el archivo
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Crear enlace para descarga
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `${payload.fileName}.${format === "pdf" ? "pdf" : "xlsx"}`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Limpieza
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Exportación completada",
+        description: "El archivo ha sido generado correctamente con tus campos seleccionados.",
+      });
+      
+    } catch (error) {
+      console.error(`Error al exportar con campos configurados:`, error);
+      toast({
+        title: "Error de exportación",
+        description: error instanceof Error ? error.message : "No se pudo generar el archivo",
+        variant: "destructive"
+      });
+    }
+  };
+  
   // Funciones para manejar la eliminación de formularios
   const handleDeleteForm = (entry: FormEntry) => {
     setEntryToDelete(entry);
@@ -684,6 +814,15 @@ export default function CapturedFormsPage() {
             </DialogContent>
           </Dialog>
         )}
+        
+        {/* Modal para selección de campos en exportación */}
+        <FieldsSelectorModal
+          open={fieldSelectorOpen}
+          onOpenChange={setFieldSelectorOpen}
+          template={templateForFields || { id: 0, name: "", description: "", department: "", structure: {} }}
+          initialSelectedFields={selectedFields}
+          onSave={handleFieldSelection}
+        />
         
         {/* Actions bar */}
         <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -918,6 +1057,15 @@ export default function CapturedFormsPage() {
                       <FileDown className="mr-2 h-4 w-4" />
                       Vista homologada
                     </Button>
+
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleConfigureFields(filteredEntries, "pdf")}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Configurar campos
+                    </Button>
                   </div>
                 )}
               </CardTitle>
@@ -1061,6 +1209,14 @@ export default function CapturedFormsPage() {
                     >
                       <Download className="mr-2 h-4 w-4" />
                       Descargar Excel
+                    </Button>
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleConfigureFields([selectedEntry], "pdf")}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Configurar campos
                     </Button>
                     
                     {selectedEntry.status === "draft" && (

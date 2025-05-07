@@ -12,7 +12,7 @@ import PDFDocument from 'pdfkit';
  */
 export async function exportConsolidatedForms(req: Request, res: Response, next: NextFunction) {
   try {
-    const { templateId, entryIds, format, fileName } = req.body;
+    const { templateId, entryIds, format, fileName, selectedFields, fieldOrder } = req.body;
     
     if (!templateId || !entryIds || !Array.isArray(entryIds) || entryIds.length === 0) {
       return res.status(400).json({ message: "Parámetros inválidos" });
@@ -173,22 +173,39 @@ async function generatePDFAndSend(
     fieldLabels[fieldId] = label;
   });
   
-  // Filtrar y ordenar campos para la tabla
-  const tableFields = Array.from(commonFields).sort((a, b) => {
-    // Intentar ordenar por displayOrder si existe
-    if (template.structure && template.structure.fields) {
-      const fieldA = template.structure.fields.find((f: any) => f.id === a);
-      const fieldB = template.structure.fields.find((f: any) => f.id === b);
-      
-      const orderA = fieldA?.displayOrder || 9999;
-      const orderB = fieldB?.displayOrder || 9999;
-      
-      if (orderA !== orderB) return orderA - orderB;
-    }
+  // Filtrar y ordenar campos para la tabla basado en la selección del usuario
+  let tableFields;
+  
+  if (req.body.selectedFields && Array.isArray(req.body.selectedFields)) {
+    // Si hay campos seleccionados, sólo usar esos
+    tableFields = req.body.selectedFields.filter(fieldId => commonFields.has(fieldId));
     
-    // Si no hay orden de visualización o es igual, ordenar alfabéticamente por etiqueta
-    return fieldLabels[a].localeCompare(fieldLabels[b]);
-  });
+    // Ordenar según el orden proporcionado por el usuario
+    if (req.body.fieldOrder && typeof req.body.fieldOrder === 'object') {
+      tableFields.sort((a, b) => {
+        const orderA = req.body.fieldOrder[a] || 9999;
+        const orderB = req.body.fieldOrder[b] || 9999;
+        return orderA - orderB;
+      });
+    }
+  } else {
+    // Comportamiento por defecto si no hay selección
+    tableFields = Array.from(commonFields).sort((a, b) => {
+      // Intentar ordenar por displayOrder si existe
+      if (template.structure && template.structure.fields) {
+        const fieldA = template.structure.fields.find((f: any) => f.id === a);
+        const fieldB = template.structure.fields.find((f: any) => f.id === b);
+        
+        const orderA = fieldA?.displayOrder || 9999;
+        const orderB = fieldB?.displayOrder || 9999;
+        
+        if (orderA !== orderB) return orderA - orderB;
+      }
+      
+      // Si no hay orden de visualización o es igual, ordenar alfabéticamente por etiqueta
+      return fieldLabels[a].localeCompare(fieldLabels[b]);
+    });
+  }
   
   // Dibujar tabla para los datos
   const tableTop = doc.y + 10;
