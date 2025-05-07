@@ -1116,6 +1116,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Endpoint para exportación consolidada (homologada) de múltiples formularios
+  app.post("/api/form-entries/consolidated-export", authorize(), async (req, res, next) => {
+    try {
+      // Importar la función de exportación consolidada desde el módulo
+      const { exportConsolidatedForms } = await import('./consolidated-export');
+      await exportConsolidatedForms(req, res, next);
+    } catch (error) {
+      console.error("Error al exportar datos consolidados:", error);
+      next(error);
+    }
+  });
+  
   // Ruta para actualizar el estado de un formulario (firmar, aprobar, etc.)
   app.patch("/api/form-entries/:id/status", authorize(), async (req, res, next) => {
     try {
