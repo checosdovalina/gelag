@@ -20,6 +20,8 @@ import ReportsPage from "@/pages/reports-page";
 import UsersPage from "@/pages/users-page";
 import SettingsPage from "@/pages/settings-page";
 import CapturedFormsPage from "@/pages/captured-forms-page";
+import ProductsPage from "@/pages/products-page";
+import EmployeesPage from "@/pages/employees-page";
 
 function Router() {
   return (
@@ -55,6 +57,16 @@ function Router() {
       <ProtectedRoute 
         path="/settings" 
         component={SettingsPage} 
+        allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/products" 
+        component={ProductsPage} 
+        allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/employees" 
+        component={EmployeesPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
       <Route path="/auth" component={AuthPage} />

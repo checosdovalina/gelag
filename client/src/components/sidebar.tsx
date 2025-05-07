@@ -12,7 +12,9 @@ import {
   LogOut,
   CheckSquare,
   PlusSquare,
-  ClipboardCheck
+  ClipboardCheck,
+  Package,
+  UserCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import gelagLogo from '@/assets/gelag-logo.png';
@@ -83,6 +85,18 @@ export default function Sidebar({ className }: SidebarProps) {
       href: "/reports",
       icon: <BarChart3 className="h-5 w-5" />,
       show: isAdmin || isSuperAdmin || user.role === UserRole.VIEWER,
+    },
+    {
+      title: "Productos",
+      href: "/products",
+      icon: <Package className="h-5 w-5" />,
+      show: isAdmin || isSuperAdmin,
+    },
+    {
+      title: "Empleados",
+      href: "/employees",
+      icon: <UserCircle className="h-5 w-5" />,
+      show: isAdmin || isSuperAdmin,
     },
     {
       title: "Configuración",
