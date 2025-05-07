@@ -168,6 +168,15 @@ export default function ReportsPage() {
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [customPersonnelFilter, setCustomPersonnelFilter] = useState<string>("");
   
+  // Obtener usuario actual
+  const { data: user } = useQuery({
+    queryKey: ["/api/user"],
+  });
+  
+  // Definir variables de control de acceso
+  const isSuperAdmin = user?.role === "superadmin";
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  
   // Mapeo entre nombres legibles de columnas y sus IDs internos
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({
     "Formulario": "formName",

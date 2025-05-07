@@ -1214,13 +1214,15 @@ export default function CapturedFormsPage() {
                       Descargar Excel
                     </Button>
                     
-                    <Button 
-                      variant="outline" 
-                      onClick={() => handleConfigureFields([selectedEntry], "pdf")}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Configurar campos
-                    </Button>
+                    {isAdmin && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleConfigureFields([selectedEntry], "pdf")}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Configurar campos
+                      </Button>
+                    )}
                     
                     {selectedEntry.status === "draft" && (
                       <Button 
