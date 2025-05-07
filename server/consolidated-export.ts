@@ -73,16 +73,22 @@ export async function exportConsolidatedForms(req: Request, res: Response, next:
     
     const outputFileName = fileName || `formularios_homologados_${Date.now()}`;
     
+    // Extraer los parámetros de selección de campos para pasar a las funciones
+    const fieldOptions = {
+      selectedFields,
+      fieldOrder
+    };
+    
     if (format === "pdf") {
       try {
-        await generatePDFAndSend(entries, template, outputFileName, res);
+        await generatePDFAndSend(entries, template, outputFileName, res, fieldOptions);
       } catch (pdfError) {
         console.error("Error generando PDF:", pdfError);
         return res.status(500).json({ message: "Error al generar PDF", error: String(pdfError) });
       }
     } else {
       try {
-        await generateExcelAndSend(entries, template, outputFileName, res);
+        await generateExcelAndSend(entries, template, outputFileName, res, fieldOptions);
       } catch (excelError) {
         console.error("Error generando Excel:", excelError);
         return res.status(500).json({ message: "Error al generar Excel", error: String(excelError) });
@@ -101,7 +107,8 @@ async function generatePDFAndSend(
   entries: FormEntry[], 
   template: FormTemplate, 
   fileName: string, 
-  res: Response
+  res: Response,
+  fieldOptions?: { selectedFields?: string[], fieldOrder?: Record<string, number> }
 ) {
   // Crear un archivo temporal para el PDF
   const tempDir = os.tmpdir();
@@ -177,7 +184,7 @@ async function generatePDFAndSend(
   let tableFields;
   
   // Acceder a la selección de campos desde los parámetros de la función
-  const { selectedFields, fieldOrder } = req.body;
+  const { selectedFields, fieldOrder } = fieldOptions || {};
   
   if (selectedFields && Array.isArray(selectedFields)) {
     // Si hay campos seleccionados, sólo usar esos
@@ -449,7 +456,8 @@ async function generateExcelAndSend(
   entries: FormEntry[], 
   template: FormTemplate, 
   fileName: string, 
-  res: Response
+  res: Response,
+  fieldOptions?: { selectedFields?: string[], fieldOrder?: Record<string, number> }
 ) {
   // Crear un archivo temporal para el Excel
   const tempDir = os.tmpdir();
@@ -578,15 +586,18 @@ async function generateExcelAndSend(
   // Filtrar y ordenar campos para el detalle basado en la selección del usuario
   let tableFields;
   
-  if (req.body.selectedFields && Array.isArray(req.body.selectedFields)) {
+  // Acceder a la selección de campos desde los parámetros de la función
+  const { selectedFields, fieldOrder } = fieldOptions || {};
+  
+  if (selectedFields && Array.isArray(selectedFields)) {
     // Si hay campos seleccionados, sólo usar esos
-    tableFields = req.body.selectedFields.filter(fieldId => allFields.has(fieldId));
+    tableFields = selectedFields.filter((fieldId: string) => allFields.has(fieldId));
     
     // Ordenar según el orden proporcionado por el usuario
-    if (req.body.fieldOrder && typeof req.body.fieldOrder === 'object') {
-      tableFields.sort((a, b) => {
-        const orderA = req.body.fieldOrder[a] || 9999;
-        const orderB = req.body.fieldOrder[b] || 9999;
+    if (fieldOrder && typeof fieldOrder === 'object') {
+      tableFields.sort((a: string, b: string) => {
+        const orderA = fieldOrder[a] || 9999;
+        const orderB = fieldOrder[b] || 9999;
         return orderA - orderB;
       });
     }
