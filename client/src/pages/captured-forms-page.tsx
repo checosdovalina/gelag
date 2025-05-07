@@ -371,6 +371,95 @@ export default function CapturedFormsPage() {
     setFormToSign(null);
   };
   
+  // Función para exportar datos consolidados de múltiples formularios
+  const handleExportConsolidatedData = async (entries: FormEntry[]) => {
+    try {
+      if (entries.length === 0) {
+        toast({
+          title: "Sin datos",
+          description: "No hay formularios para exportar",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      toast({
+        title: "Preparando datos",
+        description: "Generando vista homologada de formularios...",
+      });
+      
+      // Agrupar los formularios por tipo (formTemplateId)
+      const groupedByTemplate: Record<number, FormEntry[]> = {};
+      
+      entries.forEach(entry => {
+        if (!groupedByTemplate[entry.formTemplateId]) {
+          groupedByTemplate[entry.formTemplateId] = [];
+        }
+        groupedByTemplate[entry.formTemplateId].push(entry);
+      });
+      
+      // Para cada tipo de formulario, crear un consolidado
+      const promises = Object.entries(groupedByTemplate).map(async ([templateId, templateEntries]) => {
+        const templateIdNum = parseInt(templateId);
+        const templateName = getTemplateName(templateIdNum);
+        
+        // Preparar datos para la API
+        const payload = {
+          templateId: templateIdNum,
+          entryIds: templateEntries.map(entry => entry.id),
+          format: "pdf", // Puedes cambiar a "excel" si prefieres Excel
+          fileName: `Consolidado_${templateName.replace(/[^\w\s]/gi, '')}`
+        };
+        
+        // Solicitar el consolidado al servidor
+        const response = await apiRequest(
+          "POST",
+          "/api/form-entries/consolidated-export",
+          payload
+        );
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error al generar consolidado");
+        }
+        
+        // Descargar el archivo
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear enlace para descarga
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `${payload.fileName}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpiar
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        return templateName;
+      });
+      
+      // Esperar a que todos los consolidados se generen
+      await Promise.all(promises);
+      
+      toast({
+        title: "Exportación completada",
+        description: "Los archivos consolidados han sido generados correctamente.",
+      });
+      
+    } catch (error) {
+      console.error("Error al generar consolidado:", error);
+      toast({
+        title: "Error de exportación",
+        description: error instanceof Error ? error.message : "No se pudo generar el consolidado",
+        variant: "destructive"
+      });
+    }
+  };
+  
   // Funciones para manejar la eliminación de formularios
   const handleDeleteForm = (entry: FormEntry) => {
     setEntryToDelete(entry);
@@ -806,6 +895,18 @@ export default function CapturedFormsPage() {
                     }}>
                       <Download className="mr-2 h-4 w-4" />
                       Exportar todos (PDF)
+                    </Button>
+                    
+                    <Button size="sm" variant="default" onClick={() => {
+                      toast({
+                        title: "Generando archivo homologado",
+                        description: "Creando vista consolidada de todos los formularios filtrados"
+                      });
+                      
+                      handleExportConsolidatedData(filteredEntries);
+                    }}>
+                      <FileDown className="mr-2 h-4 w-4" />
+                      Vista homologada
                     </Button>
                   </div>
                 )}
