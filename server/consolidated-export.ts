@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { FormEntry, FormTemplate, User } from '@shared/schema';
 import { storage } from './storage';
-import * as excel from 'exceljs';
-// Importar PDFDocument correctamente
+import { Workbook } from 'exceljs';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+
+// Importar PDFKit correctamente
 const PDFDocument = require('pdfkit');
 
 /**
@@ -63,12 +67,28 @@ export async function exportConsolidatedForms(req: Request, res: Response, next:
     });
     
     // Ordenar formularios por fecha (más reciente primero)
-    entries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    entries.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+    
+    const outputFileName = fileName || `formularios_homologados_${Date.now()}`;
     
     if (format === "pdf") {
-      await generateConsolidatedPDF(entries, template, fileName || 'formularios_homologados', res);
+      try {
+        await generatePDFAndSend(entries, template, outputFileName, res);
+      } catch (pdfError) {
+        console.error("Error generando PDF:", pdfError);
+        return res.status(500).json({ message: "Error al generar PDF", error: String(pdfError) });
+      }
     } else {
-      await generateConsolidatedExcel(entries, template, fileName || 'formularios_homologados', res);
+      try {
+        await generateExcelAndSend(entries, template, outputFileName, res);
+      } catch (excelError) {
+        console.error("Error generando Excel:", excelError);
+        return res.status(500).json({ message: "Error al generar Excel", error: String(excelError) });
+      }
     }
   } catch (error) {
     console.error("Error al exportar datos consolidados:", error);
@@ -77,17 +97,24 @@ export async function exportConsolidatedForms(req: Request, res: Response, next:
 }
 
 /**
- * Genera un PDF consolidado con los datos de múltiples formularios
+ * Genera un PDF en un archivo temporal y lo envía al cliente
  */
-async function generateConsolidatedPDF(
+async function generatePDFAndSend(
   entries: FormEntry[], 
   template: FormTemplate, 
   fileName: string, 
   res: Response
 ) {
-  // Crear documento PDF
+  // Crear un archivo temporal para el PDF
+  const tempDir = os.tmpdir();
+  const tempFilePath = path.join(tempDir, `${fileName}_${Date.now()}.pdf`);
+  
+  // Crear un stream para escribir el PDF a un archivo
+  const fileStream = fs.createWriteStream(tempFilePath);
+  
+  // Crear el documento PDF
   const doc = new PDFDocument({ 
-    size: 'A4',
+    size: 'A4', 
     margin: 50,
     info: {
       Title: `Datos homologados: ${template.name}`,
@@ -95,12 +122,8 @@ async function generateConsolidatedPDF(
     }
   });
   
-  // Configurar las cabeceras de respuesta
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
-  
-  // Reenviar el PDF directamente al navegador
-  doc.pipe(res);
+  // Stream del PDF a un archivo
+  doc.pipe(fileStream);
   
   // Título del documento
   doc.fontSize(16).font('Helvetica-Bold').text(`DATOS HOMOLOGADOS: ${template.name}`, { align: 'center' });
@@ -121,8 +144,8 @@ async function generateConsolidatedPDF(
     
     // Información del formulario
     doc.fontSize(10).font('Helvetica');
-    doc.text(`Fecha: ${new Date(entry.createdAt).toLocaleString()}`);
-    doc.text(`Departamento: ${entry.department}`);
+    doc.text(`Fecha: ${entry.createdAt ? new Date(entry.createdAt).toLocaleString() : 'N/A'}`);
+    doc.text(`Departamento: ${entry.department || 'N/A'}`);
     doc.text(`Creado por: ${creator ? creator.name : `Usuario ${entry.createdBy}`}`);
     doc.text(`Estado: ${entry.status === 'draft' ? 'Borrador' : 
                     entry.status === 'signed' ? 'Firmado' : 
@@ -138,8 +161,8 @@ async function generateConsolidatedPDF(
     
     if (template.structure && template.structure.fields) {
       // Obtener los campos ordenados por displayOrder si existe
-      let fields = [...template.structure.fields];
-      fields.sort((a: any, b: any) => {
+      const fields = [...template.structure.fields] as any[];
+      fields.sort((a, b) => {
         // Si tienen displayOrder, ordenar por ese valor
         if (a.displayOrder !== undefined && b.displayOrder !== undefined) {
           return a.displayOrder - b.displayOrder;
@@ -181,9 +204,9 @@ async function generateConsolidatedPDF(
         
         doc.text(`${fieldLabel}: ${displayValue}`, { continued: false });
       }
-    } else {
+    } else if (formData && typeof formData === 'object') {
       // Si no hay estructura definida, mostrar todos los campos
-      Object.entries(formData).forEach(([key, value]) => {
+      Object.entries(formData as Record<string, any>).forEach(([key, value]) => {
         let displayValue = '';
         if (value === null || value === undefined) {
           displayValue = 'No especificado';
@@ -247,18 +270,50 @@ async function generateConsolidatedPDF(
   
   // Finalizar la generación del PDF
   doc.end();
+  
+  // Esperar a que se complete la escritura del archivo
+  await new Promise<void>((resolve, reject) => {
+    fileStream.on('finish', () => {
+      resolve();
+    });
+    fileStream.on('error', (err) => {
+      reject(err);
+    });
+  });
+  
+  // Enviar el archivo al cliente
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
+  
+  // Stream el archivo al cliente
+  const readStream = fs.createReadStream(tempFilePath);
+  readStream.pipe(res);
+  
+  // Limpiar el archivo temporal después de enviarlo
+  readStream.on('end', () => {
+    try {
+      fs.unlinkSync(tempFilePath);
+    } catch (err) {
+      console.error("Error al eliminar archivo temporal:", err);
+    }
+  });
 }
 
 /**
- * Genera un Excel consolidado con los datos de múltiples formularios
+ * Genera un Excel en un archivo temporal y lo envía al cliente
  */
-async function generateConsolidatedExcel(
+async function generateExcelAndSend(
   entries: FormEntry[], 
   template: FormTemplate, 
   fileName: string, 
   res: Response
 ) {
-  const workbook = new excel.Workbook();
+  // Crear un archivo temporal para el Excel
+  const tempDir = os.tmpdir();
+  const tempFilePath = path.join(tempDir, `${fileName}_${Date.now()}.xlsx`);
+  
+  // Crear un workbook
+  const workbook = new Workbook();
   
   // Primera hoja: Resumen
   const summarySheet = workbook.addWorksheet('Resumen');
@@ -280,8 +335,8 @@ async function generateConsolidatedExcel(
     summarySheet.addRow([
       i + 1,
       entry.folioNumber || 'N/A',
-      new Date(entry.createdAt).toLocaleString(),
-      entry.department,
+      entry.createdAt ? new Date(entry.createdAt).toLocaleString() : 'N/A',
+      entry.department || 'N/A',
       creator ? creator.name : `Usuario ${entry.createdBy}`,
       entry.status === 'draft' ? 'Borrador' : 
       entry.status === 'signed' ? 'Firmado' : 
@@ -290,7 +345,7 @@ async function generateConsolidatedExcel(
   }
   
   // Ajustar anchos de columna
-  summarySheet.columns.forEach(column => {
+  summarySheet.columns.forEach((column: any) => {
     column.width = 20;
   });
   
@@ -300,7 +355,9 @@ async function generateConsolidatedExcel(
   // Encontrar todos los campos únicos entre todos los formularios
   const allFields = new Set<string>();
   entries.forEach(entry => {
-    Object.keys(entry.data).forEach(key => allFields.add(key));
+    if (entry.data && typeof entry.data === 'object') {
+      Object.keys(entry.data as Record<string, any>).forEach(key => allFields.add(key));
+    }
   });
   
   // Mapear IDs de campo a etiquetas legibles
@@ -346,8 +403,8 @@ async function generateConsolidatedExcel(
     const rowData: any[] = [
       i + 1,
       entry.folioNumber || 'N/A',
-      new Date(entry.createdAt).toLocaleString(),
-      entry.department,
+      entry.createdAt ? new Date(entry.createdAt).toLocaleString() : 'N/A',
+      entry.department || 'N/A',
       creator ? creator.name : `Usuario ${entry.createdBy}`,
       entry.status === 'draft' ? 'Borrador' : 
       entry.status === 'signed' ? 'Firmado' : 
@@ -365,7 +422,8 @@ async function generateConsolidatedExcel(
       if (orderA !== orderB) return orderA - orderB;
       return fieldLabels[a].localeCompare(fieldLabels[b]);
     }).forEach(fieldId => {
-      const value = entry.data[fieldId];
+      const value = entry.data && typeof entry.data === 'object' ? 
+                   (entry.data as Record<string, any>)[fieldId] : undefined;
       
       // Convertir valor a string para Excel
       let displayValue = '';
@@ -394,14 +452,27 @@ async function generateConsolidatedExcel(
   }
   
   // Ajustar anchos de columna
-  detailSheet.columns.forEach(column => {
+  detailSheet.columns.forEach((column: any) => {
     column.width = 20;
   });
   
-  // Enviar el archivo Excel
+  // Guardar el Excel en el archivo temporal
+  await workbook.xlsx.writeFile(tempFilePath);
+  
+  // Configurar las cabeceras
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename="${fileName}.xlsx"`);
   
-  const buffer = await workbook.xlsx.writeBuffer();
-  res.send(buffer);
+  // Enviar el archivo al cliente
+  const readStream = fs.createReadStream(tempFilePath);
+  readStream.pipe(res);
+  
+  // Limpiar el archivo temporal después de enviarlo
+  readStream.on('end', () => {
+    try {
+      fs.unlinkSync(tempFilePath);
+    } catch (err) {
+      console.error("Error al eliminar archivo temporal:", err);
+    }
+  });
 }
