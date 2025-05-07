@@ -707,9 +707,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Obtener el próximo número de folio
-      const nextFolio = await storage.getNextFolioNumber(templateId);
+      const nextFolioNumber = await storage.getNextFolioNumber(templateId);
       
-      res.json({ nextFolio });
+      // Extraer código del formulario del nombre (asumiendo formato como "CA-RE-01-01 - NOMBRE DEL FORM")
+      let formCode = '';
+      const nameMatch = template.name.match(/^([A-Z]{2}-[A-Z]{2}-\d{2}-\d{2})/);
+      if (nameMatch && nameMatch[1]) {
+        formCode = nameMatch[1];
+      }
+      
+      // Formato personalizado para el folio
+      const formattedFolio = formCode 
+        ? `${formCode}-F${nextFolioNumber}` 
+        : nextFolioNumber.toString();
+      
+      res.json({ 
+        nextFolio: nextFolioNumber,
+        formattedFolio: formattedFolio 
+      });
     } catch (error) {
       next(error);
     }

@@ -295,7 +295,10 @@ export default function FormViewer({
             // Automáticamente establecer el valor en cualquier campo identificado como "folio"
             const folioField = isFolioField();
             if (folioField) {
-              form.setValue(folioField.id, data.nextFolio.toString());
+              // Usar el formato personalizado si está disponible
+              const folioValue = data.formattedFolio || data.nextFolio.toString();
+              console.log("Asignando folio con formato:", folioValue);
+              form.setValue(folioField.id, folioValue);
             }
           }
         } catch (error) {
@@ -478,6 +481,11 @@ export default function FormViewer({
                                field.label.toLowerCase() === "folio" ||
                                field.label.toLowerCase().includes("folio");
         
+        // Para campos de folio con formato personalizado (como CA-RE-01-01-F1), usamos un input de texto
+        // aunque el campo sea de tipo numérico
+        const isFormattedFolio = isNumericFolio && formField.value && typeof formField.value === 'string' 
+                               && formField.value.includes('-F');
+        
         return (
           <FormField
             key={field.id}
@@ -490,15 +498,25 @@ export default function FormViewer({
                   {isNumericFolio && !isReadOnly && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder={field.placeholder || ""}
-                    {...formField}
-                    value={formField.value === undefined ? "" : formField.value}
-                    onChange={e => formField.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                    disabled={isReadOnly || isNumericFolio}
-                    className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
-                  />
+                  {isFormattedFolio ? (
+                    <Input
+                      placeholder={field.placeholder || ""}
+                      {...formField}
+                      value={formField.value || ""}
+                      disabled={isReadOnly || isNumericFolio}
+                      className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
+                    />
+                  ) : (
+                    <Input
+                      type="number"
+                      placeholder={field.placeholder || ""}
+                      {...formField}
+                      value={formField.value === undefined ? "" : formField.value}
+                      onChange={e => formField.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                      disabled={isReadOnly || isNumericFolio}
+                      className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
+                    />
+                  )}
                 </FormControl>
                 {isNumericFolio && !isReadOnly && (
                   <p className="text-sm text-muted-foreground mt-1">
