@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { DateRange } from "react-day-picker";
 import { ColumnDef } from "@tanstack/react-table";
-import { Search, Download, Calendar, FileDown, Settings2, Save, FolderOpen, Edit, Trash2, PlusCircle } from "lucide-react";
+import { Search, Download, Calendar, FileDown, Settings2, Save, FolderOpen, Edit, Trash2, PlusCircle, Settings } from "lucide-react";
 import MainLayout from "@/layouts/main-layout";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,6 +27,7 @@ import { z } from "zod";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { SavedReport } from "@shared/schema";
+import { FieldsSelectorModal } from "@/components/fields-selector-modal";
 
 interface FormEntry {
   id: number;
@@ -190,6 +191,14 @@ export default function ReportsPage() {
   const [loadReportDialogOpen, setLoadReportDialogOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<SavedReport | null>(null);
   const [isEditingReport, setIsEditingReport] = useState(false);
+  
+  // Estados para el selector de campos
+  const [fieldSelectorOpen, setFieldSelectorOpen] = useState(false);
+  const [templateForFields, setTemplateForFields] = useState<FormTemplate | null>(null);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [fieldOrder, setFieldOrder] = useState<Record<string, number>>({});
+  const [entriesForExport, setEntriesForExport] = useState<FormEntry[]>([]);
+  const [exportFormat, setExportFormat] = useState<"pdf" | "excel">("pdf");
 
   // Formulario para guardar reportes
   const saveReportForm = useForm<z.infer<typeof saveReportSchema>>({
@@ -709,35 +718,198 @@ export default function ReportsPage() {
   };
 
   // Handle export
-  const handleExport = (entry: FormEntry, format: "pdf" | "excel") => {
-    toast({
-      title: `Preparando exportación`,
-      description: `Preparando los datos para exportar a ${format.toUpperCase()}`,
-    });
+  // Función para abrir el selector de campos
+  const handleConfigureFields = (entries: FormEntry[], format: "pdf" | "excel") => {
+    if (entries.length === 0) {
+      toast({
+        title: "Sin datos",
+        description: "No hay formularios para exportar",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    // Exportar solo la entrada seleccionada como un array de una entrada
-    if (format === "excel") {
-      const csvContent = generateCSV([entry]);
-      const filename = `entrada_formulario_${entry.id}_${format}_${new Date().toISOString().split('T')[0]}.csv`;
-      
-      // Descargar el archivo
-      downloadFile(csvContent, filename, "text/csv;charset=utf-8");
-      
+    // Verificar que todas las entradas sean del mismo tipo de formulario
+    const firstTemplateId = entries[0].formTemplateId;
+    const allSameTemplate = entries.every(entry => entry.formTemplateId === firstTemplateId);
+    
+    if (!allSameTemplate) {
       toast({
-        title: "Exportación completada",
-        description: "El archivo CSV ha sido generado y descargado correctamente",
+        title: "Tipos de formulario mixtos",
+        description: "Solo puedes configurar campos para formularios del mismo tipo",
+        variant: "destructive"
       });
+      return;
+    }
+    
+    // Buscar la plantilla correspondiente
+    const template = templates?.find(t => t.id === firstTemplateId);
+    if (!template) {
+      toast({
+        title: "Error",
+        description: "No se encontró la plantilla del formulario",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Establecer los datos necesarios para el selector de campos
+    setTemplateForFields(template);
+    setEntriesForExport(entries);
+    setExportFormat(format);
+    
+    // Inicializar campos seleccionados
+    if (template.structure && template.structure.fields) {
+      setSelectedFields(template.structure.fields.map(field => field.id));
+    }
+    
+    // Abrir el modal de selección de campos
+    setFieldSelectorOpen(true);
+  };
+  
+  // Manejador para la selección de campos
+  const handleFieldSelection = (selectedFieldIds: string[], fieldOrdering: Record<string, number>) => {
+    // Guardar la selección y orden de campos
+    setSelectedFields(selectedFieldIds);
+    setFieldOrder(fieldOrdering);
+    
+    // Cerrar el modal y proceder con la exportación
+    setFieldSelectorOpen(false);
+    
+    // Exportar los datos con la configuración de campos
+    exportWithFieldConfig(entriesForExport, templateForFields!, selectedFieldIds, fieldOrdering, exportFormat);
+  };
+  
+  // Función para exportar con configuración de campos
+  const exportWithFieldConfig = async (
+    entries: FormEntry[], 
+    template: FormTemplate,
+    selectedFieldIds: string[],
+    fieldOrdering: Record<string, number>,
+    format: "pdf" | "excel"
+  ) => {
+    try {
+      toast({
+        title: "Preparando datos",
+        description: `Generando ${format === "pdf" ? "PDF" : "Excel"} con campos configurados...`,
+      });
+      
+      // Usar la API de servidor para exportación consolidada
+      if (entries.length > 1) {
+        // Preparar datos para la API
+        const payload = {
+          templateId: template.id,
+          entryIds: entries.map(entry => entry.id),
+          format,
+          fileName: `Configurado_${template.name.replace(/[^\w\s]/gi, '')}`,
+          selectedFields: selectedFieldIds,
+          fieldOrder: fieldOrdering
+        };
+        
+        // Solicitar la exportación al servidor
+        const response = await apiRequest(
+          "POST",
+          "/api/form-entries/consolidated-export",
+          payload
+        );
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Error al generar ${format.toUpperCase()}`);
+        }
+        
+        // Procesar la respuesta según el formato
+        if (format === "pdf") {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        } else {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${payload.fileName}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+        
+        toast({
+          title: "Exportación completada",
+          description: `Documento ${format.toUpperCase()} generado correctamente`,
+        });
+      } 
+      // Para entradas individuales, usar el método local
+      else if (entries.length === 1) {
+        const entry = entries[0];
+        if (format === "excel") {
+          const csvContent = generateCSV([entry], selectedFieldIds);
+          const filename = `entrada_formulario_${entry.id}_${format}_${new Date().toISOString().split('T')[0]}.csv`;
+          
+          // Descargar el archivo
+          downloadFile(csvContent, filename, "text/csv;charset=utf-8");
+          
+          toast({
+            title: "Exportación completada",
+            description: "El archivo CSV ha sido generado y descargado correctamente",
+          });
+        } else {
+          // Generar contenido HTML para PDF con campos seleccionados
+          const htmlContent = generateHTML([entry], selectedFieldIds);
+          
+          // Mostrar vista previa antes de descargar
+          showPDFPreview(htmlContent);
+          
+          toast({
+            title: "Vista previa generada",
+            description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+          });
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error en la exportación",
+        description: error.message || "Ocurrió un problema al generar el archivo",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExport = (entry: FormEntry, format: "pdf" | "excel") => {
+    // Si el usuario es Admin o SuperAdmin, ofrecer la configuración de campos
+    if (isAdmin) {
+      handleConfigureFields([entry], format);
     } else {
-      // Generar contenido HTML para PDF
-      const htmlContent = generateHTML([entry]);
-      
-      // Mostrar vista previa antes de descargar
-      showPDFPreview(htmlContent);
-      
+      // Comportamiento original para otros usuarios
       toast({
-        title: "Vista previa generada",
-        description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+        title: `Preparando exportación`,
+        description: `Preparando los datos para exportar a ${format.toUpperCase()}`,
       });
+      
+      // Exportar solo la entrada seleccionada como un array de una entrada
+      if (format === "excel") {
+        const csvContent = generateCSV([entry]);
+        const filename = `entrada_formulario_${entry.id}_${format}_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        // Descargar el archivo
+        downloadFile(csvContent, filename, "text/csv;charset=utf-8");
+        
+        toast({
+          title: "Exportación completada",
+          description: "El archivo CSV ha sido generado y descargado correctamente",
+        });
+      } else {
+        // Generar contenido HTML para PDF
+        const htmlContent = generateHTML([entry]);
+        
+        // Mostrar vista previa antes de descargar
+        showPDFPreview(htmlContent);
+        
+        toast({
+          title: "Vista previa generada",
+          description: "Se ha abierto una vista previa del PDF. Puedes imprimirlo o guardarlo como PDF desde el navegador.",
+        });
+      }
     }
   };
 
@@ -752,13 +924,39 @@ export default function ReportsPage() {
       return;
     }
     
+    // Si el usuario es Admin o SuperAdmin, ofrecer la configuración de campos
+    if (isAdmin) {
+      // Verificar que todas las entradas sean del mismo tipo
+      const templateIds = new Set(filteredEntries.map(entry => entry.formTemplateId));
+      
+      if (templateIds.size > 1) {
+        toast({
+          title: "Múltiples tipos de formulario",
+          description: "Para configurar los campos, filtra por un único tipo de formulario",
+          variant: "destructive",
+        });
+        
+        // Proceder con la exportación estándar
+        performStandardExport(filteredEntries, format);
+      } else {
+        // Si todas las entradas son del mismo tipo, permitir la configuración de campos
+        handleConfigureFields(filteredEntries, format);
+      }
+    } else {
+      // Para usuarios no administradores, usar la exportación estándar
+      performStandardExport(filteredEntries, format);
+    }
+  };
+  
+  // Función de exportación estándar sin configuración de campos
+  const performStandardExport = (entries: FormEntry[], format: "pdf" | "excel") => {
     toast({
       title: `Preparando exportación`,
-      description: `Exportando ${filteredEntries.length} entradas a ${format.toUpperCase()}`,
+      description: `Exportando ${entries.length} entradas a ${format.toUpperCase()}`,
     });
     
     if (format === "excel") {
-      const csvContent = generateCSV(filteredEntries);
+      const csvContent = generateCSV(entries);
       const filename = `reporte_formularios_${format}_${new Date().toISOString().split('T')[0]}.csv`;
       
       // Descargar el archivo
@@ -766,11 +964,11 @@ export default function ReportsPage() {
       
       toast({
         title: "Exportación completada",
-        description: `Se han exportado ${filteredEntries.length} entradas a CSV correctamente`,
+        description: `Se han exportado ${entries.length} entradas a CSV correctamente`,
       });
     } else {
       // Generar contenido HTML para PDF
-      const htmlContent = generateHTML(filteredEntries);
+      const htmlContent = generateHTML(entries);
       
       // Mostrar vista previa antes de descargar
       showPDFPreview(htmlContent);
@@ -924,11 +1122,6 @@ export default function ReportsPage() {
       return;
     }
     
-    toast({
-      title: `Preparando exportación personalizada`,
-      description: `Exportando reporte personalizado a ${format.toUpperCase()}`,
-    });
-    
     // Filtrar los datos por nombre de personal si está configurado
     let reportEntries = [...filteredEntries];
     if (customPersonnelFilter) {
@@ -939,6 +1132,32 @@ export default function ReportsPage() {
         );
       });
     }
+    
+    // Si el usuario es Admin o SuperAdmin y todas las entradas son del mismo tipo, ofrecer configuración avanzada
+    if (isAdmin) {
+      // Verificar que todas las entradas sean del mismo tipo
+      const templateIds = new Set(reportEntries.map(entry => entry.formTemplateId));
+      
+      if (templateIds.size === 1) {
+        // Si todas las entradas son del mismo tipo, permitir la configuración de campos
+        handleConfigureFields(reportEntries, format);
+        return;
+      }
+      // Si hay múltiples tipos, proceder con la exportación estándar pero mostrar info
+      if (templateIds.size > 1) {
+        toast({
+          title: "Múltiples tipos de formulario",
+          description: "Se usará la configuración de columnas estándar. Para una configuración avanzada, filtra por un único tipo de formulario.",
+          variant: "destructive",
+        });
+      }
+    }
+    
+    // Comportamiento estándar para usuarios no admin o reportes con múltiples tipos de formulario
+    toast({
+      title: `Preparando exportación personalizada`,
+      description: `Exportando reporte personalizado a ${format.toUpperCase()}`,
+    });
     
     if (format === "excel") {
       const csvContent = generateCSV(reportEntries, customColumns);
@@ -1928,6 +2147,17 @@ export default function ReportsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Modal para selección de campos */}
+      {fieldSelectorOpen && templateForFields && (
+        <FieldsSelectorModal 
+          isOpen={fieldSelectorOpen}
+          onClose={() => setFieldSelectorOpen(false)}
+          template={templateForFields}
+          onSave={handleFieldSelection}
+          initialSelectedFields={selectedFields}
+        />
+      )}
     </MainLayout>
   );
 }
