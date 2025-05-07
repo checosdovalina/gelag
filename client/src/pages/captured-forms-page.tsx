@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import MainLayout from "@/layouts/main-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -71,6 +71,7 @@ interface FormEntry {
   signature?: string;
   signedBy?: number;
   signedAt?: string;
+  folioNumber?: string;
 }
 
 interface FormTemplate {
@@ -104,6 +105,7 @@ export default function CapturedFormsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [filtersVisible, setFiltersVisible] = useState(true); // Mostrar filtros por defecto
+  const [showAllFormsContent, setShowAllFormsContent] = useState(false); // Estado para mostrar todos los contenidos
   
   // Estados para el diálogo de eliminación
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -604,6 +606,14 @@ export default function CapturedFormsPage() {
               <Filter className="mr-2 h-4 w-4" />
               {filtersVisible ? "Ocultar filtros" : "Mostrar filtros"}
             </Button>
+            
+            <Button 
+              variant={showAllFormsContent ? "default" : "outline"} 
+              onClick={() => setShowAllFormsContent(!showAllFormsContent)}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {showAllFormsContent ? "Ocultar contenidos" : "Ver contenidos"}
+            </Button>
           </div>
         </div>
         
@@ -772,6 +782,112 @@ export default function CapturedFormsPage() {
             />
           </CardContent>
         </Card>
+        
+        {/* Expanded view of all forms content */}
+        {showAllFormsContent && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Contenido de formularios filtrados</span>
+                {filteredEntries.length > 0 && (
+                  <div className="flex space-x-2">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      toast({
+                        title: "Exportando formularios",
+                        description: "Se exportarán todos los formularios filtrados como PDF individuales"
+                      });
+                      
+                      // Exportar todos los formularios filtrados (uno por uno)
+                      filteredEntries.forEach(entry => {
+                        setTimeout(() => {
+                          handleExportForm(entry, "pdf");
+                        }, 500); // Pequeño retraso para evitar sobrecargar el navegador
+                      });
+                    }}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Exportar todos (PDF)
+                    </Button>
+                  </div>
+                )}
+              </CardTitle>
+              <CardDescription>
+                {filteredEntries.length > 0 
+                  ? `Mostrando contenido de ${filteredEntries.length} formularios` 
+                  : "No hay formularios que coincidan con los filtros seleccionados"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-8">
+                {filteredEntries.map(entry => {
+                  const template = templates?.find(t => t.id === entry.formTemplateId);
+                  if (!template) return null;
+                  
+                  return (
+                    <div key={entry.id} className="border rounded-lg p-4">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-2 border-b">
+                        <div>
+                          <h3 className="text-lg font-semibold">{getTemplateName(entry.formTemplateId)}</h3>
+                          <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:gap-4">
+                            <span>Folio: {entry.folioNumber || "-"}</span>
+                            <span>Creado por: {getUserName(entry.createdBy)}</span>
+                            <span>Fecha: {format(new Date(entry.createdAt), "dd/MM/yyyy HH:mm", { locale: es })}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={
+                            entry.status === "signed" ? "success" : 
+                            entry.status === "approved" ? "default" :
+                            entry.status === "rejected" ? "destructive" : "outline"
+                          }>
+                            {entry.status === "draft" ? "Borrador" :
+                             entry.status === "signed" ? "Firmado" :
+                             entry.status === "approved" ? "Aprobado" : "Rechazado"}
+                          </Badge>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleViewForm(entry)}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Ver detalle
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="max-h-[500px] overflow-y-auto bg-muted/30 rounded-md p-4">
+                        <FormViewer
+                          formTemplate={template.structure}
+                          initialData={entry.data}
+                          onSubmit={() => {}}
+                          isReadOnly={true}
+                          formId={template.id}
+                        />
+                        
+                        {/* Signature display if form is signed */}
+                        {entry.signature && (
+                          <div className="mt-4 border-t pt-4">
+                            <h4 className="text-md font-medium mb-2">Firma</h4>
+                            <div className="flex items-center justify-center p-2 border rounded-md bg-white">
+                              <img 
+                                src={entry.signature} 
+                                alt="Firma digital" 
+                                className="max-h-24"
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2 text-center">
+                              Firmado por {getUserName(entry.signedBy || entry.createdBy)} 
+                              {entry.signedAt && ` el ${format(new Date(entry.signedAt), "dd/MM/yyyy HH:mm", { locale: es })}`}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         {/* Form details dialog */}
         {selectedEntry && selectedTemplate && (
