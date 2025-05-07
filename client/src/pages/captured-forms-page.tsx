@@ -122,6 +122,7 @@ export default function CapturedFormsPage() {
   const [exportFormat, setExportFormat] = useState<"pdf" | "excel">("pdf");
   
   const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
+  const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
   
   // Fetch form entries
   const { data: entries, isLoading: isLoadingEntries, refetch: refetchEntries } = useQuery<FormEntry[]>({
