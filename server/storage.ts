@@ -5,6 +5,8 @@ import {
   activityLogs, ActivityLog, InsertActivityLog,
   savedReports, SavedReport, InsertSavedReport,
   folioCounters, FolioCounter, InsertFolioCounter,
+  products, Product, InsertProduct,
+  employees, Employee, InsertEmployee,
   UserRole 
 } from "@shared/schema";
 import session from "express-session";
@@ -70,6 +72,25 @@ export interface IStorage {
   // Folio methods
   getFolioCounter(templateId: number): Promise<FolioCounter | undefined>;
   getNextFolioNumber(templateId: number): Promise<number>;
+  
+  // Productos methods
+  getProduct(id: number): Promise<Product | undefined>;
+  getProductByCode(code: string): Promise<Product | undefined>;
+  createProduct(product: InsertProduct): Promise<Product>;
+  updateProduct(id: number, data: Partial<InsertProduct>): Promise<Product | undefined>;
+  deleteProduct(id: number): Promise<void>;
+  getAllProducts(): Promise<Product[]>;
+  getActiveProducts(): Promise<Product[]>;
+  
+  // Empleados methods
+  getEmployee(id: number): Promise<Employee | undefined>;
+  getEmployeeByEmployeeId(employeeId: string): Promise<Employee | undefined>;
+  createEmployee(employee: InsertEmployee): Promise<Employee>;
+  updateEmployee(id: number, data: Partial<InsertEmployee>): Promise<Employee | undefined>;
+  deleteEmployee(id: number): Promise<void>;
+  getAllEmployees(): Promise<Employee[]>;
+  getActiveEmployees(): Promise<Employee[]>;
+  getEmployeesByDepartment(department: string): Promise<Employee[]>;
   
   // Session store
   sessionStore: session.SessionStore;

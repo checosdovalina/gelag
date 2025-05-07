@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, jsonb, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -202,3 +202,49 @@ export const formStructureSchema = z.object({
 });
 
 export type FormStructure = z.infer<typeof formStructureSchema>;
+
+// Tabla de productos para reutilizar en formularios
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  code: text("code").notNull().unique(),
+  description: text("description"),
+  category: text("category"),
+  unit: text("unit"), // Unidad de medida (kg, litros, piezas, etc.)
+  isActive: boolean("is_active").default(true),
+  createdBy: integer("created_by").notNull(), // Usuario que creó el producto
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Tabla de empleados para reutilizar en formularios
+export const employees = pgTable("employees", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  employeeId: text("employee_id").notNull().unique(), // Número de empleado
+  position: text("position"),
+  department: text("department"),
+  isActive: boolean("is_active").default(true),
+  createdBy: integer("created_by").notNull(), // Usuario que creó el registro del empleado
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEmployeeSchema = createInsertSchema(employees).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Tipos adicionales
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
+
+export type Employee = typeof employees.$inferSelect;
+export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
