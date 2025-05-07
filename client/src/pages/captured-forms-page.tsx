@@ -93,6 +93,7 @@ export default function CapturedFormsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [contentSearchTerm, setContentSearchTerm] = useState(""); // Término para buscar en el contenido
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [userFilter, setUserFilter] = useState<number | "all">("all");
@@ -102,7 +103,7 @@ export default function CapturedFormsPage() {
   const [selectedEntry, setSelectedEntry] = useState<FormEntry | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [filtersVisible, setFiltersVisible] = useState(true); // Mostrar filtros por defecto
   
   // Estados para el diálogo de eliminación
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -196,13 +197,49 @@ export default function CapturedFormsPage() {
     }
   }, [selectedEntry, templates]);
   
+  // Función auxiliar para buscar en el contenido del formulario
+  const searchInFormContent = (entry: FormEntry, searchTerm: string): boolean => {
+    if (!searchTerm || searchTerm === "") return true;
+    
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    try {
+      // Función recursiva para buscar en objetos anidados
+      const searchInNestedObject = (obj: any): boolean => {
+        if (!obj) return false;
+        
+        // Si es un array, buscar en cada elemento
+        if (Array.isArray(obj)) {
+          return obj.some(item => searchInNestedObject(item));
+        }
+        
+        // Si es un objeto, buscar en cada propiedad
+        if (typeof obj === 'object') {
+          return Object.values(obj).some(value => searchInNestedObject(value));
+        }
+        
+        // Para valores primitivos (string, number, etc.)
+        return String(obj).toLowerCase().includes(searchTermLower);
+      };
+      
+      // Comprobar si algún valor en los datos del formulario contiene el término de búsqueda
+      return searchInNestedObject(entry.data);
+    } catch (error) {
+      console.error("Error al buscar en contenido del formulario:", error);
+      return false;
+    }
+  };
+
   // Apply filters to entries
   const filteredEntries = entries
     ? entries.filter(entry => {
-        // Text search
+        // Text search (nombre del formulario)
         const hasSearchTerm = 
           searchTerm === "" || 
           (templates?.find(t => t.id === entry.formTemplateId)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+        
+        // Content search (búsqueda en el contenido del formulario)
+        const passesContentSearch = contentSearchTerm === "" || searchInFormContent(entry, contentSearchTerm);
         
         // Department filter
         const passesDepartmentFilter = 
@@ -241,6 +278,7 @@ export default function CapturedFormsPage() {
         }
         
         return hasSearchTerm && 
+               passesContentSearch &&
                passesDepartmentFilter && 
                passesStatusFilter && 
                passesUserFilter && 
@@ -478,6 +516,7 @@ export default function CapturedFormsPage() {
   
   const clearFilters = () => {
     setSearchTerm("");
+    setContentSearchTerm("");
     setDepartmentFilter("all");
     setStatusFilter("all");
     setUserFilter("all");
@@ -579,6 +618,19 @@ export default function CapturedFormsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Buscar en contenido</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400" />
+                    <Input
+                      placeholder="Buscar dentro de formularios..."
+                      className="pl-10"
+                      value={contentSearchTerm}
+                      onChange={(e) => setContentSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Departamento</label>
                   <Select
