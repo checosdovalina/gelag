@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { ArrowUpDown, Eye, EyeOff, GripVertical, ChevronDown } from "lucide-react";
+import { ArrowUpDown, Eye, EyeOff, GripVertical, Search, ChevronRight, ChevronLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { FormTemplate } from "@shared/schema";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 interface FieldOption {
   id: string;
@@ -34,13 +35,18 @@ export function FieldsSelectorModal({
 }: FieldsSelectorModalProps) {
   const [fieldOptions, setFieldOptions] = useState<FieldOption[]>([]);
   const [selectAll, setSelectAll] = useState(true);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState<FieldOption[]>([]);
+  
+  // Estado para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Inicializar opciones de campos al montar el componente
   useEffect(() => {
     if (template && template.structure && template.structure.fields) {
       // Extraer todos los campos disponibles del template
-      const fields = template.structure.fields;
+      const fields = template.structure.fields as any[];
       
       // Crear opciones de campo con selección inicial basada en initialSelectedFields
       const options = fields.map((field, index) => ({
@@ -51,9 +57,10 @@ export function FieldsSelectorModal({
       }));
       
       // Ordenar opciones por el orden de visualización
-      options.sort((a, b) => a.order - b.order);
+      options.sort((a: any, b: any) => a.order - b.order);
       
       setFieldOptions(options);
+      setFilteredOptions(options);
       
       // Determinar si todos los campos están seleccionados inicialmente
       setSelectAll(
@@ -63,6 +70,26 @@ export function FieldsSelectorModal({
       );
     }
   }, [template, initialSelectedFields]);
+  
+  // Filtrar opciones basadas en el término de búsqueda
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredOptions(fieldOptions);
+      setCurrentPage(1);
+    } else {
+      const filtered = fieldOptions.filter(option => 
+        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredOptions(filtered);
+      setCurrentPage(1);
+    }
+  }, [searchTerm, fieldOptions]);
+
+  // Calcular opciones visibles en la página actual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredOptions.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredOptions.length / itemsPerPage);
 
   // Manejar cambio de selección en un campo
   const handleToggleField = (fieldId: string) => {
@@ -99,29 +126,30 @@ export function FieldsSelectorModal({
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
     
-    const items = Array.from(fieldOptions);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    // Actualizar orden de los campos
-    const updatedItems = items.map((item, index) => ({
-      ...item,
-      order: index
-    }));
-    
-    setFieldOptions(updatedItems);
-  };
-
-  // Función para desplazarse hacia abajo
-  const scrollToBottom = () => {
-    if (scrollAreaRef.current) {
-      // Agarrar el elemento scroll dentro del ScrollArea
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) {
-        // Scroll hacia abajo
-        scrollContainer.scrollTo({
-          top: scrollContainer.scrollHeight,
-          behavior: 'smooth'
+    // Solo permitir reordenar dentro de la página actual
+    if (result.source.droppableId === "fields-list" && result.destination.droppableId === "fields-list") {
+      // Mapeo de los índices locales a los índices globales
+      const globalSourceIndex = indexOfFirstItem + result.source.index;
+      const globalDestIndex = indexOfFirstItem + result.destination.index;
+      
+      const newFieldOptions = Array.from(fieldOptions);
+      const [reorderedItem] = newFieldOptions.splice(globalSourceIndex, 1);
+      newFieldOptions.splice(globalDestIndex, 0, reorderedItem);
+      
+      // Actualizar el orden
+      const updatedOptions = newFieldOptions.map((item, index) => ({
+        ...item,
+        order: index
+      }));
+      
+      setFieldOptions(updatedOptions);
+      
+      // Actualizar las opciones filtradas
+      if (searchTerm) {
+        setFilteredOptions(prevFiltered => {
+          const newFiltered = prevFiltered.filter(item => item.id !== reorderedItem.id);
+          newFiltered.splice(result.destination.index, 0, reorderedItem);
+          return newFiltered;
         });
       }
     }
@@ -146,12 +174,21 @@ export function FieldsSelectorModal({
       fieldOrder[option.id] = option.order;
     });
     
-    // Log para depuración
-    console.log("Campos seleccionados:", selectedFields);
-    console.log("Orden de campos:", fieldOrder);
-    
     onSave(selectedFields, fieldOrder);
     onOpenChange(false);
+  };
+
+  // Cambiar de página
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+  
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
   };
 
   return (
@@ -186,21 +223,21 @@ export function FieldsSelectorModal({
         
         <Separator />
         
-        {/* Botón para desplazarse hacia abajo */}
-        <div className="flex justify-end mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={scrollToBottom}
-            className="gap-1"
-          >
-            Ver campos al final <ChevronDown className="h-4 w-4" />
-          </Button>
+        {/* Campo de búsqueda */}
+        <div className="relative mb-4 mt-2">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Buscar campo..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         
-        {/* Aquí está el cambio clave: establecer una altura fija y asegurar que tiene overflow */}
-        <div className="flex-1 overflow-hidden" style={{ height: "55vh" }} ref={scrollAreaRef}>
-          <ScrollArea className="h-full w-full pr-4">
+        {/* Lista de campos con paginación */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-[45vh] w-full pr-4">
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="fields-list">
                 {(provided) => (
@@ -209,7 +246,7 @@ export function FieldsSelectorModal({
                     ref={provided.innerRef}
                     className="space-y-2 pb-4"
                   >
-                    {fieldOptions.map((option, index) => (
+                    {currentItems.map((option, index) => (
                       <Draggable
                         key={option.id}
                         draggableId={option.id}
@@ -257,13 +294,49 @@ export function FieldsSelectorModal({
           </ScrollArea>
         </div>
         
+        {/* Controles de paginación */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4 mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToPrevPage}
+              disabled={currentPage === 1}
+              className="gap-1"
+            >
+              <ChevronLeft className="h-4 w-4" /> Anterior
+            </Button>
+            
+            <span className="text-sm text-muted-foreground">
+              Página {currentPage} de {totalPages}
+            </span>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className="gap-1"
+            >
+              Siguiente <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave}>
-            Guardar configuración
-          </Button>
+          <div className="flex items-center justify-between w-full">
+            <div className="text-sm text-muted-foreground">
+              {filteredOptions.length} campos en total
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSave}>
+                Guardar configuración
+              </Button>
+            </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
