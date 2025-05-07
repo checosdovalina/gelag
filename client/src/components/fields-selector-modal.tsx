@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { ArrowUpDown, Eye, EyeOff, GripVertical } from "lucide-react";
+import { ArrowUpDown, Eye, EyeOff, GripVertical, ChevronDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { FormTemplate } from "@shared/schema";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,6 +34,7 @@ export function FieldsSelectorModal({
 }: FieldsSelectorModalProps) {
   const [fieldOptions, setFieldOptions] = useState<FieldOption[]>([]);
   const [selectAll, setSelectAll] = useState(true);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Inicializar opciones de campos al montar el componente
   useEffect(() => {
@@ -111,17 +112,43 @@ export function FieldsSelectorModal({
     setFieldOptions(updatedItems);
   };
 
+  // Función para desplazarse hacia abajo
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      // Agarrar el elemento scroll dentro del ScrollArea
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        // Scroll hacia abajo
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+  
   // Guardar configuración
   const handleSave = () => {
-    const selectedFields = fieldOptions
-      .filter(option => option.selected)
-      .map(option => option.id);
+    // Asegurarnos de que al menos un campo esté seleccionado
+    const selectedOptions = fieldOptions.filter(option => option.selected);
+    
+    if (selectedOptions.length === 0) {
+      // Evitar guardar si no hay campos seleccionados
+      alert("Por favor, selecciona al menos un campo para continuar.");
+      return;
+    }
+    
+    const selectedFields = selectedOptions.map(option => option.id);
     
     // Crear un mapa de id de campo a su orden
     const fieldOrder: Record<string, number> = {};
     fieldOptions.forEach(option => {
       fieldOrder[option.id] = option.order;
     });
+    
+    // Log para depuración
+    console.log("Campos seleccionados:", selectedFields);
+    console.log("Orden de campos:", fieldOrder);
     
     onSave(selectedFields, fieldOrder);
     onOpenChange(false);
@@ -159,8 +186,20 @@ export function FieldsSelectorModal({
         
         <Separator />
         
+        {/* Botón para desplazarse hacia abajo */}
+        <div className="flex justify-end mb-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={scrollToBottom}
+            className="gap-1"
+          >
+            Ver campos al final <ChevronDown className="h-4 w-4" />
+          </Button>
+        </div>
+        
         {/* Aquí está el cambio clave: establecer una altura fija y asegurar que tiene overflow */}
-        <div className="flex-1 overflow-hidden" style={{ height: "60vh" }}>
+        <div className="flex-1 overflow-hidden" style={{ height: "55vh" }} ref={scrollAreaRef}>
           <ScrollArea className="h-full w-full pr-4">
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="fields-list">
