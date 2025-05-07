@@ -1059,14 +1059,16 @@ export default function CapturedFormsPage() {
                       Vista homologada
                     </Button>
 
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => handleConfigureFields(filteredEntries, "pdf")}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Configurar campos
-                    </Button>
+                    {isAdmin && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleConfigureFields(filteredEntries, "pdf")}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Configurar campos
+                      </Button>
+                    )}
                   </div>
                 )}
               </CardTitle>
