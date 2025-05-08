@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { 
   Card, 
@@ -28,8 +28,24 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Plus, Trash, Pencil, Save, LayoutGrid, CopyPlus } from "lucide-react";
+import { 
+  AlertCircle, 
+  Plus, 
+  Trash, 
+  Pencil, 
+  Save, 
+  LayoutGrid, 
+  CopyPlus, 
+  Check, 
+  Bookmark,
+  ListChecks,
+  ArrowRight,
+  ChevronRight,
+  ChevronLeft,
+  LayoutTemplate
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,6 +62,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // Tipos para la configuración de tabla avanzada 
 interface ColumnDefinition {
@@ -88,12 +105,120 @@ interface AdvancedTableEditorProps {
   preview?: boolean;
 }
 
+// Plantillas predefinidas para tipos comunes de tablas
+const TABLE_TEMPLATES = [
+  {
+    name: "Tabla de Control de Proceso",
+    icon: <ListChecks className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 5,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Información",
+          columns: [
+            { id: uuidv4(), header: "Fecha", type: "date", width: "120px" },
+            { id: uuidv4(), header: "Hora", type: "text", width: "100px" },
+            { id: uuidv4(), header: "Responsable", type: "employee", width: "150px" }
+          ]
+        },
+        {
+          title: "Parámetros de Control",
+          columns: [
+            { id: uuidv4(), header: "pH", type: "number", validation: { min: 0, max: 14 } },
+            { id: uuidv4(), header: "Temperatura (°C)", type: "number", validation: { min: 0, max: 100 } },
+            { id: uuidv4(), header: "Observaciones", type: "text", width: "200px" }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    name: "Formato de Inspección",
+    icon: <Check className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 5,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Elemento",
+          columns: [
+            { id: uuidv4(), header: "Descripción", type: "text", width: "200px" }
+          ]
+        },
+        {
+          title: "Evaluación",
+          columns: [
+            { 
+              id: uuidv4(), 
+              header: "Cumple", 
+              type: "select", 
+              width: "100px",
+              options: [
+                { label: "Sí", value: "si" },
+                { label: "No", value: "no" },
+                { label: "N/A", value: "na" }
+              ]
+            },
+            { id: uuidv4(), header: "Comentarios", type: "text", width: "250px" }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    name: "Tabla de Fermentación",
+    icon: <Bookmark className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 10,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Tiempo",
+          columns: [
+            { id: uuidv4(), header: "Fecha", type: "date", width: "120px" },
+            { id: uuidv4(), header: "Hora", type: "text", width: "100px" }
+          ]
+        },
+        {
+          title: "Mediciones",
+          columns: [
+            { id: uuidv4(), header: "Temperatura (°C)", type: "number", validation: { min: 0, max: 100 } },
+            { id: uuidv4(), header: "Densidad", type: "number", validation: { min: 0, max: 2 } },
+            { id: uuidv4(), header: "pH", type: "number", validation: { min: 0, max: 14 } }
+          ]
+        },
+        {
+          title: "Control",
+          columns: [
+            { id: uuidv4(), header: "Responsable", type: "employee", width: "150px" },
+            { id: uuidv4(), header: "Observaciones", type: "text", width: "200px" }
+          ]
+        }
+      ]
+    }
+  }
+];
+
+// Pasos del asistente
+const WIZARD_STEPS = [
+  { id: "template", title: "Seleccionar Plantilla" },
+  { id: "structure", title: "Estructura Básica" },
+  { id: "columns", title: "Columnas" },
+  { id: "preview", title: "Vista Previa" }
+];
+
 const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   value,
   onChange,
   preview = false
 }) => {
-  const [activeTab, setActiveTab] = useState<string>("sections");
+  // Estado para el wizard
+  const [wizardMode, setWizardMode] = useState<boolean>(true);
+  const [currentStep, setCurrentStep] = useState<string>("template");
+  
+  // Estados tradicionales
+  const [activeTab, setActiveTab] = useState<string>("templates");
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [editingColumn, setEditingColumn] = useState<{sectionIndex: number, columnIndex: number} | null>(null);
   const [newSectionTitle, setNewSectionTitle] = useState<string>("");
@@ -101,6 +226,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     id: uuidv4(),
     header: "",
     type: "text"
+  });
+
+  // Estado para la estructura básica en el wizard
+  const [wizardBasicConfig, setWizardBasicConfig] = useState({
+    tableName: "",
+    numSections: 1,
+    dynamicRows: true,
+    initialRows: 3
   });
 
   // Estado para la vista previa
