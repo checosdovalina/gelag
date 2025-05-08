@@ -158,7 +158,8 @@ export const fieldTypes = [
   "evaluationMatrix",
   "employee", // Campo para seleccionar un empleado
   "employeeByType", // Campo para seleccionar un empleado filtrado por tipo
-  "product"   // Campo para seleccionar un producto
+  "product",   // Campo para seleccionar un producto
+  "advancedTable" // Tabla avanzada con múltiples columnas y filas, diseño personalizable
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];
@@ -203,6 +204,35 @@ export const formFieldSchema = z.object({
   employeeNames: z.array(z.string()).optional(), // Nombres de empleados para la matriz
   criteria: z.array(z.string()).optional(), // Criterios de evaluación
   days: z.array(z.string()).optional(), // Días de la semana (opcional)
+  // Campos específicos para tablas avanzadas
+  advancedTableConfig: z.object({
+    rows: z.number().optional(), // Número de filas fijas
+    dynamicRows: z.boolean().optional(), // Si permite agregar filas dinámicamente
+    sections: z.array(z.object({
+      title: z.string(),
+      colspan: z.number().optional(), // Número de columnas que abarca el título
+      columns: z.array(z.object({
+        id: z.string(),
+        header: z.string(),
+        width: z.string().optional(), // Ancho de la columna (%, px)
+        type: z.enum(["text", "number", "select", "checkbox", "date"]),
+        span: z.number().optional(), // Para celdas que ocupan múltiples columnas
+        rowspan: z.number().optional(), // Para celdas que ocupan múltiples filas
+        readOnly: z.boolean().optional(), // Si la celda es de solo lectura
+        validation: z.object({
+          min: z.number().optional(),
+          max: z.number().optional(),
+          pattern: z.string().optional(),
+          required: z.boolean().optional()
+        }).optional(),
+        options: z.array(z.object({
+          label: z.string(),
+          value: z.string()
+        })).optional()
+      }))
+    })).optional(),
+    initialData: z.array(z.record(z.string(), z.any())).optional() // Datos iniciales de la tabla
+  }).optional() // Para campos tipo advancedTable
 });
 
 // Export both the type and the schema

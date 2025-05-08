@@ -189,7 +189,9 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
       case "radio": return <RadioIcon className="h-4 w-4" />;
       case "textarea": return <AlignLeft className="h-4 w-4" />;
       case "table": return <TableIcon className="h-4 w-4" />;
+      case "advancedTable": return <LayoutGrid className="h-4 w-4" />;
       case "employee": return <UserCircle className="h-4 w-4" />;
+      case "employeeByType": return <Users className="h-4 w-4" />;
       case "product": return <Package className="h-4 w-4" />;
       default: return <Type className="h-4 w-4" />;
     }
