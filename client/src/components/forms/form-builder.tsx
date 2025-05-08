@@ -22,14 +22,17 @@ import {
   Calendar, 
   List, 
   CheckSquare, 
-  RadioIcon, 
+  Radio as RadioIcon, 
   AlignLeft, 
   Table as TableIcon,
+  LayoutGrid,
   Package, 
-  UserCircle 
+  UserCircle,
+  Users 
 } from "lucide-react";
 import { FieldType, formFieldSchema, formStructureSchema } from "@shared/schema";
 import type { FormField } from "@shared/schema";
+import AdvancedTableEditor from "./advanced-table-editor";
 
 interface FormBuilderProps {
   initialFormData?: z.infer<typeof formStructureSchema>;
@@ -396,6 +399,11 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   <TableIcon className="h-4 w-4 mr-2" /> Tabla
                                                 </div>
                                               </SelectItem>
+                                              <SelectItem value="advancedTable">
+                                                <div className="flex items-center">
+                                                  <LayoutGrid className="h-4 w-4 mr-2" /> Tabla Avanzada
+                                                </div>
+                                              </SelectItem>
                                               <SelectItem value="employee">
                                                 <div className="flex items-center">
                                                   <UserCircle className="h-4 w-4 mr-2" /> Seleccionar Empleado
@@ -546,6 +554,49 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                     </div>
                                   )}
 
+                                  {form.watch(`fields.${index}.type`) === "advancedTable" && (
+                                    <div>
+                                      <UIFormField
+                                        control={form.control}
+                                        name={`fields.${index}.advancedTableConfig`}
+                                        render={({ field }) => {
+                                          // Initialize advanced table config if it doesn't exist
+                                          if (!field.value) {
+                                            form.setValue(`fields.${index}.advancedTableConfig`, {
+                                              rows: 3,
+                                              dynamicRows: true,
+                                              sections: [
+                                                {
+                                                  title: "Sección 1",
+                                                  columns: [
+                                                    { id: uuidv4(), header: "Columna 1", type: "text" },
+                                                    { id: uuidv4(), header: "Columna 2", type: "text" }
+                                                  ]
+                                                }
+                                              ]
+                                            });
+                                          }
+                                          
+                                          return (
+                                            <FormItem>
+                                              <FormLabel>Configuración de Tabla Avanzada</FormLabel>
+                                              <div className="mt-2">
+                                                {/* Nota: Importar el componente AdvancedTableEditor desde otro archivo */}
+                                                <AdvancedTableEditor 
+                                                  value={field.value || {}}
+                                                  onChange={(newValue) => {
+                                                    form.setValue(`fields.${index}.advancedTableConfig`, newValue);
+                                                  }}
+                                                />
+                                              </div>
+                                              <FormMessage />
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  
                                   {form.watch(`fields.${index}.type`) === "table" && (
                                     <div>
                                       <UIFormField

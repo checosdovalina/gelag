@@ -266,7 +266,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   const TablePreview = () => {
     if (!value.sections || value.sections.length === 0) {
       return (
-        <Alert variant="warning">
+        <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Sin secciones</AlertTitle>
           <AlertDescription>
