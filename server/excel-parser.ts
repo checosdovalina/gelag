@@ -864,6 +864,242 @@ function detectFormStructure(sheetData: any[], rawData?: any[]): FormStructure |
 }
 
 /**
+ * Detecta si el archivo Excel contiene una ficha técnica de producción
+ * @param rawData Los datos en formato de array de arrays
+ * @returns true si el archivo parece ser una ficha técnica de producción
+ */
+function detectFichaTecnicaProduccion(rawData: any[]): boolean {
+  if (!rawData || !Array.isArray(rawData) || rawData.length === 0) return false;
+  
+  // Buscar patrones específicos de fichas técnicas de producción
+  for (let i = 0; i < Math.min(20, rawData.length); i++) {
+    const row = rawData[i];
+    if (!row || !Array.isArray(row)) continue;
+    
+    const rowStr = row.join(' ').toLowerCase();
+    
+    // Patrones comunes en fichas técnicas de producción
+    if (rowStr.includes('ficha técnica') || 
+        rowStr.includes('producto') || 
+        rowStr.includes('pr-pr') ||
+        rowStr.includes('producción') ||
+        rowStr.includes('elaboración') ||
+        rowStr.includes('ingredientes')) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Extrae campos para una ficha técnica de producción
+ * @param rawData Los datos en formato de array de arrays
+ * @returns Estructura de formulario con campos específicos para fichas técnicas
+ */
+function extractFichaTecnicaFields(rawData: any[]): FormStructure {
+  const formStructure: FormStructure = {
+    title: "Ficha Técnica de Producción",
+    fields: []
+  };
+  
+  // Mapa para rastrear los ID de campo y evitar duplicados
+  const fieldIds = new Set<string>();
+  
+  console.log("Extrayendo campos para ficha técnica de producción");
+  
+  // Primero buscamos posibles nombres de campo en las primeras filas
+  const possibleFieldLabels: {label: string, row: number, col: number}[] = [];
+  
+  // Recorrer las primeras 30 filas para buscar posibles etiquetas de campo
+  for (let i = 0; i < Math.min(30, rawData.length); i++) {
+    const row = rawData[i];
+    if (!row || !Array.isArray(row)) continue;
+    
+    // Buscar posibles etiquetas de campo (generalmente en primeras columnas)
+    for (let j = 0; j < Math.min(10, row.length); j++) {
+      const cell = row[j];
+      if (!cell || typeof cell !== 'string') continue;
+      
+      const cellStr = cell.trim();
+      
+      // Si la celda termina con ":" o tiene patrones comunes de etiquetas
+      if (cellStr.endsWith(':') || 
+          /^[A-Z\s]+:?$/i.test(cellStr) || 
+          cellStr.length > 3 && cellStr.length < 40) {
+        possibleFieldLabels.push({
+          label: cellStr.replace(/:$/, ''), // Remover ":" final si existe
+          row: i,
+          col: j
+        });
+      }
+    }
+  }
+  
+  // Procesar las etiquetas encontradas y crear campos
+  for (const fieldInfo of possibleFieldLabels) {
+    // Si el valor está en la columna siguiente
+    const valueCol = fieldInfo.col + 1;
+    const valueRow = fieldInfo.row;
+    
+    if (rawData[valueRow] && rawData[valueRow][valueCol] !== undefined) {
+      // Normalizar etiqueta para generar ID único
+      const normalizedLabel = fieldInfo.label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '');
+      
+      let fieldId = normalizedLabel;
+      let counter = 1;
+      
+      // Asegurar ID único
+      while (fieldIds.has(fieldId)) {
+        fieldId = `${normalizedLabel}_${counter}`;
+        counter++;
+      }
+      
+      fieldIds.add(fieldId);
+      
+      // Determinar tipo de campo basado en la etiqueta y valor
+      let fieldType: FieldType = 'text';
+      const labelLower = fieldInfo.label.toLowerCase();
+      const valueExample = rawData[valueRow][valueCol];
+      
+      if (labelLower.includes('fecha') || labelLower.includes('date')) {
+        fieldType = 'date';
+      } else if (labelLower.includes('cantidad') || 
+                 labelLower.includes('peso') || 
+                 labelLower.includes('volumen') || 
+                 labelLower.includes('porcentaje') ||
+                 labelLower.includes('total') ||
+                 labelLower.includes('kilo') ||
+                 labelLower.includes('gramo') ||
+                 labelLower.includes('unidad')) {
+        fieldType = 'number';
+      } else if (labelLower.includes('ingrediente') || 
+                 labelLower.includes('materia prima') || 
+                 labelLower.includes('material') ||
+                 labelLower.includes('insumo')) {
+        fieldType = 'product';
+      } else if (labelLower.includes('responsable') || 
+                 labelLower.includes('elaborado por') || 
+                 labelLower.includes('revisado por') ||
+                 labelLower.includes('operador') ||
+                 labelLower.includes('supervisor')) {
+        fieldType = 'employee';
+      } else if (labelLower.includes('descripción') || 
+                 labelLower.includes('procedimiento') || 
+                 labelLower.includes('notas') ||
+                 labelLower.includes('instrucciones') ||
+                 labelLower.includes('observaciones')) {
+        fieldType = 'textarea';
+      }
+      
+      // Crear el campo
+      formStructure.fields.push({
+        id: fieldId,
+        type: fieldType,
+        label: fieldInfo.label.trim(),
+        required: isRequiredField(fieldInfo.label),
+        defaultValue: String(valueExample || ''),
+        placeholder: `Ingrese ${fieldInfo.label.trim().toLowerCase()}`
+      });
+    }
+  }
+  
+  // Si no se encontraron suficientes campos, agregar algunos genéricos basados en patrones de ficha técnica
+  if (formStructure.fields.length < 3) {
+    formStructure.fields = [
+      {
+        id: "codigo_producto",
+        type: "text",
+        label: "Código de Producto",
+        required: true,
+        placeholder: "Ej: PR-01"
+      },
+      {
+        id: "nombre_producto",
+        type: "text",
+        label: "Nombre del Producto",
+        required: true,
+        placeholder: "Ej: Cerveza IPA"
+      },
+      {
+        id: "fecha_elaboracion",
+        type: "date",
+        label: "Fecha de Elaboración",
+        required: true
+      },
+      {
+        id: "responsable",
+        type: "employee",
+        label: "Responsable",
+        required: true
+      },
+      {
+        id: "ingredientes",
+        type: "textarea",
+        label: "Ingredientes",
+        required: true,
+        placeholder: "Liste los ingredientes"
+      },
+      {
+        id: "cantidad",
+        type: "number",
+        label: "Cantidad (kg)",
+        required: true
+      },
+      {
+        id: "notas",
+        type: "textarea",
+        label: "Notas de Producción",
+        required: false,
+        placeholder: "Observaciones adicionales"
+      }
+    ];
+  }
+  
+  // Asegurar que al menos tengamos un campo de fecha y uno de responsable
+  const tieneResponsable = formStructure.fields.some(f => f.type === 'employee');
+  const tieneFecha = formStructure.fields.some(f => f.type === 'date');
+  
+  if (!tieneResponsable) {
+    formStructure.fields.push({
+      id: "responsable",
+      type: "employee",
+      label: "Responsable",
+      required: true
+    });
+  }
+  
+  if (!tieneFecha) {
+    formStructure.fields.push({
+      id: "fecha",
+      type: "date",
+      label: "Fecha",
+      required: true
+    });
+  }
+  
+  return formStructure;
+}
+
+/**
+ * Determina si un campo debe ser requerido basado en su etiqueta
+ */
+function isRequiredField(label: string): boolean {
+  const lowLabel = label.toLowerCase();
+  
+  // Campos que generalmente son requeridos
+  const requiredPatterns = [
+    'código', 'codigo', 'folio', 'nombre', 'fecha', 'responsable', 
+    'producto', 'cantidad', 'total', 'elaborado', 'revisado'
+  ];
+  
+  return requiredPatterns.some(pattern => lowLabel.includes(pattern));
+}
+
+/**
  * Crea una plantilla de formulario a partir de datos de Excel
  */
 export function createFormTemplateFromExcel(excelData: any[], department: string): {
@@ -933,7 +1169,22 @@ export function createFormTemplateFromExcel(excelData: any[], department: string
         ? detectFormType(rawData) 
         : FormTemplateType.GENERIC;
     
-    // Primero intentar detectar la estructura de forma inteligente
+    // Verificar si es una ficha técnica de producción
+    if (rawData.length > 0 && detectFichaTecnicaProduccion(rawData)) {
+      console.log("Detectado tipo de formulario: Ficha Técnica de Producción");
+      
+      // Usar extractor especializado para fichas técnicas
+      const fichaTecnicaStructure = extractFichaTecnicaFields(rawData);
+      
+      return {
+        name: metadata.title || "Ficha Técnica de Producción",
+        description: `${metadata.code || ""} ${metadata.version || ""} - Ficha técnica importada desde Excel`,
+        department,
+        structure: fichaTecnicaStructure
+      };
+    }
+    
+    // En otros casos, usamos el detector genérico
     let formStructure = detectFormStructure(sheetData, rawData);
     
     // Si no se pudo detectar una estructura, usar el convertidor tradicional
