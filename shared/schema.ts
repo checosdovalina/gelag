@@ -172,6 +172,8 @@ export const formFieldSchema = z.object({
   displayName: z.string().optional(),
   // Campo para ordenar campos en los reportes
   displayOrder: z.number().optional(),
+  // Campo para controlar si el campo es editable en el constructor de formularios
+  editable: z.boolean().optional(),
   description: z.string().optional(),
   required: z.boolean().default(false),
   placeholder: z.string().optional(),

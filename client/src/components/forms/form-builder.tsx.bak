@@ -369,72 +369,71 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                 </SelectTrigger>
                                               </FormControl>
                                               <SelectContent>
-                                                <SelectItem value="text">
-                                                  <div className="flex items-center">
-                                                    <Type className="h-4 w-4 mr-2" /> Texto
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="number">
-                                                  <div className="flex items-center">
-                                                    <Hash className="h-4 w-4 mr-2" /> Número
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="date">
-                                                  <div className="flex items-center">
-                                                    <Calendar className="h-4 w-4 mr-2" /> Fecha
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="select">
-                                                  <div className="flex items-center">
-                                                    <List className="h-4 w-4 mr-2" /> Lista desplegable
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="checkbox">
-                                                  <div className="flex items-center">
-                                                    <CheckSquare className="h-4 w-4 mr-2" /> Casilla de verificación
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="radio">
-                                                  <div className="flex items-center">
-                                                    <RadioIcon className="h-4 w-4 mr-2" /> Opción única
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="textarea">
-                                                  <div className="flex items-center">
-                                                    <AlignLeft className="h-4 w-4 mr-2" /> Área de texto
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="table">
-                                                  <div className="flex items-center">
-                                                    <TableIcon className="h-4 w-4 mr-2" /> Tabla
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="advancedTable">
-                                                  <div className="flex items-center">
-                                                    <LayoutGrid className="h-4 w-4 mr-2" /> Tabla Avanzada
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="employee">
-                                                  <div className="flex items-center">
-                                                    <UserCircle className="h-4 w-4 mr-2" /> Seleccionar Empleado
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="employeeByType">
-                                                  <div className="flex items-center">
-                                                    <UserCircle className="h-4 w-4 mr-2" /> Empleado por Tipo
-                                                  </div>
-                                                </SelectItem>
-                                                <SelectItem value="product">
-                                                  <div className="flex items-center">
-                                                    <Package className="h-4 w-4 mr-2" /> Seleccionar Producto
-                                                  </div>
-                                                </SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                          </FormItem>
-                                        );
-                                      }}
+                                              <SelectItem value="text">
+                                                <div className="flex items-center">
+                                                  <Type className="h-4 w-4 mr-2" /> Texto
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="number">
+                                                <div className="flex items-center">
+                                                  <Hash className="h-4 w-4 mr-2" /> Número
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="date">
+                                                <div className="flex items-center">
+                                                  <Calendar className="h-4 w-4 mr-2" /> Fecha
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="select">
+                                                <div className="flex items-center">
+                                                  <List className="h-4 w-4 mr-2" /> Lista desplegable
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="checkbox">
+                                                <div className="flex items-center">
+                                                  <CheckSquare className="h-4 w-4 mr-2" /> Casilla de verificación
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="radio">
+                                                <div className="flex items-center">
+                                                  <RadioIcon className="h-4 w-4 mr-2" /> Opción única
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="textarea">
+                                                <div className="flex items-center">
+                                                  <AlignLeft className="h-4 w-4 mr-2" /> Área de texto
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="table">
+                                                <div className="flex items-center">
+                                                  <TableIcon className="h-4 w-4 mr-2" /> Tabla
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="advancedTable">
+                                                <div className="flex items-center">
+                                                  <LayoutGrid className="h-4 w-4 mr-2" /> Tabla Avanzada
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="employee">
+                                                <div className="flex items-center">
+                                                  <UserCircle className="h-4 w-4 mr-2" /> Seleccionar Empleado
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="employeeByType">
+                                                <div className="flex items-center">
+                                                  <UserCircle className="h-4 w-4 mr-2" /> Empleado por Tipo
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="product">
+                                                <div className="flex items-center">
+                                                  <Package className="h-4 w-4 mr-2" /> Seleccionar Producto
+                                                </div>
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
                                     />
                                   </div>
 
@@ -456,13 +455,16 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                     />
                                   )}
 
-                                  {form.watch(`fields.${index}.type`) === "select" && (
+                                  {(form.watch(`fields.${index}.type`) === "select" || 
+                                   form.watch(`fields.${index}.type`) === "radio" || 
+                                   form.watch(`fields.${index}.type`) === "checkbox") && (
                                     <div>
                                       <UIFormField
                                         control={form.control}
                                         name={`fields.${index}.options`}
                                         render={({ field }) => {
-                                          if (!field.value || !Array.isArray(field.value) || field.value.length === 0) {
+                                          // Initialize options if they don't exist
+                                          if (!field.value) {
                                             form.setValue(`fields.${index}.options`, defaultOptions);
                                           }
                                           
@@ -470,48 +472,36 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                             <FormItem>
                                               <FormLabel>Opciones</FormLabel>
                                               <div className="space-y-2">
-                                                {field.value && Array.isArray(field.value) && field.value.map((option, optionIndex) => (
-                                                  <div key={optionIndex} className="flex items-center space-x-2">
+                                                {(field.value || []).map((option, optionIndex) => (
+                                                  <div key={optionIndex} className="flex items-center gap-2">
                                                     <Input
                                                       placeholder="Etiqueta"
-                                                      value={typeof option === 'string' ? option : option.label}
+                                                      value={option.label}
                                                       onChange={(e) => {
-                                                        const newOptions = [...field.value];
-                                                        if (typeof option === 'string') {
-                                                          newOptions[optionIndex] = e.target.value;
-                                                        } else {
-                                                          newOptions[optionIndex] = { 
-                                                            ...option, 
-                                                            label: e.target.value,
-                                                            value: e.target.value.toLowerCase().replace(/\s+/g, '_')
-                                                          };
-                                                        }
+                                                        const newOptions = [...(field.value || [])];
+                                                        newOptions[optionIndex].label = e.target.value;
                                                         form.setValue(`fields.${index}.options`, newOptions);
                                                       }}
                                                     />
                                                     <Input
                                                       placeholder="Valor"
-                                                      value={typeof option === 'string' ? option : option.value}
+                                                      value={option.value}
                                                       onChange={(e) => {
-                                                        const newOptions = [...field.value];
-                                                        if (typeof option === 'string') {
-                                                          newOptions[optionIndex] = e.target.value;
-                                                        } else {
-                                                          newOptions[optionIndex] = { ...option, value: e.target.value };
-                                                        }
+                                                        const newOptions = [...(field.value || [])];
+                                                        newOptions[optionIndex].value = e.target.value;
                                                         form.setValue(`fields.${index}.options`, newOptions);
                                                       }}
                                                     />
                                                     <Button
                                                       type="button"
                                                       variant="ghost"
-                                                      size="sm"
+                                                      size="icon"
                                                       onClick={() => {
-                                                        const newOptions = [...field.value];
+                                                        const newOptions = [...(field.value || [])];
                                                         newOptions.splice(optionIndex, 1);
                                                         form.setValue(`fields.${index}.options`, newOptions);
                                                       }}
-                                                      disabled={field.value && field.value.length <= 1}
+                                                      disabled={field.value?.length <= 1}
                                                     >
                                                       <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -522,14 +512,18 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   variant="outline"
                                                   size="sm"
                                                   onClick={() => {
-                                                    const newOption = { label: `Opción ${field.value ? field.value.length + 1 : 1}`, value: `option${field.value ? field.value.length + 1 : 1}` };
-                                                    const newOptions = [...(field.value || []), newOption];
+                                                    const newOptions = [...(field.value || [])];
+                                                    newOptions.push({ 
+                                                      label: `Opción ${newOptions.length + 1}`, 
+                                                      value: `option${newOptions.length + 1}` 
+                                                    });
                                                     form.setValue(`fields.${index}.options`, newOptions);
                                                   }}
                                                 >
                                                   <Plus className="h-4 w-4 mr-1" /> Agregar Opción
                                                 </Button>
                                               </div>
+                                              <FormMessage />
                                             </FormItem>
                                           );
                                         }}
@@ -562,7 +556,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               </Select>
                                             </FormControl>
                                             <FormDescription>
-                                              El campo mostrará una lista desplegable con empleados de este tipo
+                                              El campo mostrará solo empleados del tipo seleccionado
                                             </FormDescription>
                                           </FormItem>
                                         )}
@@ -596,15 +590,15 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                           return (
                                             <FormItem>
                                               <FormLabel>Configuración de Tabla Avanzada</FormLabel>
-                                              <FormDescription>
-                                                Usa el editor para configurar las secciones y columnas de la tabla
-                                              </FormDescription>
-                                              <AdvancedTableEditor
-                                                value={field.value}
-                                                onChange={(newConfig) => {
-                                                  form.setValue(`fields.${index}.advancedTableConfig`, newConfig);
-                                                }}
-                                              />
+                                              <div className="mt-2">
+                                                {/* Nota: Importar el componente AdvancedTableEditor desde otro archivo */}
+                                                <AdvancedTableEditor 
+                                                  value={field.value || {}}
+                                                  onChange={(newValue) => {
+                                                    form.setValue(`fields.${index}.advancedTableConfig`, newValue);
+                                                  }}
+                                                />
+                                              </div>
                                               <FormMessage />
                                             </FormItem>
                                           );
@@ -613,62 +607,62 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                     </div>
                                   )}
                                   
-                                  {form.watch(`fields.${index}.type`) === "radio" && (
+                                  {form.watch(`fields.${index}.type`) === "table" && (
                                     <div>
                                       <UIFormField
                                         control={form.control}
-                                        name={`fields.${index}.options`}
+                                        name={`fields.${index}.columns`}
                                         render={({ field }) => {
-                                          if (!field.value || !Array.isArray(field.value) || field.value.length === 0) {
-                                            form.setValue(`fields.${index}.options`, defaultOptions);
+                                          // Initialize columns if they don't exist
+                                          if (!field.value) {
+                                            form.setValue(`fields.${index}.columns`, [
+                                              { id: uuidv4(), header: "Columna 1", type: "text" },
+                                              { id: uuidv4(), header: "Columna 2", type: "text" }
+                                            ]);
                                           }
                                           
                                           return (
                                             <FormItem>
-                                              <FormLabel>Opciones</FormLabel>
+                                              <FormLabel>Columnas de la Tabla</FormLabel>
                                               <div className="space-y-2">
-                                                {field.value && Array.isArray(field.value) && field.value.map((option, optionIndex) => (
-                                                  <div key={optionIndex} className="flex items-center space-x-2">
+                                                {(field.value || []).map((column, colIndex) => (
+                                                  <div key={column.id} className="flex items-center gap-2">
                                                     <Input
-                                                      placeholder="Etiqueta"
-                                                      value={typeof option === 'string' ? option : option.label}
+                                                      placeholder="Encabezado"
+                                                      value={column.header}
                                                       onChange={(e) => {
-                                                        const newOptions = [...field.value];
-                                                        if (typeof option === 'string') {
-                                                          newOptions[optionIndex] = e.target.value;
-                                                        } else {
-                                                          newOptions[optionIndex] = { 
-                                                            ...option, 
-                                                            label: e.target.value,
-                                                            value: e.target.value.toLowerCase().replace(/\s+/g, '_')
-                                                          };
-                                                        }
-                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns[colIndex].header = e.target.value;
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
                                                       }}
                                                     />
-                                                    <Input
-                                                      placeholder="Valor"
-                                                      value={typeof option === 'string' ? option : option.value}
-                                                      onChange={(e) => {
-                                                        const newOptions = [...field.value];
-                                                        if (typeof option === 'string') {
-                                                          newOptions[optionIndex] = e.target.value;
-                                                        } else {
-                                                          newOptions[optionIndex] = { ...option, value: e.target.value };
-                                                        }
-                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                    <Select
+                                                      value={column.type}
+                                                      onValueChange={(value) => {
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns[colIndex].type = value as "text" | "number" | "select";
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
                                                       }}
-                                                    />
+                                                    >
+                                                      <SelectTrigger className="w-[120px]">
+                                                        <SelectValue placeholder="Tipo" />
+                                                      </SelectTrigger>
+                                                      <SelectContent>
+                                                        <SelectItem value="text">Texto</SelectItem>
+                                                        <SelectItem value="number">Número</SelectItem>
+                                                        <SelectItem value="select">Lista</SelectItem>
+                                                      </SelectContent>
+                                                    </Select>
                                                     <Button
                                                       type="button"
                                                       variant="ghost"
-                                                      size="sm"
+                                                      size="icon"
                                                       onClick={() => {
-                                                        const newOptions = [...field.value];
-                                                        newOptions.splice(optionIndex, 1);
-                                                        form.setValue(`fields.${index}.options`, newOptions);
+                                                        const newColumns = [...(field.value || [])];
+                                                        newColumns.splice(colIndex, 1);
+                                                        form.setValue(`fields.${index}.columns`, newColumns);
                                                       }}
-                                                      disabled={field.value && field.value.length <= 1}
+                                                      disabled={field.value?.length <= 1}
                                                     >
                                                       <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -679,14 +673,19 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   variant="outline"
                                                   size="sm"
                                                   onClick={() => {
-                                                    const newOption = { label: `Opción ${field.value ? field.value.length + 1 : 1}`, value: `option${field.value ? field.value.length + 1 : 1}` };
-                                                    const newOptions = [...(field.value || []), newOption];
-                                                    form.setValue(`fields.${index}.options`, newOptions);
+                                                    const newColumns = [...(field.value || [])];
+                                                    newColumns.push({ 
+                                                      id: uuidv4(),
+                                                      header: `Columna ${newColumns.length + 1}`, 
+                                                      type: "text" 
+                                                    });
+                                                    form.setValue(`fields.${index}.columns`, newColumns);
                                                   }}
                                                 >
-                                                  <Plus className="h-4 w-4 mr-1" /> Agregar Opción
+                                                  <Plus className="h-4 w-4 mr-1" /> Agregar Columna
                                                 </Button>
                                               </div>
+                                              <FormMessage />
                                             </FormItem>
                                           );
                                         }}
@@ -749,11 +748,17 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   )}
                 </Droppable>
               </DragDropContext>
+
+              {form.formState.errors.fields?.message && (
+                <p className="text-sm font-medium text-red-500 mt-2">
+                  {form.formState.errors.fields.message}
+                </p>
+              )}
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Guardando...' : 'Guardar Formulario'}
+                {isLoading ? "Guardando..." : "Guardar Formulario"}
               </Button>
             </div>
           </div>

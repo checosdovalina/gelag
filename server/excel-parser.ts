@@ -1018,10 +1018,10 @@ function extractFichaTecnicaFields(rawData: any[]): FormStructure {
         type: "text",
         label: "Código de Producto",
         required: true,
+        editable: true,
         placeholder: "Ej: PR-01",
         displayName: "Código de Producto",
-        displayOrder: 0,
-        editable: true
+        displayOrder: 0
       },
       {
         id: "nombre_producto",
