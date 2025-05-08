@@ -253,7 +253,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   const addSection = () => {
     if (!newSectionTitle.trim()) return;
     
-    const newSections = [...(value.sections || []), {
+    const newSections = [...((value && value.sections) || []), {
       title: newSectionTitle,
       colspan: 1,
       columns: []
@@ -265,14 +265,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Eliminar una sección
   const removeSection = (index: number) => {
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     newSections.splice(index, 1);
     updateValue({ sections: newSections });
   };
 
   // Actualizar sección
   const updateSection = (index: number, updates: Partial<TableSection>) => {
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     newSections[index] = { ...newSections[index], ...updates };
     updateValue({ sections: newSections });
   };
@@ -281,7 +281,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   const addColumn = (sectionIndex: number) => {
     if (!newColumnDetails.header?.trim()) return;
     
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     const newColumn: ColumnDefinition = {
       id: newColumnDetails.id || uuidv4(),
       header: newColumnDetails.header || "Nueva columna",
@@ -314,14 +314,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Eliminar columna
   const removeColumn = (sectionIndex: number, columnIndex: number) => {
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     newSections[sectionIndex].columns.splice(columnIndex, 1);
     updateValue({ sections: newSections });
   };
 
   // Actualizar columna
   const updateColumn = (sectionIndex: number, columnIndex: number, updates: Partial<ColumnDefinition>) => {
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     newSections[sectionIndex].columns[columnIndex] = {
       ...newSections[sectionIndex].columns[columnIndex],
       ...updates
@@ -384,7 +384,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Duplicar columna
   const duplicateColumn = (sectionIndex: number, columnIndex: number) => {
-    const newSections = [...(value.sections || [])];
+    const newSections = [...((value && value.sections) || [])];
     const originalColumn = newSections[sectionIndex].columns[columnIndex];
     const newColumn = {
       ...originalColumn,
@@ -822,7 +822,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 <Label htmlFor="edit-section-title">Título</Label>
                 <Input
                   id="edit-section-title"
-                  value={value.sections?.[editingSection]?.title || ""}
+                  value={(value && value.sections)?.[editingSection]?.title || ""}
                   onChange={(e) => 
                     updateSection(editingSection, { title: e.target.value })
                   }
@@ -834,7 +834,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 <Input
                   id="edit-section-colspan"
                   type="number"
-                  value={value.sections?.[editingSection]?.colspan || ""}
+                  value={(value && value.sections)?.[editingSection]?.colspan || ""}
                   min={1}
                   onChange={(e) => 
                     updateSection(editingSection, { 
@@ -876,7 +876,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   <Label htmlFor="edit-column-header">Título</Label>
                   <Input
                     id="edit-column-header"
-                    value={value.sections?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.header || ""}
+                    value={(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.header || ""}
                     onChange={(e) => {
                       if (editingColumn) {
                         updateColumn(
