@@ -217,9 +217,18 @@ export default function FileUploadDropzone({
                 multiple={multiple}
                 className="hidden"
               />
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                Tamaño máximo: {maxSizeMB}MB
-              </p>
+              <div className="mt-4 flex flex-col items-center">
+                <p className="text-xs text-center text-muted-foreground">
+                  Tamaño máximo: <span className="font-semibold">{maxSizeMB}MB</span>
+                </p>
+                <p className="text-xs text-center text-muted-foreground mt-1">
+                  Formatos aceptados: {acceptedFileTypes === "excel" ? 
+                    "XLS, XLSX, XLSM, CSV, ODS" : 
+                    acceptedFileTypes === "pdf" ? 
+                    "PDF" : 
+                    "XLS, XLSX, XLSM, CSV, ODS, PDF"}
+                </p>
+              </div>
             </>
           ) : (
             <div className="w-full">

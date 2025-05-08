@@ -15,6 +15,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
+import fs from 'fs';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -853,9 +854,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Clean up the file after processing
         cleanupFile(filePath);
         
+        // Responder con los datos procesados
         res.status(200).json({
           fileName: req.file.originalname,
           fileType: req.file.mimetype,
+          fileSize: req.file.size || 0,
           data: parsedData,
           formTemplate: formTemplateData
         });

@@ -68,8 +68,20 @@ export default function FormImport({ onImportComplete }: FormImportProps) {
       // Extraer información del archivo para mostrar al usuario
       if (data && data.fileName && data.data) {
         const sheetsCount = data.data.length || 0;
-        const fileSizeInMB = (data.fileSize || 0) / (1024 * 1024);
-        const fileSize = fileSizeInMB.toFixed(2) + " MB";
+        
+        // Formatear tamaño del archivo para mostrar en KB, MB o GB según corresponda
+        let fileSize = "";
+        if (data.fileSize) {
+          if (data.fileSize < 1024) {
+            fileSize = data.fileSize + " bytes";
+          } else if (data.fileSize < 1024 * 1024) {
+            fileSize = (data.fileSize / 1024).toFixed(2) + " KB";
+          } else if (data.fileSize < 1024 * 1024 * 1024) {
+            fileSize = (data.fileSize / (1024 * 1024)).toFixed(2) + " MB";
+          } else {
+            fileSize = (data.fileSize / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+          }
+        }
         
         setFileInfo({
           name: data.fileName,
@@ -261,9 +273,37 @@ export default function FormImport({ onImportComplete }: FormImportProps) {
             />
           ) : (
             <div className="space-y-6">
-              <div className="flex items-center gap-2 text-green-600">
-                <Check className="h-5 w-5" />
-                <span>Archivo <strong>{previewData.fileName}</strong> procesado correctamente.</span>
+              <div className="border rounded-lg p-4 bg-green-50">
+                <div className="flex items-center gap-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span className="font-medium">¡Archivo procesado correctamente!</span>
+                </div>
+                
+                {fileInfo && (
+                  <div className="mt-3 text-sm">
+                    <div className="grid grid-cols-2 gap-y-2">
+                      <div className="text-muted-foreground">Nombre del archivo:</div>
+                      <div className="font-medium">{fileInfo.name}</div>
+                      
+                      {fileInfo.size && (
+                        <>
+                          <div className="text-muted-foreground">Tamaño:</div>
+                          <div>{fileInfo.size}</div>
+                        </>
+                      )}
+                      
+                      <div className="text-muted-foreground">Hojas detectadas:</div>
+                      <div>{fileInfo.sheets} {fileInfo.sheets === 1 ? 'hoja' : 'hojas'}</div>
+                      
+                      <div className="text-muted-foreground">Campos detectados:</div>
+                      <div>
+                        {previewData.formTemplate && previewData.formTemplate.structure.fields ? 
+                          `${previewData.formTemplate.structure.fields.length} campos` : 
+                          'Estructura no detectada'}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               
               <Tabs defaultValue="preview" className="w-full">
