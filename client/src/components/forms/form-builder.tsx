@@ -101,6 +101,24 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     append(newField);
   };
 
+  // Function to duplicate a field
+  const duplicateField = (index: number) => {
+    const fieldToDuplicate = fields[index];
+    const duplicatedField: FormField = {
+      ...fieldToDuplicate,
+      id: uuidv4(), // Generar un nuevo ID único
+      label: `${fieldToDuplicate.label} (copia)`, // Modificar el label para indicar que es una copia
+    };
+    
+    // Crear un nuevo array con todos los campos actuales
+    const newFields = [...fields];
+    // Insertar el campo duplicado justo después del original (index + 1)
+    newFields.splice(index + 1, 0, duplicatedField);
+    
+    // Actualizar los campos
+    form.setValue('fields', newFields);
+  };
+
   // Function to remove a field
   const removeField = (index: number) => {
     remove(index);
@@ -630,16 +648,27 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                         )}
                                       />
                                     </div>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => removeField(index)}
-                                      disabled={fields.length <= 1}
-                                      className="text-red-500 hover:text-red-700"
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-1" /> Eliminar Campo
-                                    </Button>
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => duplicateField(index)}
+                                        className="text-blue-500 hover:text-blue-700"
+                                      >
+                                        <Plus className="h-4 w-4 mr-1" /> Duplicar
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeField(index)}
+                                        disabled={fields.length <= 1}
+                                        className="text-red-500 hover:text-red-700"
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-1" /> Eliminar
+                                      </Button>
+                                    </div>
                                   </div>
                                 </div>
                               </CardContent>
