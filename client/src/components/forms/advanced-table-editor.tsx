@@ -238,7 +238,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Estado para la vista previa
   const [previewData, setPreviewData] = useState<Record<string, any>[]>(
-    value.initialData || Array(value.rows || 3).fill({}).map(() => ({}))
+    (value && value.initialData) ? value.initialData : Array((value && value.rows) || 3).fill({}).map(() => ({}))
   );
 
   // Función para actualizar valor
@@ -362,7 +362,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     setPreviewData([...previewData, {}]);
     updateValue({ 
       initialData: [...previewData, {}],
-      rows: (value.rows || previewData.length) + 1 
+      rows: ((value && value.rows) || previewData.length) + 1 
     });
   };
 
@@ -373,13 +373,13 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     setPreviewData(newData);
     updateValue({ 
       initialData: newData,
-      rows: Math.max(1, (value.rows || previewData.length) - 1)
+      rows: Math.max(1, ((value && value.rows) || previewData.length) - 1)
     });
   };
 
   // Toggle para filas dinámicas
   const toggleDynamicRows = () => {
-    updateValue({ dynamicRows: !value.dynamicRows });
+    updateValue({ dynamicRows: !(value && value.dynamicRows) });
   };
 
   // Duplicar columna
@@ -447,7 +447,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
           <TableBody>
             {/* Filas de datos */}
-            {Array(value.rows || 3).fill(0).map((_, rowIndex) => (
+            {Array((value && value.rows) || 3).fill(0).map((_, rowIndex) => (
               <TableRow key={rowIndex}>
                 {allColumns.map((column) => (
                   <TableCell key={`${rowIndex}-${column.id}`} className="p-1">
@@ -547,7 +547,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             ))}
             
             {/* Botón para agregar fila dinámica */}
-            {value.dynamicRows && (
+            {(value && value.dynamicRows) && (
               <TableRow>
                 <TableCell colSpan={allColumns.length} className="text-center">
                   <Button 
@@ -774,7 +774,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   <Input
                     id="rows-count"
                     type="number"
-                    value={value.rows || 3}
+                    value={(value && value.rows) || 3}
                     onChange={handleUpdateRows}
                     min={1}
                     className="mt-1"
@@ -792,11 +792,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="dynamic-rows"
-                        checked={value.dynamicRows || false}
+                        checked={(value && value.dynamicRows) || false}
                         onCheckedChange={toggleDynamicRows}
                       />
                       <Label htmlFor="dynamic-rows" className="mt-0">
-                        {value.dynamicRows ? "Activado" : "Desactivado"}
+                        {(value && value.dynamicRows) ? "Activado" : "Desactivado"}
                       </Label>
                     </div>
                   </div>
