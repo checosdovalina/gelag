@@ -18,9 +18,10 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
-import { Loader2, Save, Download, FileDown, FilePen, Pencil, Package, UserCircle } from "lucide-react";
+import { Loader2, Save, Download, FileDown, FilePen, Pencil, Package, UserCircle, LayoutGrid, Users } from "lucide-react";
 import { FormStructure, UserRole, Product, Employee } from "@shared/schema";
 import type { FormField as IFormField } from "@shared/schema";
+import AdvancedTableViewer from "./advanced-table-viewer";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -246,6 +247,9 @@ export default function FormViewer({
         case "table":
           fieldSchema = z.array(z.record(z.string(), z.any())).optional();
           break;
+        case "advancedTable":
+          fieldSchema = z.array(z.record(z.string(), z.any())).optional();
+          break;
         case "evaluationMatrix":
           fieldSchema = z.record(z.string(), z.string()).optional();
           break;
@@ -263,6 +267,8 @@ export default function FormViewer({
         if (field.type === "checkbox") {
           fieldSchema = z.array(z.string()).min(1, "Este campo es requerido");
         } else if (field.type === "table") {
+          fieldSchema = z.array(z.record(z.string(), z.any())).min(1, "Se requiere al menos una fila");
+        } else if (field.type === "advancedTable") {
           fieldSchema = z.array(z.record(z.string(), z.any())).min(1, "Se requiere al menos una fila");
         } else if (field.type === "text" || field.type === "textarea") {
           fieldSchema = z.string().min(1, "Este campo es requerido");
@@ -311,6 +317,16 @@ export default function FormViewer({
     formTemplate.fields.forEach((field) => {
       if (field.type === "table" && !form.getValues()[field.id]) {
         form.setValue(field.id, [{}]);
+      }
+      
+      if (field.type === "advancedTable" && !form.getValues()[field.id]) {
+        // Para tablas avanzadas, inicializamos con el número de filas definido en la configuración
+        if (field.advancedTableConfig && field.advancedTableConfig.rows) {
+          const initialRows = Array(field.advancedTableConfig.rows).fill().map(() => ({}));
+          form.setValue(field.id, initialRows);
+        } else {
+          form.setValue(field.id, [{}]);
+        }
       }
     });
   }, [formTemplate, form]);
@@ -586,6 +602,45 @@ export default function FormViewer({
   };
   
   // Renderizar campo de selección de producto
+  // Renderizar campo de tabla avanzada
+  const renderAdvancedTableField = (field: IFormField) => {
+    // Verificamos que tengamos la configuración necesaria
+    if (!field.advancedTableConfig) {
+      return (
+        <FormItem>
+          <FormLabel>{field.label}</FormLabel>
+          <div className="p-4 border rounded-md bg-muted/50">
+            <p>No se pudo cargar la configuración de la tabla avanzada.</p>
+          </div>
+        </FormItem>
+      );
+    }
+
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => (
+          <FormItem className="w-full space-y-2">
+            <FormLabel className="text-lg font-semibold">
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            <div className="border rounded-lg overflow-hidden">
+              <AdvancedTableViewer
+                field={field}
+                value={formField.value || []}
+                onChange={formField.onChange}
+                readOnly={isReadOnly}
+              />
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
+  
   const renderProductField = (field: IFormField) => {
     return (
       <FormField
@@ -654,6 +709,9 @@ export default function FormViewer({
         
       case "product":
         return renderProductField(field);
+        
+      case "advancedTable":
+        return renderAdvancedTableField(field);
         
       case "text":
         // Verificar si este campo es un campo de folio
