@@ -389,29 +389,59 @@ export function processExcelData(sheetsData: any[]): ExcelFormData {
   // Procesar la primera hoja
   // La estructura puede venir en diferentes formatos según la biblioteca XLSX
   let sheetData: any[] = [];
+  let rawData: any[] = [];
   
-  // Si sheetsData es un array de objetos con propiedad 'data'
-  if (sheetsData[0] && sheetsData[0].data) {
-    sheetData = sheetsData[0].data;
-    console.log("Usando formato: sheetsData[0].data");
-  } 
-  // Si sheetsData es directamente un array de arrays (filas)
-  else if (Array.isArray(sheetsData[0])) {
-    sheetData = sheetsData;
-    console.log("Usando formato: sheetsData");
-  }
-  // Si sheetsData es un objeto con nombres de hojas como claves
-  else if (typeof sheetsData === 'object' && !Array.isArray(sheetsData)) {
-    // Obtener la primera clave (nombre de hoja)
-    const firstSheetName = Object.keys(sheetsData)[0];
-    if (firstSheetName && sheetsData[firstSheetName]) {
-      sheetData = sheetsData[firstSheetName];
-      console.log("Usando formato: sheetsData[sheetName]");
+  try {
+    // Nuevo formato mejorado con múltiples representaciones
+    if (sheetsData[0] && typeof sheetsData[0] === 'object') {
+      // Si tiene propiedad data y raw (nuevo formato)
+      if (sheetsData[0].data && sheetsData[0].raw) {
+        sheetData = sheetsData[0].data;  // Datos como objetos
+        rawData = sheetsData[0].raw;     // Datos como arrays
+        console.log(`Procesando hoja '${sheetsData[0].sheetName}' con formato mejorado`);
+      }
+      // Si solo tiene data (formato anterior)
+      else if (sheetsData[0].data) {
+        sheetData = sheetsData[0].data;
+        // Intenta convertir data a formato de array si es posible
+        rawData = Array.isArray(sheetData) ? sheetData.map(row => {
+          return typeof row === 'object' ? Object.values(row) : [row];
+        }) : [];
+        console.log("Usando formato anterior: sheetsData[0].data");
+      }
+      // Si es directamente un array de arrays (filas)
+      else if (Array.isArray(sheetsData[0])) {
+        rawData = sheetsData;
+        
+        // Convertir a formato de objetos si la primera fila puede ser encabezado
+        if (sheetsData[0].length > 0) {
+          const headers = sheetsData[0];
+          sheetData = sheetsData.slice(1).map(row => {
+            const obj: {[key: string]: any} = {};
+            headers.forEach((header: string, index: number) => {
+              if (header) obj[header] = row[index] || "";
+            });
+            return obj;
+          });
+        } else {
+          sheetData = []; // No hay datos que procesar
+        }
+        console.log("Usando formato: arrays de arrays");
+      }
+    }
+  } catch (error) {
+    console.error("Error al procesar formato de datos Excel:", error);
+    // Fallback: intentar extraer algún dato útil
+    if (Array.isArray(sheetsData[0])) {
+      sheetData = sheetsData[0];
+    } else if (sheetsData[0] && sheetsData[0].data) {
+      sheetData = sheetsData[0].data;
     }
   }
   
   // Si no pudimos obtener datos, devolver una estructura vacía
-  if (!sheetData || !Array.isArray(sheetData) || sheetData.length === 0) {
+  if ((!sheetData || !Array.isArray(sheetData) || sheetData.length === 0) &&
+      (!rawData || !Array.isArray(rawData) || rawData.length === 0)) {
     console.error("No se pudieron extraer datos de la hoja:", sheetsData);
     return {
       title: "Error al procesar formulario",
@@ -419,6 +449,24 @@ export function processExcelData(sheetsData: any[]): ExcelFormData {
       formType: FormTemplateType.GENERIC,
       rawData: []
     };
+  }
+  
+  // Si rawData tiene contenido pero sheetData está vacío, usamos rawData
+  if ((!sheetData || sheetData.length === 0) && rawData && rawData.length > 0) {
+    // Intenta extraer algo útil si hay al menos 2 filas (encabezado + datos)
+    if (rawData.length >= 2) {
+      const headers = rawData[0];
+      sheetData = rawData.slice(1).map(row => {
+        const obj: {[key: string]: any} = {};
+        headers.forEach((header: string, index: number) => {
+          if (header) obj[header] = row[index] || "";
+        });
+        return obj;
+      });
+    } else {
+      // Si solo hay una fila, usarla como un objeto simple
+      sheetData = [{ row0: rawData[0] }];
+    }
   }
   
   try {
@@ -460,6 +508,167 @@ export function processExcelData(sheetsData: any[]): ExcelFormData {
 }
 
 /**
+ * Intenta detectar y extraer una estructura de formulario a partir de los datos de Excel
+ * examinando patrones en las filas y columnas
+ */
+function detectFormStructure(sheetData: any[], rawData?: any[]): FormStructure | null {
+  // Si no hay datos, no podemos detectar nada
+  if (!sheetData || !Array.isArray(sheetData) || sheetData.length === 0) {
+    return null;
+  }
+  
+  // Estructura base del formulario
+  const formStructure: FormStructure = {
+    title: "Formulario Detectado",
+    fields: []
+  };
+  
+  try {
+    // Si tenemos datos como array de objetos (columnas como claves)
+    if (typeof sheetData[0] === 'object' && !Array.isArray(sheetData[0])) {
+      // Obtener todas las claves en los objetos
+      const allKeys = new Set<string>();
+      sheetData.forEach(row => {
+        Object.keys(row).forEach(key => allKeys.add(key));
+      });
+      
+      // Para cada clave en los datos, crear un campo en el formulario
+      Array.from(allKeys).forEach((key, index) => {
+        if (key && key !== '__EMPTY' && !key.startsWith('__EMPTY')) {
+          let fieldType: FieldType = 'text';
+          
+          // Determinar el tipo de campo analizando los valores
+          const values = sheetData.map(row => row[key]).filter(Boolean);
+          
+          // Si hay valores, intentar determinar el tipo
+          if (values.length > 0) {
+            // Si todos los valores son numéricos
+            if (values.every(v => typeof v === 'number' || (!isNaN(Number(v)) && v !== ''))) {
+              fieldType = 'number';
+            }
+            // Si hay pocos valores únicos (posible select)
+            else if (new Set(values).size <= Math.min(5, values.length / 2)) {
+              fieldType = 'select';
+            }
+            // Si hay valores que parecen fechas
+            else if (values.some(v => 
+              typeof v === 'string' && 
+              (v.match(/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/) || 
+               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/))
+            )) {
+              fieldType = 'date';
+            }
+          }
+          
+          // Crear el campo
+          const field: FormField = {
+            id: `campo_${index}`,
+            type: fieldType,
+            label: key,
+            required: index < 3, // Los primeros campos son requeridos por defecto
+          };
+          
+          // Si es un campo select, añadir opciones
+          if (fieldType === 'select') {
+            const uniqueValues = Array.from(new Set(values));
+            field.options = uniqueValues.map(val => ({
+              value: String(val),
+              label: String(val)
+            }));
+          }
+          
+          formStructure.fields.push(field);
+        }
+      });
+    }
+    // Si tenemos datos como array de arrays (rawData)
+    else if (rawData && Array.isArray(rawData) && rawData.length > 1) {
+      // Asumimos que la primera fila son los encabezados
+      const headers = rawData[0];
+      
+      // Para cada columna, crear un campo en el formulario
+      headers.forEach((header, colIndex) => {
+        if (header && String(header).trim() !== '') {
+          // Extraer todos los valores de esta columna
+          const values = rawData.slice(1).map(row => row[colIndex]).filter(Boolean);
+          
+          let fieldType: FieldType = 'text';
+          
+          // Si hay valores, intentar determinar el tipo
+          if (values.length > 0) {
+            // Si todos los valores son numéricos
+            if (values.every(v => typeof v === 'number' || (!isNaN(Number(v)) && v !== ''))) {
+              fieldType = 'number';
+            }
+            // Si hay pocos valores únicos (posible select)
+            else if (new Set(values).size <= Math.min(5, values.length / 2)) {
+              fieldType = 'select';
+            }
+            // Si hay valores que parecen fechas
+            else if (values.some(v => 
+              typeof v === 'string' && 
+              (v.match(/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/) || 
+               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/))
+            )) {
+              fieldType = 'date';
+            }
+          }
+          
+          // Crear el campo
+          const field: FormField = {
+            id: `campo_${colIndex}`,
+            type: fieldType,
+            label: String(header),
+            required: colIndex < 3, // Los primeros campos son requeridos por defecto
+          };
+          
+          // Si es un campo select, añadir opciones
+          if (fieldType === 'select') {
+            const uniqueValues = Array.from(new Set(values));
+            field.options = uniqueValues.map(val => ({
+              value: String(val),
+              label: String(val)
+            }));
+          }
+          
+          formStructure.fields.push(field);
+        }
+      });
+    }
+    
+    // Verificar que se detectaron campos
+    if (formStructure.fields.length === 0) {
+      // Generar campos genéricos
+      formStructure.fields.push({
+        id: "campo1",
+        type: "text",
+        label: "Campo 1",
+        required: true
+      });
+      
+      formStructure.fields.push({
+        id: "campo2",
+        type: "text",
+        label: "Campo 2",
+        required: false
+      });
+      
+      formStructure.fields.push({
+        id: "comentarios",
+        type: "textarea",
+        label: "Comentarios",
+        required: false
+      });
+    }
+    
+    return formStructure;
+  } catch (error) {
+    console.error("Error al detectar estructura del formulario:", error);
+    return null;
+  }
+}
+
+/**
  * Crea una plantilla de formulario a partir de datos de Excel
  */
 export function createFormTemplateFromExcel(excelData: any[], department: string): {
@@ -482,39 +691,68 @@ export function createFormTemplateFromExcel(excelData: any[], department: string
   }
   
   // Determinar la estructura de los datos de la primera hoja
-  let firstSheet: any[] = [];
+  let sheetData: any[] = [];
+  let rawData: any[] = [];
+  let sheetName: string = "Hoja1";
   
   try {
-    // Si es un array de objetos con propiedad 'data'
-    if (excelData[0] && excelData[0].data) {
-      firstSheet = excelData[0].data;
-      console.log("Usando formato para plantilla: excelData[0].data");
-    } 
-    // Si es directamente un array de arrays (filas)
-    else if (Array.isArray(excelData[0])) {
-      firstSheet = excelData;
-      console.log("Usando formato para plantilla: excelData");
-    }
-    // Si es un objeto con nombres de hojas como claves
-    else if (typeof excelData === 'object' && !Array.isArray(excelData)) {
-      // Obtener la primera clave (nombre de hoja)
-      const firstSheetName = Object.keys(excelData)[0];
-      if (firstSheetName && excelData[firstSheetName]) {
-        firstSheet = excelData[firstSheetName];
-        console.log("Usando formato para plantilla: excelData[sheetName]");
+    // Nuevo formato mejorado con múltiples representaciones
+    if (excelData[0] && typeof excelData[0] === 'object') {
+      // Si tiene propiedad data, raw y sheetName (nuevo formato)
+      if (excelData[0].data && excelData[0].raw) {
+        sheetData = excelData[0].data;  // Datos como objetos
+        rawData = excelData[0].raw;     // Datos como arrays
+        sheetName = excelData[0].sheetName || "Hoja1";
+        console.log(`Extrayendo datos de la hoja '${sheetName}' con formato mejorado`);
+      }
+      // Si solo tiene data (formato anterior)
+      else if (excelData[0].data) {
+        sheetData = excelData[0].data;
+        sheetName = excelData[0].sheetName || "Hoja1";
+        console.log("Usando formato para plantilla: excelData[0].data");
+      } 
+      // Si es directamente un array de arrays (filas)
+      else if (Array.isArray(excelData[0])) {
+        rawData = excelData[0];
+        sheetData = []; // Se intentará procesar rawData directamente
+        console.log("Usando formato para plantilla: excelData[0] (raw arrays)");
       }
     }
     
-    if (!firstSheet || !Array.isArray(firstSheet) || firstSheet.length === 0) {
+    // Verificar que tengamos datos utilizables
+    if (sheetData.length === 0 && rawData.length === 0) {
       throw new Error("No se pudieron extraer datos de la hoja para crear la plantilla");
     }
     
-    // Procesar datos para extraer metadatos y detectar el tipo
-    const formType = detectFormType(firstSheet);
-    const metadata = extractFormMetadata(firstSheet);
+    // Procesar datos para extraer metadatos
+    const metadata = sheetData.length > 0 
+      ? extractFormMetadata(sheetData) 
+      : rawData.length > 0 
+        ? extractFormMetadata(rawData) 
+        : {};
     
-    // Crear estructura del formulario
-    const formStructure = convertExcelToFormStructure(firstSheet);
+    // Intentar determinar el tipo de formulario
+    const formType = sheetData.length > 0 
+      ? detectFormType(sheetData) 
+      : rawData.length > 0 
+        ? detectFormType(rawData) 
+        : FormTemplateType.GENERIC;
+    
+    // Primero intentar detectar la estructura de forma inteligente
+    let formStructure = detectFormStructure(sheetData, rawData);
+    
+    // Si no se pudo detectar una estructura, usar el convertidor tradicional
+    if (!formStructure) {
+      console.log("Utilizando método tradicional para convertir estructura");
+      formStructure = sheetData.length > 0 
+        ? convertExcelToFormStructure(sheetData) 
+        : rawData.length > 0 
+          ? convertExcelToFormStructure(rawData) 
+          : {
+              title: "Formulario Importado",
+              fields: []
+            };
+    }
     
     return {
       name: metadata.title || "Formulario importado",
@@ -526,7 +764,7 @@ export function createFormTemplateFromExcel(excelData: any[], department: string
     console.error("Error al crear plantilla de formulario:", error);
     return {
       name: "Error al procesar formulario",
-      description: "Ocurrió un error al crear la plantilla del formulario",
+      description: `Ocurrió un error al crear la plantilla del formulario: ${(error as Error).message || 'Error desconocido'}`,
       department,
       structure: {
         title: "Error",

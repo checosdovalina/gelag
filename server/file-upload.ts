@@ -51,23 +51,67 @@ export const upload = multer({
 // Function to parse Excel file
 export async function parseExcelFile(filePath: string) {
   try {
-    const workbook = read(filePath, { type: 'file' });
+    // Read the workbook with more options for compatibility
+    const workbook = read(filePath, { 
+      type: 'file',
+      cellDates: true,  // Parse dates as JS Date objects
+      cellNF: false,    // Do not parse number formats
+      cellText: false   // Do not generate text versions of cells
+    });
     const sheetNames = workbook.SheetNames;
     
-    // Get all sheets data
+    if (sheetNames.length === 0) {
+      throw new Error("El archivo Excel no contiene hojas de cálculo");
+    }
+    
+    // Get all sheets data in multiple formats for better compatibility
     const sheetsData = sheetNames.map((sheetName: string) => {
       const worksheet = workbook.Sheets[sheetName];
-      const data = utils.sheet_to_json(worksheet);
+      
+      // Standard format (objects with header-based keys)
+      const dataAsObjects = utils.sheet_to_json(worksheet, {
+        defval: "", // Default value for empty cells
+        blankrows: false // Skip completely empty rows
+      });
+      
+      // Raw format (arrays with all columns)
+      const dataAsArrays = utils.sheet_to_json(worksheet, {
+        header: 1, // Use 1-indexed headers
+        defval: "", // Default value for empty cells
+        blankrows: false // Skip completely empty rows
+      });
+      
+      // Format with raw cell addresses
+      const range = utils.decode_range(worksheet['!ref'] || 'A1');
+      const cellsMap: Record<string, any> = {};
+      
+      // Map of cell addresses to values, for direct access
+      Object.keys(worksheet)
+        .filter(key => key[0] !== '!')
+        .forEach(addr => {
+          const cell = worksheet[addr];
+          cellsMap[addr] = cell.v; // Get raw value
+        });
+      
       return {
         sheetName,
-        data
+        data: dataAsObjects,
+        raw: dataAsArrays,
+        cells: cellsMap,
+        range: {
+          startRow: range.s.r,
+          endRow: range.e.r,
+          startCol: range.s.c,
+          endCol: range.e.c
+        }
       };
     });
     
+    console.log(`Excel file parsed successfully with ${sheetsData.length} sheets`);
     return sheetsData;
   } catch (error) {
     console.error('Error parsing Excel file:', error);
-    throw new Error('Error al analizar el archivo Excel');
+    throw new Error(`Error al analizar el archivo Excel: ${(error as Error).message || 'Error desconocido'}`);
   }
 }
 
