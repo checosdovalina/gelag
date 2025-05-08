@@ -398,7 +398,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Componente para renderizar la tabla de vista previa
   const TablePreview = () => {
-    if (!value.sections || value.sections.length === 0) {
+    if (!value || !value.sections || value.sections.length === 0) {
       return (
         <Alert>
           <AlertCircle className="h-4 w-4" />
@@ -418,7 +418,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
-              {value.sections.map((section, idx) => (
+              {(value && value.sections) ? value.sections.map((section, idx) => (
                 <TableHead
                   key={idx}
                   colSpan={section.colspan || section.columns.length}
@@ -426,7 +426,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 >
                   {section.title}
                 </TableHead>
-              ))}
+              )) : null}
             </TableRow>
 
             {/* Encabezados de columna */}
@@ -588,7 +588,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           <TabsContent value="sections" className="space-y-4 mt-4">
             <ScrollArea className="h-[500px] pr-4">
               {/* Lista de secciones existentes */}
-              {(value.sections || []).map((section, sectionIndex) => (
+              {((value && value.sections) || []).map((section, sectionIndex) => (
                 <Card key={sectionIndex} className="mb-4">
                   <CardHeader className="py-3">
                     <div className="flex justify-between items-center">
