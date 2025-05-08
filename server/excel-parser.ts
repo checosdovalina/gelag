@@ -536,25 +536,75 @@ function detectFormStructure(sheetData: any[], rawData?: any[]): FormStructure |
       Array.from(allKeys).forEach((key, index) => {
         if (key && key !== '__EMPTY' && !key.startsWith('__EMPTY')) {
           let fieldType: FieldType = 'text';
+          const keyLower = key.toLowerCase().trim();
           
-          // Determinar el tipo de campo analizando los valores
+          // Intentar determinar el tipo basado en el nombre de la clave
+          if (keyLower.includes('fecha') || 
+              keyLower.includes('date') || 
+              keyLower.includes('vencimiento') || 
+              keyLower.includes('caducidad')) {
+            fieldType = 'date';
+          }
+          else if (keyLower.includes('cantidad') || 
+                  keyLower.includes('monto') || 
+                  keyLower.includes('peso') || 
+                  keyLower.includes('litros') || 
+                  keyLower.includes('kilos') || 
+                  keyLower.includes('total') || 
+                  keyLower.includes('valor') || 
+                  keyLower.includes('number')) {
+            fieldType = 'number';
+          }
+          else if (keyLower.includes('empleado') || 
+                  keyLower.includes('employee') || 
+                  keyLower.includes('personal') || 
+                  keyLower.includes('responsable') ||
+                  keyLower.includes('trabajador')) {
+            fieldType = 'employee';
+          }
+          else if (keyLower.includes('producto') || 
+                  keyLower.includes('product') || 
+                  keyLower.includes('material') || 
+                  keyLower.includes('materia prima') ||
+                  keyLower.includes('insumo')) {
+            fieldType = 'product';
+          }
+          else if (keyLower.includes('comentario') || 
+                  keyLower.includes('comment') || 
+                  keyLower.includes('observación') || 
+                  keyLower.includes('descripción') ||
+                  keyLower.includes('notes') ||
+                  keyLower.includes('notas')) {
+            fieldType = 'textarea';
+          }
+          else if (keyLower.includes('si/no') || 
+                  keyLower.includes('yes/no') || 
+                  keyLower.includes('acepta') || 
+                  keyLower.includes('aprobado') ||
+                  keyLower.includes('conforme') ||
+                  keyLower.includes('check')) {
+            fieldType = 'checkbox';
+          }
+          
+          // Determinar el tipo de campo analizando los valores si no lo hemos determinado por nombre
           const values = sheetData.map(row => row[key]).filter(Boolean);
           
-          // Si hay valores, intentar determinar el tipo
-          if (values.length > 0) {
+          // Si hay valores y aún no hemos determinado un tipo especial, intentar determinar el tipo
+          if (values.length > 0 && fieldType === 'text') {
             // Si todos los valores son numéricos
             if (values.every(v => typeof v === 'number' || (!isNaN(Number(v)) && v !== ''))) {
               fieldType = 'number';
             }
             // Si hay pocos valores únicos (posible select)
-            else if (new Set(values).size <= Math.min(5, values.length / 2)) {
+            else if (new Set(values).size <= Math.min(5, values.length / 2) && new Set(values).size > 1) {
               fieldType = 'select';
             }
             // Si hay valores que parecen fechas
             else if (values.some(v => 
               typeof v === 'string' && 
               (v.match(/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/) || 
-               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/))
+               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/) ||
+               /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(v))
             )) {
               fieldType = 'date';
             }
@@ -587,28 +637,76 @@ function detectFormStructure(sheetData: any[], rawData?: any[]): FormStructure |
       const headers = rawData[0];
       
       // Para cada columna, crear un campo en el formulario
-      headers.forEach((header, colIndex) => {
+      headers.forEach((header: any, colIndex: number) => {
         if (header && String(header).trim() !== '') {
           // Extraer todos los valores de esta columna
           const values = rawData.slice(1).map(row => row[colIndex]).filter(Boolean);
           
           let fieldType: FieldType = 'text';
+          const headerText = String(header).toLowerCase().trim();
           
-          // Si hay valores, intentar determinar el tipo
-          if (values.length > 0) {
+          // Primero intentar determinar el tipo basado en el encabezado
+          if (headerText.includes('fecha') || 
+              headerText.includes('date') || 
+              headerText.includes('vencimiento') || 
+              headerText.includes('caducidad')) {
+            fieldType = 'date';
+          }
+          else if (headerText.includes('cantidad') || 
+                  headerText.includes('monto') || 
+                  headerText.includes('peso') || 
+                  headerText.includes('litros') || 
+                  headerText.includes('kilos') || 
+                  headerText.includes('total') || 
+                  headerText.includes('valor') || 
+                  headerText.includes('number')) {
+            fieldType = 'number';
+          }
+          else if (headerText.includes('empleado') || 
+                  headerText.includes('employee') || 
+                  headerText.includes('personal') || 
+                  headerText.includes('responsable') ||
+                  headerText.includes('trabajador')) {
+            fieldType = 'employee';
+          }
+          else if (headerText.includes('producto') || 
+                  headerText.includes('product') || 
+                  headerText.includes('material') || 
+                  headerText.includes('materia prima') ||
+                  headerText.includes('insumo')) {
+            fieldType = 'product';
+          }
+          else if (headerText.includes('comentario') || 
+                  headerText.includes('comment') || 
+                  headerText.includes('observación') || 
+                  headerText.includes('descripción') ||
+                  headerText.includes('notes') ||
+                  headerText.includes('notas')) {
+            fieldType = 'textarea';
+          }
+          else if (headerText.includes('si/no') || 
+                  headerText.includes('yes/no') || 
+                  headerText.includes('acepta') || 
+                  headerText.includes('aprobado') ||
+                  headerText.includes('conforme') ||
+                  headerText.includes('check')) {
+            fieldType = 'checkbox';
+          }
+          else if (values.length > 0) {
             // Si todos los valores son numéricos
             if (values.every(v => typeof v === 'number' || (!isNaN(Number(v)) && v !== ''))) {
               fieldType = 'number';
             }
             // Si hay pocos valores únicos (posible select)
-            else if (new Set(values).size <= Math.min(5, values.length / 2)) {
+            else if (new Set(values).size <= Math.min(5, values.length / 2) && new Set(values).size > 1) {
               fieldType = 'select';
             }
             // Si hay valores que parecen fechas
             else if (values.some(v => 
               typeof v === 'string' && 
               (v.match(/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/) || 
-               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/))
+               v.match(/^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/) ||
+               /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(v))
             )) {
               fieldType = 'date';
             }
