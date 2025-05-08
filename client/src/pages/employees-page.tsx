@@ -43,6 +43,7 @@ import {
 import { Loader2, PlusCircle, Pencil, Trash2, Search, UserCircle, Users, Briefcase } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { EmployeeType } from "@shared/schema";
+import MainLayout from "@/layouts/main-layout";
 
 interface Employee {
   id: number;
