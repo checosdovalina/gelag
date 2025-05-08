@@ -295,6 +295,43 @@ export default function EmployeesPage() {
                     />
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="employeeType">Tipo de Empleado</Label>
+                  <Select
+                    value={formData.employeeType}
+                    onValueChange={handleEmployeeTypeChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione el tipo de empleado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={EmployeeType.OPERATIVE}>
+                        <div className="flex items-center">
+                          <UserCircle className="mr-2 h-4 w-4" />
+                          <span>Operativo</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value={EmployeeType.QUALITY}>
+                        <div className="flex items-center">
+                          <Users className="mr-2 h-4 w-4" />
+                          <span>Calidad</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value={EmployeeType.PRODUCTION}>
+                        <div className="flex items-center">
+                          <Briefcase className="mr-2 h-4 w-4" />
+                          <span>Producción</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value={EmployeeType.ADMINISTRATIVE}>
+                        <div className="flex items-center">
+                          <Users className="mr-2 h-4 w-4" />
+                          <span>Administrativo</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <DialogFooter>
                 <Button 
@@ -376,6 +413,43 @@ export default function EmployeesPage() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-employeeType">Tipo de Empleado</Label>
+                <Select
+                  value={formData.employeeType}
+                  onValueChange={handleEmployeeTypeChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione el tipo de empleado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={EmployeeType.OPERATIVE}>
+                      <div className="flex items-center">
+                        <UserCircle className="mr-2 h-4 w-4" />
+                        <span>Operativo</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={EmployeeType.QUALITY}>
+                      <div className="flex items-center">
+                        <Users className="mr-2 h-4 w-4" />
+                        <span>Calidad</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={EmployeeType.PRODUCTION}>
+                      <div className="flex items-center">
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Producción</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={EmployeeType.ADMINISTRATIVE}>
+                      <div className="flex items-center">
+                        <Users className="mr-2 h-4 w-4" />
+                        <span>Administrativo</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
               <Button 
@@ -400,13 +474,14 @@ export default function EmployeesPage() {
               <TableHead>Nombre</TableHead>
               <TableHead>Puesto</TableHead>
               <TableHead>Departamento</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredEmployees?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   {searchTerm 
                     ? "No se encontraron empleados que coincidan con la búsqueda." 
                     : "No hay empleados registrados."}
@@ -419,6 +494,18 @@ export default function EmployeesPage() {
                   <TableCell>{employee.name}</TableCell>
                   <TableCell>{employee.position || "-"}</TableCell>
                   <TableCell>{employee.department || "-"}</TableCell>
+                  <TableCell>
+                    <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                      ${employee.employeeType === EmployeeType.OPERATIVE ? 'bg-blue-100 text-blue-800' : 
+                      employee.employeeType === EmployeeType.QUALITY ? 'bg-green-100 text-green-800' : 
+                      employee.employeeType === EmployeeType.PRODUCTION ? 'bg-amber-100 text-amber-800' : 
+                      'bg-purple-100 text-purple-800'}`}>
+                      {employee.employeeType === EmployeeType.OPERATIVE ? 'Operativo' : 
+                       employee.employeeType === EmployeeType.QUALITY ? 'Calidad' : 
+                       employee.employeeType === EmployeeType.PRODUCTION ? 'Producción' : 
+                       'Administrativo'}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="outline"
