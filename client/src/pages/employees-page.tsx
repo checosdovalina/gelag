@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -33,14 +40,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2, PlusCircle, Pencil, Trash2, Search } from "lucide-react";
+import { Loader2, PlusCircle, Pencil, Trash2, Search, UserCircle, Users, Briefcase } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { EmployeeType } from "@shared/schema";
 
 interface Employee {
   id: number;
   name: string;
   employeeId: string;
   position: string | null;
+  employeeType: EmployeeType;
   department: string | null;
   isActive: boolean;
   createdBy: number;
@@ -52,6 +61,7 @@ interface EmployeeFormData {
   name: string;
   employeeId: string;
   position: string;
+  employeeType: EmployeeType;
   department: string;
 }
 
@@ -66,6 +76,7 @@ export default function EmployeesPage() {
     name: "",
     employeeId: "",
     position: "",
+    employeeType: EmployeeType.OPERATIVE,
     department: ""
   });
 
@@ -158,6 +169,7 @@ export default function EmployeesPage() {
       name: "",
       employeeId: "",
       position: "",
+      employeeType: EmployeeType.OPERATIVE,
       department: ""
     });
     setSelectedEmployee(null);
@@ -181,9 +193,18 @@ export default function EmployeesPage() {
       name: employee.name,
       employeeId: employee.employeeId,
       position: employee.position || "",
+      employeeType: employee.employeeType || EmployeeType.OPERATIVE,
       department: employee.department || ""
     });
     setIsUpdateDialogOpen(true);
+  };
+  
+  // Manejar cambio en tipo de empleado
+  const handleEmployeeTypeChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      employeeType: value as EmployeeType
+    }));
   };
 
   const handleDeleteClick = (id: number) => {

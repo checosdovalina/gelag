@@ -11,6 +11,13 @@ export enum UserRole {
   VIEWER = "viewer"
 }
 
+export enum EmployeeType {
+  OPERATIVE = "operativo",
+  QUALITY = "calidad",
+  PRODUCTION = "produccion",
+  ADMINISTRATIVE = "administrativo"
+}
+
 // User schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -150,6 +157,7 @@ export const fieldTypes = [
   "table",
   "evaluationMatrix",
   "employee", // Campo para seleccionar un empleado
+  "employeeByType", // Campo para seleccionar un empleado filtrado por tipo
   "product"   // Campo para seleccionar un producto
 ] as const;
 
@@ -174,6 +182,13 @@ export const formFieldSchema = z.object({
       value: z.string()
     })
   ])).optional(),
+  // Campo para especificar el tipo de empleado a mostrar (para campos tipo employeeByType)
+  employeeType: z.enum([
+    EmployeeType.OPERATIVE,
+    EmployeeType.QUALITY,
+    EmployeeType.PRODUCTION,
+    EmployeeType.ADMINISTRATIVE
+  ]).optional(),
   columns: z.array(z.object({
     id: z.string(),
     header: z.string(),
@@ -230,7 +245,8 @@ export const employees = pgTable("employees", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   employeeId: text("employee_id").notNull().unique(), // Número de empleado
-  position: text("position"),
+  position: text("position"), // Puesto específico (ej. "Supervisor", "Operador", etc.)
+  employeeType: text("employee_type").$type<EmployeeType>().notNull().default(EmployeeType.OPERATIVE), // Tipo de empleado (operativo, calidad, producción, administrativo)
   department: text("department"),
   isActive: boolean("is_active").default(true),
   createdBy: integer("created_by").notNull(), // Usuario que creó el registro del empleado
