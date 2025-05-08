@@ -736,27 +736,124 @@ function detectFormStructure(sheetData: any[], rawData?: any[]): FormStructure |
     
     // Verificar que se detectaron campos
     if (formStructure.fields.length === 0) {
-      // Generar campos genéricos
-      formStructure.fields.push({
-        id: "campo1",
-        type: "text",
-        label: "Campo 1",
-        required: true
-      });
+      console.log("No se detectaron campos automáticamente, intentando extraer campos de propiedades");
       
-      formStructure.fields.push({
-        id: "campo2",
-        type: "text",
-        label: "Campo 2",
-        required: false
-      });
+      // Intentar extraer de las primeras filas del Excel para hojas de datos complejas
+      if (rawData && rawData.length > 0) {
+        let headers: any[] = [];
+        let dataFound = false;
+        
+        // Buscar entre las primeras 10 filas para encontrar una fila con datos estructurados
+        // Esta estrategia es mejor para formularios como el de producción
+        for (let rowIndex = 0; rowIndex < Math.min(10, rawData.length); rowIndex++) {
+          if (Array.isArray(rawData[rowIndex]) && rawData[rowIndex].filter(Boolean).length >= 3) {
+            // Esta puede ser una fila de encabezados o datos
+            headers = rawData[rowIndex];
+            dataFound = true;
+            break;
+          }
+        }
+        
+        if (dataFound && headers.length > 0) {
+          // Para cada posible columna, crear un campo
+          headers.forEach((header, colIndex) => {
+            if (header && String(header).trim() !== '') {
+              // Obtener columnas de datos para esta posición
+              const columnValues = [];
+              for (let i = 0; i < rawData.length; i++) {
+                if (Array.isArray(rawData[i]) && rawData[i][colIndex] !== undefined) {
+                  columnValues.push(rawData[i][colIndex]);
+                }
+              }
+              
+              // Determinar el tipo de campo
+              let fieldType: FieldType = 'text';
+              const headerText = String(header).toLowerCase().trim();
+              
+              // Detectar tipo por encabezado
+              if (headerText.includes('fecha') || headerText.includes('date')) {
+                fieldType = 'date';
+              } else if (headerText.includes('cantidad') || headerText.includes('litros') || 
+                         headerText.includes('kilos') || headerText.includes('total') ||
+                         headerText.includes('monto') || headerText.includes('valor')) {
+                fieldType = 'number';
+              } else if (headerText.includes('comentario') || headerText.includes('observación') ||
+                         headerText.includes('descripción') || headerText.includes('notas')) {
+                fieldType = 'textarea';
+              } else if (headerText.includes('folio') || headerText.includes('codigo') || 
+                         headerText.includes('no.') || headerText.includes('número')) {
+                fieldType = 'text';
+              } else if (headerText.includes('empleado') || headerText.includes('personal') ||
+                         headerText.includes('responsable') || headerText.includes('operador')) {
+                fieldType = 'employee';
+              } else if (headerText.includes('producto') || headerText.includes('materia prima') ||
+                         headerText.includes('material') || headerText.includes('insumo')) {
+                fieldType = 'product';
+              }
+              
+              // Crear el campo
+              formStructure.fields.push({
+                id: `field_${colIndex}`,
+                type: fieldType,
+                label: String(header),
+                required: colIndex < 3 || headerText.includes('folio') || headerText.includes('fecha')
+              });
+            }
+          });
+        }
+      }
       
-      formStructure.fields.push({
-        id: "comentarios",
-        type: "textarea",
-        label: "Comentarios",
-        required: false
-      });
+      // Si aún no hemos encontrado campos, intentar con el enfoque de objetos
+      if (formStructure.fields.length === 0 && sheetData && sheetData.length > 0) {
+        // Obtener todas las claves únicas en los objetos
+        const allKeys = new Set<string>();
+        sheetData.forEach(row => {
+          if (row && typeof row === 'object') {
+            Object.keys(row).forEach(key => {
+              if (key && !key.startsWith('__EMPTY')) {
+                allKeys.add(key);
+              }
+            });
+          }
+        });
+        
+        // Crear un campo para cada clave importante
+        Array.from(allKeys).forEach((key, index) => {
+          if (key && !key.startsWith('__EMPTY')) {
+            formStructure.fields.push({
+              id: `field_${index}`,
+              type: 'text',
+              label: key,
+              required: index < 3
+            });
+          }
+        });
+      }
+      
+      // Si aún no hay campos, agregar campos genéricos como fallback
+      if (formStructure.fields.length === 0) {
+        console.log("Usando campos genéricos como último recurso");
+        formStructure.fields.push({
+          id: "campo1",
+          type: "text",
+          label: "Campo 1",
+          required: true
+        });
+        
+        formStructure.fields.push({
+          id: "campo2",
+          type: "text",
+          label: "Campo 2",
+          required: false
+        });
+        
+        formStructure.fields.push({
+          id: "comentarios",
+          type: "textarea",
+          label: "Comentarios",
+          required: false
+        });
+      }
     }
     
     return formStructure;
