@@ -520,6 +520,71 @@ export default function FormViewer({
     );
   };
   
+  // Renderizar campo de selección de empleado por tipo
+  const renderEmployeeByTypeField = (field: IFormField) => {
+    // Filtramos los empleados por tipo seleccionado en la configuración del campo
+    const filteredEmployees = employees.filter(
+      employee => employee.employeeType === field.employeeType
+    );
+    
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => (
+          <FormItem>
+            <FormLabel>
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            <Select
+              value={formField.value ? formField.value.toString() : ""}
+              onValueChange={(value) => {
+                formField.onChange(Number(value));
+              }}
+              disabled={isReadOnly}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={`Seleccionar ${
+                    field.employeeType === 'operativo' ? 'operativo' :
+                    field.employeeType === 'calidad' ? 'calidad' :
+                    field.employeeType === 'produccion' ? 'producción' :
+                    'administrativo'
+                  }`} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {employeesLoading ? (
+                  <div className="flex items-center justify-center p-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : filteredEmployees.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No hay empleados de este tipo disponibles
+                  </div>
+                ) : (
+                  filteredEmployees.map((employee) => (
+                    <SelectItem key={employee.id} value={employee.id.toString()}>
+                      <div className="flex items-center">
+                        <UserCircle className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {employee.name} - {employee.employeeId}
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              {formField.value && employees.find(e => e.id === Number(formField.value))?.position}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
+  
   // Renderizar campo de selección de producto
   const renderProductField = (field: IFormField) => {
     return (
@@ -583,6 +648,9 @@ export default function FormViewer({
         
       case "employee":
         return renderEmployeeField(field);
+        
+      case "employeeByType":
+        return renderEmployeeByTypeField(field);
         
       case "product":
         return renderProductField(field);

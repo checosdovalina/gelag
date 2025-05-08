@@ -493,6 +493,39 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                     </div>
                                   )}
 
+                                  {form.watch(`fields.${index}.type`) === "employeeByType" && (
+                                    <div>
+                                      <UIFormField
+                                        control={form.control}
+                                        name={`fields.${index}.employeeType`}
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Tipo de Empleado</FormLabel>
+                                            <FormControl>
+                                              <Select
+                                                value={field.value || 'operativo'}
+                                                onValueChange={field.onChange}
+                                              >
+                                                <SelectTrigger>
+                                                  <SelectValue placeholder="Seleccionar tipo" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value="operativo">Operativo</SelectItem>
+                                                  <SelectItem value="calidad">Calidad</SelectItem>
+                                                  <SelectItem value="produccion">Producción</SelectItem>
+                                                  <SelectItem value="administrativo">Administrativo</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </FormControl>
+                                            <FormDescription>
+                                              El campo mostrará solo empleados del tipo seleccionado
+                                            </FormDescription>
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                  )}
+
                                   {form.watch(`fields.${index}.type`) === "table" && (
                                     <div>
                                       <UIFormField
