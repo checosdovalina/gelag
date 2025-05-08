@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,7 @@ export default function EmployeesPage() {
   });
 
   // Obtener empleados
-  const { data: employees, isLoading, refetch } = useQuery<Employee[]>({
+  const { data: employees, isLoading } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
     queryFn: async () => {
       const res = await apiRequest("GET", "/api/employees");
@@ -516,7 +516,11 @@ export default function EmployeesPage() {
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="text-red-500">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-500 hover:text-red-600 border-red-200 hover:border-red-300"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
@@ -524,7 +528,7 @@ export default function EmployeesPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Esta acción no se puede deshacer. ¿Está seguro de eliminar al empleado "{employee.name}"?
+                            Esta acción eliminará permanentemente al empleado <strong>{employee.name}</strong> del sistema.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

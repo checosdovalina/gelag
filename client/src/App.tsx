@@ -21,7 +21,7 @@ import UsersPage from "@/pages/users-page";
 import SettingsPage from "@/pages/settings-page";
 import CapturedFormsPage from "@/pages/captured-forms-page";
 import ProductsPage from "@/pages/products-page";
-import EmployeesPage from "@/pages/employees-page";
+import EmployeesPage from "@/pages/employees-page-new";
 
 function Router() {
   return (
