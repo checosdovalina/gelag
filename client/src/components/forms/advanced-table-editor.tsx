@@ -52,10 +52,11 @@ interface ColumnDefinition {
   id: string;
   header: string;
   width?: string;
-  type: "text" | "number" | "select" | "checkbox" | "date";
+  type: "text" | "number" | "select" | "checkbox" | "date" | "employee" | "product";
   span?: number;
   rowspan?: number;
   readOnly?: boolean;
+  employeeType?: string; // Para filtrar por tipo de empleado si es necesario
   validation?: {
     min?: number;
     max?: number;
@@ -375,6 +376,38 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                         className="h-8"
                       />
                     )}
+                    {column.type === 'employee' && (
+                      <Select
+                        defaultValue={previewData[rowIndex]?.[column.id] || ''}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                        disabled={column.readOnly}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="Seleccionar empleado..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ejemplo1">Empleado 1</SelectItem>
+                          <SelectItem value="ejemplo2">Empleado 2</SelectItem>
+                          <SelectItem value="ejemplo3">Empleado 3</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {column.type === 'product' && (
+                      <Select
+                        defaultValue={previewData[rowIndex]?.[column.id] || ''}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                        disabled={column.readOnly}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="Seleccionar producto..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="producto1">Producto 1</SelectItem>
+                          <SelectItem value="producto2">Producto 2</SelectItem>
+                          <SelectItem value="producto3">Producto 3</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
@@ -549,6 +582,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               <SelectItem value="select">Lista desplegable</SelectItem>
                               <SelectItem value="checkbox">Casilla de verificación</SelectItem>
                               <SelectItem value="date">Fecha</SelectItem>
+                              <SelectItem value="employee">Empleado</SelectItem>
+                              <SelectItem value="product">Producto</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -744,6 +779,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                       <SelectItem value="select">Lista desplegable</SelectItem>
                       <SelectItem value="checkbox">Casilla de verificación</SelectItem>
                       <SelectItem value="date">Fecha</SelectItem>
+                      <SelectItem value="employee">Empleado</SelectItem>
+                      <SelectItem value="product">Producto</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
