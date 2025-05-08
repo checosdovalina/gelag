@@ -381,6 +381,11 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   <UserCircle className="h-4 w-4 mr-2" /> Seleccionar Empleado
                                                 </div>
                                               </SelectItem>
+                                              <SelectItem value="employeeByType">
+                                                <div className="flex items-center">
+                                                  <UserCircle className="h-4 w-4 mr-2" /> Empleado por Tipo
+                                                </div>
+                                              </SelectItem>
                                               <SelectItem value="product">
                                                 <div className="flex items-center">
                                                   <Package className="h-4 w-4 mr-2" /> Seleccionar Producto
