@@ -24,7 +24,9 @@ import {
   CheckSquare, 
   RadioIcon, 
   AlignLeft, 
-  Table as TableIcon 
+  Table as TableIcon,
+  Package, 
+  UserCircle 
 } from "lucide-react";
 import { FieldType, formFieldSchema, formStructureSchema } from "@shared/schema";
 import type { FormField } from "@shared/schema";
@@ -169,6 +171,8 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
       case "radio": return <RadioIcon className="h-4 w-4" />;
       case "textarea": return <AlignLeft className="h-4 w-4" />;
       case "table": return <TableIcon className="h-4 w-4" />;
+      case "employee": return <UserCircle className="h-4 w-4" />;
+      case "product": return <Package className="h-4 w-4" />;
       default: return <Type className="h-4 w-4" />;
     }
   };
@@ -370,6 +374,16 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               <SelectItem value="table">
                                                 <div className="flex items-center">
                                                   <TableIcon className="h-4 w-4 mr-2" /> Tabla
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="employee">
+                                                <div className="flex items-center">
+                                                  <UserCircle className="h-4 w-4 mr-2" /> Seleccionar Empleado
+                                                </div>
+                                              </SelectItem>
+                                              <SelectItem value="product">
+                                                <div className="flex items-center">
+                                                  <Package className="h-4 w-4 mr-2" /> Seleccionar Producto
                                                 </div>
                                               </SelectItem>
                                             </SelectContent>

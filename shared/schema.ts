@@ -148,7 +148,9 @@ export const fieldTypes = [
   "radio",
   "textarea",
   "table",
-  "evaluationMatrix"
+  "evaluationMatrix",
+  "employee", // Campo para seleccionar un empleado
+  "product"   // Campo para seleccionar un producto
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];
