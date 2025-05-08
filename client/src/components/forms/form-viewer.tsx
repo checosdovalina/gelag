@@ -18,9 +18,10 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
-import { Loader2, Save, Download, FileDown, FilePen, Pencil } from "lucide-react";
-import { FormStructure, UserRole } from "@shared/schema";
+import { Loader2, Save, Download, FileDown, FilePen, Pencil, Package, UserCircle } from "lucide-react";
+import { FormStructure, UserRole, Product, Employee } from "@shared/schema";
 import type { FormField as IFormField } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -68,6 +69,32 @@ export default function FormViewer({
   const [nextFolioNumber, setNextFolioNumber] = useState<number | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  // Cargar lista de productos
+  const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
+    queryKey: ['/api/products'],
+    queryFn: async () => {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error('Error al cargar productos');
+      }
+      return response.json();
+    },
+    enabled: formTemplate.fields.some(field => field.type === 'product')
+  });
+  
+  // Cargar lista de empleados
+  const { data: employees = [], isLoading: employeesLoading } = useQuery<Employee[]>({
+    queryKey: ['/api/employees'],
+    queryFn: async () => {
+      const response = await fetch('/api/employees');
+      if (!response.ok) {
+        throw new Error('Error al cargar empleados');
+      }
+      return response.json();
+    },
+    enabled: formTemplate.fields.some(field => field.type === 'employee')
+  });
   
   // Función para actualizar el displayName de un campo y guardar los cambios
   const handleFieldNameUpdate = async (fieldId: string, newDisplayName: string): Promise<boolean> => {
@@ -221,6 +248,12 @@ export default function FormViewer({
           break;
         case "evaluationMatrix":
           fieldSchema = z.record(z.string(), z.string()).optional();
+          break;
+        case "employee":
+          fieldSchema = z.number().or(z.string().transform(val => val ? Number(val) : undefined));
+          break;
+        case "product":
+          fieldSchema = z.number().or(z.string().transform(val => val ? Number(val) : undefined));
           break;
         default:
           fieldSchema = z.string().optional();
@@ -432,11 +465,127 @@ export default function FormViewer({
     );
   };
   
+  // Renderizar campo de selección de empleado
+  const renderEmployeeField = (field: IFormField) => {
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => (
+          <FormItem>
+            <FormLabel>
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            <Select
+              value={formField.value ? formField.value.toString() : ""}
+              onValueChange={(value) => {
+                formField.onChange(Number(value));
+              }}
+              disabled={isReadOnly}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar empleado" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {employeesLoading ? (
+                  <div className="flex items-center justify-center p-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : employees.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No hay empleados disponibles
+                  </div>
+                ) : (
+                  employees.map((employee) => (
+                    <SelectItem key={employee.id} value={employee.id.toString()}>
+                      <div className="flex items-center">
+                        <UserCircle className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {employee.name} - {employee.employeeId}
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              {formField.value && employees.find(e => e.id === Number(formField.value))?.position}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
+  
+  // Renderizar campo de selección de producto
+  const renderProductField = (field: IFormField) => {
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => (
+          <FormItem>
+            <FormLabel>
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            <Select
+              value={formField.value ? formField.value.toString() : ""}
+              onValueChange={(value) => {
+                formField.onChange(Number(value));
+              }}
+              disabled={isReadOnly}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar producto" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {productsLoading ? (
+                  <div className="flex items-center justify-center p-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No hay productos disponibles
+                  </div>
+                ) : (
+                  products.map((product) => (
+                    <SelectItem key={product.id} value={product.id.toString()}>
+                      <div className="flex items-center">
+                        <Package className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {product.name} - {product.code}
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              {formField.value && products.find(p => p.id === Number(formField.value))?.description}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
+
   // Render field based on its type
   const renderField = (field: IFormField) => {
     switch (field.type) {
       case "evaluationMatrix":
         return renderEvaluationMatrix(field);
+        
+      case "employee":
+        return renderEmployeeField(field);
+        
+      case "product":
+        return renderProductField(field);
         
       case "text":
         // Verificar si este campo es un campo de folio
