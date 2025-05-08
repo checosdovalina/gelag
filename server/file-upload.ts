@@ -27,15 +27,29 @@ const storage = multer.diskStorage({
 
 // Define file filter
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // Accept only Excel files for now (PDF support will be added later)
-  if (
-    file.mimetype === 'application/vnd.ms-excel' ||
-    file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-    file.mimetype === 'application/vnd.oasis.opendocument.spreadsheet'
-  ) {
+  // Lista extendida de tipos MIME aceptados
+  const acceptedMimeTypes = [
+    // Excel y formatos relacionados
+    'application/vnd.ms-excel',                                             // .xls
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',    // .xlsx
+    'application/vnd.oasis.opendocument.spreadsheet',                       // .ods
+    'application/vnd.ms-excel.sheet.macroEnabled.12',                       // .xlsm
+    'application/vnd.ms-excel.sheet.binary.macroEnabled.12',                // .xlsb
+    'text/csv',                                                             // .csv
+    
+    // PDF y formatos relacionados
+    'application/pdf',                                                      // .pdf
+    'application/x-pdf'                                                     // .pdf (variante)
+  ];
+  
+  // Verificar también por la extensión del archivo en caso de que el MIME sea incorrecto
+  const fileExtension = file.originalname.split('.').pop()?.toLowerCase() || '';
+  const acceptedExtensions = ['xls', 'xlsx', 'xlsm', 'xlsb', 'ods', 'csv', 'pdf'];
+  
+  if (acceptedMimeTypes.includes(file.mimetype) || acceptedExtensions.includes(fileExtension)) {
     cb(null, true);
   } else {
-    cb(new Error('Formato de archivo no soportado. Solo se permiten archivos Excel.'));
+    cb(new Error(`Formato de archivo no soportado (${file.mimetype}). Solo se permiten archivos Excel y PDF.`));
   }
 };
 
@@ -44,7 +58,7 @@ export const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB limit
+    fileSize: 50 * 1024 * 1024, // 50 MB limit para archivos Excel grandes con múltiples hojas
   },
 });
 

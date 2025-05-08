@@ -20,6 +20,7 @@ export default function FormImport({ onImportComplete }: FormImportProps) {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [previewData, setPreviewData] = useState<any>(null);
+  const [fileInfo, setFileInfo] = useState<{name: string, size: string, sheets: number} | null>(null);
   
   // Mutación para subir el archivo
   const uploadMutation = useMutation({
@@ -63,6 +64,20 @@ export default function FormImport({ onImportComplete }: FormImportProps) {
     onSuccess: (data) => {
       console.log("Archivo subido con éxito:", data);
       setPreviewData(data);
+      
+      // Extraer información del archivo para mostrar al usuario
+      if (data && data.fileName && data.data) {
+        const sheetsCount = data.data.length || 0;
+        const fileSizeInMB = (data.fileSize || 0) / (1024 * 1024);
+        const fileSize = fileSizeInMB.toFixed(2) + " MB";
+        
+        setFileInfo({
+          name: data.fileName,
+          size: fileSize,
+          sheets: sheetsCount
+        });
+      }
+      
       toast({
         title: "Archivo cargado correctamente",
         description: "Se ha procesado el archivo Excel con éxito.",
