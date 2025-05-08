@@ -995,14 +995,17 @@ function extractFichaTecnicaFields(rawData: any[]): FormStructure {
         fieldType = 'textarea';
       }
       
-      // Crear el campo
+      // Crear el campo con propiedad editable
       formStructure.fields.push({
         id: fieldId,
         type: fieldType,
         label: fieldInfo.label.trim(),
         required: isRequiredField(fieldInfo.label),
         defaultValue: String(valueExample || ''),
-        placeholder: `Ingrese ${fieldInfo.label.trim().toLowerCase()}`
+        placeholder: `Ingrese ${fieldInfo.label.trim().toLowerCase()}`,
+        displayName: fieldInfo.label.trim(), // Añadir displayName
+        displayOrder: formStructure.fields.length, // Asignar orden por defecto
+        editable: true // Asegurarse de que el campo sea editable
       });
     }
   }
@@ -1015,46 +1018,67 @@ function extractFichaTecnicaFields(rawData: any[]): FormStructure {
         type: "text",
         label: "Código de Producto",
         required: true,
-        placeholder: "Ej: PR-01"
+        placeholder: "Ej: PR-01",
+        displayName: "Código de Producto",
+        displayOrder: 0,
+        editable: true
       },
       {
         id: "nombre_producto",
         type: "text",
         label: "Nombre del Producto",
         required: true,
-        placeholder: "Ej: Cerveza IPA"
+        placeholder: "Ej: Cerveza IPA",
+        displayName: "Nombre del Producto",
+        displayOrder: 1,
+        editable: true
       },
       {
         id: "fecha_elaboracion",
         type: "date",
         label: "Fecha de Elaboración",
-        required: true
+        required: true,
+        displayName: "Fecha de Elaboración",
+        displayOrder: 2,
+        editable: true
       },
       {
         id: "responsable",
         type: "employee",
         label: "Responsable",
-        required: true
+        required: true,
+        displayName: "Responsable",
+        displayOrder: 3,
+        editable: true
       },
       {
         id: "ingredientes",
         type: "textarea",
         label: "Ingredientes",
         required: true,
-        placeholder: "Liste los ingredientes"
+        placeholder: "Liste los ingredientes",
+        displayName: "Ingredientes",
+        displayOrder: 4,
+        editable: true
       },
       {
         id: "cantidad",
         type: "number",
         label: "Cantidad (kg)",
-        required: true
+        required: true,
+        displayName: "Cantidad (kg)",
+        displayOrder: 5,
+        editable: true
       },
       {
         id: "notas",
         type: "textarea",
         label: "Notas de Producción",
         required: false,
-        placeholder: "Observaciones adicionales"
+        placeholder: "Observaciones adicionales",
+        displayName: "Notas de Producción",
+        displayOrder: 6,
+        editable: true
       }
     ];
   }
@@ -1068,7 +1092,10 @@ function extractFichaTecnicaFields(rawData: any[]): FormStructure {
       id: "responsable",
       type: "employee",
       label: "Responsable",
-      required: true
+      required: true,
+      displayName: "Responsable",
+      displayOrder: formStructure.fields.length,
+      editable: true
     });
   }
   
@@ -1077,7 +1104,10 @@ function extractFichaTecnicaFields(rawData: any[]): FormStructure {
       id: "fecha",
       type: "date",
       label: "Fecha",
-      required: true
+      required: true,
+      displayName: "Fecha",
+      displayOrder: formStructure.fields.length,
+      editable: true
     });
   }
   
