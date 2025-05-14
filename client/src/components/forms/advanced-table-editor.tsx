@@ -817,8 +817,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                         {section.title.toLowerCase().includes('materia') && (
                           <Button
                             type="button"
-                            variant="outline"
-                            className="border-blue-300 hover:bg-blue-50"
+                            variant="secondary"
+                            className="bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700"
                             onClick={() => {
                               // Generar filas de materias primas predefinidas
                               const materialNames = [
@@ -900,9 +900,49 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                       className="mt-1"
                     />
                   </div>
-                  <Button type="button" onClick={addSection}>
-                    <Plus className="h-4 w-4 mr-1" /> Agregar Sección
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" onClick={addSection}>
+                      <Plus className="h-4 w-4 mr-1" /> Agregar Sección
+                    </Button>
+                    
+                    {/* Botón para añadir sección de Materias Primas predefinida */}
+                    <Button 
+                      type="button" 
+                      variant="secondary"
+                      className="bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700"
+                      onClick={() => {
+                        // Crear una nueva sección para materias primas
+                        const materiasSection = {
+                          title: "Materia Prima",
+                          columns: [
+                            { 
+                              id: uuidv4(), 
+                              header: "Materia Prima", 
+                              type: "text", 
+                              width: "200px",
+                              readOnly: true 
+                            },
+                            { 
+                              id: uuidv4(), 
+                              header: "Kilos", 
+                              type: "number", 
+                              width: "100px" 
+                            }
+                          ]
+                        };
+                        
+                        const newSections = [...sections, materiasSection];
+                        setValue("sections", newSections);
+                        
+                        toast({
+                          title: "Sección de Materias Primas agregada",
+                          description: "Se ha añadido la sección con columnas para Materia Prima y Kilos",
+                        });
+                      }}
+                    >
+                      <FileSpreadsheet className="h-4 w-4 mr-1" /> Agregar Sección Materias Primas
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </ScrollArea>
