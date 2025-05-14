@@ -656,6 +656,71 @@ export default function CapturedFormsPage() {
       },
     },
     {
+      accessorKey: "lot_number",
+      header: "Lote",
+      cell: ({ row }) => {
+        const lotNumber = row.getValue("lot_number");
+        if (!lotNumber) return <div className="text-muted-foreground">-</div>;
+        return <div>{lotNumber}</div>;
+      },
+    },
+    {
+      accessorKey: "workflow_status",
+      header: "Flujo",
+      cell: ({ row }) => {
+        const workflowStatus = row.getValue("workflow_status") as string;
+        let variant: "default" | "success" | "destructive" | "outline" | "secondary" | "warning" = "outline";
+        
+        switch (workflowStatus) {
+          case "initiated":
+            variant = "outline";
+            break;
+          case "in_progress":
+            variant = "secondary";
+            break;
+          case "pending_quality":
+            variant = "warning";
+            break;
+          case "completed":
+            variant = "default";
+            break;
+          case "signed":
+            variant = "success"; 
+            break;
+          case "approved":
+            variant = "success";
+            break;
+          case "rejected":
+            variant = "destructive";
+            break;
+        }
+        
+        let label = "Iniciado";
+        switch (workflowStatus) {
+          case "in_progress":
+            label = "En progreso";
+            break;
+          case "pending_quality":
+            label = "Pendiente calidad";
+            break;
+          case "completed":
+            label = "Completado";
+            break;
+          case "signed":
+            label = "Firmado";
+            break;
+          case "approved":
+            label = "Aprobado";
+            break;
+          case "rejected":
+            label = "Rechazado";
+            break;
+        }
+        
+        return <Badge variant={variant}>{label}</Badge>;
+      },
+    },
+    {
       accessorKey: "status",
       header: "Estado",
       cell: ({ row }) => {
