@@ -116,46 +116,53 @@ interface AdvancedTableEditorProps {
 }
 
 // Definición de factores de conversión para cada producto
-// Cada producto define cuántos kilos de cada materia prima se necesitan por litro
+// Cada producto define cuántos kilos de cada materia prima se necesitan por 100 litros
+// Los valores están basados en los ejemplos proporcionados por el usuario
 const PRODUCT_MATERIALS = {
-  "Pasta Oblea Coro": {
-    "Azúcar estándar": 0.42,
-    "Leche en polvo": 0.07,
-    "Glucosa": 0.18,
-    "Bicarbonato": 0.02,
-    "CMC": 0.005,
-    "Lecitina": 0.003,
-    "Sabor Vainilla Oblea": 0.001
-  },
-  "Pasta Oblea Cajeton": {
-    "Azúcar estándar": 0.4,
-    "Leche en polvo": 0.08,
-    "Glucosa": 0.15,
-    "Bicarbonato": 0.015,
-    "CMC": 0.004,
-    "Lecitina": 0.002,
-    "Sabor Cajeta": 0.001
+  "Mielmex 65° Brix": {
+    "Leche de Vaca": 0,
+    "Leche de Cabra": 1.0,  // 100/100 litros
+    "Azúcar": 0.18,         // 18/100 litros
+    "Glucosa": 0,
+    "Malto": 0,
+    "Bicarbonato": 0.0016,  // 0.16/100 litros
+    "Sorbato": 0.0005,      // 0.05/100 litros
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Coro 68° Brix": {
-    "Azúcar estándar": 0.45,
-    "Leche en polvo": 0.06,
-    "Glucosa": 0.12,
-    "Bicarbonato": 0.01,
-    "Almidón": 0.008
+    "Leche de Vaca": 0.2,   // 20/100 litros
+    "Leche de Cabra": 0.8,  // 80/100 litros
+    "Azúcar": 0.18,         // 18/100 litros
+    "Glucosa": 0,
+    "Malto": 0,
+    "Bicarbonato": 0.0016,  // 0.16/100 litros
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Cajeton Tradicional": {
-    "Azúcar estándar": 0.42,
-    "Leche en polvo": 0.09,
-    "Glucosa": 0.14,
-    "Bicarbonato": 0.012,
-    "Almidón": 0.01
-  },
-  "Mielmex 65° Brix": {
-    "Azúcar estándar": 0.4,
-    "Leche en polvo": 0.05,
-    "Glucosa": 0.15,
-    "Bicarbonato": 0.009,
-    "Citrato de Sodio": 0.002
+    "Leche de Vaca": 0.05,
+    "Leche de Cabra": 0.95,
+    "Azúcar": 0.20,
+    "Glucosa": 0.15, 
+    "Malto": 0,
+    "Bicarbonato": 0.01,
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Cabri Tradicional": {
     "Azúcar estándar": 0.38,
