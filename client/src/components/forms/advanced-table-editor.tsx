@@ -963,12 +963,44 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             // Marcar esta pestaña como visitada
             setTabsVisited(prev => ({...prev, [value]: true}));
           }}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="templates">Plantillas</TabsTrigger>
             <TabsTrigger value="sections">Secciones</TabsTrigger>
             <TabsTrigger value="preview">Vista Previa</TabsTrigger>
             <TabsTrigger value="settings">Configuración</TabsTrigger>
           </TabsList>
           
+          {/* Pestaña de Plantillas */}
+          <TabsContent value="templates" className="space-y-4 mt-4">
+            <ScrollArea className="h-[500px] pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {TABLE_TEMPLATES.map((template, index) => (
+                  <Card 
+                    key={index} 
+                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => {
+                      // Aplicar la plantilla seleccionada
+                      onChange(template.config);
+                      toast({
+                        title: "Plantilla aplicada",
+                        description: `Se ha aplicado la plantilla: ${template.name}`,
+                      });
+                      // Cambiar a la pestaña de secciones después de aplicar
+                      setActiveTab("sections");
+                      setTabsVisited(prev => ({...prev, sections: true}));
+                    }}
+                  >
+                    <CardHeader className="py-4">
+                      <CardTitle className="text-base flex items-center">
+                        {template.icon} {template.name}
+                      </CardTitle>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
           {/* Contenedor para botones de acciones rápidas */}
           {value?.sections?.some(s => 
             s.title.toLowerCase().includes("proceso") && 
