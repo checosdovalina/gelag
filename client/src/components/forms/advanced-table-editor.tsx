@@ -792,7 +792,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       case 'select':
         return (
           <Select
-            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            value={previewData[rowIndex]?.[column.id] || ''}
             onValueChange={(val) => updateCell(rowIndex, column.id, val)}
             disabled={isReadOnly}
           >
@@ -833,7 +833,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       case 'product':
         return (
           <Select
-            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            value={previewData[rowIndex]?.[column.id] || ''}
             onValueChange={(productValue) => {
               updateCell(rowIndex, column.id, productValue);
               
@@ -860,12 +860,18 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 ))
               ) : (
                 <>
-                  {Object.keys(PRODUCT_MATERIALS).map((producto) => (
-                    <SelectItem key={producto} value={producto}>
-                      {producto}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Pasta Oblea Coro">Pasta Oblea Coro</SelectItem>
+                  <SelectItem value="Pasta Oblea Cajeton">Pasta Oblea Cajeton</SelectItem>
+                  <SelectItem value="Coro 68° Brix">Coro 68° Brix</SelectItem>
+                  <SelectItem value="Cajeton Tradicional">Cajeton Tradicional</SelectItem>
+                  <SelectItem value="Mielmex 65° Brix">Mielmex 65° Brix</SelectItem>
+                  <SelectItem value="Cabri Tradicional">Cabri Tradicional</SelectItem>
+                  <SelectItem value="Cabri Espesa">Cabri Espesa</SelectItem>
                   <SelectItem value="Horneable">Horneable</SelectItem>
+                  <SelectItem value="Gloria untable 78° Brix">Gloria untable 78° Brix</SelectItem>
+                  <SelectItem value="Gloria untable 80° Brix">Gloria untable 80° Brix</SelectItem>
+                  <SelectItem value="Pasta DGL">Pasta DGL</SelectItem>
+                  <SelectItem value="Conito">Conito</SelectItem>
                 </>
               )}
             </SelectContent>
@@ -874,11 +880,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       case 'employee':
         return (
           <Select
-            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            value={previewData[rowIndex]?.[column.id] || ''}
             onValueChange={(val) => updateCell(rowIndex, column.id, val)}
             disabled={column.readOnly}
           >
-            <SelectTrigger className="h-8">
+            <SelectTrigger className={`h-8 ${calculatedClass}`}>
               <SelectValue placeholder="Seleccionar empleado..." />
             </SelectTrigger>
             <SelectContent>
