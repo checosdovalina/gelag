@@ -221,15 +221,7 @@ export default function UsersPage() {
             break;
         }
         
-        // Formatear nombre del rol para visualización
-        let displayRole = role;
-        if (role === UserRole.PRODUCTION_MANAGER) {
-          displayRole = "Gerente Producción";
-        } else if (role === UserRole.QUALITY_MANAGER) {
-          displayRole = "Gerente Calidad";
-        }
-        
-        return <Badge variant={variant}>{displayRole}</Badge>;
+        return <Badge variant={variant}>{role}</Badge>;
       },
     },
     {

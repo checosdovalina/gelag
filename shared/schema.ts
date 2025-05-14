@@ -152,6 +152,7 @@ export const fieldTypes = [
   "text",
   "number",
   "date",
+  "time", // Campo para seleccionar hora
   "select",
   "checkbox",
   "radio",
