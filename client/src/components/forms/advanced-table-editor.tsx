@@ -84,6 +84,13 @@ interface ColumnDefinition {
     label: string;
     value: string;
   }[];
+  // Configuración para campos auto-calculados
+  dependency?: {
+    sourceColumn?: string; // ID de la columna de la que depende
+    sourceType?: "product" | "quantity"; // Tipo de dato fuente (producto o cantidad)
+    calculationType?: "price" | "total" | "weight" | "tax"; // Tipo de cálculo a realizar
+    factor?: number; // Factor opcional para multiplicar/dividir
+  };
 }
 
 interface TableSection {
@@ -1131,6 +1138,175 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   </div>
                 </div>
               )}
+              
+              {/* Configuración para columnas auto-calculadas */}
+              <div className="border p-3 rounded-md mt-2">
+                <div className="flex items-center gap-2">
+                  <Label>Valor Auto-calculado</Label>
+                  <Checkbox
+                    id="auto-calculated"
+                    checked={!!(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency}
+                    onCheckedChange={(checked) => {
+                      if (editingColumn) {
+                        if (checked) {
+                          updateColumn(
+                            editingColumn.sectionIndex, 
+                            editingColumn.columnIndex, 
+                            { 
+                              dependency: { sourceType: "product" },
+                              readOnly: true // Auto-calculated fields are always read-only
+                            }
+                          );
+                        } else {
+                          updateColumn(
+                            editingColumn.sectionIndex, 
+                            editingColumn.columnIndex, 
+                            { 
+                              dependency: undefined,
+                              readOnly: false
+                            }
+                          );
+                        }
+                      }
+                    }}
+                  />
+                </div>
+                
+                {(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency && (
+                  <div className="space-y-3 mt-3">
+                    <div>
+                      <Label htmlFor="dependency-type">Tipo de Dependencia</Label>
+                      <Select
+                        value={(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency?.sourceType || "product"}
+                        onValueChange={(val: "product" | "quantity") => {
+                          if (editingColumn) {
+                            const currentDependency = (value && value.sections)?.[editingColumn.sectionIndex]?.columns?.[editingColumn.columnIndex]?.dependency || {};
+                            updateColumn(
+                              editingColumn.sectionIndex, 
+                              editingColumn.columnIndex, 
+                              { 
+                                dependency: {
+                                  ...currentDependency,
+                                  sourceType: val
+                                }
+                              }
+                            );
+                          }
+                        }}
+                      >
+                        <SelectTrigger id="dependency-type">
+                          <SelectValue placeholder="Seleccione tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="product">Producto</SelectItem>
+                          <SelectItem value="quantity">Cantidad</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="calculation-type">Tipo de Cálculo</Label>
+                      <Select
+                        value={(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency?.calculationType || "price"}
+                        onValueChange={(val: "price" | "total" | "weight" | "tax") => {
+                          if (editingColumn) {
+                            const currentDependency = (value && value.sections)?.[editingColumn.sectionIndex]?.columns?.[editingColumn.columnIndex]?.dependency || {};
+                            updateColumn(
+                              editingColumn.sectionIndex, 
+                              editingColumn.columnIndex, 
+                              { 
+                                dependency: {
+                                  ...currentDependency,
+                                  calculationType: val
+                                }
+                              }
+                            );
+                          }
+                        }}
+                      >
+                        <SelectTrigger id="calculation-type">
+                          <SelectValue placeholder="Seleccione tipo de cálculo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="price">Precio</SelectItem>
+                          <SelectItem value="total">Total (Precio × Cantidad)</SelectItem>
+                          <SelectItem value="weight">Peso</SelectItem>
+                          <SelectItem value="tax">Impuesto</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="source-column">Columna Fuente</Label>
+                      <Select
+                        value={(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency?.sourceColumn || ""}
+                        onValueChange={(val) => {
+                          if (editingColumn) {
+                            const currentDependency = (value && value.sections)?.[editingColumn.sectionIndex]?.columns?.[editingColumn.columnIndex]?.dependency || {};
+                            updateColumn(
+                              editingColumn.sectionIndex, 
+                              editingColumn.columnIndex, 
+                              { 
+                                dependency: {
+                                  ...currentDependency,
+                                  sourceColumn: val
+                                }
+                              }
+                            );
+                          }
+                        }}
+                      >
+                        <SelectTrigger id="source-column">
+                          <SelectValue placeholder="Seleccione columna fuente" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(value && value.sections)?.flatMap(section => 
+                            section.columns
+                              .filter(col => col.id !== ((value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.id))
+                              .map(col => (
+                                <SelectItem key={col.id} value={col.id}>
+                                  {col.header}
+                                </SelectItem>
+                              ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Esta es la columna que proporcionará el valor base (producto o cantidad)
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="factor">Factor de Cálculo (opcional)</Label>
+                      <Input
+                        id="factor"
+                        type="number"
+                        step="0.01"
+                        value={(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency?.factor || ""}
+                        onChange={(e) => {
+                          if (editingColumn) {
+                            const currentDependency = (value && value.sections)?.[editingColumn.sectionIndex]?.columns?.[editingColumn.columnIndex]?.dependency || {};
+                            updateColumn(
+                              editingColumn.sectionIndex, 
+                              editingColumn.columnIndex, 
+                              { 
+                                dependency: {
+                                  ...currentDependency,
+                                  factor: parseFloat(e.target.value) || undefined
+                                }
+                              }
+                            );
+                          }
+                        }}
+                        placeholder="Ej: 0.16 para IVA"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Útil para cálculos como impuestos o descuentos (ej: 0.16 para IVA del 16%)
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>

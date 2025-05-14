@@ -15,16 +15,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
 import { Plus, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Reutilizamos los tipos de AdvancedTableEditor
 interface ColumnDefinition {
   id: string;
   header: string;
   width?: string;
-  type: "text" | "number" | "select" | "checkbox" | "date";
+  type: "text" | "number" | "select" | "checkbox" | "date" | "employee" | "product";
   span?: number;
   rowspan?: number;
   readOnly?: boolean;
+  employeeType?: string; // Para filtrar por tipo de empleado si es necesario
   validation?: {
     min?: number;
     max?: number;
@@ -35,6 +38,13 @@ interface ColumnDefinition {
     label: string;
     value: string;
   }[];
+  // Configuración para campos auto-calculados
+  dependency?: {
+    sourceColumn?: string; // ID de la columna de la que depende
+    sourceType?: "product" | "quantity"; // Tipo de dato fuente (producto o cantidad)
+    calculationType?: "price" | "total" | "weight" | "tax"; // Tipo de cálculo a realizar
+    factor?: number; // Factor opcional para multiplicar/dividir
+  };
 }
 
 interface TableSection {
@@ -68,6 +78,17 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const config = field.advancedTableConfig;
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
   
+  // Obtener la lista de empleados y productos para selectores
+  const { data: employees = [], isLoading: loadingEmployees } = useQuery({
+    queryKey: ["/api/employees"],
+    enabled: true,
+  });
+  
+  const { data: products = [], isLoading: loadingProducts } = useQuery({
+    queryKey: ["/api/products"],
+    enabled: true,
+  });
+  
   // Si no hay configuración, mostrar mensaje de error
   if (!config || !config.sections || config.sections.length === 0) {
     return <div className="text-red-500">Error: Tabla no configurada correctamente</div>;
@@ -85,6 +106,122 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       setTableData(value);
     }
   }, [config.rows, value]);
+  
+  // Obtener el valor de referencia de otra columna para cálculos automáticos
+  const getSourceValue = (rowIndex: number, sourceColumnId: string) => {
+    if (!tableData[rowIndex]) return null;
+    return tableData[rowIndex][sourceColumnId];
+  };
+  
+  // Encontrar el producto por ID
+  const findProductById = (productId: string) => {
+    return products.find((product: any) => product.id.toString() === productId.toString());
+  };
+  
+  // Calcular valor automático basado en la dependencia
+  const calculateDependentValue = (rowIndex: number, column: ColumnDefinition) => {
+    if (!column.dependency || !column.dependency.sourceColumn) return '';
+    
+    const sourceValue = getSourceValue(rowIndex, column.dependency.sourceColumn);
+    if (!sourceValue) return '';
+    
+    const factor = column.dependency.factor || 1;
+    
+    // Si es basado en un producto, buscar información del producto
+    if (column.dependency.sourceType === 'product') {
+      const product = findProductById(sourceValue);
+      if (!product) return '';
+      
+      // Retornar el tipo de valor basado en el tipo de cálculo
+      switch (column.dependency.calculationType) {
+        case 'price':
+          return product.price ? (product.price * factor).toFixed(2) : '';
+        case 'weight':
+          return product.weight ? (product.weight * factor).toFixed(2) : '';
+        case 'tax':
+          return product.price ? (product.price * factor).toFixed(2) : '';
+        case 'total':
+          // Para total, necesitamos encontrar la columna de cantidad
+          const quantityColumns = config.sections?.flatMap(section => 
+            section.columns.filter(col => col.type === 'number' && !col.dependency)
+          ) || [];
+          
+          // Buscar una columna que parezca de cantidad
+          const quantityCol = quantityColumns.length > 0 ? quantityColumns[0].id : null;
+          if (quantityCol) {
+            const quantity = parseFloat(getSourceValue(rowIndex, quantityCol) || '0');
+            return product.price ? (product.price * quantity * factor).toFixed(2) : '';
+          }
+          return '';
+        default:
+          return '';
+      }
+    }
+    
+    // Si es basado en cantidad, calcular según el tipo
+    if (column.dependency.sourceType === 'quantity') {
+      const quantity = parseFloat(sourceValue);
+      if (isNaN(quantity)) return '';
+      
+      // Buscar el ID del producto en esta fila
+      const productColumns = config.sections?.flatMap(section => 
+        section.columns.filter(col => col.type === 'product')
+      ) || [];
+      
+      if (productColumns.length > 0) {
+        const productId = getSourceValue(rowIndex, productColumns[0].id);
+        const product = findProductById(productId);
+        
+        if (product) {
+          switch (column.dependency.calculationType) {
+            case 'total':
+              return product.price ? (product.price * quantity * factor).toFixed(2) : '';
+            case 'weight':
+              return product.weight ? (product.weight * quantity * factor).toFixed(2) : '';
+            default:
+              return '';
+          }
+        }
+      }
+      
+      return '';
+    }
+    
+    return '';
+  };
+
+  // Actualizar celdas automáticamente cuando cambian productos o cantidades
+  useEffect(() => {
+    // Obtener columnas con dependencias
+    const dependentColumns = config.sections?.flatMap(section => 
+      section.columns.filter(col => col.dependency && col.dependency.sourceColumn)
+    ) || [];
+    
+    if (dependentColumns.length === 0) return;
+    
+    // Para cada fila, actualizar los valores calculados
+    const updatedData = [...tableData];
+    let hasChanges = false;
+    
+    updatedData.forEach((rowData, rowIndex) => {
+      dependentColumns.forEach(column => {
+        const calculatedValue = calculateDependentValue(rowIndex, column);
+        
+        // Solo actualizar si el valor calculado es diferente
+        if (calculatedValue !== '' && rowData[column.id] !== calculatedValue) {
+          if (!updatedData[rowIndex]) updatedData[rowIndex] = {};
+          updatedData[rowIndex][column.id] = calculatedValue;
+          hasChanges = true;
+        }
+      });
+    });
+    
+    // Actualizar datos si hay cambios
+    if (hasChanges) {
+      setTableData(updatedData);
+      onChange(updatedData);
+    }
+  }, [tableData, products]);
 
   // Actualizar una celda
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
