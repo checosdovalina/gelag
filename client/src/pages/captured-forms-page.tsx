@@ -99,6 +99,7 @@ export default function CapturedFormsPage() {
   const [contentSearchTerm, setContentSearchTerm] = useState(""); // Término para buscar en el contenido
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [workflowStatusFilter, setWorkflowStatusFilter] = useState("all"); // Filtro para el estado del flujo de trabajo
   const [userFilter, setUserFilter] = useState<number | "all">("all");
   const [templateFilter, setTemplateFilter] = useState<number | "all">("all");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -264,6 +265,11 @@ export default function CapturedFormsPage() {
           statusFilter === "all" || 
           entry.status === statusFilter;
         
+        // Workflow status filter
+        const passesWorkflowStatusFilter = 
+          workflowStatusFilter === "all" || 
+          entry.workflow_status === workflowStatusFilter;
+        
         // User filter
         const passesUserFilter = 
           userFilter === "all" || 
@@ -294,6 +300,7 @@ export default function CapturedFormsPage() {
                passesContentSearch &&
                passesDepartmentFilter && 
                passesStatusFilter && 
+               passesWorkflowStatusFilter &&
                passesUserFilter && 
                passesTemplateFilter && 
                passesDateFilter;
@@ -669,32 +676,41 @@ export default function CapturedFormsPage() {
       header: "Flujo",
       cell: ({ row }) => {
         const workflowStatus = row.getValue("workflow_status") as string;
-        let variant: "default" | "success" | "destructive" | "outline" | "secondary" | "warning" = "outline";
+        
+        // Si no hay estado de flujo, mostrar un placeholder
+        if (!workflowStatus) {
+          return <div className="text-muted-foreground">-</div>;
+        }
+        
+        // Determinar variante del badge según el estado
+        let badgeVariant: "default" | "success" | "destructive" | "outline" | "secondary" = "outline";
         
         switch (workflowStatus) {
           case "initiated":
-            variant = "outline";
+            badgeVariant = "outline";
             break;
           case "in_progress":
-            variant = "secondary";
+            badgeVariant = "secondary";
             break;
           case "pending_quality":
-            variant = "warning";
+            // Como "warning" no es un tipo válido para Badge, usamos "secondary" con clase personalizada
+            badgeVariant = "secondary";
             break;
           case "completed":
-            variant = "default";
+            badgeVariant = "default";
             break;
           case "signed":
-            variant = "success"; 
+            badgeVariant = "success"; 
             break;
           case "approved":
-            variant = "success";
+            badgeVariant = "success";
             break;
           case "rejected":
-            variant = "destructive";
+            badgeVariant = "destructive";
             break;
         }
         
+        // Texto a mostrar
         let label = "Iniciado";
         switch (workflowStatus) {
           case "in_progress":
@@ -717,7 +733,12 @@ export default function CapturedFormsPage() {
             break;
         }
         
-        return <Badge variant={variant}>{label}</Badge>;
+        // Clase especial para el estado "pending_quality"
+        const customClass = workflowStatus === "pending_quality" 
+          ? "bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300" 
+          : "";
+        
+        return <Badge variant={badgeVariant} className={customClass}>{label}</Badge>;
       },
     },
     {
@@ -816,6 +837,7 @@ export default function CapturedFormsPage() {
     setContentSearchTerm("");
     setDepartmentFilter("all");
     setStatusFilter("all");
+    setWorkflowStatusFilter("all");
     setUserFilter("all");
     setTemplateFilter("all");
     setStartDate(undefined);
@@ -977,6 +999,25 @@ export default function CapturedFormsPage() {
                       <SelectItem value="signed">Firmado</SelectItem>
                       <SelectItem value="approved">Aprobado</SelectItem>
                       <SelectItem value="rejected">Rechazado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Estado de flujo</label>
+                  <Select
+                    value={workflowStatusFilter}
+                    onValueChange={setWorkflowStatusFilter}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos los estados de flujo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos los estados</SelectItem>
+                      <SelectItem value="initiated">Iniciado</SelectItem>
+                      <SelectItem value="in_progress">En progreso</SelectItem>
+                      <SelectItem value="pending_quality">Pendiente de calidad</SelectItem>
+                      <SelectItem value="completed">Completado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
