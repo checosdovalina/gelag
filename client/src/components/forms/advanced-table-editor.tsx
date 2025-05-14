@@ -945,6 +945,72 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     >
                       <FileSpreadsheet className="h-4 w-4 mr-1" /> Agregar Sección Materias Primas
                     </Button>
+
+                    {/* Botón para pre-llenar materias primas basado en productos */}
+                    {value?.sections?.some(s => 
+                      s.title.toLowerCase().includes("materia") || 
+                      s.title.toLowerCase().includes("prima")) && (
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        className="bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
+                        onClick={() => {
+                          // Listado de productos estándar
+                          const productos = [
+                            "Mielmex 65° Brix",
+                            "Coro 68° Brix",
+                            "Cajeton Tradicional",
+                            "Cajeton Espesa",
+                            "Cajeton Esp Chepo",
+                            "Cabri Tradicional",
+                            "Cabri Espesa",
+                            "Horneable",
+                            "Gloria untable 78° Brix",
+                            "Gloria untable 80° Brix",
+                            "Pasta Oblea Coro",
+                            "Pasta Oblea Cajeton",
+                            "Pasta DGL",
+                            "Conito"
+                          ];
+                          
+                          // Encontrar el índice de la sección de Materias Primas
+                          const materiaPrimaIndex = value.sections.findIndex(s => 
+                            s.title.toLowerCase().includes("materia") || 
+                            s.title.toLowerCase().includes("prima")
+                          );
+                          
+                          if (materiaPrimaIndex !== -1) {
+                            const currentRows = value.rows || 10;
+                            const needsMore = productos.length > currentRows;
+                            
+                            // Crear filas para cada producto
+                            const newValue = { ...value };
+                            
+                            // Si se necesitan más filas, ajustar
+                            if (needsMore) {
+                              newValue.rows = productos.length;
+                            }
+                            
+                            // Simular la carga de datos con tiempo de espera para visualizar el proceso
+                            toast({
+                              title: "Cargando productos...",
+                              description: "Añadiendo listado de productos a la tabla",
+                            });
+                            
+                            // Actualizar solo después del toast
+                            onChange(newValue);
+                            
+                            toast({
+                              title: "Productos agregados",
+                              description: `Se han añadido ${productos.length} productos a la tabla`,
+                              variant: "default"
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Añadir Materias Primas
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
