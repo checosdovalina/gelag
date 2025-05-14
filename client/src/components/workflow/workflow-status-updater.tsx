@@ -379,7 +379,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
             <DialogHeader>
               <DialogTitle>Confirmar cambio de estado</DialogTitle>
               <DialogDescription>
-                {targetStatus === FormWorkflowStatus.IN_PROGRESS && !formEntry.lot_number ? (
+                {targetStatus === FormWorkflowStatus.IN_PROGRESS && !formEntry.lotNumber ? (
                   "Se requiere un número de lote para iniciar el proceso."
                 ) : (
                   `¿Está seguro que desea cambiar el estado a "${getStatusLabel(targetStatus)}"?`
@@ -387,7 +387,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
               </DialogDescription>
             </DialogHeader>
             
-            {targetStatus === FormWorkflowStatus.IN_PROGRESS && !formEntry.lot_number && (
+            {targetStatus === FormWorkflowStatus.IN_PROGRESS && !formEntry.lotNumber && (
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="lotNumber">Número de lote</Label>
