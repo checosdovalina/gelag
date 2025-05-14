@@ -124,7 +124,18 @@ export const insertFolioCounterSchema = createInsertSchema(folioCounters).omit({
 export const insertFormEntrySchema = createInsertSchema(formEntries).omit({
   id: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
+  signedAt: true,
+  approvedAt: true
+});
+
+// Esquema para actualizaciones del flujo de trabajo secuencial
+export const updateFormWorkflowSchema = z.object({
+  workflowStatus: z.nativeEnum(FormWorkflowStatus),
+  data: z.record(z.any()).optional(),
+  roleSpecificData: z.record(z.any()).optional(),
+  lotNumber: z.string().optional(),
+  lastUpdatedBy: z.number().optional(),
 });
 
 // Activity log schema
@@ -161,6 +172,8 @@ export type InsertFolioCounter = z.infer<typeof insertFolioCounterSchema>;
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+
+export type UpdateFormWorkflow = z.infer<typeof updateFormWorkflowSchema>;
 
 // Form field type definitions used in the JSON structure
 export const fieldTypes = [

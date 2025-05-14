@@ -1185,6 +1185,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Nueva ruta para actualizar el flujo de trabajo secuencial de un formulario
+  app.patch("/api/form-entries/:id/workflow", authorize(), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+      
+      // Validar los datos de entrada con el schema de actualización de flujo de trabajo
+      let workflowData;
+      try {
+        workflowData = updateFormWorkflowSchema.parse(req.body);
+      } catch (validationError) {
+        return res.status(400).json({ 
+          message: "Datos de flujo de trabajo inválidos", 
+          details: validationError 
+        });
+      }
+      
+      // Obtener la entrada actual
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Determinar si el usuario puede actualizar este formulario según el rol y el estado del flujo
+      const canUpdate = await canUserUpdateWorkflow(req.user!, entry, workflowData.workflowStatus);
+      if (!canUpdate.allowed) {
+        return res.status(403).json({ 
+          message: "No autorizado para esta etapa del flujo de trabajo", 
+          details: canUpdate.reason 
+        });
+      }
+      
+      // Preparar datos de actualización
+      const updateData: Partial<any> = {
+        workflowStatus: workflowData.workflowStatus,
+        lastUpdatedBy: req.user!.id
+      };
+      
+      // Si se proporcionan datos del formulario, actualizarlos
+      if (workflowData.data) {
+        // Combinar datos existentes con los nuevos datos
+        updateData.data = {
+          ...entry.data,
+          ...workflowData.data
+        };
+      }
+      
+      // Si se proporcionan datos específicos de rol, actualizarlos
+      if (workflowData.roleSpecificData) {
+        // Inicializar si no existe
+        const currentRoleData = entry.roleSpecificData || {};
+        updateData.roleSpecificData = {
+          ...currentRoleData,
+          [req.user!.role]: workflowData.roleSpecificData
+        };
+      }
+      
+      // Si se proporciona número de lote, actualizarlo (solo para gerente de producción)
+      if (workflowData.lotNumber && req.user!.role === UserRole.PRODUCTION_MANAGER) {
+        updateData.lotNumber = workflowData.lotNumber;
+      }
+      
+      // Actualizar la entrada
+      const updatedEntry = await storage.updateFormEntry(entryId, updateData);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user!.id,
+        action: "workflow_updated",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { 
+          previousStatus: entry.workflowStatus,
+          newStatus: workflowData.workflowStatus,
+          role: req.user!.role
+        }
+      });
+      
+      res.json(updatedEntry);
+    } catch (error) {
+      console.error("Error al actualizar flujo de trabajo:", error);
+      next(error);
+    }
+  });
+  
   // Exportar formulario a PDF o Excel
   app.get("/api/form-entries/:id/export", authorize(), async (req, res, next) => {
     try {
