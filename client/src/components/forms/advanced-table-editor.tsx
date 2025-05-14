@@ -226,6 +226,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   
   // Estados tradicionales
   const [activeTab, setActiveTab] = useState<string>("templates");
+  
+  // Controla si cada pestaña ha sido cargada al menos una vez (para optimizar el rendimiento)
+  const [tabsVisited, setTabsVisited] = useState<{[key: string]: boolean}>({
+    templates: true,
+    sections: false,
+    preview: false,
+    settings: false
+  });
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [editingColumn, setEditingColumn] = useState<{sectionIndex: number, columnIndex: number} | null>(null);
   const [newSectionTitle, setNewSectionTitle] = useState<string>("");
@@ -599,7 +607,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <Tabs defaultValue={activeTab} onValueChange={(value) => {
+            setActiveTab(value);
+            // Marcar esta pestaña como visitada
+            setTabsVisited(prev => ({...prev, [value]: true}));
+          }}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="sections">Secciones</TabsTrigger>
             <TabsTrigger value="preview">Vista Previa</TabsTrigger>
@@ -780,17 +792,18 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             </ScrollArea>
           </TabsContent>
 
-          {/* Pestaña de Vista Previa */}
+          {/* Pestaña de Vista Previa - Solo renderizar si ha sido visitada */}
           <TabsContent value="preview" className="mt-4">
             <div className="space-y-4">
-              <TablePreview />
+              {tabsVisited.preview && <TablePreview />}
             </div>
           </TabsContent>
 
-          {/* Pestaña de Configuración */}
+          {/* Pestaña de Configuración - Solo renderizar si ha sido visitada */}
           <TabsContent value="settings" className="mt-4">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tabsVisited.settings && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="rows-count">Número de Filas</Label>
                   <Input
@@ -825,6 +838,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 </div>
               </div>
             </div>
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>
