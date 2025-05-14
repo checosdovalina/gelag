@@ -40,7 +40,7 @@ interface WorkflowStatusUpdaterProps {
 export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: WorkflowStatusUpdaterProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [lotNumber, setLotNumber] = useState(formEntry.lot_number || '');
+  const [lotNumber, setLotNumber] = useState(formEntry.lotNumber || '');
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [targetStatus, setTargetStatus] = useState<FormWorkflowStatus | null>(null);
 
@@ -93,7 +93,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
   const getNextPossibleStatuses = (): {status: FormWorkflowStatus, label: string, enabled: boolean}[] => {
     if (!user) return [];
     
-    const currentStatus = formEntry.workflow_status as FormWorkflowStatus || FormWorkflowStatus.INITIATED;
+    const currentStatus = formEntry.workflowStatus as FormWorkflowStatus || FormWorkflowStatus.INITIATED;
     
     // Matriz de posibles transiciones según el rol
     const possibleTransitions: Record<UserRole, Record<FormWorkflowStatus, {status: FormWorkflowStatus, label: string}[]>> = {
@@ -214,7 +214,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
     
     // Si es transición a estado "en progreso" y no hay número de lote,
     // pedir el número de lote
-    if (status === FormWorkflowStatus.IN_PROGRESS && !formEntry.lot_number) {
+    if (status === FormWorkflowStatus.IN_PROGRESS && !formEntry.lotNumber) {
       setIsConfirmDialogOpen(true);
     } else {
       // Para otros estados, confirmar directamente
@@ -323,18 +323,18 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
     <Card className="mb-6">
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          {renderStatusIcon(formEntry.workflow_status)}
+          {renderStatusIcon(formEntry.workflowStatus)}
           <span>Estado del flujo de trabajo</span>
         </CardTitle>
         <CardDescription>
-          {formEntry.lot_number && (
+          {formEntry.lotNumber && (
             <div className="text-sm mt-1">
-              <span className="font-medium">Número de lote:</span> {formEntry.lot_number}
+              <span className="font-medium">Número de lote:</span> {formEntry.lotNumber}
             </div>
           )}
           {formEntry.lastUpdatedBy && (
             <div className="text-sm mt-1">
-              <span className="font-medium">Última actualización:</span> {format(new Date(formEntry.updatedAt || formEntry.createdAt), "dd/MM/yyyy HH:mm", { locale: es })}
+              <span className="font-medium">Última actualización:</span> {formEntry.updatedAt && format(new Date(formEntry.updatedAt), "dd/MM/yyyy HH:mm", { locale: es })}
             </div>
           )}
         </CardDescription>
@@ -344,10 +344,10 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">Estado actual:</span>
             <Badge 
-              variant={getStatusBadgeVariant(formEntry.workflow_status) as any} 
-              className={getCustomStatusClass(formEntry.workflow_status)}
+              variant={getStatusBadgeVariant(formEntry.workflowStatus) as any} 
+              className={getCustomStatusClass(formEntry.workflowStatus)}
             >
-              {getStatusLabel(formEntry.workflow_status)}
+              {getStatusLabel(formEntry.workflowStatus)}
             </Badge>
           </div>
           

@@ -34,6 +34,7 @@ import {
   AlertCircle,
   Settings
 } from "lucide-react";
+import WorkflowStatusUpdater from "@/components/workflow/workflow-status-updater";
 import {
   Dialog,
   DialogContent,
