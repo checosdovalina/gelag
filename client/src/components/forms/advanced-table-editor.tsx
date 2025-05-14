@@ -114,6 +114,50 @@ interface AdvancedTableEditorProps {
   preview?: boolean;
 }
 
+// Definición de factores de conversión para cada producto
+// Cada producto define cuántos kilos de cada materia prima se necesitan por litro
+const PRODUCT_MATERIALS = {
+  "Pasta Oblea Coro": {
+    "Azúcar estándar": 0.42,
+    "Leche en polvo": 0.07,
+    "Glucosa": 0.18,
+    "Bicarbonato": 0.02,
+    "CMC": 0.005,
+    "Lecitina": 0.003,
+    "Sabor Vainilla Oblea": 0.001
+  },
+  "Pasta Oblea Cajeton": {
+    "Azúcar estándar": 0.4,
+    "Leche en polvo": 0.08,
+    "Glucosa": 0.15,
+    "Bicarbonato": 0.015,
+    "CMC": 0.004,
+    "Lecitina": 0.002,
+    "Sabor Cajeta": 0.001
+  },
+  "Coro 68° Brix": {
+    "Azúcar estándar": 0.45,
+    "Leche en polvo": 0.06,
+    "Glucosa": 0.12,
+    "Bicarbonato": 0.01,
+    "Almidón": 0.008
+  },
+  "Cajeton Tradicional": {
+    "Azúcar estándar": 0.42,
+    "Leche en polvo": 0.09,
+    "Glucosa": 0.14,
+    "Bicarbonato": 0.012,
+    "Almidón": 0.01
+  },
+  "Mielmex 65° Brix": {
+    "Azúcar estándar": 0.4,
+    "Leche en polvo": 0.05,
+    "Glucosa": 0.15,
+    "Bicarbonato": 0.009,
+    "Citrato de Sodio": 0.002
+  }
+};
+
 // Plantillas predefinidas para tipos comunes de tablas
 const TABLE_TEMPLATES = [
   {
@@ -148,15 +192,41 @@ const TABLE_TEMPLATES = [
         {
           title: "Proceso general",
           columns: [
-            { id: uuidv4(), header: "Proceso", type: "product", width: "200px" },
-            { id: uuidv4(), header: "Litros", type: "number", width: "120px", validation: { min: 0 } }
+            { 
+              id: uuidv4(), 
+              header: "Proceso", 
+              type: "product", 
+              width: "200px"
+            },
+            { 
+              id: uuidv4(), 
+              header: "Litros", 
+              type: "number", 
+              width: "120px", 
+              validation: { min: 0 } 
+            }
           ]
         },
         {
           title: "Materia Prima",
           columns: [
-            { id: uuidv4(), header: "Materia Prima", type: "text", width: "200px", readOnly: true },
-            { id: uuidv4(), header: "Kilos", type: "number", width: "100px" }
+            { 
+              id: uuidv4(), 
+              header: "Materia Prima", 
+              type: "text", 
+              width: "200px", 
+              readOnly: true 
+            },
+            { 
+              id: uuidv4(), 
+              header: "Kilos", 
+              type: "number", 
+              width: "100px",
+              dependency: {
+                sourceType: "product", 
+                calculationType: "weight"
+              } 
+            }
           ]
         }
       ]
@@ -429,7 +499,61 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     if (!newData[rowIndex]) {
       newData[rowIndex] = {};
     }
+    
+    // Almacenar el valor original
     newData[rowIndex][columnId] = value;
+    
+    // Comprobar si tenemos secciones para procesar dependencias
+    if (value?.sections && value.sections.length >= 2) {
+      // Si es un campo de tipo producto o litros, calculamos las materias primas
+      const procesoSection = value.sections[0];
+      const materiaPrimaSection = value.sections[1];
+      
+      if (procesoSection && materiaPrimaSection) {
+        // Buscar índice de columnas de producto y litros
+        const productoColIndex = procesoSection.columns.findIndex(c => c.type === "product");
+        const litrosColIndex = procesoSection.columns.findIndex(c => c.header.toLowerCase().includes("litro"));
+        
+        // Solo si se actualizó una de estas columnas
+        const productoColumn = productoColIndex >= 0 ? procesoSection.columns[productoColIndex] : null;
+        const litrosColumn = litrosColIndex >= 0 ? procesoSection.columns[litrosColIndex] : null;
+        
+        if (productoColumn && litrosColumn) {
+          const productoValue = newData[0][productoColumn.id];
+          const litrosValue = parseFloat(newData[0][litrosColumn.id] || 0);
+          
+          // Si tenemos producto y litros, calculamos cada materia prima
+          if (productoValue && litrosValue > 0 && PRODUCT_MATERIALS[productoValue]) {
+            // Para cada materia prima en el producto
+            const materiasPrimas = Object.keys(PRODUCT_MATERIALS[productoValue]);
+            
+            // Actualizar cada materia prima en la tabla
+            let rowIdx = 0;
+            materiasPrimas.forEach((materiaPrima, idx) => {
+              // Coeficiente para este material (kg por litro)
+              const coeficiente = PRODUCT_MATERIALS[productoValue][materiaPrima];
+              
+              // Columnas de materia prima y kilos
+              const materiaPrimaColumn = materiaPrimaSection.columns[0];
+              const kilosColumn = materiaPrimaSection.columns[1];
+              
+              // Si no existe esta fila, la creamos
+              if (!newData[rowIdx + 1]) {
+                newData[rowIdx + 1] = {};
+              }
+              
+              // Actualizar nombre de materia prima y kilos calculados
+              newData[rowIdx + 1][materiaPrimaColumn.id] = materiaPrima;
+              newData[rowIdx + 1][kilosColumn.id] = (coeficiente * litrosValue).toFixed(3);
+              
+              rowIdx++;
+            });
+          }
+        }
+      }
+    }
+    
+    // Actualizamos el estado y la configuración
     setPreviewData(newData);
     
     // También actualizar los datos iniciales en la configuración
@@ -621,7 +745,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   };
   
   // Renderiza el contenido de una celda según su tipo
-  const renderCellByType = (column: ColumnDefinition, rowIndex: number) => {
+  const renderCellByType = (column: ColumnDefinition, rowIndex: number, sectionIndex?: number) => {
+    // Verificar si es un campo calculado (tiene dependencia)
+    const isCalculated = !!column.dependency;
+    const isReadOnly = column.readOnly || isCalculated;
+    
+    // Si el campo tiene dependencia calculada, aplicar estilo especial
+    const calculatedClass = isCalculated ? "bg-blue-50" : "";
+    
     switch (column.type) {
       case 'text':
         return (
@@ -629,8 +760,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             type="text"
             value={previewData[rowIndex]?.[column.id] || ''}
             onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
-            readOnly={column.readOnly}
-            className="h-8"
+            readOnly={isReadOnly}
+            className={`h-8 ${calculatedClass}`}
           />
         );
       case 'number':
@@ -638,9 +769,21 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           <Input
             type="number"
             value={previewData[rowIndex]?.[column.id] || ''}
-            onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
-            readOnly={column.readOnly}
-            className="h-8"
+            onChange={(e) => {
+              const newValue = e.target.value;
+              updateCell(rowIndex, column.id, newValue);
+              
+              // Si es la columna de litros, hay que actualizar las materias primas
+              if (column.header.toLowerCase().includes("litro") && value?.sections) {
+                // Forzar la actualización de las materias primas
+                updateCell(rowIndex, column.id, {
+                  sections: value.sections,
+                  ...value
+                });
+              }
+            }}
+            readOnly={isReadOnly}
+            className={`h-8 ${calculatedClass}`}
             min={column.validation?.min}
             max={column.validation?.max}
           />
@@ -650,9 +793,9 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           <Select
             defaultValue={previewData[rowIndex]?.[column.id] || ''}
             onValueChange={(val) => updateCell(rowIndex, column.id, val)}
-            disabled={column.readOnly}
+            disabled={isReadOnly}
           >
-            <SelectTrigger className="h-8">
+            <SelectTrigger className={`h-8 ${calculatedClass}`}>
               <SelectValue placeholder="Seleccionar..." />
             </SelectTrigger>
             <SelectContent>
