@@ -593,9 +593,9 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
           {/* Pestaña de Secciones */}
           <TabsContent value="sections" className="space-y-4 mt-4">
-            <ScrollArea className="h-[500px] pr-4">
-              {/* Lista de secciones existentes */}
-              {((value && value.sections) || []).map((section, sectionIndex) => (
+              <ScrollArea className="h-[500px] pr-4">
+                {/* Lista de secciones existentes */}
+                {((value && value.sections) || []).map((section, sectionIndex) => (
                 <Card key={sectionIndex} className="mb-4">
                   <CardHeader className="py-3">
                     <div className="flex justify-between items-center">
