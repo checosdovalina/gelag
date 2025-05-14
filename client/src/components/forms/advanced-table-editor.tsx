@@ -974,10 +974,10 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                           ];
                           
                           // Encontrar el índice de la sección de Materias Primas
-                          const materiaPrimaIndex = value.sections.findIndex(s => 
+                          const materiaPrimaIndex = value?.sections?.findIndex(s => 
                             s.title.toLowerCase().includes("materia") || 
                             s.title.toLowerCase().includes("prima")
-                          );
+                          ) || -1;
                           
                           if (materiaPrimaIndex !== -1) {
                             const currentRows = value.rows || 10;
@@ -990,6 +990,22 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                             if (needsMore) {
                               newValue.rows = productos.length;
                             }
+                            
+                            // Simulamos la creación de un conjunto de datos para cada fila
+                            const materiaPrimaColIndex = 0; // Primera columna - Materia Prima
+                            
+                            // Preparamos los datos iniciales (esto simula el llenado real de la tabla)
+                            newValue.initialData = newValue.initialData || {};
+                            
+                            // Por cada producto, creamos una entrada en los datos iniciales
+                            productos.forEach((producto, index) => {
+                              // La clave es section-row-column (ej: 1-0-0 sería sección 1, fila 0, columna 0)
+                              const cellKey = `${materiaPrimaIndex}-${index}-${materiaPrimaColIndex}`;
+                              
+                              if (typeof newValue.initialData === 'object') {
+                                (newValue.initialData as Record<string, any>)[cellKey] = producto;
+                              }
+                            });
                             
                             // Simular la carga de datos con tiempo de espera para visualizar el proceso
                             toast({
