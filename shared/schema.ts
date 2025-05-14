@@ -8,6 +8,8 @@ export enum UserRole {
   ADMIN = "admin",
   PRODUCTION = "produccion",
   QUALITY = "calidad",
+  PRODUCTION_MANAGER = "gerente_produccion",
+  QUALITY_MANAGER = "gerente_calidad",
   VIEWER = "viewer"
 }
 

@@ -210,12 +210,26 @@ export default function UsersPage() {
           case UserRole.QUALITY:
             variant = "secondary";
             break;
+          case UserRole.PRODUCTION_MANAGER:
+            variant = "default";
+            break;
+          case UserRole.QUALITY_MANAGER:
+            variant = "secondary";
+            break;
           case UserRole.VIEWER:
             variant = "outline";
             break;
         }
         
-        return <Badge variant={variant}>{role}</Badge>;
+        // Formatear nombre del rol para visualización
+        let displayRole = role;
+        if (role === UserRole.PRODUCTION_MANAGER) {
+          displayRole = "Gerente Producción";
+        } else if (role === UserRole.QUALITY_MANAGER) {
+          displayRole = "Gerente Calidad";
+        }
+        
+        return <Badge variant={variant}>{displayRole}</Badge>;
       },
     },
     {
@@ -390,6 +404,8 @@ export default function UsersPage() {
                             <SelectItem value={UserRole.ADMIN}>Administrador</SelectItem>
                             <SelectItem value={UserRole.PRODUCTION}>Producción</SelectItem>
                             <SelectItem value={UserRole.QUALITY}>Calidad</SelectItem>
+                            <SelectItem value={UserRole.PRODUCTION_MANAGER}>Gerente Producción</SelectItem>
+                            <SelectItem value={UserRole.QUALITY_MANAGER}>Gerente Calidad</SelectItem>
                             <SelectItem value={UserRole.VIEWER}>Visualizador</SelectItem>
                           </SelectContent>
                         </Select>
