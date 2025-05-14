@@ -250,6 +250,108 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       newData[rowIndex] = {};
     }
     newData[rowIndex][columnId] = value;
+    
+    // Verificar si es un campo de proceso o litros para actualizar las materias primas
+    const column = allColumns.find(col => col.id === columnId);
+    if (column) {
+      // Si es columna de producto y el valor ha cambiado, recalcular
+      if (column.type === 'product') {
+        // Buscar columna de litros (asumiendo que tiene "litros" en el nombre)
+        const litersColumn = allColumns.find(col => 
+          col.header?.toLowerCase().includes('litro') || 
+          col.id.toLowerCase().includes('litro')
+        );
+        
+        if (litersColumn) {
+          const liters = parseFloat(newData[0]?.[litersColumn.id] || '0');
+          if (!isNaN(liters) && liters > 0) {
+            // Actualizar todas las filas de materia prima basado en el producto y litros
+            updateRawMaterials(value, liters);
+          }
+        }
+      } 
+      // Si es columna de litros y el valor ha cambiado, recalcular
+      else if (column.header?.toLowerCase().includes('litro') || column.id.toLowerCase().includes('litro')) {
+        const liters = parseFloat(value || '0');
+        
+        // Buscar columna de producto
+        const productColumn = allColumns.find(col => col.type === 'product');
+        if (productColumn && !isNaN(liters) && liters > 0) {
+          const productValue = newData[0]?.[productColumn.id];
+          if (productValue) {
+            // Actualizar todas las filas de materia prima basado en el producto y litros
+            updateRawMaterials(productValue, liters);
+          }
+        }
+      }
+    }
+    
+    setTableData(newData);
+    onChange(newData);
+  };
+  
+  // Función para actualizar las filas de materias primas basado en producto y litros
+  const updateRawMaterials = (productName: string, liters: number) => {
+    console.log("Actualizando materias primas para:", productName, "litros:", liters);
+    
+    // Solo proceder si tenemos secciones configuradas
+    if (!config.sections || config.sections.length < 2) return;
+    
+    // Asumimos que la segunda sección contiene las materias primas
+    const rawMaterialsSection = config.sections[1];
+    if (!rawMaterialsSection || !rawMaterialsSection.columns) return;
+    
+    // Buscar la columna para los kilos (puede ser la segunda columna en la sección)
+    const kilosColumn = rawMaterialsSection.columns.find(col => 
+      col.header?.toLowerCase().includes('kilo') || 
+      col.id.toLowerCase().includes('kilo')
+    );
+    
+    if (!kilosColumn) return;
+    
+    // Nombres de materias primas y sus valores relativos para cálculo (basados en la imagen)
+    // Esto debería venir de la base de datos en una aplicación real
+    const materialsRelations: Record<string, Record<string, number>> = {
+      "Mielmex 65° Brix": {
+        "Leche de Vaca": 0,
+        "Leche de Cabra": 1, // 1:1 ratio
+        "Azúcar": 0.18, // 18% de los litros
+        "Glucosa": 0,
+        "Malto": 0,
+        "Bicarbonato": 0.0016, // 0.16% de los litros
+        "Sorbato": 0.0006, // 0.06% de los litros
+        "Lecitina": 0,
+        "Carrogenina": 0,
+        "Grasa": 0,
+        "Pasta": 0,
+        "Antiespumante": 0,
+        "Nuez": 0
+      }
+    };
+    
+    // Verificar si tenemos relaciones para este producto
+    const relations = materialsRelations[productName];
+    if (!relations) return;
+    
+    // Obtener los nombres de las materias primas de la primera columna
+    const nameColumn = rawMaterialsSection.columns[0];
+    if (!nameColumn) return;
+    
+    // Crear una nueva copia de los datos
+    const newData = [...tableData];
+    
+    // Para cada fila, buscar el nombre de la materia prima y actualizar su valor
+    for (let rowIndex = 0; rowIndex < newData.length; rowIndex++) {
+      const materialName = newData[rowIndex]?.[nameColumn.id];
+      
+      // Si encontramos el nombre en nuestras relaciones, actualizamos su valor
+      if (materialName && relations[materialName] !== undefined) {
+        const calculatedValue = liters * relations[materialName];
+        newData[rowIndex][kilosColumn.id] = calculatedValue === 0 ? "0" : calculatedValue.toString();
+      }
+    }
+    
+    // Actualizar los datos
     setTableData(newData);
     onChange(newData);
   };
@@ -278,15 +380,23 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Detectar si hay alguna columna con dependencias
   const hasDependentColumns = allColumns.some(col => col.dependency);
+  
+  // Identificar columnas importantes para el cálculo
+  const productColumn = allColumns.find(col => col.type === 'product');
+  const litersColumn = allColumns.find(col => 
+    col.header?.toLowerCase().includes('litro') || 
+    col.id.toLowerCase().includes('litro')
+  );
 
   return (
     <div className="border rounded-md w-full overflow-auto">
-      {hasDependentColumns && (
+      {(hasDependentColumns || (productColumn && litersColumn)) && (
         <div className="p-2 bg-blue-50 border-b text-sm text-blue-700 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Los campos con fondo azul claro se completarán automáticamente al seleccionar un producto y cantidad.
+          Los campos con fondo azul claro se completarán automáticamente. Al modificar el proceso o los litros a producción, 
+          se calcularán los kilos de materia prima correspondientes.
         </div>
       )}
       <ScrollArea className="max-h-[600px]">
