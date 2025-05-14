@@ -831,11 +831,141 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               {/* Columnas de proceso */}
               {procesoSection.columns.map(column => (
                 <TableCell key={`proceso-${column.id}`} className="p-1">
-                  {renderCellByType(column, 0, 0)}
+                  {column.type === 'product' && (
+                    <Select
+                      value={previewData[0]?.[column.id] || ''}
+                      onValueChange={(productValue) => {
+                        console.log("Seleccionado producto en vista previa:", productValue);
+                        // Actualizar valor del producto
+                        const newData = [...previewData];
+                        if (!newData[0]) newData[0] = {};
+                        newData[0][column.id] = productValue;
+                        
+                        // Buscar si hay un valor de litros ya ingresado
+                        const litrosColumn = procesoSection.columns.find(c => 
+                          c.header.toLowerCase().includes('litro') || 
+                          c.id.toLowerCase().includes('litro')
+                        );
+                        
+                        if (litrosColumn && litrosColumn.id) {
+                          const litrosValue = parseFloat(newData[0][litrosColumn.id] || '0');
+                          console.log("Valor de litros existente:", litrosValue);
+                          
+                          // Si ya hay litros y producto, calcular materias primas
+                          if (litrosValue > 0 && productValue in PRODUCT_MATERIALS) {
+                            const materiaPrimasObj = PRODUCT_MATERIALS[productValue as keyof typeof PRODUCT_MATERIALS];
+                            const materiasPrimas = Object.keys(materiaPrimasObj);
+                            
+                            // Actualizamos cada materia prima
+                            materiasPrimas.forEach((materiaPrima, idx) => {
+                              const rowIdx = idx + 1; // +1 porque fila 0 es para proceso
+                              if (!newData[rowIdx]) newData[rowIdx] = {};
+                              
+                              // Columnas de materia prima
+                              const materiaPrimaColumn = materiaPrimaSection.columns[0];
+                              const kilosColumn = materiaPrimaSection.columns[1];
+                              
+                              if (materiaPrimaColumn && kilosColumn) {
+                                // Coeficiente para este material
+                                const coeficiente = materiaPrimasObj[materiaPrima as keyof typeof materiaPrimasObj];
+                                
+                                // Actualizar valores en la vista previa
+                                newData[rowIdx][materiaPrimaColumn.id] = materiaPrima;
+                                newData[rowIdx][kilosColumn.id] = (coeficiente * litrosValue).toFixed(3);
+                              }
+                            });
+                          }
+                        }
+                        
+                        // Actualizar datos de la vista previa
+                        setPreviewData(newData);
+                        // También actualizar los datos iniciales
+                        updateValue({ initialData: newData });
+                      }}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="Seleccionar producto..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pasta Oblea Coro">Pasta Oblea Coro</SelectItem>
+                        <SelectItem value="Pasta Oblea Cajeton">Pasta Oblea Cajeton</SelectItem>
+                        <SelectItem value="Coro 68° Brix">Coro 68° Brix</SelectItem>
+                        <SelectItem value="Cajeton Tradicional">Cajeton Tradicional</SelectItem>
+                        <SelectItem value="Mielmex 65° Brix">Mielmex 65° Brix</SelectItem>
+                        <SelectItem value="Cabri Tradicional">Cabri Tradicional</SelectItem>
+                        <SelectItem value="Cabri Espesa">Cabri Espesa</SelectItem>
+                        <SelectItem value="Horneable">Horneable</SelectItem>
+                        <SelectItem value="Gloria untable 78° Brix">Gloria untable 78° Brix</SelectItem>
+                        <SelectItem value="Gloria untable 80° Brix">Gloria untable 80° Brix</SelectItem>
+                        <SelectItem value="Pasta DGL">Pasta DGL</SelectItem>
+                        <SelectItem value="Conito">Conito</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {column.type === 'number' && (
+                    <Input
+                      type="number"
+                      value={previewData[0]?.[column.id] || ''}
+                      onChange={(e) => {
+                        const litrosValue = parseFloat(e.target.value || '0');
+                        console.log("Valor de litros ingresado:", litrosValue);
+                        
+                        // Actualizar valor de litros
+                        const newData = [...previewData];
+                        if (!newData[0]) newData[0] = {};
+                        newData[0][column.id] = e.target.value;
+                        
+                        // Buscar si hay un producto seleccionado
+                        const productoColumn = procesoSection.columns.find(c => c.type === 'product');
+                        
+                        if (productoColumn && productoColumn.id) {
+                          const productoValue = newData[0][productoColumn.id];
+                          console.log("Producto seleccionado:", productoValue);
+                          
+                          // Si hay litros y producto, calcular materias primas
+                          if (litrosValue > 0 && typeof productoValue === 'string' && productoValue in PRODUCT_MATERIALS) {
+                            const materiaPrimasObj = PRODUCT_MATERIALS[productoValue as keyof typeof PRODUCT_MATERIALS];
+                            const materiasPrimas = Object.keys(materiaPrimasObj);
+                            
+                            // Actualizamos cada materia prima
+                            materiasPrimas.forEach((materiaPrima, idx) => {
+                              const rowIdx = idx + 1; // +1 porque fila 0 es para proceso
+                              if (!newData[rowIdx]) newData[rowIdx] = {};
+                              
+                              // Columnas de materia prima
+                              const materiaPrimaColumn = materiaPrimaSection.columns[0];
+                              const kilosColumn = materiaPrimaSection.columns[1];
+                              
+                              if (materiaPrimaColumn && kilosColumn) {
+                                // Coeficiente para este material
+                                const coeficiente = materiaPrimasObj[materiaPrima as keyof typeof materiaPrimasObj];
+                                
+                                // Actualizar valores en la vista previa
+                                newData[rowIdx][materiaPrimaColumn.id] = materiaPrima;
+                                newData[rowIdx][kilosColumn.id] = (coeficiente * litrosValue).toFixed(3);
+                              }
+                            });
+                          }
+                        }
+                        
+                        // Actualizar datos de la vista previa
+                        setPreviewData(newData);
+                        // También actualizar los datos iniciales
+                        updateValue({ initialData: newData });
+                      }}
+                      readOnly={column.readOnly}
+                      className="h-8"
+                      min={column.validation?.min || 0}
+                      max={column.validation?.max}
+                    />
+                  )}
+                  {column.type !== 'product' && column.type !== 'number' && (
+                    renderCellByType(column, 0, { value })
+                  )}
                 </TableCell>
               ))}
               
-              {/* Celdas vacías para la primera materia prima */}
+              {/* Celdas de materia prima en la primera fila */}
               {materiaPrimaSection.columns.map(column => (
                 <TableCell key={`mp-${column.id}`} className="p-1">
                   {column.type === 'text' && (
