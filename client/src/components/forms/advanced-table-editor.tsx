@@ -544,6 +544,67 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     }
   };
 
+  // Función auxiliar para actualizar materias primas basadas en producto y litros
+  const updateMateriaPrimasByProductoLitros = (data: Record<string, any>[], sections: TableSection[]) => {
+    if (!sections || sections.length < 2) return;
+    
+    // Obtenemos las secciones necesarias
+    const procesoSection = sections[0];
+    const materiaPrimaSection = sections[1];
+    
+    if (!procesoSection || !materiaPrimaSection) return;
+    
+    // Buscar columnas relevantes
+    const productoColumn = procesoSection.columns.find(c => c.type === 'product');
+    const litrosColumn = procesoSection.columns.find(c => 
+      c.header.toLowerCase().includes('litro') || 
+      c.header.toLowerCase().includes('liter')
+    );
+    
+    if (!productoColumn || !litrosColumn) return;
+    
+    // Obtener valores actuales
+    const productoValue = data[0]?.[productoColumn.id];
+    const litrosValue = parseFloat(data[0]?.[litrosColumn.id] || '0');
+    
+    console.log("updateMateriaPrimasByProductoLitros", { productoValue, litrosValue });
+    
+    // Solo proceder si tenemos un producto válido y valor de litros positivo
+    if (!productoValue || 
+        litrosValue <= 0 || 
+        typeof productoValue !== 'string' || 
+        !(productoValue in PRODUCT_MATERIALS)) {
+      return;
+    }
+    
+    // Obtenemos las materias primas para este producto
+    const materiaPrimasObj = PRODUCT_MATERIALS[productoValue as keyof typeof PRODUCT_MATERIALS];
+    const materiasPrimas = Object.keys(materiaPrimasObj);
+    
+    // Columnas para materias primas
+    const materiaPrimaColumn = materiaPrimaSection.columns[0];
+    const kilosColumn = materiaPrimaSection.columns[1];
+    
+    if (!materiaPrimaColumn || !kilosColumn) return;
+    
+    // Actualizamos cada materia prima
+    materiasPrimas.forEach((materiaPrima, idx) => {
+      const rowIdx = idx + 1; // +1 porque la fila 0 es para el proceso
+      
+      // Crear la fila si no existe
+      if (!data[rowIdx]) {
+        data[rowIdx] = {};
+      }
+      
+      // Coeficiente para este material
+      const coeficiente = materiaPrimasObj[materiaPrima as keyof typeof materiaPrimasObj];
+      
+      // Actualizar valores
+      data[rowIdx][materiaPrimaColumn.id] = materiaPrima;
+      data[rowIdx][kilosColumn.id] = (coeficiente * litrosValue).toFixed(3);
+    });
+  };
+
   // Actualizar celda en la vista previa
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
     console.log(`Actualizando celda en fila ${rowIndex}, columna ${columnId}`, value);
