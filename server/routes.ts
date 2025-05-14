@@ -8,7 +8,10 @@ import {
   UserRole, 
   insertUserSchema,
   insertSavedReportSchema,
-  formTemplates
+  formTemplates,
+  FormWorkflowStatus,
+  updateFormWorkflowSchema,
+  FormEntry
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -16,6 +19,138 @@ import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
 import fs from 'fs';
+import { User } from "@shared/schema";
+
+// Función para verificar si un usuario puede actualizar un formulario según su rol y estado del flujo
+interface PermissionCheckResult {
+  allowed: boolean;
+  reason?: string;
+}
+
+/**
+ * Verifica si un usuario puede actualizar un formulario según su estado en el flujo de trabajo
+ * @param user Usuario que intenta realizar la actualización
+ * @param formEntry Entrada de formulario actual
+ * @param targetStatus Estado al que se quiere cambiar
+ * @returns Resultado con permiso y razón
+ */
+async function canUserUpdateWorkflow(
+  user: User, 
+  formEntry: FormEntry, 
+  targetStatus: FormWorkflowStatus
+): Promise<PermissionCheckResult> {
+  // SuperAdmin y Admin siempre pueden actualizar formularios
+  if (user.role === UserRole.SUPERADMIN || user.role === UserRole.ADMIN) {
+    return { allowed: true };
+  }
+  
+  // El creador del formulario siempre puede actualizarlo
+  if (formEntry.createdBy === user.id) {
+    return { allowed: true };
+  }
+  
+  // Matriz de permisos según el rol y estado del flujo
+  const workflowRules: Record<UserRole, { 
+    canInitiate: boolean;
+    canEditStatuses: FormWorkflowStatus[];
+    canTransitionTo: Partial<Record<FormWorkflowStatus, FormWorkflowStatus[]>>; 
+  }> = {
+    // Gerente de Producción inicia el flujo y puede transicionar a IN_PROGRESS
+    [UserRole.PRODUCTION_MANAGER]: {
+      canInitiate: true,
+      canEditStatuses: [FormWorkflowStatus.INITIATED, FormWorkflowStatus.IN_PROGRESS],
+      canTransitionTo: {
+        [FormWorkflowStatus.INITIATED]: [FormWorkflowStatus.IN_PROGRESS],
+        [FormWorkflowStatus.IN_PROGRESS]: [FormWorkflowStatus.PENDING_QUALITY]
+      }
+    },
+    
+    // Operativos de Producción pueden actualizar cuando está en progreso
+    [UserRole.PRODUCTION]: {
+      canInitiate: false,
+      canEditStatuses: [FormWorkflowStatus.IN_PROGRESS],
+      canTransitionTo: {
+        [FormWorkflowStatus.IN_PROGRESS]: [FormWorkflowStatus.IN_PROGRESS] // Se mantiene en el mismo estado
+      }
+    },
+    
+    // Gerente de Calidad puede revisar y completar cuando está pendiente de calidad
+    [UserRole.QUALITY_MANAGER]: {
+      canInitiate: false,
+      canEditStatuses: [FormWorkflowStatus.PENDING_QUALITY],
+      canTransitionTo: {
+        [FormWorkflowStatus.PENDING_QUALITY]: [FormWorkflowStatus.COMPLETED]
+      }
+    },
+    
+    // Operativos de Calidad pueden revisar cuando está pendiente
+    [UserRole.QUALITY]: {
+      canInitiate: false,
+      canEditStatuses: [FormWorkflowStatus.PENDING_QUALITY],
+      canTransitionTo: {
+        [FormWorkflowStatus.PENDING_QUALITY]: [FormWorkflowStatus.PENDING_QUALITY] // Se mantiene en el mismo estado
+      }
+    },
+    
+    // Los roles de solo visualización no pueden editar
+    [UserRole.VIEWER]: {
+      canInitiate: false,
+      canEditStatuses: [],
+      canTransitionTo: {}
+    },
+    
+    // Por compatibilidad - Administradores pueden hacer todo
+    [UserRole.SUPERADMIN]: {
+      canInitiate: true,
+      canEditStatuses: Object.values(FormWorkflowStatus),
+      canTransitionTo: {
+        [FormWorkflowStatus.INITIATED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.IN_PROGRESS]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.PENDING_QUALITY]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.COMPLETED]: Object.values(FormWorkflowStatus), 
+        [FormWorkflowStatus.SIGNED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.APPROVED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.REJECTED]: Object.values(FormWorkflowStatus)
+      }
+    },
+    
+    [UserRole.ADMIN]: {
+      canInitiate: true,
+      canEditStatuses: Object.values(FormWorkflowStatus),
+      canTransitionTo: {
+        [FormWorkflowStatus.INITIATED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.IN_PROGRESS]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.PENDING_QUALITY]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.COMPLETED]: Object.values(FormWorkflowStatus), 
+        [FormWorkflowStatus.SIGNED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.APPROVED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.REJECTED]: Object.values(FormWorkflowStatus)
+      }
+    }
+  };
+  
+  const userRules = workflowRules[user.role];
+  const currentStatus = formEntry.workflowStatus || FormWorkflowStatus.INITIATED;
+  
+  // Verificar si el usuario puede editar el estado actual
+  if (!userRules.canEditStatuses.includes(currentStatus)) {
+    return { 
+      allowed: false, 
+      reason: `El rol ${user.role} no puede editar formularios en estado ${currentStatus}`
+    };
+  }
+  
+  // Verificar si puede transicionar al estado objetivo
+  const allowedTransitions = userRules.canTransitionTo[currentStatus] || [];
+  if (!allowedTransitions.includes(targetStatus)) {
+    return { 
+      allowed: false, 
+      reason: `No se permite transicionar de ${currentStatus} a ${targetStatus} para el rol ${user.role}`
+    };
+  }
+  
+  return { allowed: true };
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -1220,16 +1355,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Preparar datos de actualización
-      const updateData: Partial<any> = {
+      const updateData: Partial<FormEntry> = {
         workflowStatus: workflowData.workflowStatus,
         lastUpdatedBy: req.user!.id
       };
       
       // Si se proporcionan datos del formulario, actualizarlos
       if (workflowData.data) {
+        // Asegurarse de que entry.data sea un objeto
+        const currentData = typeof entry.data === 'object' ? entry.data : {};
         // Combinar datos existentes con los nuevos datos
         updateData.data = {
-          ...entry.data,
+          ...currentData,
           ...workflowData.data
         };
       }
@@ -1238,8 +1375,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (workflowData.roleSpecificData) {
         // Inicializar si no existe
         const currentRoleData = entry.roleSpecificData || {};
+        // Asegurarse de que currentRoleData sea un objeto
+        const roleData = typeof currentRoleData === 'object' ? currentRoleData : {};
+        
         updateData.roleSpecificData = {
-          ...currentRoleData,
+          ...roleData,
           [req.user!.role]: workflowData.roleSpecificData
         };
       }
