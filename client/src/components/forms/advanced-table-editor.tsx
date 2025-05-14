@@ -816,7 +816,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
       {/* Diálogo para editar sección */}
       {editingSection !== null && (
-        <Dialog open={editingSection !== null} onOpenChange={() => setEditingSection(null)}>
+        <Dialog open={editingSection !== null} onOpenChange={(open) => !open && setEditingSection(null)}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Editar Sección</DialogTitle>
