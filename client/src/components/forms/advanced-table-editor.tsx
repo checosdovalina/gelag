@@ -614,9 +614,30 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                           <SelectValue placeholder="Seleccionar producto..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="producto1">Producto 1</SelectItem>
-                          <SelectItem value="producto2">Producto 2</SelectItem>
-                          <SelectItem value="producto3">Producto 3</SelectItem>
+                          {column.options?.length ? (
+                            column.options.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <>
+                              <SelectItem value="Mielmex 65° Brix">Mielmex 65° Brix</SelectItem>
+                              <SelectItem value="Coro 68° Brix">Coro 68° Brix</SelectItem>
+                              <SelectItem value="Cajeton Tradicional">Cajeton Tradicional</SelectItem>
+                              <SelectItem value="Cajeton Espesa">Cajeton Espesa</SelectItem>
+                              <SelectItem value="Cajeton Esp Chepo">Cajeton Esp Chepo</SelectItem>
+                              <SelectItem value="Cabri Tradicional">Cabri Tradicional</SelectItem>
+                              <SelectItem value="Cabri Espesa">Cabri Espesa</SelectItem>
+                              <SelectItem value="Horneable">Horneable</SelectItem>
+                              <SelectItem value="Gloria untable 78° Brix">Gloria untable 78° Brix</SelectItem>
+                              <SelectItem value="Gloria untable 80° Brix">Gloria untable 80° Brix</SelectItem>
+                              <SelectItem value="Pasta Oblea Coro">Pasta Oblea Coro</SelectItem>
+                              <SelectItem value="Pasta Oblea Cajeton">Pasta Oblea Cajeton</SelectItem>
+                              <SelectItem value="Pasta DGL">Pasta DGL</SelectItem>
+                              <SelectItem value="Conito">Conito</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     )}
@@ -666,6 +687,103 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             <TabsTrigger value="preview">Vista Previa</TabsTrigger>
             <TabsTrigger value="settings">Configuración</TabsTrigger>
           </TabsList>
+          
+          {/* Contenedor para botones de acciones rápidas */}
+          {value?.sections?.some(s => 
+            s.title.toLowerCase().includes("proceso") && 
+            s.columns?.some(c => c.type === "product")
+          ) && (
+            <div className="mt-4 mb-2 flex flex-wrap gap-2">
+              <Button 
+                type="button" 
+                variant="outline"
+                className="bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-700"
+                onClick={() => {
+                  // Listado de productos estándar
+                  const productos = [
+                    "Mielmex 65° Brix",
+                    "Coro 68° Brix",
+                    "Cajeton Tradicional",
+                    "Cajeton Espesa",
+                    "Cajeton Esp Chepo",
+                    "Cabri Tradicional",
+                    "Cabri Espesa",
+                    "Horneable",
+                    "Gloria untable 78° Brix",
+                    "Gloria untable 80° Brix",
+                    "Pasta Oblea Coro",
+                    "Pasta Oblea Cajeton",
+                    "Pasta DGL",
+                    "Conito"
+                  ];
+                  
+                  // Encontrar el índice de la sección de Proceso
+                  const procesoIndex = value?.sections?.findIndex(s => 
+                    s.title.toLowerCase().includes("proceso")
+                  ) || -1;
+                  
+                  if (procesoIndex !== -1) {
+                    // Encontrar la columna de producto
+                    const productoColIndex = value?.sections?.[procesoIndex]?.columns?.findIndex(c => 
+                      c.type === "product"
+                    ) || -1;
+                    
+                    if (productoColIndex !== -1) {
+                      // Definir los productos como opciones para la columna de producto
+                      const newValue = { ...value };
+                      
+                      if (newValue.sections?.[procesoIndex]?.columns?.[productoColIndex]) {
+                        // Crear opciones para cada producto en el formato requerido por el tipo "product"
+                        const productOptions = productos.map(producto => ({
+                          label: producto,
+                          value: producto
+                        }));
+                        
+                        // Actualizar las opciones de la columna
+                        if (newValue.sections) {
+                          newValue.sections = [...(newValue.sections || [])];
+                          if (newValue.sections[procesoIndex]?.columns) {
+                            newValue.sections[procesoIndex].columns = [...(newValue.sections[procesoIndex]?.columns || [])];
+                            
+                            // Si existe la columna, actualizar sus opciones
+                            if (newValue.sections[procesoIndex]?.columns?.[productoColIndex]) {
+                              newValue.sections[procesoIndex].columns[productoColIndex] = {
+                                ...newValue.sections[procesoIndex].columns[productoColIndex],
+                                options: productOptions
+                              };
+                            }
+                          }
+                        }
+                        
+                        // Notificar al usuario
+                        toast({
+                          title: "Productos configurados",
+                          description: `Se han configurado ${productos.length} productos para selección`,
+                        });
+                        
+                        // Actualizar el valor
+                        onChange(newValue);
+                      }
+                    } else {
+                      toast({
+                        title: "No se encontró columna de producto",
+                        description: "Asegúrate de tener una columna de tipo 'product' en la sección de Proceso",
+                        variant: "destructive"
+                      });
+                    }
+                  } else {
+                    toast({
+                      title: "No se encontró sección de Proceso",
+                      description: "Asegúrate de tener una sección llamada 'Proceso'",
+                      variant: "destructive"
+                    });
+                  }
+                }}
+              >
+                <FileSpreadsheet className="h-4 w-4 mr-1" /> Configurar Productos
+              </Button>
+            </div>
+          )}
 
           {/* Pestaña de Secciones */}
           <TabsContent value="sections" className="space-y-4 mt-4">
