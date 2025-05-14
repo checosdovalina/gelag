@@ -144,12 +144,13 @@ const TABLE_TEMPLATES = [
     config: {
       rows: 13, // Para todas las materias primas
       dynamicRows: false,
+      
       sections: [
         {
-          title: "Proceso",
+          title: "Proceso general",
           columns: [
             { id: uuidv4(), header: "Proceso", type: "product", width: "200px" },
-            { id: uuidv4(), header: "Litros a producción", type: "number", width: "120px", validation: { min: 0 } }
+            { id: uuidv4(), header: "Litros", type: "number", width: "120px", validation: { min: 0 } }
           ]
         },
         {
