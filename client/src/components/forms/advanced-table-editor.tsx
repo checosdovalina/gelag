@@ -511,8 +511,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       
       if (procesoSection && materiaPrimaSection) {
         // Buscar índice de columnas de producto y litros
-        const productoColIndex = procesoSection.columns.findIndex(c => c.type === "product");
-        const litrosColIndex = procesoSection.columns.findIndex(c => c.header.toLowerCase().includes("litro"));
+        const productoColIndex = procesoSection.columns.findIndex((c: ColumnDefinition) => c.type === "product");
+        const litrosColIndex = procesoSection.columns.findIndex((c: ColumnDefinition) => c.header.toLowerCase().includes("litro"));
         
         // Solo si se actualizó una de estas columnas
         const productoColumn = productoColIndex >= 0 ? procesoSection.columns[productoColIndex] : null;
@@ -523,15 +523,16 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           const litrosValue = parseFloat(newData[0][litrosColumn.id] || 0);
           
           // Si tenemos producto y litros, calculamos cada materia prima
-          if (productoValue && litrosValue > 0 && PRODUCT_MATERIALS[productoValue]) {
+          if (productoValue && litrosValue > 0 && typeof productoValue === 'string' && productoValue in PRODUCT_MATERIALS) {
             // Para cada materia prima en el producto
-            const materiasPrimas = Object.keys(PRODUCT_MATERIALS[productoValue]);
+            const materiaPrimasObj = PRODUCT_MATERIALS[productoValue as keyof typeof PRODUCT_MATERIALS];
+            const materiasPrimas = Object.keys(materiaPrimasObj);
             
             // Actualizar cada materia prima en la tabla
             let rowIdx = 0;
             materiasPrimas.forEach((materiaPrima, idx) => {
               // Coeficiente para este material (kg por litro)
-              const coeficiente = PRODUCT_MATERIALS[productoValue][materiaPrima];
+              const coeficiente = materiaPrimasObj[materiaPrima as keyof typeof materiaPrimasObj];
               
               // Columnas de materia prima y kilos
               const materiaPrimaColumn = materiaPrimaSection.columns[0];
@@ -667,7 +668,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               {/* Columnas de proceso */}
               {procesoSection.columns.map(column => (
                 <TableCell key={`proceso-${column.id}`} className="p-1">
-                  {renderCellByType(column, 0)}
+                  {renderCellByType(column, 0, 0)}
                 </TableCell>
               ))}
               
@@ -715,7 +716,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   {/* Columnas de materias primas */}
                   {materiaPrimaSection.columns.map(column => (
                     <TableCell key={`mp-${rowIndex}-${column.id}`} className="p-1">
-                      {renderCellByType(column, rowIndex)}
+                      {renderCellByType(column, rowIndex, 1)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -833,10 +834,21 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
         return (
           <Select
             defaultValue={previewData[rowIndex]?.[column.id] || ''}
-            onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+            onValueChange={(productValue) => {
+              updateCell(rowIndex, column.id, productValue);
+              
+              // Cuando se selecciona un producto, actualizar las materias primas
+              if (value?.sections && value.sections.length >= 2) {
+                // Forzar la actualización de las materias primas 
+                updateCell(rowIndex, column.id, {
+                  sections: value.sections,
+                  ...value
+                });
+              }
+            }}
             disabled={column.readOnly}
           >
-            <SelectTrigger className="h-8">
+            <SelectTrigger className={`h-8 ${calculatedClass}`}>
               <SelectValue placeholder="Seleccionar producto..." />
             </SelectTrigger>
             <SelectContent>
@@ -848,20 +860,12 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 ))
               ) : (
                 <>
-                  <SelectItem value="Mielmex 65° Brix">Mielmex 65° Brix</SelectItem>
-                  <SelectItem value="Coro 68° Brix">Coro 68° Brix</SelectItem>
-                  <SelectItem value="Cajeton Tradicional">Cajeton Tradicional</SelectItem>
-                  <SelectItem value="Cajeton Espesa">Cajeton Espesa</SelectItem>
-                  <SelectItem value="Cajeton Esp Chepo">Cajeton Esp Chepo</SelectItem>
-                  <SelectItem value="Cabri Tradicional">Cabri Tradicional</SelectItem>
-                  <SelectItem value="Cabri Espesa">Cabri Espesa</SelectItem>
+                  {Object.keys(PRODUCT_MATERIALS).map((producto) => (
+                    <SelectItem key={producto} value={producto}>
+                      {producto}
+                    </SelectItem>
+                  ))}
                   <SelectItem value="Horneable">Horneable</SelectItem>
-                  <SelectItem value="Gloria untable 78° Brix">Gloria untable 78° Brix</SelectItem>
-                  <SelectItem value="Gloria untable 80° Brix">Gloria untable 80° Brix</SelectItem>
-                  <SelectItem value="Pasta Oblea Coro">Pasta Oblea Coro</SelectItem>
-                  <SelectItem value="Pasta Oblea Cajeton">Pasta Oblea Cajeton</SelectItem>
-                  <SelectItem value="Pasta DGL">Pasta DGL</SelectItem>
-                  <SelectItem value="Conito">Conito</SelectItem>
                 </>
               )}
             </SelectContent>
