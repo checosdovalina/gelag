@@ -826,6 +826,29 @@ export default function FormViewer({
             )}
           />
         );
+      
+      case "time":
+        return (
+          <FormField
+            key={field.id}
+            control={form.control}
+            name={field.id}
+            render={({ field: formField }) => (
+              <FormItem>
+                <FormLabel>{field.label} {field.required && <span className="text-red-500">*</span>}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="time"
+                    {...formField}
+                    value={formField.value || ""}
+                    disabled={isReadOnly}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        );
         
       case "select":
         return (

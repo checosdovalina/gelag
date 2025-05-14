@@ -20,6 +20,7 @@ import {
   Type, 
   Hash, 
   Calendar, 
+  Clock,
   List, 
   CheckSquare, 
   Radio as RadioIcon, 
@@ -382,6 +383,11 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                 <SelectItem value="date">
                                                   <div className="flex items-center">
                                                     <Calendar className="h-4 w-4 mr-2" /> Fecha
+                                                  </div>
+                                                </SelectItem>
+                                                <SelectItem value="time">
+                                                  <div className="flex items-center">
+                                                    <Clock className="h-4 w-4 mr-2" /> Hora
                                                   </div>
                                                 </SelectItem>
                                                 <SelectItem value="select">
