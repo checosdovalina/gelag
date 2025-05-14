@@ -1771,6 +1771,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               <SelectItem value="select">Lista desplegable</SelectItem>
                               <SelectItem value="checkbox">Casilla de verificación</SelectItem>
                               <SelectItem value="date">Fecha</SelectItem>
+                              <SelectItem value="time">Hora</SelectItem>
                               <SelectItem value="employee">Empleado</SelectItem>
                               <SelectItem value="product">Producto</SelectItem>
                             </SelectContent>
