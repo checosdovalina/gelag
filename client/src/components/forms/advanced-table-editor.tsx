@@ -918,21 +918,24 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                             { 
                               id: uuidv4(), 
                               header: "Materia Prima", 
-                              type: "text", 
+                              type: "text" as const, 
                               width: "200px",
                               readOnly: true 
                             },
                             { 
                               id: uuidv4(), 
                               header: "Kilos", 
-                              type: "number", 
+                              type: "number" as const, 
                               width: "100px" 
                             }
                           ]
                         };
                         
-                        const newSections = [...sections, materiasSection];
-                        setValue("sections", newSections);
+                        const currentSections = value?.sections || [];
+                        onChange({
+                          ...value,
+                          sections: [...currentSections, materiasSection]
+                        });
                         
                         toast({
                           title: "Sección de Materias Primas agregada",
@@ -1340,28 +1343,30 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               )}
               
               {/* Configuración para columnas auto-calculadas */}
-              <div className="border p-3 rounded-md mt-2">
-                <div className="flex items-center gap-2">
-                  <Label>Valor Auto-calculado</Label>
-                  <Badge variant="outline" className="ml-2 bg-blue-50">
-                    Auto-rellenado
-                  </Badge>
-                </div>
-                
-                <Alert className="bg-blue-50 border-blue-200 my-2">
-                  <AlertCircle className="h-4 w-4 text-blue-700" />
-                  <AlertTitle className="text-blue-700">Auto-rellenado de campos</AlertTitle>
-                  <AlertDescription className="text-blue-600 text-xs">
-                    Al activar esta opción, el campo se auto-rellenará basado en la selección de producto/cantidad.
-                    Los campos auto-rellenados aparecerán con fondo azul claro y no serán editables.
-                  </AlertDescription>
-                </Alert>
-                
-                <div className="flex items-center gap-2 mt-2">
-                  <Checkbox
-                    id="auto-calculated"
-                    checked={!!(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency}
-                    onCheckedChange={(checked) => {
+              <Card className="mt-2">
+                <CardHeader className="bg-blue-50 border-b border-blue-100">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-medium text-blue-800">Valor Auto-calculado</h3>
+                    <Badge variant="outline" className="ml-2 bg-blue-100 text-blue-800 border-blue-200">
+                      Auto-rellenado
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <Alert className="bg-blue-50 border-blue-200 mb-4">
+                    <AlertCircle className="h-4 w-4 text-blue-700" />
+                    <AlertTitle className="text-blue-700">Auto-rellenado de campos</AlertTitle>
+                    <AlertDescription className="text-blue-600 text-xs">
+                      Al activar esta opción, el campo se auto-rellenará basado en la selección de producto/cantidad.
+                      Los campos auto-rellenados aparecerán con fondo azul claro y no serán editables.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Checkbox
+                      id="auto-calculated"
+                      checked={!!(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency}
+                      onCheckedChange={(checked) => {
                       if (editingColumn) {
                         if (checked) {
                           updateColumn(
@@ -1521,7 +1526,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
+                </CardContent>
+              </Card>
             </div>
             <DialogFooter>
               <DialogClose asChild>
