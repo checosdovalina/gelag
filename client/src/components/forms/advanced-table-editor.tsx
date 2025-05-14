@@ -165,10 +165,25 @@ const PRODUCT_MATERIALS = {
     "Nuez": 0.00001         // 0.001/100 litros
   },
   "Cajeton Tradicional": {
-    "Leche de Vaca": 0.05,
-    "Leche de Cabra": 0.95,
+    "Leche de Vaca": 0,
+    "Leche de Cabra": 1.0,   // 100/100 litros
+    "Azúcar": 0.2,           // 20/100 litros
+    "Glucosa": 0.27,         // 27/100 litros
+    "Malto": 0.05,           // 5.0/100 litros
+    "Bicarbonato": 0.0016,   // 0.16/100 litros
+    "Sorbato": 0.001,        // 0.10/100 litros
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
+  },
+  "Cabri Tradicional": {
+    "Leche de Vaca": 0,
+    "Leche de Cabra": 1.0,
     "Azúcar": 0.20,
-    "Glucosa": 0.15, 
+    "Glucosa": 0,
     "Malto": 0,
     "Bicarbonato": 0.01,
     "Sorbato": 0,
@@ -179,40 +194,65 @@ const PRODUCT_MATERIALS = {
     "Antiespumante": 0,
     "Nuez": 0
   },
-  "Cabri Tradicional": {
-    "Azúcar estándar": 0.38,
-    "Leche en polvo": 0.08,
-    "Glucosa": 0.14,
-    "Bicarbonato": 0.01,
-    "Estabilizante": 0.003
-  },
   "Cabri Espesa": {
-    "Azúcar estándar": 0.4,
-    "Leche en polvo": 0.1,
-    "Glucosa": 0.16,
-    "Bicarbonato": 0.012,
-    "Estabilizante": 0.005
+    "Leche de Vaca": 0,
+    "Leche de Cabra": 1.0,
+    "Azúcar": 0.22,
+    "Glucosa": 0.05,
+    "Malto": 0,
+    "Bicarbonato": 0.01,
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Horneable": {
-    "Azúcar estándar": 0.35,
-    "Leche en polvo": 0.06,
-    "Glucosa": 0.12,
-    "Maltodextrina": 0.04,
-    "Almidón": 0.03
+    "Leche de Vaca": 0.10,
+    "Leche de Cabra": 0.10,
+    "Azúcar": 0.22,
+    "Glucosa": 0.10,
+    "Malto": 0,
+    "Bicarbonato": 0.01,
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Gloria untable 78° Brix": {
-    "Azúcar estándar": 0.5,
-    "Leche en polvo": 0.08,
-    "Glucosa": 0.2,
-    "Bicarbonato": 0.012,
-    "Carragenina": 0.003
+    "Leche de Vaca": 0.90,
+    "Leche de Cabra": 0,
+    "Azúcar": 0.25,
+    "Glucosa": 0.18,
+    "Malto": 0,
+    "Bicarbonato": 0.015,
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0.003,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Gloria untable 80° Brix": {
-    "Azúcar estándar": 0.52,
-    "Leche en polvo": 0.09,
-    "Glucosa": 0.22,
+    "Leche de Vaca": 0.90,
+    "Leche de Cabra": 0,
+    "Azúcar": 0.28,
+    "Glucosa": 0.20,
+    "Malto": 0,
     "Bicarbonato": 0.015,
-    "Carragenina": 0.004
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0.004,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Pasta DGL": {
     "Azúcar estándar": 0.45,
