@@ -64,6 +64,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
 
 // Tipos para la configuración de tabla avanzada 
 interface ColumnDefinition {
@@ -115,6 +116,30 @@ interface AdvancedTableEditorProps {
 
 // Plantillas predefinidas para tipos comunes de tablas
 const TABLE_TEMPLATES = [
+  {
+    name: "Ficha Técnica de Producción",
+    icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 13, // Para todas las materias primas
+      dynamicRows: false,
+      sections: [
+        {
+          title: "Proceso",
+          columns: [
+            { id: uuidv4(), header: "Proceso", type: "product", width: "200px" },
+            { id: uuidv4(), header: "Litros a producción", type: "number", width: "120px", validation: { min: 0 } }
+          ]
+        },
+        {
+          title: "Materia Prima",
+          columns: [
+            { id: uuidv4(), header: "Materia Prima", type: "text", width: "200px", readOnly: true },
+            { id: uuidv4(), header: "Kilos", type: "number", width: "100px" }
+          ]
+        }
+      ]
+    }
+  },
   {
     name: "Tabla de Control de Proceso",
     icon: <ListChecks className="h-4 w-4 mr-2" />,
@@ -221,6 +246,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   onChange,
   preview = false
 }) => {
+  const { toast } = useToast();
   // Estado para el wizard
   const [wizardMode, setWizardMode] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<string>("template");
