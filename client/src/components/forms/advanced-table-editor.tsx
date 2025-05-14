@@ -279,8 +279,23 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Actualizar sección
   const updateSection = (index: number, updates: Partial<TableSection>) => {
+    // Verificar parámetros de entrada
+    if (index === null || index === undefined) return;
+    if (!updates) return;
+    
     const newSections = [...((value && value.sections) || [])];
-    newSections[index] = { ...newSections[index], ...updates };
+    if (!newSections[index]) return;
+    
+    // Crear copia profunda para asegurar que cambien todas las referencias
+    newSections[index] = { 
+      ...newSections[index], 
+      ...updates,
+      // Asegurar que estos campos estén definidos
+      title: updates.title !== undefined ? updates.title : newSections[index].title,
+      colspan: updates.colspan !== undefined ? updates.colspan : newSections[index].colspan
+    };
+    
+    console.log("Actualizando sección:", index, updates, newSections);
     updateValue({ sections: newSections });
   };
 
@@ -816,7 +831,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
       {/* Diálogo para editar sección */}
       {editingSection !== null && (
-        <Dialog open={editingSection !== null} onOpenChange={(open) => !open && setEditingSection(null)}>
+        <Dialog 
+          open={editingSection !== null} 
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditingSection(null);
+            }
+          }}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Editar Sección</DialogTitle>
@@ -824,42 +846,50 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 Actualice las propiedades de esta sección
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-section-title">Título</Label>
-                <Input
-                  id="edit-section-title"
-                  value={(value && value.sections)?.[editingSection]?.title || ""}
-                  onChange={(e) => 
-                    updateSection(editingSection, { title: e.target.value })
-                  }
-                />
-              </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              // Cerrar el diálogo cuando se envía el formulario
+              setEditingSection(null);
+            }}>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-section-title">Título</Label>
+                  <Input
+                    id="edit-section-title"
+                    value={(value?.sections?.[editingSection]?.title) || ""}
+                    onChange={(e) => {
+                      if (editingSection !== null && value?.sections?.[editingSection]) {
+                        updateSection(editingSection, { title: e.target.value });
+                      }
+                    }}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="edit-section-colspan">Ancho (Colspan)</Label>
-                <Input
-                  id="edit-section-colspan"
-                  type="number"
-                  value={(value && value.sections)?.[editingSection]?.colspan || ""}
-                  min={1}
-                  onChange={(e) => 
-                    updateSection(editingSection, { 
-                      colspan: parseInt(e.target.value) || undefined 
-                    })
-                  }
-                />
-                <FormDescription>
-                  Si se especifica, determina cuántas columnas abarca esta sección.
-                  Por defecto, usa el número de columnas que contiene.
-                </FormDescription>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-section-colspan">Ancho (Colspan)</Label>
+                  <Input
+                    id="edit-section-colspan"
+                    type="number"
+                    value={(value?.sections?.[editingSection]?.colspan) || ""}
+                    min={1}
+                    onChange={(e) => {
+                      if (editingSection !== null && value?.sections?.[editingSection]) {
+                        updateSection(editingSection, { 
+                          colspan: parseInt(e.target.value) || undefined 
+                        });
+                      }
+                    }}
+                  />
+                  <FormDescription>
+                    Si se especifica, determina cuántas columnas abarca esta sección.
+                    Por defecto, usa el número de columnas que contiene.
+                  </FormDescription>
+                </div>
               </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button">Guardar Cambios</Button>
-              </DialogClose>
-            </DialogFooter>
+              <DialogFooter>
+                <Button type="submit">Guardar Cambios</Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       )}
