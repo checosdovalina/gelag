@@ -75,6 +75,7 @@ interface ColumnDefinition {
   span?: number;
   rowspan?: number;
   readOnly?: boolean;
+  calculated?: boolean; // Indica si el campo se calcula automáticamente
   employeeType?: string; // Para filtrar por tipo de empleado si es necesario
   validation?: {
     min?: number;
@@ -986,11 +987,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     )}
                     {column.type === 'select' && (
                       <Select
-                        defaultValue={previewData[rowIndex]?.[column.id] || ''}
+                        value={previewData[rowIndex]?.[column.id] || ''}
                         onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={column.readOnly}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className={`h-8 ${column.calculated ? 'bg-blue-100' : ''}`}>
                           <SelectValue placeholder="Seleccionar..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -1024,11 +1025,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     )}
                     {column.type === 'employee' && (
                       <Select
-                        defaultValue={previewData[rowIndex]?.[column.id] || ''}
+                        value={previewData[rowIndex]?.[column.id] || ''}
                         onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={column.readOnly}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className={`h-8 ${column.calculated ? 'bg-blue-100' : ''}`}>
                           <SelectValue placeholder="Seleccionar empleado..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -1040,11 +1041,11 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     )}
                     {column.type === 'product' && (
                       <Select
-                        defaultValue={previewData[rowIndex]?.[column.id] || ''}
+                        value={previewData[rowIndex]?.[column.id] || ''}
                         onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={column.readOnly}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className={`h-8 ${column.calculated ? 'bg-blue-100' : ''}`}>
                           <SelectValue placeholder="Seleccionar producto..." />
                         </SelectTrigger>
                         <SelectContent>
