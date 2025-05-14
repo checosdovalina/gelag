@@ -44,7 +44,8 @@ import {
   ArrowRight,
   ChevronRight,
   ChevronLeft,
-  LayoutTemplate
+  LayoutTemplate,
+  FileSpreadsheet
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -756,13 +757,80 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                         </div>
                       </div>
 
-                      <Button
-                        type="button"
-                        onClick={() => addColumn(sectionIndex)}
-                        className="mt-3"
-                      >
-                        <Plus className="h-4 w-4 mr-1" /> Agregar Columna
-                      </Button>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          type="button"
+                          onClick={() => addColumn(sectionIndex)}
+                        >
+                          <Plus className="h-4 w-4 mr-1" /> Agregar Columna
+                        </Button>
+                        
+                        {/* Botón para añadir materias primas predefinidas */}
+                        {section.title.toLowerCase().includes('materia') && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="border-blue-300 hover:bg-blue-50"
+                            onClick={() => {
+                              // Generar filas de materias primas predefinidas
+                              const materialNames = [
+                                "Leche de Vaca",
+                                "Leche de Cabra",
+                                "Azúcar",
+                                "Glucosa",
+                                "Malto",
+                                "Bicarbonato",
+                                "Sorbato",
+                                "Lecitina",
+                                "Carrogenina",
+                                "Grasa",
+                                "Pasta",
+                                "Antiespumante",
+                                "Nuez"
+                              ];
+                              
+                              // Solo proceder si hay al menos una columna
+                              if (!section.columns?.length) {
+                                toast({
+                                  title: "Sin columnas",
+                                  description: "Primero debes agregar al menos una columna para los nombres de materias primas",
+                                  variant: "destructive"
+                                });
+                                return;
+                              }
+                              
+                              // Crear datos iniciales para la tabla
+                              const currentData = [...previewData];
+                              
+                              // Agregar filas con los nombres de materias primas en la primera columna
+                              const newData = materialNames.map((material, idx) => {
+                                // Inicializar o actualizar la fila
+                                const row = currentData[idx] || {};
+                                // Usar el ID de la primera columna para los nombres
+                                const firstColumnId = section.columns[0].id;
+                                return {
+                                  ...row,
+                                  [firstColumnId]: material
+                                };
+                              });
+                              
+                              // Actualizar los datos de preview y el valor del formulario
+                              setPreviewData(newData);
+                              updateValue({ 
+                                initialData: newData,
+                                rows: newData.length
+                              });
+                              
+                              toast({
+                                title: "Materias primas agregadas",
+                                description: `Se han agregado ${materialNames.length} materias primas a la tabla`,
+                              });
+                            }}
+                          >
+                            <ListChecks className="h-4 w-4 mr-1" /> Añadir Materias Primas
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
