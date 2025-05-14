@@ -71,7 +71,7 @@ interface ColumnDefinition {
   id: string;
   header: string;
   width?: string;
-  type: "text" | "number" | "select" | "checkbox" | "date" | "employee" | "product";
+  type: "text" | "number" | "select" | "checkbox" | "date" | "time" | "employee" | "product";
   span?: number;
   rowspan?: number;
   readOnly?: boolean;
@@ -1200,6 +1200,16 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             className="h-8"
           />
         );
+      case 'time':
+        return (
+          <Input
+            type="time"
+            value={previewData[rowIndex]?.[column.id] || ''}
+            onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
+            readOnly={column.readOnly}
+            className="h-8"
+          />
+        );
       case 'product':
         return (
           <Select
@@ -2167,6 +2177,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                       <SelectItem value="select">Lista desplegable</SelectItem>
                       <SelectItem value="checkbox">Casilla de verificación</SelectItem>
                       <SelectItem value="date">Fecha</SelectItem>
+                      <SelectItem value="time">Hora</SelectItem>
                       <SelectItem value="employee">Empleado</SelectItem>
                       <SelectItem value="product">Producto</SelectItem>
                     </SelectContent>
