@@ -144,7 +144,6 @@ const TABLE_TEMPLATES = [
     config: {
       rows: 13, // Para todas las materias primas
       dynamicRows: false,
-      
       sections: [
         {
           title: "Proceso general",
@@ -476,6 +475,277 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     updateValue({ sections: newSections });
   };
 
+  // Renderizar tabla especializada para proceso + materias primas
+  const renderProcessMaterialsTable = () => {
+    if (!value?.sections || value.sections.length !== 2) {
+      return (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Configuración incorrecta</AlertTitle>
+          <AlertDescription>
+            Este formato requiere exactamente 2 secciones: Proceso y Materia Prima
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    
+    const procesoSection = value.sections[0];
+    const materiaPrimaSection = value.sections[1];
+    
+    if (!procesoSection || !materiaPrimaSection) return null;
+    
+    return (
+      <div className="border rounded-md overflow-auto">
+        <Table>
+          <TableHeader>
+            {/* Encabezados de sección */}
+            <TableRow>
+              <TableHead
+                colSpan={procesoSection.columns.length}
+                className="text-center bg-muted font-bold"
+              >
+                {procesoSection.title}
+              </TableHead>
+              <TableHead
+                colSpan={materiaPrimaSection.columns.length}
+                className="text-center bg-muted font-bold"
+              >
+                {materiaPrimaSection.title}
+              </TableHead>
+            </TableRow>
+            
+            {/* Encabezados de columnas */}
+            <TableRow>
+              {procesoSection.columns.map(column => (
+                <TableHead
+                  key={column.id}
+                  style={{ width: column.width || 'auto' }}
+                  className="text-center"
+                >
+                  {column.header}
+                </TableHead>
+              ))}
+              {materiaPrimaSection.columns.map(column => (
+                <TableHead
+                  key={column.id}
+                  style={{ width: column.width || 'auto' }}
+                  className="text-center"
+                >
+                  {column.header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          
+          <TableBody>
+            {/* Primera fila solo para proceso */}
+            <TableRow>
+              {/* Columnas de proceso */}
+              {procesoSection.columns.map(column => (
+                <TableCell key={`proceso-${column.id}`} className="p-1">
+                  {renderCellByType(column, 0)}
+                </TableCell>
+              ))}
+              
+              {/* Celdas vacías para la primera materia prima */}
+              {materiaPrimaSection.columns.map(column => (
+                <TableCell key={`mp-${column.id}`} className="p-1">
+                  {column.type === 'text' && (
+                    <Input
+                      type="text"
+                      value={previewData[0]?.[column.id] || ''}
+                      onChange={(e) => updateCell(0, column.id, e.target.value)}
+                      readOnly={column.readOnly}
+                      className="h-8"
+                    />
+                  )}
+                  {column.type === 'number' && (
+                    <Input
+                      type="number"
+                      value={previewData[0]?.[column.id] || ''}
+                      onChange={(e) => updateCell(0, column.id, e.target.value)}
+                      readOnly={column.readOnly}
+                      className="h-8"
+                      min={column.validation?.min}
+                      max={column.validation?.max}
+                    />
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+            
+            {/* Filas siguientes: celdas vacías para proceso y materias primas reales */}
+            {Array(Math.max(0, ((value && value.rows) || 3) - 1)).fill(0).map((_, index) => {
+              // El índice real es index + 1 porque empezamos desde la fila 2
+              const rowIndex = index + 1;
+              
+              return (
+                <TableRow key={`row-${rowIndex}`}>
+                  {/* Columnas de proceso (vacías en las filas adicionales) */}
+                  {procesoSection.columns.map(column => (
+                    <TableCell key={`proceso-empty-${column.id}`} className="p-1 bg-gray-50">
+                      {/* Vacío */}
+                    </TableCell>
+                  ))}
+                  
+                  {/* Columnas de materias primas */}
+                  {materiaPrimaSection.columns.map(column => (
+                    <TableCell key={`mp-${rowIndex}-${column.id}`} className="p-1">
+                      {renderCellByType(column, rowIndex)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+            
+            {/* Botón para agregar fila dinámica */}
+            {(value && value.dynamicRows) && (
+              <TableRow>
+                <TableCell colSpan={procesoSection.columns.length + materiaPrimaSection.columns.length} className="text-center">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={addRow}
+                    className="mt-2"
+                  >
+                    <Plus className="h-4 w-4 mr-1" /> Agregar Fila
+                  </Button>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+  
+  // Renderiza el contenido de una celda según su tipo
+  const renderCellByType = (column: ColumnDefinition, rowIndex: number) => {
+    switch (column.type) {
+      case 'text':
+        return (
+          <Input
+            type="text"
+            value={previewData[rowIndex]?.[column.id] || ''}
+            onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
+            readOnly={column.readOnly}
+            className="h-8"
+          />
+        );
+      case 'number':
+        return (
+          <Input
+            type="number"
+            value={previewData[rowIndex]?.[column.id] || ''}
+            onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
+            readOnly={column.readOnly}
+            className="h-8"
+            min={column.validation?.min}
+            max={column.validation?.max}
+          />
+        );
+      case 'select':
+        return (
+          <Select
+            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+            disabled={column.readOnly}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder="Seleccionar..." />
+            </SelectTrigger>
+            <SelectContent>
+              {column.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      case 'checkbox':
+        return (
+          <div className="flex justify-center">
+            <Checkbox
+              checked={previewData[rowIndex]?.[column.id] || false}
+              onCheckedChange={(checked) => 
+                updateCell(rowIndex, column.id, checked === true)
+              }
+              disabled={column.readOnly}
+            />
+          </div>
+        );
+      case 'date':
+        return (
+          <Input
+            type="date"
+            value={previewData[rowIndex]?.[column.id] || ''}
+            onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
+            readOnly={column.readOnly}
+            className="h-8"
+          />
+        );
+      case 'product':
+        return (
+          <Select
+            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+            disabled={column.readOnly}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder="Seleccionar producto..." />
+            </SelectTrigger>
+            <SelectContent>
+              {column.options?.length ? (
+                column.options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))
+              ) : (
+                <>
+                  <SelectItem value="Mielmex 65° Brix">Mielmex 65° Brix</SelectItem>
+                  <SelectItem value="Coro 68° Brix">Coro 68° Brix</SelectItem>
+                  <SelectItem value="Cajeton Tradicional">Cajeton Tradicional</SelectItem>
+                  <SelectItem value="Cajeton Espesa">Cajeton Espesa</SelectItem>
+                  <SelectItem value="Cajeton Esp Chepo">Cajeton Esp Chepo</SelectItem>
+                  <SelectItem value="Cabri Tradicional">Cabri Tradicional</SelectItem>
+                  <SelectItem value="Cabri Espesa">Cabri Espesa</SelectItem>
+                  <SelectItem value="Horneable">Horneable</SelectItem>
+                  <SelectItem value="Gloria untable 78° Brix">Gloria untable 78° Brix</SelectItem>
+                  <SelectItem value="Gloria untable 80° Brix">Gloria untable 80° Brix</SelectItem>
+                  <SelectItem value="Pasta Oblea Coro">Pasta Oblea Coro</SelectItem>
+                  <SelectItem value="Pasta Oblea Cajeton">Pasta Oblea Cajeton</SelectItem>
+                  <SelectItem value="Pasta DGL">Pasta DGL</SelectItem>
+                  <SelectItem value="Conito">Conito</SelectItem>
+                </>
+              )}
+            </SelectContent>
+          </Select>
+        );
+      case 'employee':
+        return (
+          <Select
+            defaultValue={previewData[rowIndex]?.[column.id] || ''}
+            onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+            disabled={column.readOnly}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder="Seleccionar empleado..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ejemplo1">Empleado 1</SelectItem>
+              <SelectItem value="ejemplo2">Empleado 2</SelectItem>
+              <SelectItem value="ejemplo3">Empleado 3</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      default:
+        return null;
+    }
+  };
+
   // Componente para renderizar la tabla de vista previa
   const TablePreview = () => {
     if (!value || !value.sections || value.sections.length === 0) {
@@ -488,6 +758,16 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           </AlertDescription>
         </Alert>
       );
+    }
+    
+    // Verificar si tenemos exactamente dos secciones: proceso y materia prima
+    const isProcessMaterialsTable = value.sections.length === 2 && 
+      value.sections[0].title.toLowerCase().includes("proceso") && 
+      value.sections[1].title.toLowerCase().includes("materia");
+      
+    // Si es una tabla especializada de proceso y materias primas, usar el renderizado especial
+    if (isProcessMaterialsTable) {
+      return renderProcessMaterialsTable();
     }
 
     const allColumns = value.sections.flatMap(section => section.columns);
