@@ -255,19 +255,34 @@ const PRODUCT_MATERIALS = {
     "Nuez": 0
   },
   "Pasta DGL": {
-    "Azúcar estándar": 0.45,
-    "Leche en polvo": 0.1,
-    "Glucosa": 0.2,
+    "Leche de Vaca": 0.80,
+    "Leche de Cabra": 0,
+    "Azúcar": 0.25,
+    "Glucosa": 0.15,
+    "Malto": 0,
     "Bicarbonato": 0.02,
+    "Sorbato": 0,
     "Lecitina": 0.006,
-    "Vainilla": 0.002
+    "Carragenina": 0,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   },
   "Conito": {
-    "Azúcar estándar": 0.38,
-    "Leche en polvo": 0.06,
-    "Glucosa": 0.14,
+    "Leche de Vaca": 0.20,
+    "Leche de Cabra": 0.75,
+    "Azúcar": 0.22,
+    "Glucosa": 0.12,
+    "Malto": 0,
     "Bicarbonato": 0.01,
-    "Espesante": 0.003
+    "Sorbato": 0,
+    "Lecitina": 0,
+    "Carragenina": 0.003,
+    "Grasa": 0,
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0
   }
 };
 
