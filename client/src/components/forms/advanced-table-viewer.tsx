@@ -18,6 +18,26 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Interfaces para productos y empleados
+interface Product {
+  id: number;
+  name: string;
+  code?: string;
+  description?: string;
+  price?: number;
+  weight?: number;
+  category?: string;
+}
+
+interface Employee {
+  id: number;
+  name: string;
+  employeeId?: string;
+  type?: string;
+  position?: string;
+  department?: string;
+}
+
 // Reutilizamos los tipos de AdvancedTableEditor
 interface ColumnDefinition {
   id: string;
@@ -79,12 +99,12 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
   
   // Obtener la lista de empleados y productos para selectores
-  const { data: employees = [], isLoading: loadingEmployees } = useQuery({
+  const { data: employees = [], isLoading: loadingEmployees } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
     enabled: true,
   });
   
-  const { data: products = [], isLoading: loadingProducts } = useQuery({
+  const { data: products = [], isLoading: loadingProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     enabled: true,
   });
@@ -115,7 +135,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   
   // Encontrar el producto por ID
   const findProductById = (productId: string) => {
-    return products.find((product: any) => product.id.toString() === productId.toString());
+    return products.find((product) => product.id.toString() === productId.toString());
   };
   
   // Calcular valor automático basado en la dependencia
@@ -256,8 +276,19 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   // Obtener todas las columnas de todas las secciones
   const allColumns = config.sections?.flatMap(section => section.columns) || [];
 
+  // Detectar si hay alguna columna con dependencias
+  const hasDependentColumns = allColumns.some(col => col.dependency);
+
   return (
     <div className="border rounded-md w-full overflow-auto">
+      {hasDependentColumns && (
+        <div className="p-2 bg-blue-50 border-b text-sm text-blue-700 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Los campos con fondo azul claro se completarán automáticamente al seleccionar un producto y cantidad.
+        </div>
+      )}
       <ScrollArea className="max-h-[600px]">
         <Table>
           {/* Encabezados de sección */}
@@ -298,7 +329,9 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             {tableData.map((rowData, rowIndex) => (
               <TableRow key={rowIndex}>
                 {allColumns.map((column) => (
-                  <TableCell key={`${rowIndex}-${column.id}`} className="p-1">
+                  <TableCell 
+                    key={`${rowIndex}-${column.id}`} 
+                    className={`p-1 ${column.dependency ? 'bg-blue-50' : ''}`}>
                     {column.type === 'text' && (
                       <Input
                         type="text"
@@ -356,6 +389,52 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         readOnly={readOnly || column.readOnly}
                         className="h-8"
                       />
+                    )}
+                    {column.type === 'product' && (
+                      loadingProducts ? (
+                        <Skeleton className="h-8 w-full" />
+                      ) : (
+                        <Select
+                          defaultValue={rowData[column.id] || ''}
+                          onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                          disabled={readOnly || column.readOnly}
+                        >
+                          <SelectTrigger className="h-8">
+                            <SelectValue placeholder="Seleccionar producto..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {products.map((product) => (
+                              <SelectItem key={product.id} value={product.id.toString()}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )
+                    )}
+                    {column.type === 'employee' && (
+                      loadingEmployees ? (
+                        <Skeleton className="h-8 w-full" />
+                      ) : (
+                        <Select
+                          defaultValue={rowData[column.id] || ''}
+                          onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                          disabled={readOnly || column.readOnly}
+                        >
+                          <SelectTrigger className="h-8">
+                            <SelectValue placeholder="Seleccionar empleado..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {employees
+                              .filter((emp) => !column.employeeType || emp.type === column.employeeType)
+                              .map((employee) => (
+                                <SelectItem key={employee.id} value={employee.id.toString()}>
+                                  {employee.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      )
                     )}
                   </TableCell>
                 ))}
