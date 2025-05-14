@@ -853,7 +853,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             }
           }}
         >
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Editar Sección</DialogTitle>
               <DialogDescription>
@@ -914,7 +914,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           open={editingColumn !== null} 
           onOpenChange={() => setEditingColumn(null)}
         >
-          <DialogContent className="max-w-xl">
+          <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Editar Columna</DialogTitle>
               <DialogDescription>
@@ -1187,6 +1187,21 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               <div className="border p-3 rounded-md mt-2">
                 <div className="flex items-center gap-2">
                   <Label>Valor Auto-calculado</Label>
+                  <Badge variant="outline" className="ml-2 bg-blue-50">
+                    Auto-rellenado
+                  </Badge>
+                </div>
+                
+                <Alert className="bg-blue-50 border-blue-200 my-2">
+                  <AlertCircle className="h-4 w-4 text-blue-700" />
+                  <AlertTitle className="text-blue-700">Auto-rellenado de campos</AlertTitle>
+                  <AlertDescription className="text-blue-600 text-xs">
+                    Al activar esta opción, el campo se auto-rellenará basado en la selección de producto/cantidad.
+                    Los campos auto-rellenados aparecerán con fondo azul claro y no serán editables.
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="flex items-center gap-2 mt-2">
                   <Checkbox
                     id="auto-calculated"
                     checked={!!(value && value.sections)?.[editingColumn?.sectionIndex || 0]?.columns?.[editingColumn?.columnIndex || 0]?.dependency}
