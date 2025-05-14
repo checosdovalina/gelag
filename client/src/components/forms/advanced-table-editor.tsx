@@ -121,6 +121,28 @@ const TABLE_TEMPLATES = [
     icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
     config: {
       rows: 13, // Para todas las materias primas
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Proceso",
+          columns: [
+            { id: uuidv4(), header: "Proceso", type: "product", width: "200px" }
+          ]
+        },
+        {
+          title: "Materias Primas",
+          columns: [
+            { id: uuidv4(), header: "Materia Prima", type: "text", width: "200px", readOnly: true }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    name: "Ficha Técnica con Litros",
+    icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 13, // Para todas las materias primas
       dynamicRows: false,
       sections: [
         {
