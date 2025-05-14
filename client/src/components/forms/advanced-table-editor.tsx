@@ -149,6 +149,21 @@ const PRODUCT_MATERIALS = {
     "Antiespumante": 0,
     "Nuez": 0
   },
+  "Cajeton Esp Chepo": {
+    "Leche de Vaca": 0,
+    "Leche de Cabra": 1.0,  // 100/100 litros
+    "Azúcar": 0.2,          // 20/100 litros
+    "Glucosa": 0.27,        // 27/100 litros
+    "Malto": 0.05,          // 5.0/100 litros
+    "Bicarbonato": 0.0018,  // 0.18/100 litros
+    "Sorbato": 0.0001,      // 0.01/100 litros  
+    "Lecitina": 0.00001,    // 0.001/100 litros
+    "Carragenina": 0.00001, // 0.001/100 litros
+    "Grasa": 0.00001,       // 0.001/100 litros
+    "Pasta": 0,
+    "Antiespumante": 0,
+    "Nuez": 0.00001         // 0.001/100 litros
+  },
   "Cajeton Tradicional": {
     "Leche de Vaca": 0.05,
     "Leche de Cabra": 0.95,
@@ -967,7 +982,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     />
                   )}
                   {column.type !== 'product' && column.type !== 'number' && (
-                    renderCellByType(column, 0, { value })
+                    renderCellByType(column, 0)
                   )}
                 </TableCell>
               ))}
