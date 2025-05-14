@@ -74,6 +74,17 @@ export const insertSavedReportSchema = createInsertSchema(savedReports).omit({
   updatedAt: true
 });
 
+// Form workflow status enum
+export enum FormWorkflowStatus {
+  INITIATED = "initiated",      // El formulario ha sido iniciado por un gerente
+  IN_PROGRESS = "in_progress",  // Operativos están trabajando en él
+  PENDING_QUALITY = "pending_quality", // Pendiente de revisión de calidad
+  COMPLETED = "completed",      // Formulario completamente lleno
+  SIGNED = "signed",            // Firmado
+  APPROVED = "approved",        // Aprobado
+  REJECTED = "rejected"         // Rechazado
+}
+
 // Form data schema (completed forms)
 export const formEntries = pgTable("form_entries", {
   id: serial("id").primaryKey(),
@@ -84,12 +95,16 @@ export const formEntries = pgTable("form_entries", {
   updatedAt: timestamp("updated_at").defaultNow(),
   department: text("department"),
   status: text("status").default("draft"), // "draft", "signed", "approved", "rejected"
+  workflowStatus: text("workflow_status").$type<FormWorkflowStatus>().default(FormWorkflowStatus.INITIATED), // Estado en el flujo de trabajo
+  lastUpdatedBy: integer("last_updated_by"), // Usuario que realizó la última actualización
+  lotNumber: text("lot_number"), // Número de lote para referenciar relacionados
   signature: text("signature"), // Base64 encoded signature image
   signedBy: integer("signed_by"), // User ID who signed the form
   signedAt: timestamp("signed_at"), // When the form was signed
   approvedBy: integer("approved_by"), // User ID who approved the form (if applicable)
   approvedAt: timestamp("approved_at"), // When the form was approved (if applicable)
   folioNumber: integer("folio_number"), // Consecutive folio number for this template
+  roleSpecificData: json("role_specific_data"), // Datos específicos por rol para formularios secuenciales
 });
 
 // Folios counter schema (tracks last folio number used per template)
