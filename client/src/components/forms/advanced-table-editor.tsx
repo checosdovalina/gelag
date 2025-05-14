@@ -1958,7 +1958,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                             const materiaPrimaColIndex = 0; // Primera columna - Materia Prima
                             
                             // Preparamos los datos iniciales (esto simula el llenado real de la tabla)
-                            newValue.initialData = newValue.initialData || {};
+                            newValue.initialData = newValue.initialData || [];
                             
                             // Por cada producto, creamos una entrada en los datos iniciales
                             productos.forEach((producto, index) => {
