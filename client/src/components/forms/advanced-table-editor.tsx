@@ -156,6 +156,56 @@ const PRODUCT_MATERIALS = {
     "Glucosa": 0.15,
     "Bicarbonato": 0.009,
     "Citrato de Sodio": 0.002
+  },
+  "Cabri Tradicional": {
+    "Azúcar estándar": 0.38,
+    "Leche en polvo": 0.08,
+    "Glucosa": 0.14,
+    "Bicarbonato": 0.01,
+    "Estabilizante": 0.003
+  },
+  "Cabri Espesa": {
+    "Azúcar estándar": 0.4,
+    "Leche en polvo": 0.1,
+    "Glucosa": 0.16,
+    "Bicarbonato": 0.012,
+    "Estabilizante": 0.005
+  },
+  "Horneable": {
+    "Azúcar estándar": 0.35,
+    "Leche en polvo": 0.06,
+    "Glucosa": 0.12,
+    "Maltodextrina": 0.04,
+    "Almidón": 0.03
+  },
+  "Gloria untable 78° Brix": {
+    "Azúcar estándar": 0.5,
+    "Leche en polvo": 0.08,
+    "Glucosa": 0.2,
+    "Bicarbonato": 0.012,
+    "Carragenina": 0.003
+  },
+  "Gloria untable 80° Brix": {
+    "Azúcar estándar": 0.52,
+    "Leche en polvo": 0.09,
+    "Glucosa": 0.22,
+    "Bicarbonato": 0.015,
+    "Carragenina": 0.004
+  },
+  "Pasta DGL": {
+    "Azúcar estándar": 0.45,
+    "Leche en polvo": 0.1,
+    "Glucosa": 0.2,
+    "Bicarbonato": 0.02,
+    "Lecitina": 0.006,
+    "Vainilla": 0.002
+  },
+  "Conito": {
+    "Azúcar estándar": 0.38,
+    "Leche en polvo": 0.06,
+    "Glucosa": 0.14,
+    "Bicarbonato": 0.01,
+    "Espesante": 0.003
   }
 };
 
@@ -496,6 +546,8 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Actualizar celda en la vista previa
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
+    console.log(`Actualizando celda en fila ${rowIndex}, columna ${columnId}`, value);
+    
     const newData = [...previewData];
     if (!newData[rowIndex]) {
       newData[rowIndex] = {};
@@ -504,34 +556,50 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     // Almacenar el valor original
     newData[rowIndex][columnId] = value;
     
-    // Comprobar si tenemos secciones para procesar dependencias
-    if (value?.sections && value.sections.length >= 2) {
+    // Verificar si estamos en un formulario con secciones y tenemos que calcular dependencias
+    const sections = value?.sections || (value && value.sections);
+    
+    if (sections && sections.length >= 2) {
+      console.log("Procesando cálculo de materias primas en formulario multi-sección");
+      
       // Si es un campo de tipo producto o litros, calculamos las materias primas
-      const procesoSection = value.sections[0];
-      const materiaPrimaSection = value.sections[1];
+      const procesoSection = sections[0];
+      const materiaPrimaSection = sections[1];
       
       if (procesoSection && materiaPrimaSection) {
         // Buscar índice de columnas de producto y litros
         const productoColIndex = procesoSection.columns.findIndex((c: ColumnDefinition) => c.type === "product");
-        const litrosColIndex = procesoSection.columns.findIndex((c: ColumnDefinition) => c.header.toLowerCase().includes("litro"));
+        const litrosColIndex = procesoSection.columns.findIndex((c: ColumnDefinition) => 
+          c.header.toLowerCase().includes("litro") || 
+          c.header.toLowerCase().includes("liter")
+        );
         
-        // Solo si se actualizó una de estas columnas
+        console.log(`Encontradas columnas: Producto (${productoColIndex}), Litros (${litrosColIndex})`);
+        
+        // Solo si se actualizaron las columnas relevantes
         const productoColumn = productoColIndex >= 0 ? procesoSection.columns[productoColIndex] : null;
         const litrosColumn = litrosColIndex >= 0 ? procesoSection.columns[litrosColIndex] : null;
         
         if (productoColumn && litrosColumn) {
-          const productoValue = newData[0][productoColumn.id];
-          const litrosValue = parseFloat(newData[0][litrosColumn.id] || 0);
+          // Obtenemos valores actuales de producto y litros
+          const productoValue = newData[0]?.[productoColumn.id];
+          const litrosValue = parseFloat(newData[0]?.[litrosColumn.id] || "0");
+          
+          console.log(`Valores actuales: Producto="${productoValue}", Litros=${litrosValue}`);
           
           // Si tenemos producto y litros, calculamos cada materia prima
           if (productoValue && litrosValue > 0 && typeof productoValue === 'string' && productoValue in PRODUCT_MATERIALS) {
+            console.log(`Calculando materias primas para ${productoValue} con ${litrosValue} litros`);
+            
             // Para cada materia prima en el producto
             const materiaPrimasObj = PRODUCT_MATERIALS[productoValue as keyof typeof PRODUCT_MATERIALS];
             const materiasPrimas = Object.keys(materiaPrimasObj);
             
+            console.log(`Encontradas ${materiasPrimas.length} materias primas`);
+            
             // Actualizar cada materia prima en la tabla
             let rowIdx = 0;
-            materiasPrimas.forEach((materiaPrima, idx) => {
+            materiasPrimas.forEach((materiaPrima) => {
               // Coeficiente para este material (kg por litro)
               const coeficiente = materiaPrimasObj[materiaPrima as keyof typeof materiaPrimasObj];
               
@@ -545,12 +613,45 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               }
               
               // Actualizar nombre de materia prima y kilos calculados
+              const kilosCalculados = (coeficiente * litrosValue).toFixed(3);
+              console.log(`Materia prima: ${materiaPrima}, coeficiente: ${coeficiente}, kilos: ${kilosCalculados}`);
+              
               newData[rowIdx + 1][materiaPrimaColumn.id] = materiaPrima;
-              newData[rowIdx + 1][kilosColumn.id] = (coeficiente * litrosValue).toFixed(3);
+              newData[rowIdx + 1][kilosColumn.id] = kilosCalculados;
               
               rowIdx++;
             });
+            
+            // Actualizar el número de filas si es necesario
+            if (value && materiasPrimas.length + 1 > (value.rows || 0)) {
+              updateValue({ rows: materiasPrimas.length + 1 });
+            }
           }
+        }
+      }
+    } else {
+      // También verificar si un campo type="product" fue actualizado
+      // Esta sección es para cuando se actualiza directamente una celda sin estar dentro de un objeto value
+      const valueTable = value;
+      if (valueTable && valueTable.sections && valueTable.sections.length >= 2) {
+        // Verificar si la columna actual es de tipo "product" o "litros"
+        let currentSection = -1;
+        let currentColumnDef: ColumnDefinition | null = null;
+        
+        // Buscar la definición de la columna actual
+        valueTable.sections.forEach((section: TableSection, sIdx: number) => {
+          section.columns.forEach((column: ColumnDefinition, cIdx: number) => {
+            if (column.id === columnId) {
+              currentSection = sIdx;
+              currentColumnDef = column;
+            }
+          });
+        });
+        
+        // Si es columna de producto o litros, verificar y actualizar
+        if (currentColumnDef) {
+          // Caso especial: actualización directa de producto o litros
+          updateMateriaPrimasByProductoLitros(newData, valueTable.sections);
         }
       }
     }
