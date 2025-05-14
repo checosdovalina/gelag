@@ -998,15 +998,24 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           <Select
             value={previewData[rowIndex]?.[column.id] || ''}
             onValueChange={(productValue) => {
+              console.log("Seleccionado producto:", productValue);
+              // Primero almacenamos el valor simple
               updateCell(rowIndex, column.id, productValue);
               
-              // Cuando se selecciona un producto, actualizar las materias primas
+              // Luego verificamos si necesitamos actualizar materias primas
               if (value?.sections && value.sections.length >= 2) {
-                // Forzar la actualización de las materias primas 
-                updateCell(rowIndex, column.id, {
-                  sections: value.sections,
-                  ...value
-                });
+                // Obtenemos el valor actual de litros
+                const litrosColumn = value.sections[0].columns.find(c => 
+                  c.header.toLowerCase().includes('litro') || c.id.toLowerCase().includes('litro')
+                );
+                
+                if (litrosColumn && litrosColumn.id) {
+                  const litrosValue = parseFloat(previewData[rowIndex]?.[litrosColumn.id] || '0');
+                  if (litrosValue > 0 && productValue in PRODUCT_MATERIALS) {
+                    // Actualizamos directamente las materias primas con los valores actuales
+                    updateMateriaPrimasByProductoLitros(previewData, value.sections);
+                  }
+                }
               }
             }}
             disabled={column.readOnly}
