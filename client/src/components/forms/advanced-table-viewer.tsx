@@ -116,14 +116,19 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Inicializar datos si están vacíos
   useEffect(() => {
+    console.log("AdvancedTableViewer useEffect - Valor recibido:", value);
+    
     if (!tableData.length && config.rows && config.rows > 0) {
       // Crear filas iniciales vacías
-      const initialData = Array(config.rows).fill({}).map(() => ({}));
+      const initialData = Array(config.rows).fill().map(() => ({}));
+      console.log("Inicializando tabla con filas vacías:", initialData);
       setTableData(initialData);
-      onChange(initialData);
-    } else if (value.length > 0 && JSON.stringify(value) !== JSON.stringify(tableData)) {
+      onChange(JSON.parse(JSON.stringify(initialData)));
+    } else if (value && Array.isArray(value) && value.length > 0 && 
+               JSON.stringify(value) !== JSON.stringify(tableData)) {
       // Actualizar si el valor externo cambia
-      setTableData(value);
+      console.log("Actualizando tableData con valor externo:", value);
+      setTableData(JSON.parse(JSON.stringify(value)));
     }
   }, [config.rows, value]);
   
@@ -137,6 +142,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const findProductById = (productId: string) => {
     return products.find((product) => product.id.toString() === productId.toString());
   };
+  
+
   
   // Calcular valor automático basado en la dependencia
   const calculateDependentValue = (rowIndex: number, column: ColumnDefinition) => {
@@ -376,19 +383,40 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const addRow = () => {
     if (!config.dynamicRows) return;
     
-    const newData = [...tableData, {}];
+    // Crear una copia profunda para evitar referencias
+    const currentData = JSON.parse(JSON.stringify(tableData));
+    const newRow = {};
+    
+    // Agregar la nueva fila y actualizar los datos locales
+    const newData = [...currentData, newRow];
+    console.log("Añadiendo nueva fila. Datos actualizados:", newData);
+    
+    // Actualizar el estado local
     setTableData(newData);
-    onChange(newData);
+    
+    // Notificar al componente padre con una pequeña demora
+    setTimeout(() => {
+      onChange(JSON.parse(JSON.stringify(newData)));
+    }, 0);
   };
 
   // Eliminar una fila (si está habilitado y hay más de una fila)
   const removeRow = (index: number) => {
     if (!config.dynamicRows || tableData.length <= 1) return;
     
-    const newData = [...tableData];
-    newData.splice(index, 1);
+    // Crear una copia profunda para evitar referencias
+    const currentData = JSON.parse(JSON.stringify(tableData));
+    const newData = currentData.filter((_, i) => i !== index);
+    
+    console.log("Eliminando fila", index, "Datos actualizados:", newData);
+    
+    // Actualizar los datos locales
     setTableData(newData);
-    onChange(newData);
+    
+    // Notificar al componente padre con una pequeña demora
+    setTimeout(() => {
+      onChange(JSON.parse(JSON.stringify(newData)));
+    }, 0);
   };
 
   // Obtener todas las columnas de todas las secciones
