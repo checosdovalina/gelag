@@ -572,11 +572,16 @@ function generatePDFContent(
     
     // Procesar las tablas avanzadas después de todas las secciones
     if (advancedTables.length > 0) {
-      // Crear una nueva página para las tablas avanzadas
-      doc.addPage();
+      // Verificar si es necesario crear una nueva página según el espacio disponible
+      if (doc.y > doc.page.height - 200) {
+        doc.addPage();
+      } else {
+        // Si hay espacio suficiente, solo agregamos un espacio adicional
+        doc.moveDown(2);
+      }
       
       // Título para la sección de tablas con estilo mejorado
-      doc.fontSize(16).font('Helvetica-Bold').fillColor('#000')
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#000')
          .text('TABLAS DE DATOS ADICIONALES', {
            align: 'center',
            width: pageWidth - 100
@@ -739,7 +744,12 @@ function generatePDFContent(
         
         // Espacio entre tablas
         if (tableIndex < advancedTables.length - 1) {
-          doc.moveDown(2);
+          // Verificar si hay suficiente espacio para la siguiente tabla
+          if (doc.y > doc.page.height - 200) {
+            doc.addPage();
+          } else {
+            doc.moveDown(2);
+          }
         }
       });
       
