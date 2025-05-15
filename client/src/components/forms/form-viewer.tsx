@@ -1310,35 +1310,52 @@ export default function FormViewer({
         // Para cada campo de tabla, asegurarse de que se realiza una copia profunda
         if (tableCampos.length > 0) {
           console.log("[FormViewer] Preparando tablas avanzadas para envío...");
+          let processingDelay = 0;
           
-          tableCampos.forEach(campo => {
-            try {
-              const id = campo.id;
-              const currentData = formValues[id];
-              
-              if (currentData) {
-                console.log(`[FormViewer] Procesando tabla ${id} con datos:`, currentData);
+          // Procesar en secuencia con pequeños retrasos para evitar condiciones de carrera
+          const processTablesSequentially = async () => {
+            for (const campo of tableCampos) {
+              try {
+                const id = campo.id;
+                const currentData = formValues[id];
                 
-                // Realizar una copia profunda para romper referencias
-                const dataCopy = JSON.parse(JSON.stringify(currentData));
-                
-                // Forzar la actualización del valor en el formulario
-                form.setValue(id, dataCopy, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true
-                });
-                
-                console.log(`[FormViewer] Tabla ${id} procesada correctamente`);
+                if (currentData) {
+                  console.log(`[FormViewer] Procesando tabla ${id} con datos:`, currentData);
+                  
+                  // Realizar una copia profunda para romper referencias
+                  const dataCopy = JSON.parse(JSON.stringify(currentData));
+                  
+                  // Forzar la actualización del valor en el formulario
+                  form.setValue(id, dataCopy, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true
+                  });
+                  
+                  // Esperar un momento para que React procese el cambio
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                  
+                  console.log(`[FormViewer] Tabla ${id} procesada correctamente`);
+                }
+              } catch (error) {
+                console.error(`[FormViewer] Error al procesar tabla ${campo.id}:`, error);
               }
-            } catch (error) {
-              console.error(`[FormViewer] Error al procesar tabla ${campo.id}:`, error);
             }
+            
+            // Una vez procesadas todas las tablas, continuar con el envío
+            console.log("[FormViewer] Todas las tablas procesadas. Enviando formulario...");
+            form.handleSubmit(onSubmit)(new Event('submit') as any);
+          };
+          
+          processTablesSequentially().catch(error => {
+            console.error("[FormViewer] Error al procesar tablas:", error);
+            // En caso de error, intentar enviar de todas formas
+            form.handleSubmit(onSubmit)(e);
           });
+        } else {
+          // Si no hay tablas avanzadas, proceder directamente
+          form.handleSubmit(onSubmit)(e);
         }
-        
-        // Continuar con el envío normal del formulario
-        form.handleSubmit(onSubmit)(e);
       }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
