@@ -329,3 +329,45 @@ export type InsertProduct = z.infer<typeof insertProductSchema>;
 
 export type Employee = typeof employees.$inferSelect;
 export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
+
+// Tabla de recetas de productos
+export const productRecipes = pgTable("product_recipes", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull().references(() => products.id),
+  name: text("name").notNull(), // Nombre del proceso
+  baseQuantity: integer("base_quantity").notNull().default(100), // Litros base (generalmente 100)
+  isActive: boolean("is_active").default(true),
+  createdBy: integer("created_by").notNull(), // Usuario que creó la receta
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductRecipeSchema = createInsertSchema(productRecipes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Tabla de materiales para recetas
+export const recipeIngredients = pgTable("recipe_ingredients", {
+  id: serial("id").primaryKey(),
+  recipeId: integer("recipe_id").notNull().references(() => productRecipes.id),
+  materialName: text("material_name").notNull(), // Nombre del material (ej. "Leche de Cabra")
+  quantity: text("quantity").notNull(), // Cantidad en formato string (para manejar decimales)
+  unit: text("unit").default("kg"), // Unidad de medida (kg, litros, etc.)
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertRecipeIngredientSchema = createInsertSchema(recipeIngredients).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Tipos para recetas
+export type ProductRecipe = typeof productRecipes.$inferSelect;
+export type InsertProductRecipe = z.infer<typeof insertProductRecipeSchema>;
+
+export type RecipeIngredient = typeof recipeIngredients.$inferSelect;
+export type InsertRecipeIngredient = z.infer<typeof insertRecipeIngredientSchema>;

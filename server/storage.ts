@@ -7,6 +7,8 @@ import {
   folioCounters, FolioCounter, InsertFolioCounter,
   products, Product, InsertProduct,
   employees, Employee, InsertEmployee,
+  productRecipes, ProductRecipe, InsertProductRecipe,
+  recipeIngredients, RecipeIngredient, InsertRecipeIngredient,
   UserRole 
 } from "@shared/schema";
 import session from "express-session";
