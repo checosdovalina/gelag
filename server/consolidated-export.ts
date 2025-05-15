@@ -840,23 +840,58 @@ async function generatePDFAndSend(
         currentY = 40;
       }
       
-      // Comprobamos si tenemos solo una tabla de microbiología para decidir si mostrar el título
-      const isSingleMicrobiologiaTable = 
-        advancedTablesForThisEntry.length === 1 && 
-        (advancedTablesForThisEntry[0].fieldId.includes('microbiologia') || 
-         advancedTablesForThisEntry[0].fieldLabel.toLowerCase().includes('microbiologia'));
+      // Usamos una lógica simplificada para determinar si es microbiología
+      let isSingleMicrobiologiaTable = false;
+
+      // Solo verificar si es una tabla de microbiología si hay exactamente 1 tabla
+      if (advancedTablesForThisEntry.length === 1) {
+        const firstTable = advancedTablesForThisEntry[0];
+        const fieldLabel = firstTable?.fieldLabel || '';
+        const fieldId = firstTable?.fieldId || '';
+        
+        // Verificar por nombre o ID (formas más seguras)
+        if (fieldLabel.toLowerCase().includes("microbiologia") || 
+            fieldLabel.toLowerCase().includes("microbiología") ||
+            fieldId.includes("microbiologia")) {
+          isSingleMicrobiologiaTable = true;
+        }
+        
+        // También verificar por código de formulario/plantilla
+        const formCode = typeof entry.folioNumber === 'string' ? entry.folioNumber : '';
+        if (formCode && formCode.includes("CA-RE-15")) {
+          isSingleMicrobiologiaTable = true;
+        }
+      }
       
       // Solo mostramos el título de sección si no es una única tabla de microbiología (que ya tiene su propio título)
       if (!isSingleMicrobiologiaTable) {
+        // Hacer más atractivo el título con fondo y mejor centrado
+        const titleText = `Tablas de datos adicionales - ${entry.folioNumber || `Formulario #${entry.id}`}`;
+        const titleWidth = 350;
+        const titleHeight = 22;
+        const titleX = (pageWidth - titleWidth) / 2;
+        
+        // Dibujar un fondo para el título
+        doc.fillColor('#f5f5f5')
+           .rect(titleX, currentY, titleWidth, titleHeight)
+           .fill();
+        
+        // Dibujar un borde para el título
+        doc.lineWidth(1)
+           .rect(titleX, currentY, titleWidth, titleHeight)
+           .stroke('#2a4d69');
+        
+        // Escribir el texto del título centrado
         doc.fontSize(11)
            .font('Helvetica-Bold')
            .fillColor('#2a4d69')
-           .text(`Tablas de datos adicionales - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
-             width: pageWidth - 80,
-             align: 'center'
+           .text(titleText, titleX, currentY + 5, {
+             align: 'center',
+             width: titleWidth
            });
         
-        currentY += 15;
+        // Actualizar la posición Y después del título
+        currentY += titleHeight + 10;
       }
       
       // Renderizar cada tabla avanzada directamente debajo del registro

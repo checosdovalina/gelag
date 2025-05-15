@@ -580,39 +580,56 @@ function generatePDFContent(
         doc.moveDown(2);
       }
       
-      // Solo mostramos el título general si hay más de una tabla
-      // o si la tabla no es de microbiología (que ya tiene su propio título)
-      const firstTable = advancedTables[0];
-      const isSingleMicrobiologiaTable = 
-        advancedTables.length === 1 && 
-        (firstTable.field.label.toLowerCase().includes("microbiologia") ||
-         (firstTable.field.advancedTableConfig?.sections?.length === 1 && 
-          firstTable.field.advancedTableConfig.sections[0].columns.some(
-            (col: any) => col.id.includes('mesofilo') || 
-                         col.label.includes('Mesofilo') || 
-                         col.id.includes('salmonella')
-          )
-        ));
+      // Usamos una lógica simplificada para determinar si es microbiología
+      let isSingleMicrobiologiaTable = false;
+
+      // Solo verificar si es una tabla de microbiología si hay exactamente 1 tabla
+      if (advancedTables.length === 1) {
+        const firstTable = advancedTables[0];
+        const fieldLabel = firstTable?.field?.label || '';
+        
+        // Verificar por nombre (forma más segura)
+        if (fieldLabel.toLowerCase().includes("microbiologia") || 
+            fieldLabel.toLowerCase().includes("microbiología")) {
+          isSingleMicrobiologiaTable = true;
+        }
+        
+        // También revisar código de formulario para CA-RE-15
+        if (template.name && template.name.includes("CA-RE-15")) {
+          isSingleMicrobiologiaTable = true;
+        }
+      }
       
       // Solo mostramos el título general si no es una única tabla de microbiología
       if (!isSingleMicrobiologiaTable) {
-        doc.fontSize(14).font('Helvetica-Bold').fillColor('#000')
-           .text('TABLAS DE DATOS ADICIONALES', {
+        // Hacer más atractivo el título con fondo y mejor centrado
+        const titleText = 'TABLAS DE DATOS ADICIONALES';
+        const titleWidth = 350;
+        const titleHeight = 25;
+        const titleX = (pageWidth - titleWidth) / 2;
+        const titleY = doc.y;
+        
+        // Dibujar un fondo para el título
+        doc.fillColor('#f5f5f5')
+           .rect(titleX, titleY, titleWidth, titleHeight)
+           .fill();
+        
+        // Dibujar un borde para el título
+        doc.lineWidth(1)
+           .rect(titleX, titleY, titleWidth, titleHeight)
+           .stroke('#2a4d69');
+        
+        // Escribir el texto del título centrado
+        doc.fontSize(14)
+           .font('Helvetica-Bold')
+           .fillColor('#2a4d69')
+           .text(titleText, titleX, titleY + 5, {
              align: 'center',
-             width: pageWidth - 100
+             width: titleWidth
            });
         
-        // Agregar una línea decorativa bajo el título
-        const titleWidth = 300;
-        const titleLineY = doc.y + 5;
-        const titleLineX = (pageWidth - titleWidth) / 2;
-        
-        doc.moveTo(titleLineX, titleLineY)
-           .lineTo(titleLineX + titleWidth, titleLineY)
-           .lineWidth(1)
-           .stroke();
-        
-        doc.moveDown(1);
+        // Espacio después del título
+        doc.y = titleY + titleHeight + 10;
       }
       
       // Renderizar cada tabla avanzada
