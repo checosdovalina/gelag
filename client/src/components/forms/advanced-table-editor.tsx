@@ -1300,7 +1300,16 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Toggle para filas dinámicas
   const toggleDynamicRows = () => {
-    updateValue({ dynamicRows: !(value && value.dynamicRows) });
+    // Crear un objeto completamente nuevo para evitar problemas de referencia
+    const newConfig = {
+      ...value,  // Copiamos todo el valor actual
+      dynamicRows: !(value && value.dynamicRows) // Y sobrescribimos dynamicRows
+    };
+    
+    // Usar directamente onChange en lugar de updateValue para garantizar que
+    // se pase el objeto completo y no solo el campo dynamicRows
+    console.log("Cambiando filas dinámicas a:", !(value && value.dynamicRows));
+    onChange(newConfig);
   };
 
   // Duplicar columna
