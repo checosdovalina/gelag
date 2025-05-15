@@ -3,12 +3,14 @@
  * Basados en los IDs exactos que aparecen en el reporte
  */
 export const microbiologyHeaders: Record<string, string> = {
+  // IDs exactos que han aparecido en los logs
   "28e24f6f": "Mesófilo",
   "3084603": "Coliformes", 
   "39c28f8": "E. Coli",
   "a2a4db54": "Producto",
   "a3e4f9fa": "Fecha",
   "a4ca5ad": "Salmonella",
+  "a4ce5ad3": "Salmonella", // Variante detectada en los logs
   "a835a31b": "Listeria", 
   "c0a838ef": "Lote",
   "ff43d9d4": "Resultado"

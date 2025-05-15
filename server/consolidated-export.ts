@@ -284,15 +284,15 @@ function renderAdvancedTable(
         displayValue = cellValue ? 'Sí' : 'No';
         isBooleanValue = true;
       }
-      else if (cellValue === 'Si' || cellValue === 'Sí') {
+      else if (cellValue === 'Si' || cellValue === 'Sí' || cellValue === 'si' || cellValue === 'sí') {
         displayValue = 'Sí';
         isBooleanValue = true;
       }
-      else if (cellValue === 'No') {
+      else if (cellValue === 'No' || cellValue === 'no') {
         displayValue = 'No';
         isBooleanValue = true;
       }
-      else if (cellValue === 'NA' || cellValue === 'N/A') {
+      else if (cellValue === 'NA' || cellValue === 'N/A' || cellValue === 'na' || cellValue === 'n/a') {
         displayValue = 'N/A';
         isBooleanValue = true;
       }
@@ -312,12 +312,16 @@ function renderAdvancedTable(
       // Establecer color según el tipo de dato
       if (isBooleanValue) {
         if (displayValue === 'Sí') {
-          doc.fillColor('#166534'); // Verde oscuro para Sí
+          doc.fillColor('#047857'); // Verde para Sí
         } else if (displayValue === 'No') {
-          doc.fillColor('#991b1b'); // Rojo oscuro para No
+          doc.fillColor('#b91c1c'); // Rojo para No
         } else {
-          doc.fillColor('#525252'); // Gris para N/A
+          doc.fillColor('#6b7280'); // Gris para N/A
         }
+      } else if (headerText === 'Salmonella' && displayValue.toLowerCase() === 'ausencia') {
+        doc.fillColor('#047857'); // Verde para ausencia de Salmonella
+      } else if (headerText === 'Salmonella' && displayValue.toLowerCase() === 'presencia') {
+        doc.fillColor('#b91c1c'); // Rojo para presencia de Salmonella
       } else {
         doc.fillColor('#000000'); // Negro normal para otros valores
       }
