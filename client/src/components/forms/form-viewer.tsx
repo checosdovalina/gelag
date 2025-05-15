@@ -650,22 +650,100 @@ export default function FormViewer({
         key={field.id}
         control={form.control}
         name={field.id}
-        render={({ field: formField }) => (
-          <FormItem className="w-full space-y-2">
-            <FormLabel className="text-lg font-semibold">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
-            </FormLabel>
-            <div className="border rounded-lg overflow-hidden">
-              <AdvancedTableViewer
-                field={field}
-                value={formField.value || []}
-                onChange={formField.onChange}
-                readOnly={isReadOnly}
-              />
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={({ field: formField }) => {
+          // Asegurarnos de que siempre exista un valor para el campo
+          let existingData = formField.value;
+          
+          // Si no hay datos o los datos están vacíos, inicializamos
+          if (!existingData || !Array.isArray(existingData) || existingData.length === 0) {
+            console.log(`Inicializando tabla avanzada ${field.id}`);
+            
+            // Usar los datos iniciales definidos en la configuración o crear filas vacías
+            let initialData = [];
+            
+            if (field.advancedTableConfig && field.advancedTableConfig.initialData && 
+                Array.isArray(field.advancedTableConfig.initialData) && 
+                field.advancedTableConfig.initialData.length > 0) {
+              // Usar los datos predefinidos en la configuración
+              initialData = JSON.parse(JSON.stringify(field.advancedTableConfig.initialData));
+              console.log(`Usando datos iniciales de la configuración:`, initialData);
+            } else if (field.advancedTableConfig && field.advancedTableConfig.rows) {
+              // Crear filas vacías basadas en la configuración
+              initialData = Array(field.advancedTableConfig.rows).fill().map(() => ({}));
+              console.log(`Creando ${field.advancedTableConfig.rows} filas vacías`);
+            } else {
+              // Si no hay configuración, crear al menos una fila vacía
+              initialData = [{}];
+              console.log(`Creando una fila vacía por defecto`);
+            }
+            
+            // Establecer los datos iniciales
+            form.setValue(field.id, initialData, {
+              shouldDirty: true,
+              shouldTouch: true,
+              shouldValidate: true
+            });
+            
+            existingData = initialData;
+          }
+          
+          // Función para manejar cambios en la tabla y asegurar guardado
+          const handleTableChange = (newData: Record<string, any>[]) => {
+            console.log(`[renderAdvancedTableField] Actualizando tabla ${field.id} con datos:`, newData);
+            
+            // Crear copia profunda para evitar problemas de referencia
+            const dataCopy = JSON.parse(JSON.stringify(newData));
+            
+            // Actualizar el formulario con los nuevos datos
+            form.setValue(field.id, dataCopy, { 
+              shouldDirty: true,
+              shouldTouch: true,
+              shouldValidate: true 
+            });
+            
+            // También actualizamos el valor local del campo
+            formField.onChange(dataCopy);
+          };
+          
+          return (
+            <FormItem className="w-full space-y-2">
+              <FormLabel className="text-lg font-semibold">
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </FormLabel>
+              <div className="border rounded-lg overflow-hidden">
+                <AdvancedTableViewer
+                  field={field}
+                  value={existingData}
+                  onChange={handleTableChange}
+                  readOnly={isReadOnly}
+                />
+              </div>
+              {!isReadOnly && (
+                <div className="flex justify-end">
+                  <Button 
+                    type="button" 
+                    onClick={() => {
+                      // Forzar guardado de los datos actuales
+                      const currentData = form.getValues(field.id);
+                      console.log(`[Guardar Tabla] Guardando datos de tabla ${field.id}:`, currentData);
+                      form.setValue(field.id, JSON.parse(JSON.stringify(currentData)), {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                        shouldValidate: true
+                      });
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    size="sm"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Guardar Tabla
+                  </Button>
+                </div>
+              )}
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
     );
   };
