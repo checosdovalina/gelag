@@ -247,7 +247,18 @@ function generatePDFContent(
     // Agrupar campos por sección si existe la propiedad section
     const sections: Record<string, any[]> = {};
     
+    // Guardar los campos de tablas avanzadas para procesarlos después
+    const advancedTables: any[] = [];
+    
     fields.forEach(field => {
+      // Si es un campo de tabla avanzada, lo guardamos para procesarlo después
+      if (field.type === 'advancedTable' && entry.data[field.id]) {
+        advancedTables.push({
+          field,
+          data: entry.data[field.id]
+        });
+      }
+      
       const sectionName = field.section || 'General';
       if (!sections[sectionName]) {
         sections[sectionName] = [];
@@ -346,6 +357,10 @@ function generatePDFContent(
               console.error("Error al formatear fecha:", e);
             }
           }
+        } else if (field.type === 'advancedTable') {
+          // Para campos de tabla avanzada, se maneja de manera especial
+          // y se renderiza más adelante, no aquí
+          fieldValue = '[Ver tabla más abajo]';
         } else if (Array.isArray(fieldValue)) {
           // Detectar valores de buenas prácticas en arrays
           if (fieldValue.length === 1 && typeof fieldValue[0] === 'string') {
@@ -460,6 +475,10 @@ function generatePDFContent(
                 console.error("Error al formatear fecha:", e);
               }
             }
+          } else if (field.type === 'advancedTable') {
+            // Para campos de tabla avanzada, se maneja de manera especial
+            // y se renderiza más adelante, no aquí
+            fieldValue = '[Ver tabla más abajo]';
           } else if (Array.isArray(fieldValue)) {
             // Detectar valores de buenas prácticas en arrays
             if (fieldValue.length === 1 && typeof fieldValue[0] === 'string') {
