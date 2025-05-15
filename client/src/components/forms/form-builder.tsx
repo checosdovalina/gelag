@@ -648,7 +648,13 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                               <AdvancedTableEditor
                                                 value={field.value}
                                                 onChange={(newConfig) => {
-                                                  form.setValue(`fields.${index}.advancedTableConfig`, newConfig);
+                                                  // Asegurarse de que el campo esté correctamente configurado
+                                                  const safeCopy = JSON.parse(JSON.stringify(newConfig));
+                                                  form.setValue(`fields.${index}.advancedTableConfig`, safeCopy, {
+                                                    shouldDirty: true,
+                                                    shouldTouch: true,
+                                                    shouldValidate: true
+                                                  });
                                                 }}
                                               />
                                               <FormMessage />
