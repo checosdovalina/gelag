@@ -580,24 +580,40 @@ function generatePDFContent(
         doc.moveDown(2);
       }
       
-      // Título para la sección de tablas con estilo mejorado
-      doc.fontSize(14).font('Helvetica-Bold').fillColor('#000')
-         .text('TABLAS DE DATOS ADICIONALES', {
-           align: 'center',
-           width: pageWidth - 100
-         });
+      // Solo mostramos el título general si hay más de una tabla
+      // o si la tabla no es de microbiología (que ya tiene su propio título)
+      const firstTable = advancedTables[0];
+      const isSingleMicrobiologiaTable = 
+        advancedTables.length === 1 && 
+        (firstTable.field.label.toLowerCase().includes("microbiologia") ||
+         (firstTable.field.advancedTableConfig?.sections?.length === 1 && 
+          firstTable.field.advancedTableConfig.sections[0].columns.some(
+            (col: any) => col.id.includes('mesofilo') || 
+                         col.label.includes('Mesofilo') || 
+                         col.id.includes('salmonella')
+          )
+        ));
       
-      // Agregar una línea decorativa bajo el título
-      const titleWidth = 300;
-      const titleLineY = doc.y + 5;
-      const titleLineX = (pageWidth - titleWidth) / 2;
-      
-      doc.moveTo(titleLineX, titleLineY)
-         .lineTo(titleLineX + titleWidth, titleLineY)
-         .lineWidth(1)
-         .stroke();
-      
-      doc.moveDown(1);
+      // Solo mostramos el título general si no es una única tabla de microbiología
+      if (!isSingleMicrobiologiaTable) {
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#000')
+           .text('TABLAS DE DATOS ADICIONALES', {
+             align: 'center',
+             width: pageWidth - 100
+           });
+        
+        // Agregar una línea decorativa bajo el título
+        const titleWidth = 300;
+        const titleLineY = doc.y + 5;
+        const titleLineX = (pageWidth - titleWidth) / 2;
+        
+        doc.moveTo(titleLineX, titleLineY)
+           .lineTo(titleLineX + titleWidth, titleLineY)
+           .lineWidth(1)
+           .stroke();
+        
+        doc.moveDown(1);
+      }
       
       // Renderizar cada tabla avanzada
       advancedTables.forEach((tableData, tableIndex) => {

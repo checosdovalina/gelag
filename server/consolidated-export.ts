@@ -840,16 +840,24 @@ async function generatePDFAndSend(
         currentY = 40;
       }
       
-      // Título de sección incluido junto al registro
-      doc.fontSize(11)
-         .font('Helvetica-Bold')
-         .fillColor('#2a4d69')
-         .text(`Tablas de datos adicionales - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
-           width: pageWidth - 80,
-           align: 'center'
-         });
+      // Comprobamos si tenemos solo una tabla de microbiología para decidir si mostrar el título
+      const isSingleMicrobiologiaTable = 
+        advancedTablesForThisEntry.length === 1 && 
+        (advancedTablesForThisEntry[0].fieldId.includes('microbiologia') || 
+         advancedTablesForThisEntry[0].fieldLabel.toLowerCase().includes('microbiologia'));
       
-      currentY += 15;
+      // Solo mostramos el título de sección si no es una única tabla de microbiología (que ya tiene su propio título)
+      if (!isSingleMicrobiologiaTable) {
+        doc.fontSize(11)
+           .font('Helvetica-Bold')
+           .fillColor('#2a4d69')
+           .text(`Tablas de datos adicionales - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
+             width: pageWidth - 80,
+             align: 'center'
+           });
+        
+        currentY += 15;
+      }
       
       // Renderizar cada tabla avanzada directamente debajo del registro
       for (const table of advancedTablesForThisEntry) {
