@@ -598,7 +598,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
         </div>
       )}
       <div className="w-full overflow-x-auto max-h-[600px]">
-        <Table className="min-w-full table-fixed">
+        <Table className="min-w-full table-fixed border-collapse">
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
@@ -606,11 +606,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                 <TableHead
                   key={idx}
                   colSpan={section.colspan || section.columns.length}
-                  className="text-center bg-muted font-bold"
+                  className="text-center bg-primary text-primary-foreground font-bold py-2"
                 >
                   {section.title}
                 </TableHead>
               ))}
+              {config.dynamicRows && !readOnly && (
+                <TableHead className="w-10 bg-primary"></TableHead>
+              )}
             </TableRow>
 
             {/* Encabezados de columna */}
@@ -626,13 +629,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                             column.type === 'select' ? '100px' : 
                             column.type === 'number' ? '80px' : '100px'
                   }}
-                  className="text-center whitespace-nowrap"
+                  className="text-center whitespace-nowrap bg-muted p-2 border border-border"
                 >
                   {column.header}
                 </TableHead>
               ))}
               {config.dynamicRows && !readOnly && (
-                <TableHead className="w-10"></TableHead>
+                <TableHead className="w-10 bg-muted"></TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -640,18 +643,18 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           <TableBody>
             {/* Datos de la tabla */}
             {tableData.map((rowData, rowIndex) => (
-              <TableRow key={rowIndex}>
+              <TableRow key={rowIndex} className="hover:bg-muted/30">
                 {allColumns.map((column) => (
                   <TableCell 
                     key={`${rowIndex}-${column.id}`} 
-                    className={`p-1 ${column.dependency ? 'bg-blue-50' : ''}`}>
+                    className={`p-1 border border-border ${column.dependency ? 'bg-blue-50' : ''}`}>
                     {column.type === 'text' && (
                       <Input
                         type="text"
                         value={rowData[column.id] || ''}
                         onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
-                        className="h-8"
+                        className="h-8 w-full"
                       />
                     )}
                     {column.type === 'number' && (
@@ -660,7 +663,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         value={rowData[column.id] || ''}
                         onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
-                        className="h-8"
+                        className="h-8 w-full"
                         min={column.validation?.min}
                         max={column.validation?.max}
                       />
@@ -671,7 +674,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={readOnly || column.readOnly}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className="h-8 w-full border-muted min-w-[80px]">
                           <SelectValue placeholder="Seleccionar..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -698,7 +701,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         value={rowData[column.id] || ''}
                         onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
-                        className="h-8"
+                        className="h-8 w-full"
                       />
                     )}
                     {column.type === 'employee' && (
@@ -707,7 +710,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={readOnly || column.readOnly || loadingEmployees}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className="h-8 w-full border-muted min-w-[80px]">
                           <SelectValue placeholder="Seleccionar empleado..." />
                         </SelectTrigger>
                         <SelectContent>
