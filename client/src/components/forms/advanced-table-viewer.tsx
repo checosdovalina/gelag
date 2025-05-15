@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
-import { Plus, Trash, Save, AlertCircle, Info } from "lucide-react";
+import { Plus, Trash, Save, AlertCircle, Info, MoveHorizontal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -599,7 +599,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       )}
       <div className="relative mb-1 text-xs text-muted-foreground flex justify-end pr-3">
         <span>
-          <ArrowsHorizontal className="h-3 w-3 inline mr-1" />
+          <MoveHorizontal className="h-3 w-3 inline mr-1" />
           Desliza horizontalmente para ver más columnas
         </span>
       </div>
