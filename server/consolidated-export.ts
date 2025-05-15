@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { FormEntry, FormTemplate, User } from '@shared/schema';
 import { storage } from './storage';
-import { Workbook } from 'exceljs';
+import ExcelJS from 'exceljs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -953,7 +953,7 @@ async function generateExcelAndSend(
   const tempFilePath = path.join(tempDir, `${fileName}_${Date.now()}.xlsx`);
   
   // Crear un workbook
-  const workbook = new Workbook();
+  const workbook = new ExcelJS.Workbook();
   
   // Primera hoja: Resumen
   const summarySheet = workbook.addWorksheet('Resumen');
