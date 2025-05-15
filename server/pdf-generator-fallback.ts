@@ -779,8 +779,10 @@ function generatePDFContent(
         let y = doc.y;
         
         // Calcular altura para celdas (un poco más alta para cabeceras)
-        const headerHeight = 25;
-        const rowHeight = 20;
+        // En formato horizontal tenemos más espacio para el ancho pero menos para el alto
+        const isLandscape = doc.page.size[0] > doc.page.size[1]; // Ancho > Alto = Horizontal
+        const headerHeight = isLandscape ? 20 : 25;
+        const rowHeight = isLandscape ? 18 : 20;
         
         // Dibujar fondo de la cabecera
         doc.rect(x, y, tableWidth, headerHeight)
@@ -799,7 +801,7 @@ function generatePDFContent(
           }
           
           // Dibujar el texto del encabezado
-          doc.fillColor('#000000').fontSize(8).font('Helvetica-Bold')
+          doc.fillColor('#000000').fontSize(isLandscape ? 7 : 8).font('Helvetica-Bold')
              .text(column.header, x + 3, y + 8, { 
                width: colWidth - 6,
                align: 'center',
@@ -869,7 +871,7 @@ function generatePDFContent(
             }
             
             // Dibujar el texto de la celda
-            doc.fillColor('#000000').fontSize(8).font('Helvetica')
+            doc.fillColor('#000000').fontSize(isLandscape ? 7 : 8).font('Helvetica')
                .text(cellValue.toString(), x + 3, y + 6, { 
                  width: colWidth - 6,
                  align: 'center',
