@@ -1087,7 +1087,15 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   const handleUpdateRows = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rows = parseInt(e.target.value);
     if (!isNaN(rows) && rows > 0) {
-      updateValue({ rows });
+      // Crear un objeto completamente nuevo con todas las propiedades actuales
+      const newConfig = {
+        ...value,  // Mantener todas las propiedades existentes
+        rows: rows  // Sobrescribir solo el número de filas
+      };
+      
+      // Usar directamente onChange en lugar de updateValue
+      console.log("Cambiando número de filas a:", rows);
+      onChange(newConfig);
       
       // Actualizar los datos de vista previa
       if (rows > previewData.length) {
