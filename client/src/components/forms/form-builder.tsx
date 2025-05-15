@@ -576,6 +576,44 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                       />
                                     </div>
                                   )}
+                                  
+                                  {form.watch(`fields.${index}.type`) === "product" && (
+                                    <div className="space-y-4">
+                                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                                        <div className="space-y-0.5">
+                                          <FormLabel>Autocompletado de Recetas</FormLabel>
+                                          <FormDescription>
+                                            Habilitar el autocompletado de ingredientes cuando se selecciona un producto
+                                          </FormDescription>
+                                        </div>
+                                        <UIFormField
+                                          control={form.control}
+                                          name={`fields.${index}.features`}
+                                          render={({ field }) => {
+                                            const features = field.value || [];
+                                            const hasRecipeAutocomplete = features.includes('recipeAutocomplete');
+                                            
+                                            return (
+                                              <FormControl>
+                                                <Switch
+                                                  checked={hasRecipeAutocomplete}
+                                                  onCheckedChange={(checked) => {
+                                                    let newFeatures = [...features];
+                                                    if (checked && !hasRecipeAutocomplete) {
+                                                      newFeatures.push('recipeAutocomplete');
+                                                    } else if (!checked && hasRecipeAutocomplete) {
+                                                      newFeatures = newFeatures.filter(f => f !== 'recipeAutocomplete');
+                                                    }
+                                                    field.onChange(newFeatures);
+                                                  }}
+                                                />
+                                              </FormControl>
+                                            );
+                                          }}
+                                        />
+                                      </FormItem>
+                                    </div>
+                                  )}
 
                                   {form.watch(`fields.${index}.type`) === "advancedTable" && (
                                     <div>
