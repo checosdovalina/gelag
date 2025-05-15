@@ -593,30 +593,47 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
         const content = e.target?.result as string;
         const parsedData = JSON.parse(content);
         
-        // Verificar que el archivo contiene la estructura esperada
+        // Intentar identificar la estructura correcta del archivo
+        let config;
+        
         if (parsedData && parsedData.advancedTableConfig) {
-          const config = parsedData.advancedTableConfig;
-          
-          // Aplicar la configuración importada
-          updateValue(config);
-          
-          toast({
-            title: "Plantilla importada",
-            description: `Se importó "${parsedData.name || 'Plantilla personalizada'}" exitosamente`,
-            variant: "default",
-          });
-          
-          // Cambiar a la vista previa
-          setActiveTab("preview");
-          setTabsVisited(prev => ({...prev, preview: true}));
+          // Formato 1: Objeto con propiedad advancedTableConfig
+          config = parsedData.advancedTableConfig;
+        } else if (parsedData && parsedData.sections) {
+          // Formato 2: Configuración directa con secciones
+          config = parsedData;
+        } else if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].title) {
+          // Formato 3: Array de secciones
+          config = {
+            rows: 5,
+            dynamicRows: true,
+            sections: parsedData
+          };
         } else {
-          throw new Error("Formato de archivo incorrecto");
+          throw new Error("Formato de archivo no reconocido");
         }
+        
+        // Asegurarse de hacer una copia profunda para evitar problemas de referencia
+        const safeConfig = JSON.parse(JSON.stringify(config));
+        
+        // Aplicar la configuración importada y hacer una copia profunda
+        console.log("Aplicando configuración importada:", safeConfig);
+        onChange(safeConfig);
+        
+        toast({
+          title: "Plantilla importada",
+          description: `Se importó "${parsedData.name || 'Plantilla personalizada'}" exitosamente`,
+          variant: "default",
+        });
+        
+        // Cambiar a la vista previa
+        setActiveTab("preview");
+        setTabsVisited(prev => ({...prev, preview: true}));
       } catch (error) {
         console.error("Error al procesar el archivo:", error);
         toast({
           title: "Error al importar",
-          description: "El archivo no tiene el formato correcto",
+          description: "El archivo no tiene el formato correcto: " + (error instanceof Error ? error.message : "Error desconocido"),
           variant: "destructive",
         });
       }
