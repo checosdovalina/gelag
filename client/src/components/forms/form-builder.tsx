@@ -47,6 +47,7 @@ const defaultField: FormField = {
   label: "",
   displayName: "",  // Añadimos el campo displayName para que se incluya en el formulario
   displayOrder: 0,  // Y también displayOrder para controlar el orden en reportes
+  features: [],     // Características especiales como autocompletado de recetas
   required: false,
   placeholder: "",
 };
