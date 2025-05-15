@@ -252,86 +252,113 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Actualizar una celda
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
-    console.log("[updateCell] Actualizando celda en fila", rowIndex, "columna", columnId, "valor:", value, "tipo:", typeof value);
-    
-    // Realizar una copia profunda de los datos actuales
-    const newData = JSON.parse(JSON.stringify(tableData));
-    
-    // Asegurarnos de que la fila existe
-    if (!newData[rowIndex]) {
-      newData[rowIndex] = {};
-    }
-    
-    // Actualizar el valor en la celda
-    newData[rowIndex][columnId] = value;
-    
-    // Guardar esto para determinar si necesitamos actualizar el estado
-    const prevData = JSON.stringify(tableData);
-    const updatedData = JSON.stringify(newData);
-    const hasDataChanged = prevData !== updatedData;
-    
-    console.log("[updateCell] Datos cambiados:", hasDataChanged);
-    
-    // Verificar si es un campo de proceso o litros para actualizar las materias primas
-    const column = allColumns.find(col => col.id === columnId);
-    if (column) {
-      // Si es columna de producto y el valor ha cambiado, recalcular
-      if (column.type === 'product') {
-        // Buscar columna de litros (asumiendo que tiene "litros" en el nombre)
-        const litersColumn = allColumns.find(col => 
-          col.header?.toLowerCase().includes('litro') || 
-          col.id.toLowerCase().includes('litro')
-        );
-        
-        if (litersColumn) {
-          const liters = parseFloat(newData[0]?.[litersColumn.id] || '0');
-          if (!isNaN(liters) && liters > 0) {
-            // Actualizar todas las filas de materia prima basado en el producto y litros
-            console.log("[updateCell] Calculando materias primas para producto:", value, "litros:", liters);
-            updateRawMaterials(value, liters);
-            return; // Permitimos que updateRawMaterials actualice los datos
+    try {
+      console.log("[updateCell] 🔄 Actualizando celda en fila", rowIndex, "columna", columnId, "valor:", value, "tipo:", typeof value);
+      
+      // Realizar una copia profunda de los datos actuales
+      const newData = JSON.parse(JSON.stringify(tableData));
+      
+      // Asegurarnos de que la fila existe
+      if (!newData[rowIndex]) {
+        newData[rowIndex] = {};
+      }
+      
+      // Actualizar el valor en la celda (convertir a número si es posible)
+      if (typeof value === "string" && !isNaN(Number(value))) {
+        newData[rowIndex][columnId] = Number(value);
+      } else {
+        newData[rowIndex][columnId] = value;
+      }
+      
+      console.log("[updateCell] ⚠️ FORZANDO actualización de datos de tabla");
+      
+      // Verificar si es un campo de proceso o litros para actualizar las materias primas
+      const column = allColumns.find(col => col.id === columnId);
+      if (column) {
+        // Si es columna de producto, recalcular
+        if (column.type === 'product') {
+          // Buscar columna de litros (asumiendo que tiene "litros" en el nombre)
+          const litersColumn = allColumns.find(col => 
+            col.header?.toLowerCase().includes('litro') || 
+            col.id.toLowerCase().includes('litro')
+          );
+          
+          if (litersColumn) {
+            const liters = parseFloat(newData[0]?.[litersColumn.id] || '0');
+            if (!isNaN(liters) && liters > 0) {
+              // Actualizar todas las filas de materia prima basado en el producto y litros
+              console.log("[updateCell] Calculando materias primas para producto:", value, "litros:", liters);
+              updateRawMaterials(value, liters);
+              return; // Permitimos que updateRawMaterials actualice los datos
+            }
           }
-        }
-      } 
-      // Si es columna de litros y el valor ha cambiado, recalcular
-      else if (column.header?.toLowerCase().includes('litro') || column.id.toLowerCase().includes('litro')) {
-        const liters = parseFloat(value || '0');
-        
-        // Buscar columna de producto
-        const productColumn = allColumns.find(col => col.type === 'product');
-        if (productColumn && !isNaN(liters) && liters > 0) {
-          const productValue = newData[0]?.[productColumn.id];
-          if (productValue) {
-            // Actualizar todas las filas de materia prima basado en el producto y litros
-            console.log("[updateCell] Calculando materias primas para producto:", productValue, "litros:", liters);
-            updateRawMaterials(productValue, liters);
-            return; // Permitimos que updateRawMaterials actualice los datos
+        } 
+        // Si es columna de litros, recalcular
+        else if (column.header?.toLowerCase().includes('litro') || column.id.toLowerCase().includes('litro')) {
+          const liters = parseFloat(value || '0');
+          
+          // Buscar columna de producto
+          const productColumn = allColumns.find(col => col.type === 'product');
+          if (productColumn && !isNaN(liters) && liters > 0) {
+            const productValue = newData[0]?.[productColumn.id];
+            if (productValue) {
+              // Actualizar todas las filas de materia prima basado en el producto y litros
+              console.log("[updateCell] Calculando materias primas para producto:", productValue, "litros:", liters);
+              updateRawMaterials(productValue, liters);
+              return; // Permitimos que updateRawMaterials actualice los datos
+            }
           }
         }
       }
-    }
-    
-    // Si los datos han cambiado realmente, actualizar el estado
-    if (hasDataChanged) {
-      console.log("[updateCell] Actualizando datos de tabla:", newData);
+      
+      // SIEMPRE actualizar el estado, independientemente de si cambiaron los datos
+      console.log("[updateCell] ⚠️ Actualizando datos de tabla:", newData);
       
       // Actualizamos los datos locales
       setTableData(newData);
       
-      // Importante: usamos un retraso para asegurar que la actualización 
+      // Importante: usamos un retraso mayor para asegurar que la actualización 
       // suceda después de que React haya procesado los cambios de estado
       setTimeout(() => {
         try {
-          // Asegurarnos de propagar una copia profunda al componente padre
-          const finalData = JSON.parse(JSON.stringify(newData));
-          console.log("[updateCell] Propagando cambios al componente padre:", finalData);
+          // Asegurarnos de propagar una copia TOTALMENTE nueva al componente padre
+          // Esto rompe TODAS las referencias posibles
+          const jsonString = JSON.stringify(newData);
+          const finalData = JSON.parse(jsonString);
+          
+          console.log("[updateCell] ⚠️ FORZANDO propagación de cambios al componente padre:", finalData);
           onChange(finalData);
+          
+          // Crear un mensaje visual temporal de confirmación
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
+          toast.innerHTML = `<span class="mr-1">●</span> Celda actualizada`;
+          document.body.appendChild(toast);
+          
+          // Eliminar mensaje después de 1 segundo
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 1000);
         } catch (error) {
-          console.error("[updateCell] Error al propagar cambios:", error);
+          console.error("[updateCell] ❌ Error al propagar cambios:", error);
+          
+          // Mensaje de error visual
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
+          toast.innerHTML = '<span class="mr-1">●</span> Error al actualizar';
+          document.body.appendChild(toast);
+          
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 2000);
         }
-      }, 50);
-    } else {
-      console.log("[updateCell] No se detectaron cambios en los datos, omitiendo actualización");
+      }, 100); // Aumentado a 100ms
+    } catch (error) {
+      console.error("[updateCell] ❌ Error crítico en la función:", error);
     }
   };
   
@@ -415,70 +442,134 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Agregar una nueva fila (si está habilitado)
   const addRow = () => {
-    if (!config.dynamicRows) {
-      console.log("[addRow] Filas dinámicas no están habilitadas, no se puede agregar fila");
-      return;
-    }
-    
-    // Crear una copia profunda para evitar referencias
-    const currentData = JSON.parse(JSON.stringify(tableData));
-    const newRow = {};
-    
-    // Agregar la nueva fila y actualizar los datos locales
-    const newData = [...currentData, newRow];
-    console.log("[addRow] Añadiendo nueva fila. Datos actualizados:", newData);
-    
-    // Actualizar el estado local
-    setTableData(newData);
-    
-    // Notificar al componente padre con una pequeña demora
-    setTimeout(() => {
-      try {
-        const finalData = JSON.parse(JSON.stringify(newData));
-        console.log("[addRow] Propagando cambios al componente padre:", finalData);
-        onChange(finalData);
-      } catch (error) {
-        console.error("[addRow] Error al propagar cambios:", error);
+    try {
+      if (!config.dynamicRows) {
+        console.log("[addRow] Filas dinámicas no están habilitadas, no se puede agregar fila");
+        return;
       }
-    }, 50);
+      
+      // Crear una copia profunda para evitar referencias
+      const currentData = JSON.parse(JSON.stringify(tableData));
+      const newRow = {};
+      
+      // Agregar la nueva fila y actualizar los datos locales
+      const newData = [...currentData, newRow];
+      console.log("[addRow] ⚠️ FORZANDO actualización con nueva fila. Datos:", newData);
+      
+      // Actualizar el estado local
+      setTableData(newData);
+      
+      // Notificar al componente padre con una pequeña demora MAYOR
+      setTimeout(() => {
+        try {
+          // Asegurarnos de propagar una copia TOTALMENTE nueva al componente padre
+          const jsonString = JSON.stringify(newData);
+          const finalData = JSON.parse(jsonString);
+          
+          console.log("[addRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
+          onChange(finalData);
+          
+          // Crear un mensaje visual temporal de confirmación
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
+          toast.innerHTML = `<span class="mr-1">●</span> Fila agregada correctamente`;
+          document.body.appendChild(toast);
+          
+          // Eliminar mensaje después de 1 segundo
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 1000);
+        } catch (error) {
+          console.error("[addRow] ❌ Error al propagar cambios:", error);
+          
+          // Mensaje de error visual
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
+          toast.innerHTML = '<span class="mr-1">●</span> Error al agregar fila';
+          document.body.appendChild(toast);
+          
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 2000);
+        }
+      }, 100); // Aumentado a 100ms para mayor seguridad
+    } catch (error) {
+      console.error("[addRow] ❌ Error crítico en la función:", error);
+    }
   };
 
   // Eliminar una fila (si está habilitado y hay más de una fila)
   const removeRow = (index: number) => {
-    if (!config.dynamicRows) {
-      console.log("[removeRow] Filas dinámicas no están habilitadas, no se puede eliminar fila");
-      return;
-    }
-    
-    if (tableData.length <= 1) {
-      console.log("[removeRow] No se puede eliminar la única fila de la tabla");
-      return;
-    }
-    
-    // Crear una copia profunda para evitar referencias
-    const currentData = JSON.parse(JSON.stringify(tableData));
-    if (index < 0 || index >= currentData.length) {
-      console.error("[removeRow] Índice fuera de rango:", index, "longitud:", currentData.length);
-      return;
-    }
-    
-    const newData = currentData.filter((_, i) => i !== index);
-    
-    console.log("[removeRow] Eliminando fila", index, "Datos actualizados:", newData);
-    
-    // Actualizar los datos locales
-    setTableData(newData);
-    
-    // Notificar al componente padre con una pequeña demora
-    setTimeout(() => {
-      try {
-        const finalData = JSON.parse(JSON.stringify(newData));
-        console.log("[removeRow] Propagando cambios al componente padre:", finalData);
-        onChange(finalData);
-      } catch (error) {
-        console.error("[removeRow] Error al propagar cambios:", error);
+    try {
+      if (!config.dynamicRows) {
+        console.log("[removeRow] Filas dinámicas no están habilitadas, no se puede eliminar fila");
+        return;
       }
-    }, 50);
+      
+      if (tableData.length <= 1) {
+        console.log("[removeRow] No se puede eliminar la única fila de la tabla");
+        return;
+      }
+      
+      // Crear una copia profunda para evitar referencias
+      const currentData = JSON.parse(JSON.stringify(tableData));
+      if (index < 0 || index >= currentData.length) {
+        console.error("[removeRow] Índice fuera de rango:", index, "longitud:", currentData.length);
+        return;
+      }
+      
+      const newData = currentData.filter((_: unknown, i: number) => i !== index);
+      
+      console.log("[removeRow] ⚠️ FORZANDO eliminación de fila", index, "Datos actualizados:", newData);
+      
+      // Actualizar los datos locales
+      setTableData(newData);
+      
+      // Notificar al componente padre con una pequeña demora
+      setTimeout(() => {
+        try {
+          // Asegurarnos de propagar una copia TOTALMENTE nueva al componente padre
+          const jsonString = JSON.stringify(newData);
+          const finalData = JSON.parse(jsonString);
+          
+          console.log("[removeRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
+          onChange(finalData);
+          
+          // Crear un mensaje visual temporal de confirmación
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
+          toast.innerHTML = `<span class="mr-1">●</span> Fila eliminada`;
+          document.body.appendChild(toast);
+          
+          // Eliminar mensaje después de 1 segundo
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 1000);
+        } catch (error) {
+          console.error("[removeRow] ❌ Error al propagar cambios:", error);
+          
+          // Mensaje de error visual
+          const toast = document.createElement('div');
+          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
+          toast.innerHTML = '<span class="mr-1">●</span> Error al eliminar fila';
+          document.body.appendChild(toast);
+          
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 2000);
+        }
+      }, 100); // Aumentado a 100ms para mayor seguridad
+    } catch (error) {
+      console.error("[removeRow] ❌ Error crítico en la función:", error);
+    }
   };
 
   // Obtener todas las columnas de todas las secciones
