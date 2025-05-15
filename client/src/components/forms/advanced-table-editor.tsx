@@ -617,8 +617,15 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
         const safeConfig = JSON.parse(JSON.stringify(config));
         
         // Aplicar la configuración importada y hacer una copia profunda
-        console.log("Aplicando configuración importada:", safeConfig);
-        onChange(safeConfig);
+        // Sanitizar la configuración
+        const sanitizedConfig = sanitizeTableConfig(safeConfig);
+        
+        console.log("Aplicando configuración sanitizada:", sanitizedConfig);
+        
+        // Aplicar usando updateValue con retraso
+        setTimeout(() => {
+          updateValue(sanitizedConfig);
+        }, 150);
         
         toast({
           title: "Plantilla importada",
