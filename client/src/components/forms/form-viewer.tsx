@@ -1297,7 +1297,49 @@ export default function FormViewer({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        
+        // Realizar una preparación especial para las tablas avanzadas
+        const formValues = form.getValues();
+        const formFields = formTemplate.fields || [];
+        
+        // Identificar todos los campos de tabla avanzada
+        const tableCampos = formFields.filter(field => field.type === 'advancedTable');
+        
+        // Para cada campo de tabla, asegurarse de que se realiza una copia profunda
+        if (tableCampos.length > 0) {
+          console.log("[FormViewer] Preparando tablas avanzadas para envío...");
+          
+          tableCampos.forEach(campo => {
+            try {
+              const id = campo.id;
+              const currentData = formValues[id];
+              
+              if (currentData) {
+                console.log(`[FormViewer] Procesando tabla ${id} con datos:`, currentData);
+                
+                // Realizar una copia profunda para romper referencias
+                const dataCopy = JSON.parse(JSON.stringify(currentData));
+                
+                // Forzar la actualización del valor en el formulario
+                form.setValue(id, dataCopy, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true
+                });
+                
+                console.log(`[FormViewer] Tabla ${id} procesada correctamente`);
+              }
+            } catch (error) {
+              console.error(`[FormViewer] Error al procesar tabla ${campo.id}:`, error);
+            }
+          });
+        }
+        
+        // Continuar con el envío normal del formulario
+        form.handleSubmit(onSubmit)(e);
+      }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
