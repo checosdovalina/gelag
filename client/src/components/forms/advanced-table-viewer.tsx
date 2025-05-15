@@ -678,14 +678,57 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                   colSpan={allColumns.length + 1}
                   className="text-center p-2"
                 >
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={addRow}
-                  >
-                    <Plus className="h-4 w-4 mr-1" /> Agregar Fila
-                  </Button>
+                  <div className="flex justify-center space-x-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={addRow}
+                    >
+                      <Plus className="h-4 w-4 mr-1" /> Agregar Fila
+                    </Button>
+                    
+                    <Button 
+                      type="button" 
+                      variant="default" 
+                      size="sm" 
+                      onClick={() => {
+                        try {
+                          // Forzar una copia profunda y actualización
+                          console.log("[saveTable] Guardando tabla con datos:", tableData);
+                          const copyData = JSON.parse(JSON.stringify(tableData));
+                          onChange(copyData);
+                          
+                          // Mensaje de confirmación visual
+                          const toast = document.createElement('div');
+                          toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
+                          toast.innerHTML = 'Tabla guardada correctamente';
+                          document.body.appendChild(toast);
+                          
+                          // Eliminar mensaje después de 2 segundos
+                          setTimeout(() => {
+                            document.body.removeChild(toast);
+                          }, 2000);
+                        } catch (error) {
+                          console.error("[saveTable] Error al guardar tabla:", error);
+                          
+                          // Mensaje de error visual
+                          const toast = document.createElement('div');
+                          toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
+                          toast.innerHTML = 'Error al guardar tabla';
+                          document.body.appendChild(toast);
+                          
+                          // Eliminar mensaje después de 2 segundos
+                          setTimeout(() => {
+                            document.body.removeChild(toast);
+                          }, 2000);
+                        }
+                      }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      Guardar Tabla
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
