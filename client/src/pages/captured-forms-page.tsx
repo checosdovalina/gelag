@@ -678,10 +678,10 @@ export default function CapturedFormsPage() {
       },
     },
     {
-      accessorKey: "lot_number",
+      accessorKey: "lotNumber",
       header: "Lote",
       cell: ({ row }) => {
-        const lotNumber = row.getValue("lot_number");
+        const lotNumber = row.getValue("lotNumber");
         if (!lotNumber) return <div className="text-muted-foreground">-</div>;
         return <div>{lotNumber as React.ReactNode}</div>;
       },
