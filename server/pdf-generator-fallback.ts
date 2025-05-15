@@ -1015,23 +1015,23 @@ function generatePDFContent(
     doc.moveDown(1);
   }
   
-  // Sección de firma (con diseño mejorado)
-  if (entry.signature) {
+  // Sección de firmas (con diseño mejorado para incluir dos firmas)
+  // Verificar si el formulario está firmado o si es un formulario aprobado
+  if (entry.signature || entry.status === 'SIGNED' || entry.status === 'APPROVED') {
     doc.moveDown(2);
     
-    // Crear una sección centrada para la firma con área distintiva
+    // Crear una sección para dos firmas en columnas
     const pageWidth = doc.page.width;
     const pageCenter = pageWidth / 2;
     
-    // Título simple "Firma" como en la imagen de referencia
-    // Centrado exactamente en la posición correspondiente al recuadro
+    // Título de la sección
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
-       .text('Firma', 0, doc.y, { 
+       .text('Firmas de autorización', 0, doc.y, { 
           align: 'center',
           width: pageWidth
        });
        
-    doc.moveDown(0.5);
+    doc.moveDown(1);
     
     // Dibujar un recuadro simple para la firma como en la imagen de referencia
     const signatureBoxWidth = 300;
