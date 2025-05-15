@@ -602,10 +602,12 @@ function generatePDFContent(
       
       // Solo mostramos el título general si no es una única tabla de microbiología
       if (!isSingleMicrobiologiaTable) {
-        // Hacer más atractivo el título con fondo y mejor centrado
+        // Hacer más atractivo el título con fondo y perfectamente centrado
         const titleText = 'TABLAS DE DATOS ADICIONALES';
-        const titleWidth = 350;
+        // Aumentamos el ancho para que ocupe más espacio en la página
+        const titleWidth = pageWidth * 0.7; // 70% del ancho de la página
         const titleHeight = 25;
+        // Centramos con precisión
         const titleX = (pageWidth - titleWidth) / 2;
         const titleY = doc.y;
         

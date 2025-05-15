@@ -13,7 +13,10 @@ export const microbiologyHeaders: Record<string, string> = {
   "a4ce5ad3": "Salmonella", // Variante detectada en los logs
   "a835a31b": "Listeria", 
   "c0a838ef": "Lote",
-  "ff43d9d4": "Resultado"
+  "ff43d9d4": "Resultado",
+  
+  // Nombre para el campo Registro
+  "42ed44a8": "REGISTRO DE MICROBIOLOGÍA"
 };
 
 /**
