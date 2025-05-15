@@ -361,6 +361,46 @@ const TABLE_TEMPLATES = [
     }
   },
   {
+    name: "Análisis Microbiológico",
+    icon: <Check className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 5,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Análisis Microbiológico",
+          columns: [
+            { 
+              id: uuidv4(), 
+              header: "Parámetro", 
+              type: "text", 
+              width: "200px",
+              readOnly: true
+            },
+            { 
+              id: uuidv4(), 
+              header: "Resultado", 
+              type: "select", 
+              width: "120px",
+              options: [
+                { label: "Si", value: "Si" },
+                { label: "No", value: "No" },
+                { label: "NA", value: "NA" }
+              ]
+            },
+            { 
+              id: uuidv4(), 
+              header: "Observaciones", 
+              type: "text", 
+              width: "300px" 
+            }
+          ]
+        }
+      ],
+      initialData: []
+    }
+  },
+  {
     name: "Tabla de Control de Proceso",
     icon: <ListChecks className="h-4 w-4 mr-2" />,
     config: {
