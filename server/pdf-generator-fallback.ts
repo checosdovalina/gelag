@@ -747,14 +747,29 @@ function generatePDFContent(
       function renderMicrobiologiaTable(doc, config, data, pageWidth) {
         console.log("Renderizando tabla de microbiología con formato tabular");
         
-        const tableWidth = pageWidth - 100;
-        const section = config.sections[0]; // Tomamos la primera sección
+        // Detectar si estamos en orientación horizontal
+        const isLandscape = doc.page.size[0] > doc.page.size[1];
+        
+        // Reducir márgenes en orientación horizontal para aprovechar más espacio
+        const leftMargin = isLandscape ? 40 : 50;
+        const tableWidth = pageWidth - (isLandscape ? 80 : 100);
+        
+        // Tomamos la primera sección
+        const section = config.sections[0];
         
         // Calcular anchos de columnas
         const columnCount = section.columns.length;
-        const columnDefaultWidth = Math.floor(tableWidth / columnCount);
         
-        // Acumular el ancho total real (respetando width en px)
+        // Ajuste de tamaño dependiendo de orientación para asegurar que todo quepa
+        const scale = isLandscape ? 0.8 : 1.0; // Reducir tamaño un 20% en horizontal
+        const columnDefaultWidth = Math.floor((tableWidth / columnCount) * scale);
+        
+        // Titulo con tamaño más pequeño
+        doc.fontSize(isLandscape ? 9 : 12).font('Helvetica-Bold')
+          .text('Registro', { align: 'center' });
+        doc.moveDown(0.2); // Muy poco espacio después del título
+        
+        // Acumular el ancho total real (respetando width en px pero ajustando escala)
         let totalWidth = 0;
         let columnsWithWidth = 0;
         
@@ -763,7 +778,8 @@ function generatePDFContent(
           if (column.width && column.width.includes('px')) {
             const width = parseInt(column.width);
             if (!isNaN(width)) {
-              totalWidth += width;
+              // Aplicar factor de escala a los anchos definidos
+              totalWidth += width * scale;
               columnsWithWidth++;
             }
           }
@@ -775,12 +791,11 @@ function generatePDFContent(
         const defaultColumnWidth = remainingColumns > 0 ? Math.floor(remainingWidth / remainingColumns) : columnDefaultWidth;
         
         // Variable para controlar la posición X actual
-        let x = 50;
+        let x = leftMargin;
         let y = doc.y;
         
-        // Calcular altura para celdas (un poco más alta para cabeceras)
-        // En formato horizontal tenemos más espacio para el ancho pero menos para el alto
-        const isLandscape = doc.page.size[0] > doc.page.size[1]; // Ancho > Alto = Horizontal
+        // Calcular altura para celdas (más pequeñas en horizontal para que quepa todo)
+        // En modo horizontal necesitamos celdas más compactas
         const headerHeight = isLandscape ? 20 : 25;
         const rowHeight = isLandscape ? 18 : 20;
         
@@ -1039,20 +1054,63 @@ function isFormWithWideTable(formName: string): boolean {
   
   const lowercaseName = formName.toLowerCase();
   
-  // Lista de términos que indican formularios anchos
-  const wideFormKeywords = [
+  // Lista de términos que indican formularios anchos (alta probabilidad)
+  const highPriorityKeywords = [
     'microbiologia',
     'microbiología',
+    'análisis microbiológico',
+    'analisis microbiologico',
+    'ficha técnica',
+    'laboratorio'
+  ];
+  
+  // Códigos de formulario específicos que siempre deben ser horizontales
+  const horizontalFormCodes = [
+    'ca-re-15-01',  // Microbiología
+    'pr-pr-01-04'   // Ficha técnica
+  ];
+  
+  // Detección por códigos específicos
+  if (horizontalFormCodes.some(code => lowercaseName.includes(code))) {
+    console.log(`Orientación horizontal detectada por código de formulario: ${formName}`);
+    return true;
+  }
+  
+  // Detección por palabras clave de alta prioridad
+  if (highPriorityKeywords.some(keyword => lowercaseName.includes(keyword))) {
+    console.log(`Orientación horizontal detectada por palabra clave de alta prioridad: ${formName}`);
+    return true;
+  }
+  
+  // Lista extendida de términos que podrían indicar formularios anchos
+  const wideFormKeywords = [
     'tabla',
     'análisis',
     'analisis',
-    'laboratorio',
     'parámetros',
     'parametros',
-    'mediciones'
+    'mediciones',
+    'resultados',
+    'reporte',
+    'registro',
+    'calidad',
+    'control',
+    'prueba',
+    'test',
+    'datos'
   ];
   
-  return wideFormKeywords.some(keyword => lowercaseName.includes(keyword));
+  // Si el nombre contiene algún término en la lista extendida, revisar también la longitud
+  // Los nombres largos con estos términos suelen indicar formularios complejos con tablas
+  const hasKeyword = wideFormKeywords.some(keyword => lowercaseName.includes(keyword));
+  const isLongName = formName.length > 30;
+  
+  if (hasKeyword && isLongName) {
+    console.log(`Orientación horizontal detectada por combinación de palabra clave y nombre largo: ${formName}`);
+    return true;
+  }
+  
+  return false;
 }
 
 function getStatusLabel(status: string): string {
