@@ -209,6 +209,8 @@ export const formFieldSchema = z.object({
   required: z.boolean().default(false),
   placeholder: z.string().optional(),
   defaultValue: z.any().optional(),
+  // Características especiales del campo (autocompletado de recetas, etc.)
+  features: z.array(z.string()).optional(),
   options: z.array(z.union([
     z.string(),
     z.object({

@@ -643,54 +643,104 @@ export default function FormViewer({
   };
   
   const renderProductField = (field: IFormField) => {
+    // Verificar si este campo tiene la característica "autocompletable" para recetas
+    const hasRecipeAutocomplete = field.features?.includes('recipeAutocomplete');
+    
+    // Función para manejar cuando se selecciona una receta de producto
+    const handleRecipeSelected = (recipeData: any) => {
+      // Buscamos las correspondencias de campos en el formulario
+      // "Leche" -> "campo_leche", "Azúcar" -> "campo_azucar", etc.
+      
+      const formValues = form.getValues();
+      
+      if (recipeData && recipeData.ingredients) {
+        // Iteramos sobre cada ingrediente en la receta
+        Object.entries(recipeData.ingredients).forEach(([ingredientName, quantity]) => {
+          // Normalizamos el nombre del ingrediente (sin acentos, todo minúsculas)
+          const normalizedName = ingredientName.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          
+          // Buscamos campos que puedan corresponder con este ingrediente
+          const possibleFieldIds = [
+            `${normalizedName}`,
+            `cantidad_${normalizedName}`,
+            `campo_${normalizedName}`,
+            ingredientName.toLowerCase()
+          ];
+          
+          // Buscamos en los campos del formulario
+          formTemplate.fields.forEach(formField => {
+            const fieldIdLower = formField.id.toLowerCase();
+            
+            // Si el campo contiene el nombre del ingrediente
+            if (possibleFieldIds.some(id => fieldIdLower.includes(id)) || 
+                fieldIdLower.includes(normalizedName)) {
+              
+              // Actualizamos el valor del campo
+              form.setValue(formField.id, quantity);
+            }
+          });
+        });
+      }
+    };
+    
     return (
       <FormField
         key={field.id}
         control={form.control}
         name={field.id}
         render={({ field: formField }) => (
-          <FormItem>
-            <FormLabel>
-              {field.label} {field.required && <span className="text-red-500">*</span>}
-            </FormLabel>
-            <Select
-              value={formField.value ? formField.value.toString() : ""}
-              onValueChange={(value) => {
-                formField.onChange(Number(value));
-              }}
-              disabled={isReadOnly}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar producto" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {productsLoading ? (
-                  <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                ) : products.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    No hay productos disponibles
-                  </div>
-                ) : (
-                  products.map((product) => (
-                    <SelectItem key={product.id} value={product.id.toString()}>
-                      <div className="flex items-center">
-                        <Package className="h-4 w-4 mr-2 text-muted-foreground" />
-                        {product.name} - {product.code}
-                      </div>
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            <FormDescription>
-              {formField.value && products.find(p => p.id === Number(formField.value))?.description}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          hasRecipeAutocomplete ? (
+            <ProductRecipeSelector 
+              formField={formField}
+              field={field}
+              isReadOnly={isReadOnly}
+              onRecipeSelected={handleRecipeSelected}
+            />
+          ) : (
+            <FormItem>
+              <FormLabel>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </FormLabel>
+              <Select
+                value={formField.value ? formField.value.toString() : ""}
+                onValueChange={(value) => {
+                  formField.onChange(Number(value));
+                }}
+                disabled={isReadOnly}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar producto" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {productsLoading ? (
+                    <div className="flex items-center justify-center p-4">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  ) : products.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      No hay productos disponibles
+                    </div>
+                  ) : (
+                    products.map((product) => (
+                      <SelectItem key={product.id} value={product.id.toString()}>
+                        <div className="flex items-center">
+                          <Package className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {product.name} - {product.code}
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                {formField.value && products.find(p => p.id === Number(formField.value))?.description}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )
         )}
       />
     );
