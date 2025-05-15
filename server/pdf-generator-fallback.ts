@@ -1033,80 +1033,164 @@ function generatePDFContent(
        
     doc.moveDown(1);
     
-    // Dibujar un recuadro simple para la firma como en la imagen de referencia
-    const signatureBoxWidth = 300;
-    const signatureBoxHeight = 80;
-    const signatureBoxX = pageCenter - (signatureBoxWidth / 2);
+    // Configuración de los recuadros para firmas
+    const signatureBoxWidth = Math.min(180, (pageWidth / 2) - 50);
+    const signatureBoxHeight = 70;
+    const spacing = 40;
+    
+    // Posición X para las dos columnas
+    const leftSignatureX = (pageWidth / 2) - signatureBoxWidth - (spacing / 2);
+    const rightSignatureX = (pageWidth / 2) + (spacing / 2);
     const signatureBoxY = doc.y;
     
-    // Dibujar un recuadro simple con borde gris claro
-    doc.rect(signatureBoxX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
-       .lineWidth(0.5)
-       .stroke('#999999');
-       
-    // Restaurar la opacidad para asegurarnos
-    doc.fillOpacity(1);
+    // -- PRIMERA FIRMA (RESPONSABLE) --
     
-    // Centrar la firma dentro del recuadro
-    try {
-      // Intentar añadir la imagen de firma
-      if (entry.signature && entry.signature.startsWith('data:image')) {
-        // Extraer la parte de base64 de la data URL
-        const base64Data = entry.signature.split(',')[1];
+    // Título para la primera firma
+    doc.fontSize(10).font('Helvetica-Bold')
+       .text('Responsable', leftSignatureX, signatureBoxY - 15, { 
+          width: signatureBoxWidth, 
+          align: 'center' 
+       });
+    
+    // Recuadro para la primera firma
+    doc.rect(leftSignatureX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
+       .lineWidth(1)
+       .stroke('#999999');
+    
+    // Insertar la imagen de la firma si existe
+    if (entry.signature && entry.signature.startsWith('data:image')) {
+      // Extraer la parte de base64 de la data URL
+      const base64Data = entry.signature.split(',')[1];
+      
+      try {
         if (base64Data) {
           // Convertir a buffer
           const signatureBuffer = Buffer.from(base64Data, 'base64');
           
-          // Dimensiones óptimas para la firma
-          const signatureWidth = 180;
-          const signatureX = pageCenter - (signatureWidth / 2);
-          const signatureY = signatureBoxY + 5; // Ajuste para centrar verticalmente
+          // Centrar la imagen en el recuadro
+          const signatureWidth = Math.min(signatureBoxWidth - 20, 150);
+          const signatureHeight = Math.min(signatureBoxHeight - 10, 50);
           
-          // Añadir la firma al PDF, centrada dentro del recuadro
-          doc.image(signatureBuffer, signatureX, signatureY, {
-            width: signatureWidth,
-            height: signatureBoxHeight - 10,
-            align: 'center',
-            valign: 'center'
+          // Posicionar en el centro del recuadro
+          const sigX = leftSignatureX + (signatureBoxWidth - signatureWidth) / 2;
+          const sigY = signatureBoxY + (signatureBoxHeight - signatureHeight) / 2;
+          
+          // Añadir la imagen de la firma
+          doc.image(signatureBuffer, sigX, sigY, {
+            fit: [signatureWidth, signatureHeight],
+            align: 'center' 
           });
         }
+      } catch (error) {
+        console.error('Error al procesar imagen de firma:', error);
+        // Si falla, mostramos texto alternativo
+        doc.fontSize(9).font('Helvetica').text('Documento firmado electrónicamente', 
+          leftSignatureX + 10, signatureBoxY + 30, { 
+            width: signatureBoxWidth - 20,
+            align: 'center' 
+          });
       }
-    } catch (error) {
-      console.error("Error al mostrar la firma:", error);
-      // Si falla, mostramos texto alternativo
-      doc.fontSize(9).font('Helvetica').text('Documento firmado electrónicamente', 
-        signatureBoxX + 50, signatureBoxY + 30, { 
-          width: signatureBoxWidth - 100,
+    }
+    
+    // Datos debajo de la primera firma
+    doc.fontSize(8).font('Helvetica-Bold')
+       .text('Nombre:', leftSignatureX, signatureBoxY + signatureBoxHeight + 5, { 
+          width: signatureBoxWidth, 
+          align: 'left' 
+       });
+       
+    doc.fontSize(8).font('Helvetica')
+       .text(
+          entry.signedBy ? entry.signedBy : (creator ? creator.name || creator.username : 'Usuario del sistema'),
+          leftSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+          { width: signatureBoxWidth - 45, align: 'left' }
+       );
+       
+    doc.fontSize(8).font('Helvetica-Bold')
+       .text('Fecha:', leftSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+          width: signatureBoxWidth, 
+          align: 'left' 
+       });
+       
+    doc.fontSize(8).font('Helvetica')
+       .text(
+          entry.signedAt 
+            ? new Date(entry.signedAt).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }) 
+            : new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+          leftSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+          { width: signatureBoxWidth - 45, align: 'left' }
+       );
+    
+    // -- SEGUNDA FIRMA (SUPERVISOR/APROBADOR) --
+    
+    // Título para la segunda firma
+    doc.fontSize(10).font('Helvetica-Bold')
+       .text('Supervisor / Aprobador', rightSignatureX, signatureBoxY - 15, { 
+          width: signatureBoxWidth, 
           align: 'center' 
-        });
+       });
+    
+    // Recuadro para la segunda firma
+    doc.rect(rightSignatureX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
+       .lineWidth(1)
+       .stroke('#999999');
+    
+    // Datos debajo de la segunda firma
+    doc.fontSize(8).font('Helvetica-Bold')
+       .text('Nombre:', rightSignatureX, signatureBoxY + signatureBoxHeight + 5, { 
+          width: signatureBoxWidth, 
+          align: 'left' 
+       });
+       
+    // Solo mostrar el nombre del aprobador si el formulario está aprobado
+    if (entry.status === 'APPROVED' && entry.approvedBy) {
+      doc.fontSize(8).font('Helvetica')
+         .text(
+            entry.approvedBy,
+            rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+            { width: signatureBoxWidth - 45, align: 'left' }
+         );
+         
+      // Mostrar fecha de aprobación si está disponible
+      if (entry.approvedAt) {
+        doc.fontSize(8).font('Helvetica-Bold')
+           .text('Fecha:', rightSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+              width: signatureBoxWidth, 
+              align: 'left' 
+           });
+           
+        doc.fontSize(8).font('Helvetica')
+           .text(
+              new Date(entry.approvedAt).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+              rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+              { width: signatureBoxWidth - 45, align: 'left' }
+           );
+      }
+    } else {
+      // Si no está aprobado, dejar espacio para firma manual
+      doc.fontSize(8).font('Helvetica')
+         .text(
+            '________________________________',
+            rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+            { width: signatureBoxWidth - 45, align: 'left' }
+         );
+         
+      doc.fontSize(8).font('Helvetica-Bold')
+         .text('Fecha:', rightSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+            width: signatureBoxWidth, 
+            align: 'left' 
+         });
+         
+      doc.fontSize(8).font('Helvetica')
+         .text(
+            '_______________',
+            rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+            { width: signatureBoxWidth - 45, align: 'left' }
+         );
     }
     
-    // Movernos al final del recuadro
-    doc.y = signatureBoxY + signatureBoxHeight + 15;
-    
-    // Información del firmante en formato similar a la imagen de referencia
-    doc.fillColor('#000000');
-    
-    // Texto de "Firmado por" y la fecha en dos columnas
-    const firmadoPorX = pageCenter - 100;
-    const fechaFirmaX = pageCenter + 20;
-    
-    // Columna izquierda: Firmado por
-    doc.fontSize(9).font('Helvetica-Bold')
-       .text('Firmado por:', firmadoPorX, doc.y);
-    doc.font('Helvetica')
-       .text(`${entry.signedBy ? creator?.name || `Usuario ID: ${entry.signedBy}` : creatorName}`, 
-          firmadoPorX, doc.y);
-    
-    // Columna derecha: Fecha de firma (en la misma línea)
-    if (entry.signedAt) {
-      // Posicionar en la misma altura que "Firmado por"
-      doc.fontSize(9).font('Helvetica-Bold')
-         .text('Fecha de firma:', fechaFirmaX, doc.y - doc.currentLineHeight());
-      doc.font('Helvetica')
-         .text(`${new Date(entry.signedAt).toLocaleDateString('es-MX')}`, 
-            fechaFirmaX, doc.y);
-    }
+    // Movernos a después de la sección de firmas
+    doc.y = signatureBoxY + signatureBoxHeight + 40;
   }
   
   // Pie de página como en la imagen de referencia

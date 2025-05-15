@@ -1,0 +1,172 @@
+// Nueva implementación de la sección de firmas
+
+// Sección de firmas (con diseño mejorado para incluir dos firmas)
+// Verificar si el formulario está firmado o si es un formulario aprobado
+if (entry.signature || entry.status === 'SIGNED' || entry.status === 'APPROVED') {
+  doc.moveDown(2);
+  
+  // Crear una sección para dos firmas en columnas
+  const pageWidth = doc.page.width;
+  const pageCenter = pageWidth / 2;
+  
+  // Título de la sección
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+     .text('Firmas de autorización', 0, doc.y, { 
+        align: 'center',
+        width: pageWidth
+     });
+     
+  doc.moveDown(1);
+  
+  // Configuración de los recuadros para firmas
+  const signatureBoxWidth = Math.min(180, (pageWidth / 2) - 50);
+  const signatureBoxHeight = 70;
+  const spacing = 40;
+  
+  // Posición X para las dos columnas
+  const leftSignatureX = (pageWidth / 2) - signatureBoxWidth - (spacing / 2);
+  const rightSignatureX = (pageWidth / 2) + (spacing / 2);
+  const signatureBoxY = doc.y;
+  
+  // -- PRIMERA FIRMA (RESPONSABLE) --
+  
+  // Título para la primera firma
+  doc.fontSize(10).font('Helvetica-Bold')
+     .text('Responsable', leftSignatureX, signatureBoxY - 15, { 
+        width: signatureBoxWidth, 
+        align: 'center' 
+     });
+  
+  // Recuadro para la primera firma
+  doc.rect(leftSignatureX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
+     .lineWidth(1)
+     .stroke();
+  
+  // Insertar la imagen de la firma si existe
+  if (entry.signature && entry.signature !== 'placeholder') {
+    // Convertir la cadena base64 a imagen
+    const signatureBase64 = entry.signature.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
+    
+    try {
+      const signatureBuffer = Buffer.from(signatureBase64, 'base64');
+      
+      // Centrar la imagen en el recuadro
+      const signatureWidth = Math.min(signatureBoxWidth - 20, 150);
+      const signatureHeight = Math.min(signatureBoxHeight - 10, 50);
+      
+      // Posicionar en el centro del recuadro
+      const sigX = leftSignatureX + (signatureBoxWidth - signatureWidth) / 2;
+      const sigY = signatureBoxY + (signatureBoxHeight - signatureHeight) / 2;
+      
+      // Añadir la imagen de la firma
+      doc.image(signatureBuffer, sigX, sigY, {
+        fit: [signatureWidth, signatureHeight],
+        align: 'center' 
+      });
+    } catch (error) {
+      console.error('Error al procesar imagen de firma:', error);
+    }
+  }
+  
+  // Datos debajo de la primera firma
+  doc.fontSize(8).font('Helvetica-Bold')
+     .text('Nombre:', leftSignatureX, signatureBoxY + signatureBoxHeight + 5, { 
+        width: signatureBoxWidth, 
+        align: 'left' 
+     });
+     
+  doc.fontSize(8).font('Helvetica')
+     .text(
+        entry.signedBy ? entry.signedBy : (creator ? creator.name || creator.username : 'Usuario del sistema'),
+        leftSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+        { width: signatureBoxWidth - 45, align: 'left' }
+     );
+     
+  doc.fontSize(8).font('Helvetica-Bold')
+     .text('Fecha:', leftSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+        width: signatureBoxWidth, 
+        align: 'left' 
+     });
+     
+  doc.fontSize(8).font('Helvetica')
+     .text(
+        entry.signedAt 
+          ? new Date(entry.signedAt).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }) 
+          : new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+        leftSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+        { width: signatureBoxWidth - 45, align: 'left' }
+     );
+  
+  // -- SEGUNDA FIRMA (SUPERVISOR/APROBADOR) --
+  
+  // Título para la segunda firma
+  doc.fontSize(10).font('Helvetica-Bold')
+     .text('Supervisor / Aprobador', rightSignatureX, signatureBoxY - 15, { 
+        width: signatureBoxWidth, 
+        align: 'center' 
+     });
+  
+  // Recuadro para la segunda firma
+  doc.rect(rightSignatureX, signatureBoxY, signatureBoxWidth, signatureBoxHeight)
+     .lineWidth(1)
+     .stroke();
+  
+  // Espacio para firma del supervisor (se llenará manualmente o en versiones futuras)
+  
+  // Datos debajo de la segunda firma
+  doc.fontSize(8).font('Helvetica-Bold')
+     .text('Nombre:', rightSignatureX, signatureBoxY + signatureBoxHeight + 5, { 
+        width: signatureBoxWidth, 
+        align: 'left' 
+     });
+     
+  // Solo mostrar el nombre del aprobador si el formulario está aprobado
+  if (entry.status === 'APPROVED' && entry.approvedBy) {
+    doc.fontSize(8).font('Helvetica')
+       .text(
+          entry.approvedBy,
+          rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+          { width: signatureBoxWidth - 45, align: 'left' }
+       );
+       
+    // Mostrar fecha de aprobación si está disponible
+    if (entry.approvedAt) {
+      doc.fontSize(8).font('Helvetica-Bold')
+         .text('Fecha:', rightSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+            width: signatureBoxWidth, 
+            align: 'left' 
+         });
+         
+      doc.fontSize(8).font('Helvetica')
+         .text(
+            new Date(entry.approvedAt).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+            rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+            { width: signatureBoxWidth - 45, align: 'left' }
+         );
+    }
+  } else {
+    // Si no está aprobado, dejar espacio para firma manual
+    doc.fontSize(8).font('Helvetica')
+       .text(
+          '________________________________',
+          rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 5, 
+          { width: signatureBoxWidth - 45, align: 'left' }
+       );
+       
+    doc.fontSize(8).font('Helvetica-Bold')
+       .text('Fecha:', rightSignatureX, signatureBoxY + signatureBoxHeight + 18, { 
+          width: signatureBoxWidth, 
+          align: 'left' 
+       });
+       
+    doc.fontSize(8).font('Helvetica')
+       .text(
+          '_______________',
+          rightSignatureX + 45, signatureBoxY + signatureBoxHeight + 18, 
+          { width: signatureBoxWidth - 45, align: 'left' }
+       );
+  }
+  
+  // Movernos a después de la sección de firmas
+  doc.y = signatureBoxY + signatureBoxHeight + 40;
+}
