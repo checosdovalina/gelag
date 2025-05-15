@@ -550,6 +550,9 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     preview: false,
     settings: false
   });
+  
+  // Referencia para el input de archivo de importación
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [editingColumn, setEditingColumn] = useState<{sectionIndex: number, columnIndex: number} | null>(null);
   const [newSectionTitle, setNewSectionTitle] = useState<string>("");
