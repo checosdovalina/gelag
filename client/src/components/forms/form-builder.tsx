@@ -684,23 +684,58 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   try {
                                                     console.log("FormBuilder: recibiendo nueva configuración de tabla avanzada", newConfig);
                                                     
-                                                    // Hacer una copia profunda y segura del objeto
-                                                    const safeCopy = JSON.parse(JSON.stringify(newConfig));
+                                                    // CAMBIO RADICAL: Simplificar completamente el proceso
+                                                    // Usar el siguiente hack:
+                                                    // 1. Crear un clon simplificado que solo contenga las propiedades esenciales
+                                                    const basicConfig = {
+                                                      rows: newConfig.rows || 3,
+                                                      dynamicRows: newConfig.dynamicRows === undefined ? true : newConfig.dynamicRows,
+                                                      sections: newConfig.sections || []
+                                                    };
                                                     
-                                                    // Forzar actualización del campo en el formulario
+                                                    // 2. Convertir a JSON y de vuelta para romper cualquier referencia
+                                                    const cleanConfig = JSON.parse(JSON.stringify(basicConfig));
+                                                    
+                                                    console.log("FormBuilder: configuración limpia preparada para guardar", cleanConfig);
+                                                    
+                                                    // 3. Aplicar con un retraso mayor
                                                     setTimeout(() => {
-                                                      form.setValue(`fields.${index}.advancedTableConfig`, safeCopy, {
-                                                        shouldDirty: true,
-                                                        shouldTouch: true,
-                                                        shouldValidate: true
-                                                      });
-                                                      
-                                                      // Marcar el formulario como modificado
+                                                      // Eliminar cualquier configuración anterior
+                                                      const allFields = form.getValues("fields");
+                                                      if (allFields && allFields[index]) {
+                                                        // Crear un campo completamente nuevo
+                                                        const updatedField = { 
+                                                          ...allFields[index],
+                                                          advancedTableConfig: cleanConfig
+                                                        };
+                                                        
+                                                        // Actualizar el campo completo
+                                                        const allFieldsUpdated = [...allFields];
+                                                        allFieldsUpdated[index] = updatedField;
+                                                        
+                                                        // Aplicar la actualización completa
+                                                        form.setValue("fields", allFieldsUpdated, {
+                                                          shouldDirty: true,
+                                                          shouldTouch: true,
+                                                          shouldValidate: true
+                                                        });
+                                                        
+                                                        console.log("FormBuilder: actualización aplicada con éxito");
+                                                      } else {
+                                                        // Método alternativo si falla
+                                                        form.setValue(`fields.${index}.advancedTableConfig`, cleanConfig, {
+                                                          shouldDirty: true,
+                                                          shouldTouch: true,
+                                                          shouldValidate: true
+                                                        });
+                                                        console.log("FormBuilder: actualización con método alternativo");
+                                                      }
                                                       form.trigger();
-                                                      console.log("FormBuilder: actualización aplicada con éxito");
-                                                    }, 100);
+                                                    }, 300); // Retraso más largo para asegurar que todo esté listo
                                                   } catch (error) {
                                                     console.error("FormBuilder: Error al actualizar configuración de tabla", error);
+                                                    // Intento de recuperación
+                                                    form.setValue(`fields.${index}.advancedTableConfig`, newConfig);
                                                   }
                                                 }}
                                               />

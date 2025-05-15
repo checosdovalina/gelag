@@ -715,6 +715,34 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   );
 
   // Función para importar una plantilla JSON personalizada
+  // Método para aplicar directamente la plantilla de Microbiología Horizontal
+  const handleApplyMicrobiologiaTemplate = () => {
+    console.log("Aplicando plantilla de Microbiología directamente");
+    // Obtener la configuración directamente del template
+    const microTemplate = TABLE_TEMPLATES.find(t => t.name === "Análisis Microbiológico Horizontal");
+    if (!microTemplate) {
+      console.error("No se encontró la plantilla de Microbiología");
+      return;
+    }
+    
+    // Crear una copia profunda de la configuración
+    const config = JSON.parse(JSON.stringify(microTemplate.config));
+    console.log("Aplicando plantilla de Microbiología:", config);
+    
+    // Aplicar directamente sin sanitización
+    onChange(config);
+    
+    toast({
+      title: "Plantilla aplicada",
+      description: "Se aplicó la plantilla de Análisis Microbiológico exitosamente",
+      variant: "default",
+    });
+    
+    // Cambiar a la vista previa
+    setActiveTab("preview");
+    setTabsVisited(prev => ({...prev, preview: true}));
+  };
+  
   const handleImportCustomTemplate = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -1917,6 +1945,17 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                 >
                   <FileSpreadsheet className="h-4 w-4" /> Importar Plantilla
                 </Button>
+                
+                {/* Botón para aplicar directamente la plantilla de Microbiología */}
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={handleApplyMicrobiologiaTemplate}
+                  className="flex items-center gap-2 ml-2 bg-green-600 hover:bg-green-700"
+                >
+                  <FileSpreadsheet className="h-4 w-4" /> Plantilla Microbiología
+                </Button>
+                
                 <input
                   type="file"
                   ref={fileInputRef}
