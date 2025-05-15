@@ -75,6 +75,16 @@ interface FormEntry {
   signedBy?: number;
   signedAt?: string;
   folioNumber?: string;
+  
+  // Campos para el flujo de trabajo secuencial
+  workflowStatus?: string;
+  lotNumber?: string;
+  lastUpdatedBy?: number;
+  approvedBy?: number;
+  approvedAt?: string;
+  rejectedBy?: number;
+  rejectedAt?: string;
+  roleSpecificData?: any;
 }
 
 interface FormTemplate {
@@ -1271,32 +1281,50 @@ export default function CapturedFormsPage() {
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="max-h-[70vh] overflow-y-auto py-4">
-                <FormViewer
-                  formTemplate={selectedTemplate.structure}
-                  initialData={selectedEntry.data}
-                  onSubmit={() => {}}
-                  isReadOnly={true}
-                  formId={selectedTemplate.id}
+              <div className="py-4">
+                {/* Componente de flujo de trabajo */}
+                <WorkflowStatusUpdater 
+                  formEntry={selectedEntry} 
+                  onStatusUpdated={() => {
+                    // Refrescar el formulario seleccionado cuando se actualiza su estado
+                    refetchEntries();
+                    // Cerrar el diálogo de detalles
+                    setDetailsOpen(false);
+                    toast({
+                      title: "Formulario actualizado",
+                      description: "Los cambios en el flujo de trabajo han sido guardados correctamente",
+                    });
+                  }} 
                 />
                 
-                {/* Signature display if form is signed */}
-                {selectedEntry.signature && (
-                  <div className="mt-6 border-t pt-4">
-                    <h3 className="text-lg font-medium mb-2">Firma</h3>
-                    <div className="flex items-center justify-center p-4 border rounded-md">
-                      <img 
-                        src={selectedEntry.signature} 
-                        alt="Firma digital" 
-                        className="max-h-32"
-                      />
+                {/* Vista del formulario */}
+                <div className="max-h-[60vh] overflow-y-auto mt-4">
+                  <FormViewer
+                    formTemplate={selectedTemplate.structure}
+                    initialData={selectedEntry.data}
+                    onSubmit={() => {}}
+                    isReadOnly={true}
+                    formId={selectedTemplate.id}
+                  />
+                  
+                  {/* Signature display if form is signed */}
+                  {selectedEntry.signature && (
+                    <div className="mt-6 border-t pt-4">
+                      <h3 className="text-lg font-medium mb-2">Firma</h3>
+                      <div className="flex items-center justify-center p-4 border rounded-md">
+                        <img 
+                          src={selectedEntry.signature} 
+                          alt="Firma digital" 
+                          className="max-h-32"
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2 text-center">
+                        Firmado por {getUserName(selectedEntry.signedBy || selectedEntry.createdBy)} 
+                        {selectedEntry.signedAt && ` el ${format(new Date(selectedEntry.signedAt), "dd/MM/yyyy HH:mm", { locale: es })}`}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 text-center">
-                      Firmado por {getUserName(selectedEntry.signedBy || selectedEntry.createdBy)} 
-                      {selectedEntry.signedAt && ` el ${format(new Date(selectedEntry.signedAt), "dd/MM/yyyy HH:mm", { locale: es })}`}
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
               
               <DialogFooter>
