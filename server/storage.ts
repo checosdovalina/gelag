@@ -94,6 +94,20 @@ export interface IStorage {
   getActiveEmployees(): Promise<Employee[]>;
   getEmployeesByDepartment(department: string): Promise<Employee[]>;
   
+  // Recetas methods
+  getProductRecipe(id: number): Promise<ProductRecipe | undefined>;
+  getProductRecipesByProductId(productId: number): Promise<ProductRecipe[]>;
+  createProductRecipe(recipe: InsertProductRecipe): Promise<ProductRecipe>;
+  updateProductRecipe(id: number, data: Partial<InsertProductRecipe>): Promise<ProductRecipe | undefined>;
+  deleteProductRecipe(id: number): Promise<void>;
+  getAllProductRecipes(): Promise<ProductRecipe[]>;
+  
+  // Ingredientes de recetas methods
+  getRecipeIngredientsByRecipeId(recipeId: number): Promise<RecipeIngredient[]>;
+  createRecipeIngredient(ingredient: InsertRecipeIngredient): Promise<RecipeIngredient>;
+  updateRecipeIngredient(id: number, data: Partial<InsertRecipeIngredient>): Promise<RecipeIngredient | undefined>;
+  deleteRecipeIngredient(id: number): Promise<void>;
+  
   // Session store
   sessionStore: session.SessionStore;
 }
@@ -649,6 +663,77 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(employees)
       .where(eq(employees.department, department));
+  }
+
+  // Métodos para recetas de productos
+  async getProductRecipe(id: number): Promise<ProductRecipe | undefined> {
+    const [recipe] = await db.select().from(productRecipes).where(eq(productRecipes.id, id));
+    return recipe;
+  }
+
+  async getProductRecipesByProductId(productId: number): Promise<ProductRecipe[]> {
+    return await db
+      .select()
+      .from(productRecipes)
+      .where(eq(productRecipes.productId, productId));
+  }
+
+  async createProductRecipe(recipe: InsertProductRecipe): Promise<ProductRecipe> {
+    const [newRecipe] = await db.insert(productRecipes).values(recipe).returning();
+    return newRecipe;
+  }
+
+  async updateProductRecipe(id: number, data: Partial<InsertProductRecipe>): Promise<ProductRecipe | undefined> {
+    const [updatedRecipe] = await db
+      .update(productRecipes)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(productRecipes.id, id))
+      .returning();
+    return updatedRecipe;
+  }
+
+  async deleteProductRecipe(id: number): Promise<void> {
+    await db
+      .delete(productRecipes)
+      .where(eq(productRecipes.id, id));
+  }
+
+  async getAllProductRecipes(): Promise<ProductRecipe[]> {
+    return await db.select().from(productRecipes);
+  }
+
+  // Métodos para ingredientes de recetas
+  async getRecipeIngredientsByRecipeId(recipeId: number): Promise<RecipeIngredient[]> {
+    return await db
+      .select()
+      .from(recipeIngredients)
+      .where(eq(recipeIngredients.recipeId, recipeId));
+  }
+
+  async createRecipeIngredient(ingredient: InsertRecipeIngredient): Promise<RecipeIngredient> {
+    const [newIngredient] = await db.insert(recipeIngredients).values(ingredient).returning();
+    return newIngredient;
+  }
+
+  async updateRecipeIngredient(id: number, data: Partial<InsertRecipeIngredient>): Promise<RecipeIngredient | undefined> {
+    const [updatedIngredient] = await db
+      .update(recipeIngredients)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(recipeIngredients.id, id))
+      .returning();
+    return updatedIngredient;
+  }
+
+  async deleteRecipeIngredient(id: number): Promise<void> {
+    await db
+      .delete(recipeIngredients)
+      .where(eq(recipeIngredients.id, id));
   }
 }
 
