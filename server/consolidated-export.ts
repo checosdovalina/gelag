@@ -318,9 +318,9 @@ function renderAdvancedTable(
         } else {
           doc.fillColor('#6b7280'); // Gris para N/A
         }
-      } else if (headerText === 'Salmonella' && displayValue.toLowerCase() === 'ausencia') {
+      } else if (columnNames[id] === 'Salmonella' && displayValue.toLowerCase() === 'ausencia') {
         doc.fillColor('#047857'); // Verde para ausencia de Salmonella
-      } else if (headerText === 'Salmonella' && displayValue.toLowerCase() === 'presencia') {
+      } else if (columnNames[id] === 'Salmonella' && displayValue.toLowerCase() === 'presencia') {
         doc.fillColor('#b91c1c'); // Rojo para presencia de Salmonella
       } else {
         doc.fillColor('#000000'); // Negro normal para otros valores
@@ -332,6 +332,8 @@ function renderAdvancedTable(
         align = 'center';
       } else if (/^\d+(\.\d+)?$/.test(displayValue)) {
         align = 'right'; // Alinear números a la derecha
+      } else if (columnNames[id] === 'Producto' || columnNames[id] === 'Lote') {
+        align = 'left'; // Productos y lotes a la izquierda
       } else if (displayValue.length <= 3) {
         align = 'center'; // Centrar valores muy cortos
       }
