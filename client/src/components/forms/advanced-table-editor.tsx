@@ -716,25 +716,41 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
 
   // Función para importar una plantilla JSON personalizada
   // Método para aplicar directamente la plantilla de Microbiología Horizontal
+  // Versión súper simplificada que evita cualquier complejidad
   const handleApplyMicrobiologiaTemplate = () => {
-    console.log("Aplicando plantilla de Microbiología Horizontal - MÉTODO DIRECTO");
+    console.log("Aplicando plantilla de Microbiología - VERSIÓN SIMPLIFICADA EXTREMA");
     
-    // Definimos la plantilla manualmente para evitar cualquier problema de referencias
-    const directConfig = {
+    // Creamos objetos completamente nuevos en cada nivel para evitar referencias compartidas
+    // y usamos tipos específicos en lugar de strings para evitar problemas de TypeScript
+    const config = {
       rows: 3,
       dynamicRows: true,
       sections: [
         {
           title: "Análisis Microbiológico",
           columns: [
-            { id: "fecha", header: "Fecha", type: "date", width: "120px" },
-            { id: "producto", header: "Producto", type: "product", width: "150px" },
-            { id: "lote", header: "Lote", type: "text", width: "100px" },
-            { id: "fcaducidad", header: "Fecha de caducidad", type: "date", width: "150px" },
             { 
-              id: "hongos", 
+              id: "col1",
+              header: "Fecha", 
+              type: "date" as const, 
+              width: "120px" 
+            },
+            { 
+              id: "col2",
+              header: "Producto", 
+              type: "text" as const, 
+              width: "150px" 
+            },
+            { 
+              id: "col3",
+              header: "Lote", 
+              type: "text" as const, 
+              width: "100px" 
+            },
+            { 
+              id: "col4",
               header: "Hongos y Levaduras", 
-              type: "select", 
+              type: "select" as const, 
               width: "120px",
               options: [
                 { label: "Si", value: "Si" },
@@ -743,20 +759,9 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
               ]
             },
             { 
-              id: "coliformes", 
+              id: "col5",
               header: "Coliformes", 
-              type: "select", 
-              width: "120px",
-              options: [
-                { label: "Si", value: "Si" },
-                { label: "No", value: "No" },
-                { label: "NA", value: "NA" }
-              ]
-            },
-            { 
-              id: "staph", 
-              header: "Staphylococos", 
-              type: "select", 
+              type: "select" as const, 
               width: "120px",
               options: [
                 { label: "Si", value: "Si" },
@@ -769,18 +774,30 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       ]
     };
     
-    // Aplicar directamente sin sanitización ni transformaciones
-    onChange(directConfig);
-    
-    toast({
-      title: "Plantilla aplicada",
-      description: "Se aplicó la plantilla de Análisis Microbiológico exitosamente",
-      variant: "default",
-    });
-    
-    // Cambiar a la vista previa
-    setActiveTab("preview");
-    setTabsVisited(prev => ({...prev, preview: true}));
+    try {
+      // Aplicamos la configuración directamente sin sanitización
+      onChange(config);
+      
+      // Mensaje de éxito
+      toast({
+        title: "Plantilla aplicada",
+        description: "Se aplicó la plantilla de Análisis Microbiológico exitosamente",
+        variant: "default",
+      });
+      
+      // Cambiar a la vista previa 
+      setTimeout(() => {
+        setActiveTab("preview");
+        setTabsVisited(prev => ({...prev, preview: true}));
+      }, 300); // Añadimos un pequeño retraso para mayor estabilidad
+    } catch (error) {
+      console.error("Error al aplicar plantilla:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo aplicar la plantilla. Intente de nuevo.",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleImportCustomTemplate = () => {
