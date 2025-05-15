@@ -320,13 +320,41 @@ export default function FormViewer({
         form.setValue(field.id, [{}]);
       }
       
-      if (field.type === "advancedTable" && !form.getValues()[field.id]) {
-        // Para tablas avanzadas, inicializamos con el número de filas definido en la configuración
-        if (field.advancedTableConfig && field.advancedTableConfig.rows) {
-          const initialRows = Array(field.advancedTableConfig.rows).fill().map(() => ({}));
-          form.setValue(field.id, initialRows);
+      if (field.type === "advancedTable") {
+        // Para tablas avanzadas, comprobamos si hay datos existentes
+        const existingData = form.getValues()[field.id];
+        
+        // Si no hay datos o los datos están vacíos, inicializamos
+        if (!existingData || !Array.isArray(existingData) || existingData.length === 0) {
+          console.log(`Inicializando tabla avanzada ${field.id}`);
+          
+          // Usar los datos iniciales definidos en la configuración o crear filas vacías
+          let initialData = [];
+          
+          if (field.advancedTableConfig && field.advancedTableConfig.initialData && 
+              Array.isArray(field.advancedTableConfig.initialData) && 
+              field.advancedTableConfig.initialData.length > 0) {
+            // Usar los datos predefinidos en la configuración
+            initialData = JSON.parse(JSON.stringify(field.advancedTableConfig.initialData));
+            console.log(`Usando datos iniciales de la configuración:`, initialData);
+          } else if (field.advancedTableConfig && field.advancedTableConfig.rows) {
+            // Crear filas vacías basadas en la configuración
+            initialData = Array(field.advancedTableConfig.rows).fill().map(() => ({}));
+            console.log(`Creando ${field.advancedTableConfig.rows} filas vacías`);
+          } else {
+            // Si no hay configuración, crear al menos una fila vacía
+            initialData = [{}];
+            console.log(`Creando una fila vacía por defecto`);
+          }
+          
+          // Establecer los datos iniciales
+          form.setValue(field.id, initialData, {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true
+          });
         } else {
-          form.setValue(field.id, [{}]);
+          console.log(`Tabla avanzada ${field.id} ya tiene datos:`, existingData);
         }
       }
     });

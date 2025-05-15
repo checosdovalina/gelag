@@ -247,10 +247,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
     console.log("Actualizando celda en fila", rowIndex, "columna", columnId, value);
     
-    const newData = [...tableData];
+    // Realizar una copia profunda de los datos actuales
+    const newData = JSON.parse(JSON.stringify(tableData));
+    
+    // Asegurarnos de que la fila existe
     if (!newData[rowIndex]) {
       newData[rowIndex] = {};
     }
+    
+    // Actualizar el valor en la celda
     newData[rowIndex][columnId] = value;
     
     // Verificar si es un campo de proceso o litros para actualizar las materias primas
@@ -293,9 +298,12 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     // Actualizamos los datos locales
     setTableData(newData);
     
-    // Importante: notificamos al componente padre sobre los cambios
-    // Esto asegura que el formulario principal registre los cambios
-    onChange(JSON.parse(JSON.stringify(newData)));
+    // Importante: usamos un retraso mínimo para asegurar que la actualización 
+    // suceda después de que React haya procesado los cambios de estado
+    setTimeout(() => {
+      // Asegurarnos de propagar una copia profunda al componente padre
+      onChange(JSON.parse(JSON.stringify(newData)));
+    }, 0);
   };
   
   // Función para actualizar las filas de materias primas basado en producto y litros
