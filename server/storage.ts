@@ -367,18 +367,45 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createFormEntry(entry: InsertFormEntry): Promise<FormEntry> {
-    // Obtener el siguiente número de folio para este tipo de formulario
-    const nextFolioNumber = await this.getNextFolioNumber(entry.formTemplateId);
+    console.log("[Storage] Creando nueva entrada de formulario, datos:", entry);
     
-    // Añadir el número de folio a la entrada
-    const entryWithFolio = {
-      ...entry,
-      folioNumber: nextFolioNumber
-    };
-    
-    // Guardar la entrada con el número de folio
-    const [newEntry] = await db.insert(formEntries).values(entryWithFolio).returning();
-    return newEntry;
+    try {
+      // Verificar que tenemos los datos necesarios
+      if (!entry.formTemplateId) {
+        throw new Error("La plantilla de formulario es requerida");
+      }
+      
+      if (!entry.data || Object.keys(entry.data).length === 0) {
+        throw new Error("Los datos del formulario no pueden estar vacíos");
+      }
+      
+      // Crear una copia limpia de los datos para evitar problemas con referencias circulares
+      const cleanData = JSON.parse(JSON.stringify(entry.data));
+      entry.data = cleanData;
+      
+      // Obtener el siguiente número de folio para este tipo de formulario
+      const nextFolioNumber = await this.getNextFolioNumber(entry.formTemplateId);
+      console.log("[Storage] Número de folio asignado:", nextFolioNumber);
+      
+      // Añadir el número de folio a la entrada y asegurar valores por defecto para campos requeridos
+      const entryWithFolio = {
+        ...entry,
+        folioNumber: nextFolioNumber,
+        status: entry.status || "draft",
+        createdAt: entry.createdAt || new Date(),
+        updatedAt: entry.updatedAt || new Date()
+      };
+      
+      // Guardar la entrada con el número de folio
+      console.log("[Storage] Insertando entrada en la base de datos...");
+      const [newEntry] = await db.insert(formEntries).values(entryWithFolio).returning();
+      console.log("[Storage] Entrada guardada exitosamente, ID:", newEntry.id);
+      
+      return newEntry;
+    } catch (error) {
+      console.error("[Storage] Error al crear entrada de formulario:", error);
+      throw error;
+    }
   }
 
   async getFormEntriesByTemplate(templateId: number): Promise<FormEntry[]> {

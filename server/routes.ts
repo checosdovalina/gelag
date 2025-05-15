@@ -689,7 +689,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/form-entries", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
     async (req, res, next) => {
       try {
-        const entryData = insertFormEntrySchema.parse(req.body);
+        console.log("[API] Recibiendo solicitud para crear entrada de formulario");
+        
+        // Crear una copia limpia de los datos para evitar problemas de referencia
+        const cleanData = JSON.parse(JSON.stringify(req.body));
+        
+        // Validar los datos con Zod
+        const entryData = insertFormEntrySchema.parse(cleanData);
+        
+        console.log("[API] Datos de entrada validados correctamente");
         
         // Set creator ID from logged in user
         entryData.createdBy = req.user.id;
@@ -700,10 +708,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if form template exists
         const template = await storage.getFormTemplate(entryData.formTemplateId);
         if (!template) {
+          console.log("[API] Error: Plantilla no encontrada, ID:", entryData.formTemplateId);
           return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
         }
         
+        console.log("[API] Plantilla encontrada:", template.name);
+        
+        // Validar que los datos del formulario no están vacíos
+        if (!entryData.data || Object.keys(entryData.data).length === 0) {
+          console.log("[API] Error: Datos de formulario vacíos");
+          return res.status(400).json({ 
+            message: "Los datos del formulario no pueden estar vacíos" 
+          });
+        }
+        
         // Create entry
+        console.log("[API] Creando entrada de formulario...");
         const entry = await storage.createFormEntry(entryData);
         
         // Log activity
@@ -718,10 +738,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
         
+        console.log("[API] Entrada creada exitosamente, ID:", entry.id);
         res.status(201).json(entry);
       } catch (error) {
+        console.error("[API] Error al crear entrada de formulario:", error);
+        
         if (error instanceof z.ZodError) {
-          return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+          return res.status(400).json({ 
+            message: "Datos inválidos", 
+            details: error.errors 
+          });
         }
         next(error);
       }

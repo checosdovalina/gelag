@@ -119,27 +119,49 @@ export default function FormCapture() {
   // Handle form submission
   const handleFormSubmit = (data: any) => {
     if (!selectedTemplate) return;
-
+    
+    console.log("[FormCapture] Preparando formulario para envío:", data);
+    
+    // Crear una copia profunda de los datos para prevenir problemas de referencia
+    const cleanData = JSON.parse(JSON.stringify(data));
+    
     const formEntry = {
       formTemplateId: selectedTemplate.id,
-      data: data,
+      data: cleanData,
       department: selectedTemplate.department,
     };
 
-    setConfirmDialog(true);
+    // Guardar los datos en el estado local con una copia profunda
     setCurrentEntry({
       ...formEntry,
       id: 0,
       createdBy: user!.id,
       createdAt: new Date().toISOString(),
     });
+    
+    // Abrir el diálogo de confirmación
+    setConfirmDialog(true);
   };
 
   // Handle confirmation
   const handleConfirmSubmit = () => {
-    if (currentEntry) {
-      createEntryMutation.mutate(currentEntry);
+    if (!currentEntry) {
+      console.error("[FormCapture] Error: No hay datos de formulario para enviar");
+      toast({
+        title: "Error",
+        description: "No se encontraron datos para guardar. Intente de nuevo.",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    console.log("[FormCapture] Enviando formulario al servidor:", currentEntry);
+    
+    // Realizar una copia limpia final antes de enviar
+    const entryToSubmit = JSON.parse(JSON.stringify(currentEntry));
+    
+    // Enviar al servidor
+    createEntryMutation.mutate(entryToSubmit);
     setConfirmDialog(false);
   };
 
