@@ -19,10 +19,35 @@ export async function generatePDFFallback(
       // Crear un buffer para almacenar el PDF
       const chunks: Buffer[] = [];
       
-      // Crear un nuevo documento PDF
+      // Determinar si el formulario necesita orientación horizontal
+      const templateName = template.name || '';
+      console.log("Nombre del formulario para decidir orientación:", templateName);
+      
+      // Verificar si el nombre indica una tabla ancha
+      const detectByName = isFormWithWideTable(templateName);
+      console.log("Detección por nombre:", detectByName);
+      
+      // Verificar si hay campos de tabla avanzada anchos
+      const hasWideTable = Array.isArray(template.structure?.fields) && 
+        template.structure.fields.some(field => 
+          field.type === 'advancedTable' && 
+          field?.advancedTableConfig?.sections?.[0]?.columns?.length > 6);
+          
+      console.log("Detección por estructura:", hasWideTable);
+      
+      // Siempre usar orientación horizontal para microbiología
+      const isMicrobiologia = templateName.toLowerCase().includes('microbiologia') || 
+                             templateName.toLowerCase().includes('microbiología');
+                             
+      const needsLandscape = detectByName || hasWideTable || isMicrobiologia;
+      
+      console.log("¿Usando orientación horizontal?", needsLandscape);
+
+      // Crear un nuevo documento PDF con orientación apropiada
       const doc = new PDFDocument({
         margins: { top: 50, bottom: 50, left: 50, right: 50 },
-        size: 'A4'
+        size: 'A4',
+        layout: needsLandscape ? 'landscape' : 'portrait'
       });
       
       // Capturar trozos de datos del documento
@@ -1002,6 +1027,32 @@ function generatePDFContent(
 }
 
 // Función para obtener la etiqueta del estado en español
+/**
+ * Determinar si un formulario necesita orientación horizontal
+ * @param formName Nombre del formulario
+ * @returns true si el formulario debe mostrarse en horizontal
+ */
+function isFormWithWideTable(formName: string): boolean {
+  if (!formName) return false;
+  
+  const lowercaseName = formName.toLowerCase();
+  
+  // Lista de términos que indican formularios anchos
+  const wideFormKeywords = [
+    'microbiologia',
+    'microbiología',
+    'tabla',
+    'análisis',
+    'analisis',
+    'laboratorio',
+    'parámetros',
+    'parametros',
+    'mediciones'
+  ];
+  
+  return wideFormKeywords.some(keyword => lowercaseName.includes(keyword));
+}
+
 function getStatusLabel(status: string): string {
   switch (status) {
     case 'draft':
