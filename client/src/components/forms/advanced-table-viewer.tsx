@@ -597,8 +597,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           se calcularán los kilos de materia prima correspondientes.
         </div>
       )}
-      <div className="w-full overflow-x-auto max-h-[600px]">
-        <Table className="w-full table-auto border-collapse">
+      <div className="relative mb-1 text-xs text-muted-foreground flex justify-end pr-3">
+        <span>
+          <ArrowsHorizontal className="h-3 w-3 inline mr-1" />
+          Desliza horizontalmente para ver más columnas
+        </span>
+      </div>
+      <div className="w-full overflow-x-auto overflow-y-auto max-h-[600px] relative border border-border rounded-md" style={{ minWidth: "100%" }}>
+        <Table className="border-collapse relative" style={{ minWidth: "1200px", width: "100%" }}>
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
@@ -606,13 +612,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                 <TableHead
                   key={idx}
                   colSpan={section.colspan || section.columns.length}
-                  className="text-center bg-primary text-primary-foreground font-bold py-2"
+                  className="text-center bg-primary text-primary-foreground font-bold py-2 border border-border"
                 >
-                  {section.title}
+                  <div className="py-2">{section.title}</div>
                 </TableHead>
               ))}
               {config.dynamicRows && !readOnly && (
-                <TableHead className="w-10 bg-primary"></TableHead>
+                <TableHead className="w-10 bg-primary border border-border"></TableHead>
               )}
             </TableRow>
 
@@ -624,18 +630,19 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                   colSpan={column.span || 1}
                   rowSpan={column.rowspan || 1}
                   style={{ 
-                    width: column.width || '150px',
-                    minWidth: column.type === 'text' ? '150px' : 
-                            column.type === 'select' ? '120px' : 
-                            column.type === 'number' ? '100px' : '150px'
+                    width: column.width || '180px',
+                    minWidth: column.type === 'text' ? '180px' : 
+                            column.type === 'select' ? '180px' : 
+                            column.type === 'number' ? '130px' : 
+                            column.type === 'date' ? '180px' : '180px'
                   }}
-                  className="text-center bg-muted p-2 border border-border break-words"
+                  className="text-center bg-muted border border-border"
                 >
-                  <div className="truncate px-1 py-1">{column.header}</div>
+                  <div className="py-2 px-2 whitespace-normal text-sm">{column.header}</div>
                 </TableHead>
               ))}
               {config.dynamicRows && !readOnly && (
-                <TableHead className="w-10 bg-muted"></TableHead>
+                <TableHead className="w-10 bg-muted border border-border"></TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -649,10 +656,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     key={`${rowIndex}-${column.id}`} 
                     className={`p-1 border border-border ${column.dependency ? 'bg-blue-50' : ''}`}
                     style={{ 
-                      width: column.width || '150px',
-                      minWidth: column.type === 'text' ? '150px' : 
-                               column.type === 'select' ? '120px' : 
-                               column.type === 'number' ? '100px' : '150px'
+                      width: column.width || '180px',
+                      minWidth: column.type === 'text' ? '180px' : 
+                               column.type === 'select' ? '180px' : 
+                               column.type === 'number' ? '130px' : 
+                               column.type === 'date' ? '180px' : '180px'
                     }}
                   >
                     {column.type === 'text' && (
@@ -802,7 +810,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     
                     <Button
                       size="sm"
-                      variant="primary"
+                      variant="default"
                       onClick={() => {
                         try {
                           setIsSaving(true);
@@ -820,7 +828,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                           setIsSaving(false);
                         }
                       }}
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      className="bg-blue-600 hover:bg-blue-700 text-white h-9 px-4"
                     >
                       {isSaving ? (
                         <>
