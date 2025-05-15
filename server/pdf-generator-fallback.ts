@@ -607,8 +607,8 @@ function generatePDFContent(
         // Aumentamos el ancho para que ocupe más espacio en la página
         const titleWidth = pageWidth * 0.7; // 70% del ancho de la página
         const titleHeight = 25;
-        // Centramos con precisión
-        const titleX = (pageWidth - titleWidth) / 2;
+        // Centramos con precisión, ajustando 10px a la izquierda
+        const titleX = ((pageWidth - titleWidth) / 2) - 10;
         const titleY = doc.y;
         
         // Dibujar un fondo para el título
@@ -645,10 +645,12 @@ function generatePDFContent(
           return; // Saltamos esta tabla
         }
         
-        // Título de la tabla (etiqueta del campo)
+        // Título de la tabla (etiqueta del campo), ajustado 10px a la izquierda
         const tableLabel = field.displayName || field.label;
+        // Calculamos el centro de la página menos 10px
+        const centerTextX = (pageWidth / 2) - 10;
         doc.fontSize(12).font('Helvetica-Bold')
-           .text(tableLabel, { align: 'center'});
+           .text(tableLabel, centerTextX - 100, doc.y, { width: 200, align: 'center' });
         
         doc.moveDown(0.5);
         
@@ -808,9 +810,10 @@ function generatePDFContent(
         // Ajuste de tamaño dependiendo de orientación para asegurar que todo quepa
         const scale = isLandscape ? 0.85 : 1.0; // Reducir tamaño un 15% en horizontal para mejor visualización
         
-        // Definir un título más descriptivo y con mejor formato
+        // Definir un título más descriptivo y con mejor formato, ajustado 10px a la izquierda
+        const centerX = (pageWidth / 2) - 10;  // Centramos pero 10px a la izquierda
         doc.fontSize(isLandscape ? 10 : 12).font('Helvetica-Bold')
-          .text('TABLAS DE DATOS ADICIONALES', { align: 'center' });
+          .text('TABLAS DE DATOS ADICIONALES', centerX - 100, doc.y, { width: 200, align: 'center' });
         doc.moveDown(0.2);
         
         // Añadir línea horizontal para separar título de la tabla
@@ -819,9 +822,9 @@ function generatePDFContent(
            .stroke();
         doc.moveDown(0.3);
         
-        // Subtítulo de la tabla
+        // Subtítulo de la tabla, ajustado 10px a la izquierda
         doc.fontSize(isLandscape ? 9 : 10).font('Helvetica-Bold')
-          .text('Registro', { align: 'center' });
+          .text('Registro', centerX - 100, doc.y, { width: 200, align: 'center' });
         doc.moveDown(0.2); // Muy poco espacio después del subtítulo
         
         // Crear distribución de anchos basada en la imagen de referencia
