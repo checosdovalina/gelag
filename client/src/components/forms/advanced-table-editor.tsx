@@ -2056,6 +2056,26 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
             )}
           </TabsContent>
         </Tabs>
+        
+        {/* Botón para guardar la configuración de la tabla */}
+        <div className="flex justify-end px-6 pb-6 pt-2 border-t">
+          <Button
+            type="button"
+            onClick={() => {
+              // Guardar la configuración actual
+              const currentConfig = { ...value };
+              onChange(currentConfig);
+              toast({
+                title: "Tabla guardada",
+                description: "La configuración de la tabla ha sido guardada correctamente",
+              });
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Guardar Tabla
+          </Button>
+        </div>
       </CardContent>
 
       {/* Diálogo para editar sección */}
