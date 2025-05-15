@@ -250,7 +250,7 @@ export const formFieldSchema = z.object({
         id: z.string(),
         header: z.string(),
         width: z.string().optional(), // Ancho de la columna (%, px)
-        type: z.enum(["text", "number", "select", "checkbox", "date"]),
+        type: z.enum(["text", "number", "select", "checkbox", "date", "product", "employee", "time"]),
         span: z.number().optional(), // Para celdas que ocupan múltiples columnas
         rowspan: z.number().optional(), // Para celdas que ocupan múltiples filas
         readOnly: z.boolean().optional(), // Si la celda es de solo lectura
