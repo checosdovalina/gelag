@@ -1,117 +1,138 @@
 {
-  "name": "Análisis Microbiológico",
-  "description": "Formulario para registrar análisis microbiológicos de productos",
-  "department": "Calidad",
-  "structure": {
-    "title": "Análisis Microbiológico",
-    "fields": [
+  "name": "Análisis Microbiológico Horizontal",
+  "description": "Tabla con parámetros microbiológicos en formato horizontal",
+  "advancedTableConfig": {
+    "rows": 3,
+    "dynamicRows": true,
+    "sections": [
       {
-        "id": "fecha",
-        "type": "date",
-        "label": "Fecha",
-        "displayName": "Fecha",
-        "required": true,
-        "displayOrder": 1
-      },
-      {
-        "id": "folio",
-        "type": "text",
-        "label": "Folio",
-        "displayName": "Folio",
-        "required": true,
-        "displayOrder": 2
-      },
-      {
-        "id": "producto",
-        "type": "product",
-        "label": "Producto",
-        "displayName": "Producto",
-        "required": true,
-        "displayOrder": 3
-      },
-      {
-        "id": "fecha_caducidad",
-        "type": "date",
-        "label": "Fecha de Caducidad",
-        "displayName": "FechaCaducidad",
-        "required": true,
-        "displayOrder": 4
-      },
-      {
-        "id": "tabla_analisis",
-        "type": "advanced-table",
-        "label": "Análisis Microbiológico",
-        "displayName": "AnalisisMicrobiologico",
-        "required": true,
-        "displayOrder": 5,
-        "advancedTableConfig": {
-          "rows": 5,
-          "dynamicRows": true,
-          "sections": [
-            {
-              "title": "Análisis Microbiológico",
-              "columns": [
-                {
-                  "id": "parametro",
-                  "header": "Parámetro",
-                  "type": "text",
-                  "readOnly": true,
-                  "width": "200px"
-                },
-                {
-                  "id": "resultado",
-                  "header": "Resultado",
-                  "type": "select",
-                  "options": [
-                    { "label": "Si", "value": "Si" },
-                    { "label": "No", "value": "No" },
-                    { "label": "NA", "value": "NA" }
-                  ],
-                  "width": "150px"
-                },
-                {
-                  "id": "observaciones",
-                  "header": "Observaciones",
-                  "type": "text",
-                  "width": "300px"
-                }
-              ]
-            }
-          ],
-          "initialData": [
-            {
-              "parametro": "Hongos y Levaduras"
-            },
-            {
-              "parametro": "Coliformes"
-            },
-            {
-              "parametro": "Staphylococos"
-            },
-            {
-              "parametro": "Mesofilicos"
-            },
-            {
-              "parametro": "Salmonella"
-            }
-          ]
-        }
-      },
-      {
-        "id": "observaciones_generales",
-        "type": "textarea",
-        "label": "Observaciones Generales",
-        "displayName": "ObservacionesGenerales",
-        "required": false,
-        "displayOrder": 6
-      },
-      {
-        "id": "realizado_por",
-        "type": "employee",
-        "label": "Realizado por",
-        "displayName": "RealizadoPor",
-        "required": true,
-        "displayOrder": 7
+        "title": "Análisis Microbiológico",
+        "columns": [
+          {
+            "id": "a3e4f9fa-4e74-4964-8b55-932e45ffe3bd",
+            "header": "Fecha",
+            "type": "date",
+            "width": "120px"
+          },
+          {
+            "id": "a2a4db54-8b91-450e-abb2-56c5b5d35073",
+            "header": "Producto",
+            "type": "product",
+            "width": "150px"
+          },
+          {
+            "id": "c0a838ef-15a7-41fb-be00-d47bd19d0848",
+            "header": "Lote",
+            "type": "text",
+            "width": "100px"
+          },
+          {
+            "id": "a835a31b-235d-4f11-a4bf-66bd7e40afd7",
+            "header": "Fecha de caducidad",
+            "type": "date",
+            "width": "150px"
+          },
+          {
+            "id": "3084603f-e7b8-44c6-bde3-065b0c5b9dee",
+            "header": "Hongos y Levaduras",
+            "type": "select",
+            "width": "120px",
+            "options": [
+              {
+                "label": "Si",
+                "value": "Si"
+              },
+              {
+                "label": "No",
+                "value": "No"
+              },
+              {
+                "label": "NA",
+                "value": "NA"
+              }
+            ]
+          },
+          {
+            "id": "ff43d9d4-165e-426c-a574-434da514d22a",
+            "header": "Coliformes",
+            "type": "select",
+            "width": "120px",
+            "options": [
+              {
+                "label": "Si",
+                "value": "Si"
+              },
+              {
+                "label": "No",
+                "value": "No"
+              },
+              {
+                "label": "NA",
+                "value": "NA"
+              }
+            ]
+          },
+          {
+            "id": "28e24f6f-8a32-4ed4-9374-1ac60799bbde",
+            "header": "Staphylococos",
+            "type": "select",
+            "width": "120px",
+            "options": [
+              {
+                "label": "Si",
+                "value": "Si"
+              },
+              {
+                "label": "No",
+                "value": "No"
+              },
+              {
+                "label": "NA",
+                "value": "NA"
+              }
+            ]
+          },
+          {
+            "id": "a4ce5ad3-2584-4049-8b59-a635f53da130",
+            "header": "Mesofilicos",
+            "type": "select",
+            "width": "120px",
+            "options": [
+              {
+                "label": "Si",
+                "value": "Si"
+              },
+              {
+                "label": "No",
+                "value": "No"
+              },
+              {
+                "label": "NA",
+                "value": "NA"
+              }
+            ]
+          },
+          {
+            "id": "39c28f85-6d5b-4c00-9691-9e24197350fa",
+            "header": "Salmonella",
+            "type": "select",
+            "width": "120px",
+            "options": [
+              {
+                "label": "Si",
+                "value": "Si"
+              },
+              {
+                "label": "No",
+                "value": "No"
+              },
+              {
+                "label": "NA",
+                "value": "NA"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

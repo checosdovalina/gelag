@@ -1,148 +1,116 @@
-import { db } from "../server/db";
-import { formTemplates } from "../shared/schema";
-import { pool } from "../server/db";
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
-// No necesitamos cargar variables de entorno, ya están disponibles
-
+/**
+ * Script para crear una plantilla JSON de tabla avanzada para microbiología
+ * Esta plantilla se puede importar en el sistema para usarla en el constructor de formularios
+ */
 async function createMicrobiologiaTemplate() {
-  console.log("Iniciando creación de plantilla de Análisis Microbiológico...");
+  console.log('Creando plantilla de tabla microbiológica horizontal...');
 
-  const templateData = {
-    name: "Análisis Microbiológico",
-    description: "Formulario para registrar análisis microbiológicos de productos",
-    department: "Calidad",
-    structure: {
-      title: "Análisis Microbiológico",
-      fields: [
+  // Estructura de la plantilla de tabla avanzada con formato horizontal
+  const template = {
+    name: 'Análisis Microbiológico Horizontal',
+    description: 'Tabla con parámetros microbiológicos en formato horizontal',
+    advancedTableConfig: {
+      rows: 3,
+      dynamicRows: true,
+      sections: [
         {
-          id: "fecha",
-          type: "date",
-          label: "Fecha",
-          displayName: "Fecha",
-          required: true,
-          displayOrder: 1
-        },
-        {
-          id: "folio",
-          type: "text",
-          label: "Folio",
-          displayName: "Folio",
-          required: true,
-          displayOrder: 2
-        },
-        {
-          id: "producto",
-          type: "product",
-          label: "Producto",
-          displayName: "Producto",
-          required: true,
-          displayOrder: 3
-        },
-        {
-          id: "fecha_caducidad",
-          type: "date",
-          label: "Fecha de Caducidad",
-          displayName: "FechaCaducidad",
-          required: true,
-          displayOrder: 4
-        },
-        {
-          id: "tabla_analisis",
-          type: "advanced-table",
-          label: "Análisis Microbiológico",
-          displayName: "AnalisisMicrobiologico",
-          required: true,
-          displayOrder: 5,
-          advancedTableConfig: {
-            rows: 5,
-            dynamicRows: true,
-            sections: [
-              {
-                title: "Análisis Microbiológico",
-                columns: [
-                  {
-                    id: "parametro",
-                    header: "Parámetro",
-                    type: "text",
-                    readOnly: true,
-                    width: "200px"
-                  },
-                  {
-                    id: "resultado",
-                    header: "Resultado",
-                    type: "select",
-                    options: [
-                      { label: "Si", value: "Si" },
-                      { label: "No", value: "No" },
-                      { label: "NA", value: "NA" }
-                    ],
-                    width: "150px"
-                  },
-                  {
-                    id: "observaciones",
-                    header: "Observaciones",
-                    type: "text",
-                    width: "300px"
-                  }
-                ]
-              }
-            ],
-            initialData: [
-              {
-                parametro: "Hongos y Levaduras"
-              },
-              {
-                parametro: "Coliformes"
-              },
-              {
-                parametro: "Staphylococos"
-              },
-              {
-                parametro: "Mesofilicos"
-              },
-              {
-                parametro: "Salmonella"
-              }
-            ]
-          }
-        },
-        {
-          id: "observaciones_generales",
-          type: "textarea",
-          label: "Observaciones Generales",
-          displayName: "ObservacionesGenerales",
-          required: false,
-          displayOrder: 6
-        },
-        {
-          id: "realizado_por",
-          type: "employee",
-          label: "Realizado por",
-          displayName: "RealizadoPor",
-          required: true,
-          displayOrder: 7
+          title: 'Análisis Microbiológico',
+          columns: [
+            {
+              id: uuidv4(),
+              header: 'Fecha',
+              type: 'date',
+              width: '120px'
+            },
+            {
+              id: uuidv4(),
+              header: 'Producto',
+              type: 'product',
+              width: '150px'
+            },
+            {
+              id: uuidv4(),
+              header: 'Lote',
+              type: 'text',
+              width: '100px'
+            },
+            {
+              id: uuidv4(),
+              header: 'Fecha de caducidad',
+              type: 'date',
+              width: '150px'
+            },
+            {
+              id: uuidv4(),
+              header: 'Hongos y Levaduras',
+              type: 'select',
+              width: '120px',
+              options: [
+                { label: 'Si', value: 'Si' },
+                { label: 'No', value: 'No' },
+                { label: 'NA', value: 'NA' }
+              ]
+            },
+            {
+              id: uuidv4(),
+              header: 'Coliformes',
+              type: 'select',
+              width: '120px',
+              options: [
+                { label: 'Si', value: 'Si' },
+                { label: 'No', value: 'No' },
+                { label: 'NA', value: 'NA' }
+              ]
+            },
+            {
+              id: uuidv4(),
+              header: 'Staphylococos',
+              type: 'select',
+              width: '120px',
+              options: [
+                { label: 'Si', value: 'Si' },
+                { label: 'No', value: 'No' },
+                { label: 'NA', value: 'NA' }
+              ]
+            },
+            {
+              id: uuidv4(),
+              header: 'Mesofilicos',
+              type: 'select',
+              width: '120px',
+              options: [
+                { label: 'Si', value: 'Si' },
+                { label: 'No', value: 'No' },
+                { label: 'NA', value: 'NA' }
+              ]
+            },
+            {
+              id: uuidv4(),
+              header: 'Salmonella',
+              type: 'select',
+              width: '120px',
+              options: [
+                { label: 'Si', value: 'Si' },
+                { label: 'No', value: 'No' },
+                { label: 'NA', value: 'NA' }
+              ]
+            }
+          ]
         }
       ]
-    },
-    createdBy: 1, // ID del superadmin
-    isActive: true
+    }
   };
 
-  try {
-    // Insertar el template en la base de datos
-    const [newTemplate] = await db
-      .insert(formTemplates)
-      .values(templateData)
-      .returning();
+  // Guardar la plantilla en un archivo JSON
+  const filePath = path.join(process.cwd(), 'microbiologia_template.json');
+  fs.writeFileSync(filePath, JSON.stringify(template, null, 2));
 
-    console.log("Plantilla creada exitosamente:", newTemplate);
-  } catch (error) {
-    console.error("Error al crear la plantilla:", error);
-  } finally {
-    // Cerrar la conexión de la base de datos
-    await pool.end();
-    console.log("Conexión a la base de datos cerrada");
-  }
+  console.log(`Plantilla creada exitosamente en: ${filePath}`);
+  console.log('Puedes importar esta plantilla en el constructor de formularios como una tabla avanzada');
 }
 
 // Ejecutar la función
