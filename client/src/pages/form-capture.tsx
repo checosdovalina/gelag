@@ -343,7 +343,7 @@ export default function FormCapture() {
       {/* Form Dialog */}
       {selectedTemplate && (
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-6xl">
             <DialogHeader>
               <DialogTitle>{selectedTemplate.name}</DialogTitle>
               <DialogDescription>
