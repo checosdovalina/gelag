@@ -870,8 +870,8 @@ async function generatePDFAndSend(
         // Aumentamos el ancho para que ocupe más espacio en la página
         const titleWidth = pageWidth * 0.7; // 70% del ancho de la página
         const titleHeight = 22;
-        // Centramos con precisión
-        const titleX = (pageWidth - titleWidth) / 2;
+        // Centramos con precisión y ajustamos 10px a la izquierda
+        const titleX = ((pageWidth - titleWidth) / 2) - 10;
         
         // Dibujar un fondo para el título
         doc.fillColor('#f5f5f5')
