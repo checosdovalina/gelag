@@ -726,30 +726,7 @@ async function generatePDFAndSend(
     }
   }
   
-  // Añadir pie de página
-  const pageCount = doc.bufferedPageRange().count;
-  for (let i = 0; i < pageCount; i++) {
-    doc.switchToPage(i);
-    
-    // Línea separadora en el pie de página
-    doc.strokeColor("#d0d0d0")
-       .lineWidth(0.5)
-       .moveTo(30, doc.page.height - 25)
-       .lineTo(doc.page.width - 30, doc.page.height - 25)
-       .stroke();
-    
-    // Texto del pie de página
-    doc.fillColor("#888888")
-       .fontSize(8)
-       .text(
-         `Página ${i+1} de ${pageCount}`,
-         30,
-         doc.page.height - 20,
-         { align: 'center', width: doc.page.width - 60 }
-       );
-  }
-  
-  // Finalizar la generación del PDF
+  // Finalizar el documento para escribir al archivo
   doc.end();
   
   // Esperar a que se complete la escritura del archivo
@@ -762,22 +739,31 @@ async function generatePDFAndSend(
     });
   });
   
-  // Enviar el archivo al cliente
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
-  
-  // Stream el archivo al cliente
-  const readStream = fs.createReadStream(tempFilePath);
-  readStream.pipe(res);
-  
-  // Limpiar el archivo temporal después de enviarlo
-  readStream.on('end', () => {
-    try {
-      fs.unlinkSync(tempFilePath);
-    } catch (err) {
-      console.error("Error al eliminar archivo temporal:", err);
-    }
-  });
+  try {
+    // Verificar que el archivo se haya creado correctamente
+    const stat = fs.statSync(tempFilePath);
+    
+    // Configurar las cabeceras de respuesta
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
+    
+    // Stream el archivo al cliente
+    const readStream = fs.createReadStream(tempFilePath);
+    readStream.pipe(res);
+    
+    // Limpiar el archivo temporal después de enviarlo
+    readStream.on('end', () => {
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (err) {
+        console.error("Error al eliminar archivo temporal:", err);
+      }
+    });
+  } catch (error) {
+    console.error('Error al enviar el PDF:', error);
+    res.status(500).json({ message: 'Error al enviar el PDF', error: String(error) });
+  }
 }
 
 /**
