@@ -570,7 +570,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   );
 
   return (
-    <div className="border rounded-md w-full overflow-auto">
+    <div className="border rounded-md w-full">
       {(hasDependentColumns || (productColumn && litersColumn)) && (
         <div className="p-2 bg-blue-50 border-b text-sm text-blue-700 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -580,8 +580,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           se calcularán los kilos de materia prima correspondientes.
         </div>
       )}
-      <ScrollArea className="max-h-[600px]">
-        <Table>
+      <div className="w-full overflow-x-auto max-h-[600px]">
+        <Table className="min-w-full">
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
@@ -823,7 +823,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             )}
           </TableBody>
         </Table>
-      </ScrollArea>
+      </div>
     </div>
   );
 };
