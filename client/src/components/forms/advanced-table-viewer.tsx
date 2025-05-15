@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
 import { Plus, Trash, Save, AlertCircle } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -155,8 +154,6 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     return products.find((product) => product.id.toString() === productId.toString());
   };
   
-
-  
   // Calcular valor automático basado en la dependencia
   const calculateDependentValue = (rowIndex: number, column: ColumnDefinition) => {
     if (!column.dependency || !column.dependency.sourceColumn) return '';
@@ -261,6 +258,19 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       onChange(updatedData);
     }
   }, [tableData, products]);
+
+  // Obtener todas las columnas de todas las secciones
+  const allColumns = config.sections?.flatMap(section => section.columns) || [];
+
+  // Detectar si hay alguna columna con dependencias
+  const hasDependentColumns = allColumns.some(col => col.dependency);
+  
+  // Identificar columnas importantes para el cálculo
+  const productColumn = allColumns.find(col => col.type === 'product');
+  const litersColumn = allColumns.find(col => 
+    col.header?.toLowerCase().includes('litro') || 
+    col.id.toLowerCase().includes('litro')
+  );
 
   // Actualizar una celda
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
@@ -431,58 +441,51 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     // Propagar el cambio con un pequeño retraso para asegurar que React haya actualizado el estado
     setTimeout(() => {
       try {
-        // Asegurarnos de propagar una copia profunda al componente padre
-        const finalData = JSON.parse(JSON.stringify(newData));
-        console.log("[updateRawMaterials] Propagando cambios al componente padre:", finalData);
+        // Propagar una copia limpia al componente padre
+        const jsonString = JSON.stringify(newData);
+        const finalData = JSON.parse(jsonString);
         onChange(finalData);
+        notifyTableUpdate("Materias primas actualizadas", "success");
       } catch (error) {
         console.error("[updateRawMaterials] Error al propagar cambios:", error);
+        notifyTableUpdate("Error al actualizar materias primas", "error");
       }
-    }, 50);
+    }, 150);
   };
-
-  // Agregar una nueva fila (si está habilitado)
+  
+  // Agregar una fila
   const addRow = () => {
     try {
-      if (!config.dynamicRows) {
-        console.log("[addRow] Filas dinámicas no están habilitadas, no se puede agregar fila");
-        notifyTableUpdate("No se pueden añadir filas a esta tabla", "info");
-        return;
-      }
+      console.log("[addRow] Añadiendo fila a la tabla...");
       
       setIsSaving(true);
       
-      // Crear una copia profunda para evitar referencias
-      const currentData = JSON.parse(JSON.stringify(tableData));
+      // Crear una nueva fila vacía
       const newRow = {};
       
-      // Agregar la nueva fila y actualizar los datos locales
-      const newData = [...currentData, newRow];
-      console.log("[addRow] ⚠️ FORZANDO actualización con nueva fila. Datos:", newData);
+      // Realizar una copia profunda de los datos actuales
+      const newData = JSON.parse(JSON.stringify(tableData));
       
-      // Actualizar el estado local inmediatamente
+      // Agregar la nueva fila
+      newData.push(newRow);
+      
+      // Actualizar estado y propagar cambios
+      console.log("[addRow] Actualizando datos de tabla:", newData);
       setTableData(newData);
       
-      // Notificar al componente padre con una pequeña demora MAYOR
+      // Importante: usamos un retraso para asegurar que la actualización se haga correctamente
       setTimeout(() => {
         try {
-          // Asegurarnos de propagar una copia TOTALMENTE nueva al componente padre
+          // Propagar una copia limpia al componente padre
           const jsonString = JSON.stringify(newData);
           const finalData = JSON.parse(jsonString);
-          
-          console.log("[addRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
           onChange(finalData);
           
-          // Usar el sistema de notificaciones de shadcn
-          notifyTableUpdate("Fila agregada correctamente", "success");
-          
+          notifyTableUpdate("Fila agregada", "success");
           setIsSaving(false);
         } catch (error) {
-          console.error("[addRow] ❌ Error al propagar cambios:", error);
-          
-          // Usar el sistema de notificaciones de shadcn
-          notifyTableUpdate("Error al agregar fila", "error");
-          
+          console.error("[addRow] Error crítico al agregar fila:", error);
+          notifyTableUpdate("Error crítico al agregar fila", "error");
           setIsSaving(false);
         }
       }, 150); // Aumentado a 150ms para mayor seguridad
@@ -492,60 +495,43 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       setIsSaving(false);
     }
   };
-
-  // Eliminar una fila (si está habilitado y hay más de una fila)
-  const removeRow = (index: number) => {
+  
+  // Eliminar una fila
+  const removeRow = (rowIndex: number) => {
     try {
-      if (!config.dynamicRows) {
-        console.log("[removeRow] Filas dinámicas no están habilitadas, no se puede eliminar fila");
-        notifyTableUpdate("No se pueden eliminar filas de esta tabla", "info");
-        return;
-      }
+      console.log("[removeRow] Eliminando fila", rowIndex);
       
       if (tableData.length <= 1) {
-        console.log("[removeRow] No se puede eliminar la única fila de la tabla");
-        notifyTableUpdate("Se requiere al menos una fila en la tabla", "info");
+        console.log("[removeRow] No se puede eliminar la última fila");
+        notifyTableUpdate("No se puede eliminar la última fila", "info");
         return;
       }
       
       setIsSaving(true);
       
-      // Crear una copia profunda para evitar referencias
-      const currentData = JSON.parse(JSON.stringify(tableData));
-      if (index < 0 || index >= currentData.length) {
-        console.error("[removeRow] Índice fuera de rango:", index, "longitud:", currentData.length);
-        notifyTableUpdate("Error: índice de fila fuera de rango", "error");
-        setIsSaving(false);
-        return;
-      }
+      // Realizar una copia profunda de los datos actuales
+      const newData = JSON.parse(JSON.stringify(tableData));
       
-      const newData = currentData.filter((_: unknown, i: number) => i !== index);
+      // Eliminar la fila
+      newData.splice(rowIndex, 1);
       
-      console.log("[removeRow] ⚠️ FORZANDO eliminación de fila", index, "Datos actualizados:", newData);
-      
-      // Actualizar los datos locales inmediatamente
+      // Actualizar estado y propagar cambios
+      console.log("[removeRow] Actualizando datos de tabla:", newData);
       setTableData(newData);
       
-      // Notificar al componente padre con una pequeña demora
+      // Importante: usamos un retraso para asegurar que la actualización se haga correctamente
       setTimeout(() => {
         try {
-          // Asegurarnos de propagar una copia TOTALMENTE nueva al componente padre
+          // Propagar una copia limpia al componente padre
           const jsonString = JSON.stringify(newData);
           const finalData = JSON.parse(jsonString);
-          
-          console.log("[removeRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
           onChange(finalData);
           
-          // Usar el sistema de notificaciones de shadcn
-          notifyTableUpdate("Fila eliminada correctamente", "success");
-          
+          notifyTableUpdate("Fila eliminada", "success");
           setIsSaving(false);
         } catch (error) {
-          console.error("[removeRow] ❌ Error al propagar cambios:", error);
-          
-          // Usar el sistema de notificaciones de shadcn
-          notifyTableUpdate("Error al eliminar fila", "error");
-          
+          console.error("[removeRow] Error crítico al eliminar fila:", error);
+          notifyTableUpdate("Error crítico al eliminar fila", "error");
           setIsSaving(false);
         }
       }, 150); // Aumentado a 150ms para mayor seguridad
@@ -555,19 +541,6 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       setIsSaving(false);
     }
   };
-
-  // Obtener todas las columnas de todas las secciones
-  const allColumns = config.sections?.flatMap(section => section.columns) || [];
-
-  // Detectar si hay alguna columna con dependencias
-  const hasDependentColumns = allColumns.some(col => col.dependency);
-  
-  // Identificar columnas importantes para el cálculo
-  const productColumn = allColumns.find(col => col.type === 'product');
-  const litersColumn = allColumns.find(col => 
-    col.header?.toLowerCase().includes('litro') || 
-    col.id.toLowerCase().includes('litro')
-  );
 
   return (
     <div className="border rounded-md w-full">
@@ -581,7 +554,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
         </div>
       )}
       <div className="w-full overflow-x-auto max-h-[600px]">
-        <Table className="min-w-full">
+        <Table className="min-w-full table-fixed">
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
@@ -603,8 +576,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                   key={column.id}
                   colSpan={column.span || 1}
                   rowSpan={column.rowspan || 1}
-                  style={{ width: column.width || 'auto' }}
-                  className="text-center"
+                  style={{ 
+                    width: column.width || 'auto',
+                    minWidth: column.type === 'text' ? '120px' : 
+                            column.type === 'select' ? '100px' : 
+                            column.type === 'number' ? '80px' : '100px'
+                  }}
+                  className="text-center whitespace-nowrap"
                 >
                   {column.header}
                 </TableHead>
@@ -662,15 +640,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       </Select>
                     )}
                     {column.type === 'checkbox' && (
-                      <div className="flex justify-center">
-                        <Checkbox
-                          checked={rowData[column.id] || false}
-                          onCheckedChange={(checked) => 
-                            updateCell(rowIndex, column.id, checked === true)
-                          }
-                          disabled={readOnly || column.readOnly}
-                        />
-                      </div>
+                      <Checkbox
+                        checked={rowData[column.id] || false}
+                        onCheckedChange={(checked) => 
+                          updateCell(rowIndex, column.id, checked)
+                        }
+                        disabled={readOnly || column.readOnly}
+                      />
                     )}
                     {column.type === 'date' && (
                       <Input
@@ -681,123 +657,104 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         className="h-8"
                       />
                     )}
-                    {column.type === 'product' && (
-                      loadingProducts ? (
-                        <Skeleton className="h-8 w-full" />
-                      ) : (
-                        <Select
-                          defaultValue={rowData[column.id] || ''}
-                          onValueChange={(val) => updateCell(rowIndex, column.id, val)}
-                          disabled={readOnly || column.readOnly}
-                        >
-                          <SelectTrigger className="h-8">
-                            <SelectValue placeholder="Seleccionar producto..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {products.map((product) => (
-                              <SelectItem key={product.id} value={product.id.toString()}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )
-                    )}
                     {column.type === 'employee' && (
-                      loadingEmployees ? (
-                        <Skeleton className="h-8 w-full" />
-                      ) : (
-                        <Select
-                          defaultValue={rowData[column.id] || ''}
-                          onValueChange={(val) => updateCell(rowIndex, column.id, val)}
-                          disabled={readOnly || column.readOnly}
-                        >
-                          <SelectTrigger className="h-8">
-                            <SelectValue placeholder="Seleccionar empleado..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {employees
-                              .filter((emp) => !column.employeeType || emp.type === column.employeeType)
+                      <Select
+                        defaultValue={rowData[column.id] || ''}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                        disabled={readOnly || column.readOnly || loadingEmployees}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="Seleccionar empleado..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingEmployees ? (
+                            <div className="p-2">
+                              <Skeleton className="h-4 w-full" />
+                            </div>
+                          ) : (
+                            employees
+                              // Filtrar por tipo de empleado si es necesario
+                              .filter(emp => !column.employeeType || emp.type === column.employeeType)
                               .map((employee) => (
                                 <SelectItem key={employee.id} value={employee.id.toString()}>
                                   {employee.name}
                                 </SelectItem>
-                              ))}
-                          </SelectContent>
-                        </Select>
-                      )
+                              ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {column.type === 'product' && (
+                      <Select
+                        defaultValue={rowData[column.id] || ''}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
+                        disabled={readOnly || column.readOnly || loadingProducts}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="Seleccionar producto..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingProducts ? (
+                            <div className="p-2">
+                              <Skeleton className="h-4 w-full" />
+                            </div>
+                          ) : (
+                            products.map((product) => (
+                              <SelectItem key={product.id} value={product.name}>
+                                {product.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
                     )}
                   </TableCell>
                 ))}
+                {/* Botón para eliminar fila */}
                 {config.dynamicRows && !readOnly && (
                   <TableCell className="p-1 w-10">
                     <Button
-                      type="button"
-                      variant="ghost"
                       size="icon"
-                      disabled={isSaving}
+                      variant="ghost"
                       onClick={() => removeRow(rowIndex)}
-                      className={`h-8 w-8 ${isSaving ? 'text-gray-400' : 'text-red-500 hover:text-red-700'}`}
-                      tabIndex={-1}
+                      disabled={isSaving}
+                      className="h-8 w-8"
                     >
-                      <Trash className="h-4 w-4" />
+                      <Trash className="h-4 w-4 text-red-500" />
                     </Button>
                   </TableCell>
                 )}
               </TableRow>
             ))}
             
-            {/* Botón para agregar fila dinámica */}
+            {/* Botones para agregar fila y guardar */}
             {config.dynamicRows && !readOnly && (
               <TableRow>
-                <TableCell 
-                  colSpan={allColumns.length + 1}
-                  className="text-center p-2"
-                >
-                  <div className="flex justify-center space-x-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                <TableCell colSpan={allColumns.length + 1} className="p-1">
+                  <div className="flex justify-between items-center">
+                    <Button
                       size="sm"
-                      disabled={isSaving}
+                      variant="outline"
                       onClick={addRow}
+                      disabled={isSaving}
+                      className="h-8"
                     >
                       <Plus className="h-4 w-4 mr-1" /> Agregar Fila
                     </Button>
                     
-                    <Button 
-                      type="button" 
-                      variant="default" 
+                    <Button
                       size="sm"
-                      disabled={isSaving} 
                       onClick={() => {
                         try {
                           setIsSaving(true);
                           
-                          // Forzar una copia profunda y actualización
-                          console.log("[saveTable] ⚠️ FORZANDO guardado de tabla con datos:", tableData);
-                          
-                          // Crear una copia totalmente independiente
+                          // Propagar el cambio actual al componente padre
                           const jsonString = JSON.stringify(tableData);
-                          const copyData = JSON.parse(jsonString);
+                          const finalData = JSON.parse(jsonString);
+                          onChange(finalData);
                           
-                          // Dar tiempo al servidor para procesar
-                          setTimeout(() => {
-                            try {
-                              // Actualizar los datos en el padre
-                              console.log("[saveTable] Enviando datos:", copyData);
-                              onChange(copyData);
-                              
-                              // Notificar éxito
-                              notifyTableUpdate("Tabla guardada correctamente", "success");
-                              
-                              setIsSaving(false);
-                            } catch (error) {
-                              console.error("[saveTable] Error al guardar tabla:", error);
-                              notifyTableUpdate("Error al guardar tabla", "error");
-                              setIsSaving(false);
-                            }
-                          }, 150);
+                          notifyTableUpdate("Tabla guardada", "success");
+                          setIsSaving(false);
                         } catch (error) {
                           console.error("[saveTable] Error crítico al guardar tabla:", error);
                           notifyTableUpdate("Error crítico al guardar tabla", "error");
