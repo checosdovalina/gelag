@@ -415,7 +415,10 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Agregar una nueva fila (si está habilitado)
   const addRow = () => {
-    if (!config.dynamicRows) return;
+    if (!config.dynamicRows) {
+      console.log("[addRow] Filas dinámicas no están habilitadas, no se puede agregar fila");
+      return;
+    }
     
     // Crear una copia profunda para evitar referencias
     const currentData = JSON.parse(JSON.stringify(tableData));
@@ -423,34 +426,59 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     
     // Agregar la nueva fila y actualizar los datos locales
     const newData = [...currentData, newRow];
-    console.log("Añadiendo nueva fila. Datos actualizados:", newData);
+    console.log("[addRow] Añadiendo nueva fila. Datos actualizados:", newData);
     
     // Actualizar el estado local
     setTableData(newData);
     
     // Notificar al componente padre con una pequeña demora
     setTimeout(() => {
-      onChange(JSON.parse(JSON.stringify(newData)));
-    }, 0);
+      try {
+        const finalData = JSON.parse(JSON.stringify(newData));
+        console.log("[addRow] Propagando cambios al componente padre:", finalData);
+        onChange(finalData);
+      } catch (error) {
+        console.error("[addRow] Error al propagar cambios:", error);
+      }
+    }, 50);
   };
 
   // Eliminar una fila (si está habilitado y hay más de una fila)
   const removeRow = (index: number) => {
-    if (!config.dynamicRows || tableData.length <= 1) return;
+    if (!config.dynamicRows) {
+      console.log("[removeRow] Filas dinámicas no están habilitadas, no se puede eliminar fila");
+      return;
+    }
+    
+    if (tableData.length <= 1) {
+      console.log("[removeRow] No se puede eliminar la única fila de la tabla");
+      return;
+    }
     
     // Crear una copia profunda para evitar referencias
     const currentData = JSON.parse(JSON.stringify(tableData));
+    if (index < 0 || index >= currentData.length) {
+      console.error("[removeRow] Índice fuera de rango:", index, "longitud:", currentData.length);
+      return;
+    }
+    
     const newData = currentData.filter((_, i) => i !== index);
     
-    console.log("Eliminando fila", index, "Datos actualizados:", newData);
+    console.log("[removeRow] Eliminando fila", index, "Datos actualizados:", newData);
     
     // Actualizar los datos locales
     setTableData(newData);
     
     // Notificar al componente padre con una pequeña demora
     setTimeout(() => {
-      onChange(JSON.parse(JSON.stringify(newData)));
-    }, 0);
+      try {
+        const finalData = JSON.parse(JSON.stringify(newData));
+        console.log("[removeRow] Propagando cambios al componente padre:", finalData);
+        onChange(finalData);
+      } catch (error) {
+        console.error("[removeRow] Error al propagar cambios:", error);
+      }
+    }, 50);
   };
 
   // Obtener todas las columnas de todas las secciones
