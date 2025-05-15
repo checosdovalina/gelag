@@ -332,23 +332,25 @@ async function generatePDFAndSend(
       
       // Dibujar fondo del encabezado
       doc.fillColor("#f0f0f0")
-         .rect(startX, currentY, pageWidth, 25)
+         .rect(startX, currentY, pageWidth, 30)
          .fill();
       
       // Dibujar líneas de la tabla para el encabezado
       doc.strokeColor("#000000")
          .lineWidth(0.5)
-         .rect(startX, currentY, pageWidth, 25)
+         .rect(startX, currentY, pageWidth, 30)
          .stroke();
       
       // Texto de los encabezados
-      doc.fillColor("#000000").fontSize(9).font('Helvetica-Bold');
+      doc.fillColor("#000000").fontSize(10).font('Helvetica-Bold');
       
       columns.forEach((field, i) => {
+        const colWidth = columnWidths[field];
+        
         // Dibujar línea vertical entre columnas (excepto al principio)
         if (i > 0) {
           doc.moveTo(currentX, currentY)
-             .lineTo(currentX, currentY + 25)
+             .lineTo(currentX, currentY + 30)
              .stroke();
         }
         
@@ -356,7 +358,7 @@ async function generatePDFAndSend(
         doc.text(
           fieldLabels[field],
           currentX + 3,
-          currentY + 7,
+          currentY + 10,
           {
             width: colWidth - 6,
             align: 'center',
@@ -368,11 +370,11 @@ async function generatePDFAndSend(
       });
       
       // Avanzamos a la siguiente fila
-      currentY += 25;
+      currentY += 30;
     }
     
-    // Altura de la fila (ajustable según contenido)
-    const rowHeight = 20;
+    // Altura de la fila (ajustable según contenido) - Mayor para mejor legibilidad
+    const rowHeight = 24;
     
     // Dibujar bordes de la fila
     doc.strokeColor("#000000")
@@ -427,11 +429,11 @@ async function generatePDFAndSend(
       // Obtener el ancho para esta columna
       const colWidth = columnWidths[field];
       
-      // Texto centrado en la celda
+      // Texto centrado en la celda con mejor posicionamiento vertical
       doc.text(
         displayValue,
         currentX + 3,
-        currentY + 6,
+        currentY + 8,  // Mejor posicionamiento vertical
         {
           width: colWidth - 6,
           align: 'center',
