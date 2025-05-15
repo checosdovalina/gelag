@@ -22,6 +22,7 @@ import { Loader2, Save, Download, FileDown, FilePen, Pencil, Package, UserCircle
 import { FormStructure, UserRole, Product, Employee } from "@shared/schema";
 import type { FormField as IFormField } from "@shared/schema";
 import AdvancedTableViewer from "./advanced-table-viewer";
+import ProductRecipeSelector from "./product-recipe-selector";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
