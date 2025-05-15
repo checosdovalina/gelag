@@ -90,9 +90,13 @@ interface FormEntry {
 interface FormTemplate {
   id: number;
   name: string;
-  description: string;
-  department: string;
+  description: string | null;
+  department: string | null;
   structure: any;
+  createdAt: Date | null;
+  createdBy: number;
+  updatedAt: Date | null;
+  isActive: boolean | null;
 }
 
 interface User {
@@ -532,7 +536,7 @@ export default function CapturedFormsPage() {
     
     // Inicializar campos seleccionados
     if (template.structure && template.structure.fields) {
-      setSelectedFields(template.structure.fields.map(field => field.id));
+      setSelectedFields(template.structure.fields.map((field: { id: string }) => field.id));
     }
     
     // Abrir el modal de selección de campos
@@ -649,7 +653,7 @@ export default function CapturedFormsPage() {
       cell: ({ row }) => {
         const folioNumber = row.getValue("folioNumber");
         if (!folioNumber) return <div>-</div>;
-        return <div className="font-medium">{folioNumber}</div>;
+        return <div className="font-medium">{folioNumber as React.ReactNode}</div>;
       },
     },
     {
@@ -679,7 +683,7 @@ export default function CapturedFormsPage() {
       cell: ({ row }) => {
         const lotNumber = row.getValue("lot_number");
         if (!lotNumber) return <div className="text-muted-foreground">-</div>;
-        return <div>{lotNumber}</div>;
+        return <div>{lotNumber as React.ReactNode}</div>;
       },
     },
     {
@@ -918,7 +922,17 @@ export default function CapturedFormsPage() {
         <FieldsSelectorModal
           open={fieldSelectorOpen}
           onOpenChange={setFieldSelectorOpen}
-          template={templateForFields || { id: 0, name: "", description: "", department: "", structure: {} }}
+          template={templateForFields || { 
+            id: 0, 
+            name: "", 
+            description: null, 
+            department: null, 
+            structure: {}, 
+            createdAt: null, 
+            createdBy: 0, 
+            updatedAt: null, 
+            isActive: null 
+          }}
           initialSelectedFields={selectedFields}
           onSave={handleFieldSelection}
         />
