@@ -121,10 +121,12 @@ async function generatePDFAndSend(
   const doc = new PDFDocument({ 
     size: 'A4', 
     layout: 'landscape',
-    margin: 30,
+    margin: 40,  // Margen más grande para mejor visualización
     info: {
       Title: `Datos homologados: ${template.name}`,
       Author: 'GELAG - Sistema de Formularios',
+      Creator: 'Sistema de formularios GELAG', 
+      Producer: 'GELAG',
     }
   });
   
@@ -217,15 +219,59 @@ async function generatePDFAndSend(
     });
   }
   
-  // Dibujar tabla para los datos
+  // Dibujar tabla para los datos - optimizado para orientación horizontal
   const tableTop = doc.y + 10;
-  const pageWidth = doc.page.width - 60; // Márgenes a ambos lados
-  const startX = 30;
+  const pageWidth = doc.page.width - 80; // Márgenes a ambos lados
+  const startX = 40;
   
   // Calcular ancho de columna basado en el número de campos
   // Asumimos al menos las columnas básicas (Fecha, Folio, etc.)
   const columns = [...tableFields];
-  const colWidth = Math.min(120, pageWidth / (columns.length || 1));
+  
+  // Distribución de anchos de columna optimizada para vista horizontal
+  // Intentamos distribuir el espacio de manera más inteligente según el tipo de campo
+  const columnWidths: Record<string, number> = {};
+  
+  // Asignar anchos específicos a campos conocidos
+  columns.forEach(field => {
+    const labelLower = fieldLabels[field].toLowerCase();
+    
+    // Asignar diferentes anchos según el tipo de campo
+    if (labelLower.includes('fecha')) {
+      columnWidths[field] = 0.12; // 12% para fechas
+    } 
+    else if (labelLower === 'folio' || labelLower === 'código' || labelLower === 'lote') {
+      columnWidths[field] = 0.08; // 8% para códigos cortos
+    }
+    else if (labelLower.includes('producto') || labelLower.includes('nombre')) {
+      columnWidths[field] = 0.18; // 18% para nombres de productos
+    }
+    else if (labelLower.includes('observaciones') || labelLower.includes('comentarios')) {
+      columnWidths[field] = 0.22; // 22% para campos de texto largo
+    }
+    else {
+      columnWidths[field] = 0.14; // 14% por defecto
+    }
+  });
+  
+  // Normalizar los porcentajes para que sumen 1
+  const totalPercentage = Object.values(columnWidths).reduce((sum, val) => sum + val, 0);
+  Object.keys(columnWidths).forEach(key => {
+    columnWidths[key] = columnWidths[key] / totalPercentage;
+  });
+  
+  // Aplicar los porcentajes al ancho total de la tabla
+  columns.forEach(field => {
+    columnWidths[field] = Math.floor(pageWidth * columnWidths[field]);
+  });
+  
+  // Usamos un ancho mínimo y máximo para las columnas
+  const minColWidth = 60;
+  const maxColWidth = 180;
+  
+  columns.forEach(field => {
+    columnWidths[field] = Math.max(minColWidth, Math.min(maxColWidth, columnWidths[field]));
+  });
   
   // Encabezados de la tabla
   let currentX = startX;
@@ -239,17 +285,19 @@ async function generatePDFAndSend(
   // Dibujar líneas de la tabla para el encabezado
   doc.strokeColor("#000000")
      .lineWidth(0.5)
-     .rect(startX, currentY, pageWidth, 25)
+     .rect(startX, currentY, pageWidth, 30) // Altura de encabezado aumentada
      .stroke();
   
   // Texto de los encabezados
-  doc.fillColor("#000000").fontSize(9).font('Helvetica-Bold');
+  doc.fillColor("#000000").fontSize(10).font('Helvetica-Bold'); // Fuente más grande
   
   columns.forEach((field, i) => {
+    const colWidth = columnWidths[field];
+    
     // Dibujar línea vertical entre columnas (excepto al principio)
     if (i > 0) {
       doc.moveTo(currentX, currentY)
-         .lineTo(currentX, currentY + 25)
+         .lineTo(currentX, currentY + 30) // Altura ajustada
          .stroke();
     }
     
@@ -257,7 +305,7 @@ async function generatePDFAndSend(
     doc.text(
       fieldLabels[field],
       currentX + 3,
-      currentY + 7,
+      currentY + 10, // Ajuste para centrar mejor con altura mayor
       {
         width: colWidth - 6,
         align: 'center',
@@ -269,15 +317,15 @@ async function generatePDFAndSend(
   });
   
   // Avanzamos a la siguiente fila
-  currentY += 25;
+  currentY += 30; // Ajustado para coincidior con la altura del encabezado
   
   // Filas de datos
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     
     if (currentY > doc.page.height - 50) {
-      doc.addPage({ layout: 'landscape', margin: 30 });
-      currentY = 30;
+      doc.addPage({ layout: 'landscape', margin: 40 });
+      currentY = 40;
       
       // Repetir encabezados en la nueva página
       currentX = startX;
@@ -375,6 +423,9 @@ async function generatePDFAndSend(
       } else {
         displayValue = String(value);
       }
+      
+      // Obtener el ancho para esta columna
+      const colWidth = columnWidths[field];
       
       // Texto centrado en la celda
       doc.text(
