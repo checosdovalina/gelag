@@ -279,7 +279,7 @@ export default function CapturedFormsPage() {
         // Workflow status filter
         const passesWorkflowStatusFilter = 
           workflowStatusFilter === "all" || 
-          entry.workflow_status === workflowStatusFilter;
+          entry.workflowStatus === workflowStatusFilter;
         
         // User filter
         const passesUserFilter = 
@@ -683,10 +683,10 @@ export default function CapturedFormsPage() {
       },
     },
     {
-      accessorKey: "workflow_status",
+      accessorKey: "workflowStatus",
       header: "Flujo",
       cell: ({ row }) => {
-        const workflowStatus = row.getValue("workflow_status") as string;
+        const workflowStatus = row.getValue("workflowStatus") as string;
         
         // Si no hay estado de flujo, mostrar un placeholder
         if (!workflowStatus) {

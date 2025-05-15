@@ -1,5 +1,31 @@
 import React, { useState } from 'react';
-import { FormEntry, FormWorkflowStatus, UserRole } from '@shared/schema';
+import { FormWorkflowStatus, UserRole } from '@shared/schema';
+
+// Interface local para el componente, adaptada a la estructura esperada en la aplicación cliente
+interface FormEntry {
+  id: number;
+  formTemplateId: number;
+  data: any;
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+  department: string;
+  status: string;
+  signature?: string;
+  signedBy?: number;
+  signedAt?: string;
+  folioNumber?: string;
+  
+  // Campos para el flujo de trabajo secuencial
+  workflowStatus?: string;
+  lotNumber?: string;
+  lastUpdatedBy?: number;
+  approvedBy?: number;
+  approvedAt?: string;
+  rejectedBy?: number;
+  rejectedAt?: string;
+  roleSpecificData?: any;
+}
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -243,7 +269,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
   };
   
   // Renderizar el icono apropiado según el estado del flujo
-  const renderStatusIcon = (status: FormWorkflowStatus | string | null) => {
+  const renderStatusIcon = (status: FormWorkflowStatus | string | null | undefined) => {
     switch(status) {
       case FormWorkflowStatus.INITIATED:
         return <Clock className="h-5 w-5 text-muted-foreground" />;
@@ -265,7 +291,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
   };
   
   // Obtener la etiqueta legible del estado
-  const getStatusLabel = (status: FormWorkflowStatus | string | null) => {
+  const getStatusLabel = (status: FormWorkflowStatus | string | null | undefined) => {
     switch(status) {
       case FormWorkflowStatus.INITIATED:
         return "Iniciado";
@@ -287,7 +313,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
   };
   
   // Obtener la variante de badge según el estado
-  const getStatusBadgeVariant = (status: FormWorkflowStatus | string | null) => {
+  const getStatusBadgeVariant = (status: FormWorkflowStatus | string | null | undefined) => {
     switch(status) {
       case FormWorkflowStatus.INITIATED:
         return "outline";
@@ -309,7 +335,7 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
   };
   
   // Clase personalizada para estado "pendiente de calidad"
-  const getCustomStatusClass = (status: FormWorkflowStatus | string | null) => {
+  const getCustomStatusClass = (status: FormWorkflowStatus | string | null | undefined) => {
     if (status === FormWorkflowStatus.PENDING_QUALITY) {
       return "bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300";
     }
