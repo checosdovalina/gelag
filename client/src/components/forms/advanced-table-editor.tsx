@@ -289,6 +289,145 @@ const PRODUCT_MATERIALS = {
 // Plantillas predefinidas para tipos comunes de tablas
 const TABLE_TEMPLATES = [
   {
+    name: "Análisis Microbiológico Horizontal",
+    icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 3,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Análisis Microbiológico",
+          columns: [
+            {
+              id: "a3e4f9fa-4e74-4964-8b55-932e45ffe3bd",
+              header: "Fecha",
+              type: "date",
+              width: "120px"
+            },
+            {
+              id: "a2a4db54-8b91-450e-abb2-56c5b5d35073",
+              header: "Producto",
+              type: "product",
+              width: "150px"
+            },
+            {
+              id: "c0a838ef-15a7-41fb-be00-d47bd19d0848",
+              header: "Lote",
+              type: "text",
+              width: "100px"
+            },
+            {
+              id: "a835a31b-235d-4f11-a4bf-66bd7e40afd7",
+              header: "Fecha de caducidad",
+              type: "date",
+              width: "150px"
+            },
+            {
+              id: "3084603f-e7b8-44c6-bde3-065b0c5b9dee",
+              header: "Hongos y Levaduras",
+              type: "select",
+              width: "120px",
+              options: [
+                {
+                  label: "Si",
+                  value: "Si"
+                },
+                {
+                  label: "No",
+                  value: "No"
+                },
+                {
+                  label: "NA",
+                  value: "NA"
+                }
+              ]
+            },
+            {
+              id: "ff43d9d4-165e-426c-a574-434da514d22a",
+              header: "Coliformes",
+              type: "select",
+              width: "120px",
+              options: [
+                {
+                  label: "Si",
+                  value: "Si"
+                },
+                {
+                  label: "No",
+                  value: "No"
+                },
+                {
+                  label: "NA",
+                  value: "NA"
+                }
+              ]
+            },
+            {
+              id: "28e24f6f-8a32-4ed4-9374-1ac60799bbde",
+              header: "Staphylococos",
+              type: "select",
+              width: "120px",
+              options: [
+                {
+                  label: "Si",
+                  value: "Si"
+                },
+                {
+                  label: "No",
+                  value: "No"
+                },
+                {
+                  label: "NA",
+                  value: "NA"
+                }
+              ]
+            },
+            {
+              id: "a4ce5ad3-2584-4049-8b59-a635f53da130",
+              header: "Mesofilicos",
+              type: "select",
+              width: "120px",
+              options: [
+                {
+                  label: "Si",
+                  value: "Si"
+                },
+                {
+                  label: "No",
+                  value: "No"
+                },
+                {
+                  label: "NA",
+                  value: "NA"
+                }
+              ]
+            },
+            {
+              id: "39c28f85-6d5b-4c00-9691-9e24197350fa",
+              header: "Salmonella",
+              type: "select",
+              width: "120px",
+              options: [
+                {
+                  label: "Si",
+                  value: "Si"
+                },
+                {
+                  label: "No",
+                  value: "No"
+                },
+                {
+                  label: "NA",
+                  value: "NA"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     name: "Ficha Técnica de Producción",
     icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
     config: {
@@ -708,34 +847,61 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     }
   }, []);
   
+  // Función simple para establecer un valor de tabla predefinido
+  const setFixedTemplateValue = useCallback((templateName: string) => {
+    try {
+      // Buscar la plantilla por nombre
+      const template = TABLE_TEMPLATES.find(t => t.name === templateName);
+      
+      if (!template) {
+        console.error(`Plantilla "${templateName}" no encontrada`);
+        return;
+      }
+      
+      // Crear una copia profunda de la configuración
+      const config = JSON.parse(JSON.stringify(template.config));
+      
+      console.log(`Aplicando plantilla "${templateName}" directamente:`, config);
+      
+      // Enviar directamente la configuración al padre
+      onChange(config);
+      
+      toast({
+        title: "Plantilla aplicada",
+        description: `Se ha aplicado la plantilla: ${templateName}`,
+      });
+      
+      // Cambiar a la pestaña de secciones después de aplicar
+      setActiveTab("preview");
+      setTabsVisited(prev => ({...prev, preview: true}));
+      
+    } catch (error) {
+      console.error("Error al aplicar plantilla fija:", error);
+      toast({
+        title: "Error al aplicar plantilla",
+        description: "Ocurrió un error al aplicar la plantilla seleccionada",
+        variant: "destructive",
+      });
+    }
+  }, [onChange, toast, setActiveTab]);
+  
   // Función para actualizar valor
   const updateValue = useCallback((newValue: Partial<AdvancedTableConfig>) => {
     try {
-      // Combinar con el valor existente
-      const combinedValue = {
-        ...value,
-        ...newValue
-      };
+      // Vamos a ignorar completamente el valor existente y simplemente reemplazarlo
+      // Esto garantiza que no haya problema de referencias compartidas o sanitización
       
-      // Sanitizar el valor combinado
-      const sanitizedValue = sanitizeTableConfig(combinedValue);
+      // Crear una copia profunda del nuevo valor
+      const safeValue = JSON.parse(JSON.stringify(newValue));
       
-      // Enviar una copia limpia al padre
-      const safeValue = JSON.parse(JSON.stringify(sanitizedValue));
-      
-      // Pequeño retraso para asegurar que se procese correctamente
-      setTimeout(() => {
-        onChange(safeValue);
-      }, 50);
+      // Enviar directamente sin delay
+      onChange(safeValue);
     } catch (error) {
       console.error("Error al actualizar el valor de la tabla:", error);
-      // En caso de error, tratar de usar el valor original
-      onChange({
-        ...value,
-        ...newValue
-      });
+      // Intentar al menos establecer algo
+      onChange(newValue);
     }
-  }, [value, onChange, sanitizeTableConfig]);
+  }, [onChange]);
 
   // Agregar una nueva sección
   const addSection = () => {
