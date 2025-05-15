@@ -598,7 +598,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
         </div>
       )}
       <div className="w-full overflow-x-auto max-h-[600px]">
-        <Table className="min-w-full table-fixed border-collapse">
+        <Table className="w-full table-auto border-collapse">
           {/* Encabezados de sección */}
           <TableHeader>
             <TableRow>
@@ -624,14 +624,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                   colSpan={column.span || 1}
                   rowSpan={column.rowspan || 1}
                   style={{ 
-                    width: column.width || 'auto',
-                    minWidth: column.type === 'text' ? '120px' : 
-                            column.type === 'select' ? '100px' : 
-                            column.type === 'number' ? '80px' : '100px'
+                    width: column.width || '150px',
+                    minWidth: column.type === 'text' ? '150px' : 
+                            column.type === 'select' ? '120px' : 
+                            column.type === 'number' ? '100px' : '150px'
                   }}
-                  className="text-center whitespace-nowrap bg-muted p-2 border border-border"
+                  className="text-center bg-muted p-2 border border-border break-words"
                 >
-                  {column.header}
+                  <div className="truncate px-1 py-1">{column.header}</div>
                 </TableHead>
               ))}
               {config.dynamicRows && !readOnly && (
@@ -647,7 +647,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                 {allColumns.map((column) => (
                   <TableCell 
                     key={`${rowIndex}-${column.id}`} 
-                    className={`p-1 border border-border ${column.dependency ? 'bg-blue-50' : ''}`}>
+                    className={`p-1 border border-border ${column.dependency ? 'bg-blue-50' : ''}`}
+                    style={{ 
+                      width: column.width || '150px',
+                      minWidth: column.type === 'text' ? '150px' : 
+                               column.type === 'select' ? '120px' : 
+                               column.type === 'number' ? '100px' : '150px'
+                    }}
+                  >
                     {column.type === 'text' && (
                       <Input
                         type="text"
@@ -687,13 +694,16 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       </Select>
                     )}
                     {column.type === 'checkbox' && (
-                      <Checkbox
-                        checked={rowData[column.id] || false}
-                        onCheckedChange={(checked) => 
-                          updateCell(rowIndex, column.id, checked)
-                        }
-                        disabled={readOnly || column.readOnly}
-                      />
+                      <div className="flex items-center justify-center">
+                        <Checkbox
+                          checked={rowData[column.id] || false}
+                          onCheckedChange={(checked) => 
+                            updateCell(rowIndex, column.id, checked)
+                          }
+                          disabled={readOnly || column.readOnly}
+                          className="h-5 w-5 border-2"
+                        />
+                      </div>
                     )}
                     {column.type === 'date' && (
                       <Input
@@ -759,15 +769,16 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                 ))}
                 {/* Botón para eliminar fila */}
                 {config.dynamicRows && !readOnly && (
-                  <TableCell className="p-1 w-10">
+                  <TableCell className="p-1 w-10 border border-border">
                     <Button
                       size="icon"
-                      variant="ghost"
+                      variant="destructive"
                       onClick={() => removeRow(rowIndex)}
                       disabled={isSaving}
-                      className="h-8 w-8"
+                      className="h-8 w-8 rounded-none"
                     >
-                      <Trash className="h-4 w-4 text-red-500" />
+                      <Trash className="h-4 w-4" />
+                      <span className="sr-only">Eliminar fila</span>
                     </Button>
                   </TableCell>
                 )}
@@ -777,20 +788,21 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             {/* Botones para agregar fila y guardar */}
             {config.dynamicRows && !readOnly && (
               <TableRow>
-                <TableCell colSpan={allColumns.length + 1} className="p-1">
+                <TableCell colSpan={allColumns.length + 1} className="p-2 border border-border">
                   <div className="flex justify-between items-center">
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="default"
                       onClick={addRow}
                       disabled={isSaving}
-                      className="h-8"
+                      className="h-9 px-4"
                     >
-                      <Plus className="h-4 w-4 mr-1" /> Agregar Fila
+                      <Plus className="h-4 w-4 mr-2" /> Agregar Fila
                     </Button>
                     
                     <Button
                       size="sm"
+                      variant="primary"
                       onClick={() => {
                         try {
                           setIsSaving(true);
