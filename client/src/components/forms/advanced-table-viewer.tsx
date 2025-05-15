@@ -252,7 +252,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   // Actualizar una celda
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
-    console.log("Actualizando celda en fila", rowIndex, "columna", columnId, value);
+    console.log("[updateCell] Actualizando celda en fila", rowIndex, "columna", columnId, "valor:", value, "tipo:", typeof value);
     
     // Realizar una copia profunda de los datos actuales
     const newData = JSON.parse(JSON.stringify(tableData));
@@ -264,6 +264,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     
     // Actualizar el valor en la celda
     newData[rowIndex][columnId] = value;
+    
+    // Guardar esto para determinar si necesitamos actualizar el estado
+    const prevData = JSON.stringify(tableData);
+    const updatedData = JSON.stringify(newData);
+    const hasDataChanged = prevData !== updatedData;
+    
+    console.log("[updateCell] Datos cambiados:", hasDataChanged);
     
     // Verificar si es un campo de proceso o litros para actualizar las materias primas
     const column = allColumns.find(col => col.id === columnId);
@@ -280,6 +287,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           const liters = parseFloat(newData[0]?.[litersColumn.id] || '0');
           if (!isNaN(liters) && liters > 0) {
             // Actualizar todas las filas de materia prima basado en el producto y litros
+            console.log("[updateCell] Calculando materias primas para producto:", value, "litros:", liters);
             updateRawMaterials(value, liters);
             return; // Permitimos que updateRawMaterials actualice los datos
           }
@@ -295,6 +303,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           const productValue = newData[0]?.[productColumn.id];
           if (productValue) {
             // Actualizar todas las filas de materia prima basado en el producto y litros
+            console.log("[updateCell] Calculando materias primas para producto:", productValue, "litros:", liters);
             updateRawMaterials(productValue, liters);
             return; // Permitimos que updateRawMaterials actualice los datos
           }
@@ -302,15 +311,28 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       }
     }
     
-    // Actualizamos los datos locales
-    setTableData(newData);
-    
-    // Importante: usamos un retraso mínimo para asegurar que la actualización 
-    // suceda después de que React haya procesado los cambios de estado
-    setTimeout(() => {
-      // Asegurarnos de propagar una copia profunda al componente padre
-      onChange(JSON.parse(JSON.stringify(newData)));
-    }, 0);
+    // Si los datos han cambiado realmente, actualizar el estado
+    if (hasDataChanged) {
+      console.log("[updateCell] Actualizando datos de tabla:", newData);
+      
+      // Actualizamos los datos locales
+      setTableData(newData);
+      
+      // Importante: usamos un retraso para asegurar que la actualización 
+      // suceda después de que React haya procesado los cambios de estado
+      setTimeout(() => {
+        try {
+          // Asegurarnos de propagar una copia profunda al componente padre
+          const finalData = JSON.parse(JSON.stringify(newData));
+          console.log("[updateCell] Propagando cambios al componente padre:", finalData);
+          onChange(finalData);
+        } catch (error) {
+          console.error("[updateCell] Error al propagar cambios:", error);
+        }
+      }, 50);
+    } else {
+      console.log("[updateCell] No se detectaron cambios en los datos, omitiendo actualización");
+    }
   };
   
   // Función para actualizar las filas de materias primas basado en producto y litros
@@ -375,8 +397,20 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     }
     
     // Actualizar los datos
+    console.log("[updateRawMaterials] Actualizando datos de tabla:", newData);
     setTableData(newData);
-    onChange(newData);
+    
+    // Propagar el cambio con un pequeño retraso para asegurar que React haya actualizado el estado
+    setTimeout(() => {
+      try {
+        // Asegurarnos de propagar una copia profunda al componente padre
+        const finalData = JSON.parse(JSON.stringify(newData));
+        console.log("[updateRawMaterials] Propagando cambios al componente padre:", finalData);
+        onChange(finalData);
+      } catch (error) {
+        console.error("[updateRawMaterials] Error al propagar cambios:", error);
+      }
+    }, 50);
   };
 
   // Agregar una nueva fila (si está habilitado)
