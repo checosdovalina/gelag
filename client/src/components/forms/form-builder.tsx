@@ -655,20 +655,25 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                         name={`fields.${index}.advancedTableConfig`}
                                         render={({ field }) => {
                                           // Initialize advanced table config if it doesn't exist
-                                          if (!field.value) {
-                                            form.setValue(`fields.${index}.advancedTableConfig`, {
+                                          if (!field.value || !field.value.sections || field.value.sections.length === 0) {
+                                            console.log("Inicializando tabla avanzada con configuración robusta");
+                                            const robustConfig = {
                                               rows: 3,
                                               dynamicRows: true,
                                               sections: [
                                                 {
-                                                  title: "Sección 1",
+                                                  title: "Tabla de Datos",
                                                   columns: [
-                                                    { id: uuidv4(), header: "Columna 1", type: "text" },
-                                                    { id: uuidv4(), header: "Columna 2", type: "text" }
+                                                    { id: "fecha", header: "Fecha", type: "date", width: "120px" },
+                                                    { id: "descripcion", header: "Descripción", type: "text", width: "200px" },
+                                                    { id: "cantidad", header: "Cantidad", type: "number", width: "100px" }
                                                   ]
                                                 }
                                               ]
-                                            });
+                                            };
+                                            
+                                            // Aplicar configuración robusta
+                                            form.setValue(`fields.${index}.advancedTableConfig`, robustConfig);
                                           }
                                           
                                           return (
@@ -684,13 +689,34 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                   try {
                                                     console.log("FormBuilder: recibiendo nueva configuración de tabla avanzada", newConfig);
                                                     
-                                                    // CAMBIO RADICAL: Simplificar completamente el proceso
-                                                    // Usar el siguiente hack:
-                                                    // 1. Crear un clon simplificado que solo contenga las propiedades esenciales
+                                                    // ENFOQUE ULTRA SIMPLIFICADO Y ROBUSTO
+                                                    // Verificar si la configuración tiene secciones, si no, proporcionarle una configuración básica
+                                                    let configToSave = { ...newConfig };
+                                                    
+                                                    // Si no hay secciones o están vacías, crear una configuración básica
+                                                    if (!configToSave.sections || configToSave.sections.length === 0) {
+                                                      console.log("Configuración sin secciones detectada, aplicando configuración por defecto");
+                                                      configToSave = {
+                                                        rows: configToSave.rows || 3,
+                                                        dynamicRows: configToSave.dynamicRows !== undefined ? configToSave.dynamicRows : true,
+                                                        sections: [
+                                                          {
+                                                            title: "Tabla de Datos",
+                                                            columns: [
+                                                              { id: "fecha", header: "Fecha", type: "date", width: "120px" },
+                                                              { id: "descripcion", header: "Descripción", type: "text", width: "200px" },
+                                                              { id: "cantidad", header: "Cantidad", type: "number", width: "100px" }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      };
+                                                    }
+                                                    
+                                                    // Crear un clon simplificado que solo contenga las propiedades esenciales
                                                     const basicConfig = {
-                                                      rows: newConfig.rows || 3,
-                                                      dynamicRows: newConfig.dynamicRows === undefined ? true : newConfig.dynamicRows,
-                                                      sections: newConfig.sections || []
+                                                      rows: configToSave.rows || 3,
+                                                      dynamicRows: configToSave.dynamicRows !== undefined ? configToSave.dynamicRows : true,
+                                                      sections: configToSave.sections || []
                                                     };
                                                     
                                                     // 2. Convertir a JSON y de vuelta para romper cualquier referencia
