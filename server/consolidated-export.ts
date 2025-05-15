@@ -74,11 +74,21 @@ function renderAdvancedTable(
     return startY + 20; // No hay datos que mostrar
   }
 
-  // Título de la tabla
+  // Título de la tabla con mejor estilo
   doc.fontSize(14)
      .font('Helvetica-Bold')
-     .fillColor('#000000')
-     .text(`Tabla: ${fieldLabel}`, 40, startY, { width: pageWidth - 80 });
+     .fillColor('#1a365d')
+     .text(`Tabla: ${fieldLabel}`, 40, startY, { 
+       width: pageWidth - 80,
+       align: 'center'
+     });
+  
+  // Línea decorativa bajo el título
+  doc.strokeColor('#2a4d69')
+     .lineWidth(1)
+     .moveTo(pageWidth / 4, startY + 22)
+     .lineTo((pageWidth * 3) / 4, startY + 22)
+     .stroke();
   
   let currentY = startY + 30;
   
@@ -86,22 +96,54 @@ function renderAdvancedTable(
   const firstRow = value[0];
   const columnIds = Object.keys(firstRow);
   
-  // Buscar nombres de columnas más apropiados si están disponibles en la configuración
-  // Por ahora usaremos los IDs como nombres
+  // Buscar nombres de columnas más apropiados
   const columnNames: Record<string, string> = {};
   columnIds.forEach(id => {
-    // Intentar encontrar un nombre más amigable, o usar el ID
-    let readableName = id;
+    // Mapeo de IDs conocidos a nombres legibles
+    const knownIds: Record<string, string> = {
+      "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
+      "30846f03f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
+      "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
+      "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
+      "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
+      "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
+      "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
+      "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
+      "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho y Lev."
+    };
     
-    // Nombres específicos para columnas conocidas
-    if (id.includes("a2a4db54") || id.includes("producto")) {
+    // Intentar encontrar un nombre amigable
+    let readableName;
+    
+    // Primero revisar si es un ID exacto conocido
+    if (knownIds[id]) {
+      readableName = knownIds[id];
+    }
+    // Verificar si es un ID parcial (contiene alguna cadena conocida)
+    else if (id.includes("producto") || id.toLowerCase().includes("product")) {
       readableName = "Producto";
-    } else if (id.includes("fecha") || id.includes("a3e4f9fa")) {
+    }
+    else if (id.includes("fecha") || id.toLowerCase().includes("date") || id.toLowerCase().includes("fech")) {
       readableName = "Fecha";
-    } else {
-      // Truncar IDs largos para mejorar la presentación
-      if (id.length > 10) {
-        readableName = id.substring(0, 10) + "...";
+    }
+    else if (id.includes("folio") || id.toLowerCase().includes("code")) {
+      readableName = "Folio";
+    }
+    else if (id.includes("lote") || id.toLowerCase().includes("batch") || id.toLowerCase().includes("lot")) {
+      readableName = "Lote";
+    }
+    else if (id.includes("version") || id.toLowerCase().includes("vers")) {
+      readableName = "Versión";
+    }
+    else if (id.toLowerCase().includes("observa") || id.toLowerCase().includes("coment")) {
+      readableName = "Observaciones";
+    }
+    else {
+      // Intentar hacer más legible el ID
+      readableName = id.split('-')[0];
+      // Si sigue siendo muy largo, truncarlo
+      if (readableName.length > 10) {
+        readableName = readableName.substring(0, 8) + "...";
       }
     }
     
@@ -112,18 +154,89 @@ function renderAdvancedTable(
   const columnWidths: Record<string, number> = {};
   const tableWidth = pageWidth - 80; // Margen a ambos lados
   
-  // Asignar anchos a las columnas
+  // Clasificar columnas por tipo
+  const productColumns: string[] = [];
+  const dateColumns: string[] = [];
+  const codeColumns: string[] = [];
+  const textColumns: string[] = [];
+  const booleanColumns: string[] = [];
+  
+  // Identificar el tipo de cada columna
   columnIds.forEach(id => {
-    // Columnas especiales más anchas
-    if (id.includes("a2a4db54") || id.includes("producto")) {
-      columnWidths[id] = tableWidth * 0.25; // 25% para producto
-    } else if (id.includes("fecha") || id.includes("a3e4f9fa") || id.includes("lote") || id.includes("c0a838ef")) {
-      columnWidths[id] = tableWidth * 0.15; // 15% para fechas y lotes
-    } else {
-      // Distribuir el resto de manera uniforme
-      columnWidths[id] = tableWidth / columnIds.length;
+    const columnName = columnNames[id].toLowerCase();
+    const firstValue = firstRow[id];
+    const valueType = typeof firstValue;
+    
+    // Columnas de producto
+    if (columnName === 'producto' || id.includes("producto") || id.includes("a2a4db54")) {
+      productColumns.push(id);
+    }
+    // Columnas de fecha
+    else if (columnName === 'fecha' || id.includes("fecha") || id.includes("a3e4f9fa")) {
+      dateColumns.push(id);
+    }
+    // Columnas de código/lote
+    else if (columnName === 'lote' || columnName === 'folio' || 
+            id.includes("lote") || id.includes("c0a838ef") ||
+            id.includes("folio") || id.includes("codigo")) {
+      codeColumns.push(id);
+    }
+    // Columnas de Si/No/NA
+    else if (valueType === 'string' && 
+            (firstValue === 'Si' || firstValue === 'No' || firstValue === 'NA' ||
+             firstValue === 'Sí' || firstValue === 'N/A')) {
+      booleanColumns.push(id);
+    }
+    // Columnas de texto
+    else if (valueType === 'string' && String(firstValue).length > 10) {
+      textColumns.push(id);
+    }
+    // El resto de columnas
+    else {
+      // No hacer nada especial, serán clasificadas después
     }
   });
+  
+  // Porcentajes de ancho para cada tipo de columna
+  const percentages = {
+    product: 0.25,  // 25% para productos
+    date: 0.12,     // 12% para fechas
+    code: 0.10,     // 10% para códigos/lotes
+    text: 0.20,     // 20% para textos largos
+    boolean: 0.07,  // 7% para columnas Si/No
+    default: 0.10   // 10% por defecto
+  };
+  
+  // Asignar anchos según el tipo de columna
+  columnIds.forEach(id => {
+    if (productColumns.includes(id)) {
+      columnWidths[id] = tableWidth * percentages.product;
+    } 
+    else if (dateColumns.includes(id)) {
+      columnWidths[id] = tableWidth * percentages.date;
+    } 
+    else if (codeColumns.includes(id)) {
+      columnWidths[id] = tableWidth * percentages.code;
+    } 
+    else if (textColumns.includes(id)) {
+      columnWidths[id] = tableWidth * percentages.text;
+    } 
+    else if (booleanColumns.includes(id)) {
+      columnWidths[id] = tableWidth * percentages.boolean;
+    }
+    else {
+      columnWidths[id] = tableWidth * percentages.default;
+    }
+  });
+  
+  // Normalizar para asegurar que las columnas no excedan el ancho de la tabla
+  const totalWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
+  if (totalWidth > tableWidth) {
+    const ratio = tableWidth / totalWidth;
+    Object.keys(columnWidths).forEach(id => {
+      columnWidths[id] = columnWidths[id] * ratio;
+    });
+  }
   
   // Dibujar encabezados
   doc.fillColor("#2a4d69")
@@ -177,26 +290,74 @@ function renderAdvancedTable(
          .lineTo(currentX, currentY + 25)
          .stroke();
       
-      // Formatear valor
+      // Formatear valor con mejor presentación
       let cellValue = row[id];
       let displayValue = '';
+      let isBooleanValue = false;
       
       if (cellValue === null || cellValue === undefined) {
-        displayValue = '';
-      } else if (typeof cellValue === 'boolean') {
+        displayValue = '-';
+      } 
+      else if (typeof cellValue === 'boolean') {
         displayValue = cellValue ? 'Sí' : 'No';
-      } else {
+        isBooleanValue = true;
+      }
+      else if (cellValue === 'Si' || cellValue === 'Sí') {
+        displayValue = 'Sí';
+        isBooleanValue = true;
+      }
+      else if (cellValue === 'No') {
+        displayValue = 'No';
+        isBooleanValue = true;
+      }
+      else if (cellValue === 'NA' || cellValue === 'N/A') {
+        displayValue = 'N/A';
+        isBooleanValue = true;
+      }
+      else if (typeof cellValue === 'string' && cellValue.includes('T00:00:00')) {
+        // Es probablemente una fecha ISO
+        const date = new Date(cellValue);
+        if (!isNaN(date.getTime())) {
+          displayValue = date.toLocaleDateString('es-MX');
+        } else {
+          displayValue = cellValue;
+        }
+      }
+      else {
         displayValue = String(cellValue);
       }
       
-      // Texto de la celda
+      // Establecer color según el tipo de dato
+      if (isBooleanValue) {
+        if (displayValue === 'Sí') {
+          doc.fillColor('#166534'); // Verde oscuro para Sí
+        } else if (displayValue === 'No') {
+          doc.fillColor('#991b1b'); // Rojo oscuro para No
+        } else {
+          doc.fillColor('#525252'); // Gris para N/A
+        }
+      } else {
+        doc.fillColor('#000000'); // Negro normal para otros valores
+      }
+      
+      // Establecer alineación según el tipo de dato
+      let align = 'left';
+      if (isBooleanValue) {
+        align = 'center';
+      } else if (/^\d+(\.\d+)?$/.test(displayValue)) {
+        align = 'right'; // Alinear números a la derecha
+      } else if (displayValue.length <= 3) {
+        align = 'center'; // Centrar valores muy cortos
+      }
+      
+      // Texto de la celda con mejor formato
       doc.text(
         displayValue,
-        currentX + 3,
+        currentX + 5, // Más margen a la izquierda
         currentY + 8,
         {
-          width: width - 6,
-          align: 'center',
+          width: width - 10, // Más margen a ambos lados
+          align: align,
           ellipsis: true
         }
       );
