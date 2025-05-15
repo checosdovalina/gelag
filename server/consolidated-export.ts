@@ -59,6 +59,163 @@ function formatAdvancedTableValue(value: any, fieldId: string, fieldLabel: strin
   }
 }
 
+/**
+ * Función para renderizar una tabla avanzada en el PDF como una sección separada
+ */
+function renderAdvancedTable(
+  doc: any, 
+  value: any[], 
+  fieldId: string, 
+  fieldLabel: string, 
+  pageWidth: number,
+  startY: number
+): number {
+  if (!Array.isArray(value) || value.length === 0) {
+    return startY + 20; // No hay datos que mostrar
+  }
+
+  // Título de la tabla
+  doc.fontSize(14)
+     .font('Helvetica-Bold')
+     .fillColor('#000000')
+     .text(`Tabla: ${fieldLabel}`, 40, startY, { width: pageWidth - 80 });
+  
+  let currentY = startY + 30;
+  
+  // Determinar columnas de la tabla basadas en el primer registro
+  const firstRow = value[0];
+  const columnIds = Object.keys(firstRow);
+  
+  // Buscar nombres de columnas más apropiados si están disponibles en la configuración
+  // Por ahora usaremos los IDs como nombres
+  const columnNames: Record<string, string> = {};
+  columnIds.forEach(id => {
+    // Intentar encontrar un nombre más amigable, o usar el ID
+    let readableName = id;
+    
+    // Nombres específicos para columnas conocidas
+    if (id.includes("a2a4db54") || id.includes("producto")) {
+      readableName = "Producto";
+    } else if (id.includes("fecha") || id.includes("a3e4f9fa")) {
+      readableName = "Fecha";
+    } else {
+      // Truncar IDs largos para mejorar la presentación
+      if (id.length > 10) {
+        readableName = id.substring(0, 10) + "...";
+      }
+    }
+    
+    columnNames[id] = readableName;
+  });
+  
+  // Calcular anchos de columna
+  const columnWidths: Record<string, number> = {};
+  const tableWidth = pageWidth - 80; // Margen a ambos lados
+  
+  // Asignar anchos a las columnas
+  columnIds.forEach(id => {
+    // Columnas especiales más anchas
+    if (id.includes("a2a4db54") || id.includes("producto")) {
+      columnWidths[id] = tableWidth * 0.25; // 25% para producto
+    } else if (id.includes("fecha") || id.includes("a3e4f9fa") || id.includes("lote") || id.includes("c0a838ef")) {
+      columnWidths[id] = tableWidth * 0.15; // 15% para fechas y lotes
+    } else {
+      // Distribuir el resto de manera uniforme
+      columnWidths[id] = tableWidth / columnIds.length;
+    }
+  });
+  
+  // Dibujar encabezados
+  doc.fillColor("#2a4d69")
+     .rect(40, currentY, tableWidth, 25)
+     .fill();
+  
+  let currentX = 40;
+  doc.fillColor("#ffffff").font('Helvetica-Bold').fontSize(10);
+  
+  columnIds.forEach(id => {
+    const width = columnWidths[id];
+    doc.text(
+      columnNames[id],
+      currentX + 3,
+      currentY + 8,
+      {
+        width: width - 6,
+        align: 'center',
+      }
+    );
+    currentX += width;
+  });
+  
+  currentY += 25;
+  
+  // Dibujar filas de datos
+  value.forEach((row, rowIndex) => {
+    // Fondo alternado
+    if (rowIndex % 2 === 0) {
+      doc.fillColor("#f8f8f8")
+         .rect(40, currentY, tableWidth, 25)
+         .fill();
+    }
+    
+    // Borde de la fila
+    doc.strokeColor("#dddddd")
+       .lineWidth(0.5)
+       .rect(40, currentY, tableWidth, 25)
+       .stroke();
+    
+    // Textos
+    currentX = 40;
+    doc.fillColor("#000000").font('Helvetica').fontSize(9);
+    
+    columnIds.forEach(id => {
+      const width = columnWidths[id];
+      
+      // Dibujar separador vertical
+      doc.strokeColor("#dddddd")
+         .moveTo(currentX, currentY)
+         .lineTo(currentX, currentY + 25)
+         .stroke();
+      
+      // Formatear valor
+      let cellValue = row[id];
+      let displayValue = '';
+      
+      if (cellValue === null || cellValue === undefined) {
+        displayValue = '';
+      } else if (typeof cellValue === 'boolean') {
+        displayValue = cellValue ? 'Sí' : 'No';
+      } else {
+        displayValue = String(cellValue);
+      }
+      
+      // Texto de la celda
+      doc.text(
+        displayValue,
+        currentX + 3,
+        currentY + 8,
+        {
+          width: width - 6,
+          align: 'center',
+          ellipsis: true
+        }
+      );
+      
+      currentX += width;
+    });
+    
+    currentY += 25;
+    
+    // Verificar si necesitamos una nueva página
+    if (currentY > doc.page.height - 50) {
+      doc.addPage();
+      currentY = 50;
+    }
+  });
+  
+  return currentY + 20; // Devuelve la nueva posición Y después de la tabla
+}
+
 export async function exportConsolidatedForms(req: Request, res: Response, next: NextFunction) {
   try {
     const { templateId, entryIds, format, fileName, selectedFields, fieldOrder } = req.body;
@@ -453,6 +610,13 @@ async function generatePDFAndSend(
       doc.fillColor("#000000");
     }
     
+    // Almacenar referencias a tablas avanzadas para mostrarlas después
+    const advancedTablesForThisEntry: { 
+      fieldId: string; 
+      fieldLabel: string; 
+      data: any[] 
+    }[] = [];
+    
     columns.forEach((field, j) => {
       // Dibujar línea vertical entre columnas (excepto al principio)
       if (j > 0) {
@@ -473,7 +637,14 @@ async function generatePDFAndSend(
         displayValue = value ? 'Sí' : 'No';
       } else if (typeof value === 'object') {
         if (Array.isArray(value) && advancedTableFields.includes(field)) {
-          // Usar la función especializada para tablas avanzadas
+          // Guardar la tabla avanzada para mostrarla después en una sección separada
+          advancedTablesForThisEntry.push({
+            fieldId: field, 
+            fieldLabel: fieldLabels[field],
+            data: value
+          });
+          
+          // En la tabla principal solo mostrar un resumen
           displayValue = formatAdvancedTableValue(value, field, fieldLabels[field]);
         } else if (Array.isArray(value)) {
           displayValue = value.join(', ');
@@ -508,6 +679,51 @@ async function generatePDFAndSend(
     
     // Avanzamos a la siguiente fila
     currentY += rowHeight;
+    
+    // Si hay tablas avanzadas, mostrarlas en una sección separada
+    if (advancedTablesForThisEntry.length > 0) {
+      // Separador
+      currentY += 20;
+      
+      // Si no hay suficiente espacio, pasar a la siguiente página
+      if (currentY > doc.page.height - 150) {
+        doc.addPage({ layout: 'landscape', margin: 40 });
+        currentY = 40;
+      }
+      
+      // Título de sección
+      doc.fontSize(12)
+         .font('Helvetica-Bold')
+         .fillColor('#2a4d69')
+         .text(`Detalle de Tablas Dinámicas - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
+           width: pageWidth - 80,
+           align: 'center'
+         });
+      
+      currentY += 20;
+      
+      // Renderizar cada tabla avanzada
+      for (const table of advancedTablesForThisEntry) {
+        // Espacio adicional antes de la tabla
+        currentY += 15;
+        
+        // Verificar si necesitamos pasar a una nueva página
+        if (currentY > doc.page.height - 150) {
+          doc.addPage({ layout: 'landscape', margin: 40 });
+          currentY = 40;
+        }
+        
+        // Renderizar la tabla
+        currentY = renderAdvancedTable(
+          doc, 
+          table.data, 
+          table.fieldId, 
+          table.fieldLabel, 
+          pageWidth,
+          currentY
+        );
+      }
+    }
   }
   
   // Añadir pie de página
