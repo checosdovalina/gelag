@@ -729,41 +729,64 @@ async function generatePDFAndSend(
   // Finalizar el documento para escribir al archivo
   doc.end();
   
-  // Esperar a que se complete la escritura del archivo
+  // Usamos una promesa para asegurar que el archivo se complete
   await new Promise<void>((resolve, reject) => {
+    // Manejar evento de finalización
     fileStream.on('finish', () => {
-      resolve();
-    });
-    fileStream.on('error', (err) => {
-      reject(err);
-    });
-  });
-  
-  try {
-    // Verificar que el archivo se haya creado correctamente
-    const stat = fs.statSync(tempFilePath);
-    
-    // Configurar las cabeceras de respuesta
-    res.setHeader('Content-Length', stat.size);
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
-    
-    // Stream el archivo al cliente
-    const readStream = fs.createReadStream(tempFilePath);
-    readStream.pipe(res);
-    
-    // Limpiar el archivo temporal después de enviarlo
-    readStream.on('end', () => {
       try {
-        fs.unlinkSync(tempFilePath);
-      } catch (err) {
-        console.error("Error al eliminar archivo temporal:", err);
+        // Verificar que el archivo se haya creado correctamente
+        if (fs.existsSync(tempFilePath)) {
+          const stat = fs.statSync(tempFilePath);
+          
+          // Configurar las cabeceras de respuesta
+          res.setHeader('Content-Length', stat.size);
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="${fileName}.pdf"`);
+          
+          // Stream el archivo al cliente
+          const readStream = fs.createReadStream(tempFilePath);
+          
+          // Manejar la finalización del envío
+          readStream.on('end', () => {
+            try {
+              // Limpiar el archivo temporal
+              fs.unlinkSync(tempFilePath);
+            } catch (cleanupError) {
+              console.error("Error al eliminar archivo temporal:", cleanupError);
+            }
+            // Resolver la promesa cuando todo esté completado
+            resolve();
+          });
+          
+          // Manejar errores durante el envío
+          readStream.on('error', (streamError) => {
+            console.error("Error durante el envío del PDF:", streamError);
+            reject(streamError);
+          });
+          
+          // Iniciar el envío del archivo
+          readStream.pipe(res);
+        } else {
+          reject(new Error("El archivo temporal no fue creado correctamente"));
+        }
+      } catch (fileError) {
+        console.error("Error al procesar el archivo PDF:", fileError);
+        reject(fileError);
       }
     });
-  } catch (error) {
-    console.error('Error al enviar el PDF:', error);
-    res.status(500).json({ message: 'Error al enviar el PDF', error: String(error) });
-  }
+    
+    // Manejar errores durante la escritura
+    fileStream.on('error', (err) => {
+      console.error("Error al escribir el PDF:", err);
+      reject(err);
+    });
+  }).catch(error => {
+    console.error('Error durante la generación o envío del PDF:', error);
+    // Solo enviar respuesta de error si no se ha enviado nada al cliente todavía
+    if (!res.headersSent) {
+      res.status(500).json({ message: 'Error al generar o enviar el PDF', error: String(error) });
+    }
+  });
 }
 
 /**
