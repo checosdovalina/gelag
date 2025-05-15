@@ -590,7 +590,8 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                           control={form.control}
                                           name={`fields.${index}.features`}
                                           render={({ field }) => {
-                                            const features = field.value || [];
+                                            // Asegurarse de que features sea siempre un array
+                                            const features = Array.isArray(field.value) ? field.value : [];
                                             const hasRecipeAutocomplete = features.includes('recipeAutocomplete');
                                             
                                             return (

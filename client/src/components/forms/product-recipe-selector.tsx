@@ -87,8 +87,8 @@ export default function ProductRecipeSelector({
     setRecipeApplied(false);
     
     // Buscar el producto seleccionado
-    const selectedProduct = products.find(p => p.id === productId);
-    if (selectedProduct) {
+    const selectedProduct = products.find((p: any) => p.id === productId);
+    if (selectedProduct && selectedProduct.name) {
       // Intentar cargar la receta automáticamente
       loadRecipeForProduct(productId, selectedProduct.name);
     }
@@ -108,8 +108,8 @@ export default function ProductRecipeSelector({
                   variant="outline" 
                   size="sm" 
                   onClick={() => {
-                    const selectedProduct = products.find(p => p.id === Number(formField.value));
-                    if (selectedProduct) {
+                    const selectedProduct = products.find((p: any) => p.id === Number(formField.value));
+                    if (selectedProduct && selectedProduct.id && selectedProduct.name) {
                       loadRecipeForProduct(selectedProduct.id, selectedProduct.name);
                     }
                   }}
@@ -157,7 +157,7 @@ export default function ProductRecipeSelector({
         </SelectContent>
       </Select>
       <FormDescription>
-        {formField.value && products.find(p => p.id === Number(formField.value))?.description}
+        {formField.value && products.find((p: any) => p.id === Number(formField.value))?.description}
         {recipeApplied && <span className="ml-2 text-green-600">✓ Receta aplicada</span>}
       </FormDescription>
       <FormMessage />
