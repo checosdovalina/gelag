@@ -1201,7 +1201,8 @@ function generatePDFContent(
   // Pie de página como en la imagen de referencia
   // Siempre colocamos el pie de página en la parte inferior de la página actual
   doc.moveDown(2);
-  const bottomPos = doc.page.height - 40;
+  // Movemos el pie de página 2 líneas más arriba (20 unidades adicionales)
+  const bottomPos = doc.page.height - 60;
   
   // Guardar la posición actual del cursor
   const currentPos = doc.y;
