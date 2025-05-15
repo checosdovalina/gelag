@@ -250,9 +250,16 @@ function generatePDFContent(
     // Guardar los campos de tablas avanzadas para procesarlos después
     const advancedTables: any[] = [];
     
+    console.log("Buscando tablas dinámicas en los campos del formulario...");
+    
     fields.forEach(field => {
+      console.log(`Campo: ${field.label} (${field.id}), tipo: ${field.type}`);
+      
       // Si es un campo de tabla avanzada, lo guardamos para procesarlo después
-      if (field.type === 'advancedTable' && entry.data[field.id]) {
+      if (field.type === 'advancedTable') {
+        console.log(`  - Encontrado campo advancedTable: ${field.label}`);
+        console.log(`  - Datos para este campo:`, JSON.stringify(entry.data[field.id]));
+        
         advancedTables.push({
           field,
           data: entry.data[field.id]
@@ -580,119 +587,288 @@ function generatePDFContent(
         
         doc.moveDown(0.5);
         
-        // Para cada fila de datos en la tabla avanzada
-        data.forEach((row, rowIndex) => {
-          // Verificar que tengamos datos válidos
-          if (!row || typeof row !== 'object') return;
-          
-          // Crear un rectángulo con borde para cada fila
-          const startY = doc.y;
-          
-          // Agregar número de fila con mejor formato
-          doc.roundedRect(40, doc.y - 5, pageWidth - 80, 22, 3)
-             .fillAndStroke('#f0f0f0', '#cccccc');
-             
-          doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold')
-             .text(`Fila ${rowIndex + 1}`, 50, doc.y + 5, { continued: false });
-          
-          doc.moveDown(1.2);
-          
-          // Iterar por cada sección del config
-          config.sections.forEach(section => {
-            // Título de la sección con color de fondo
-            doc.rect(50, doc.y - 2, pageWidth - 100, 20)
-               .fillAndStroke('#e0e0e0', '#d0d0d0');
+        console.log("Procesando tabla avanzada:", tableLabel);
+        
+        // Detectar si es la tabla de microbiología
+        const isMicrobiologiaTable = tableLabel.toLowerCase().includes("microbiologia") || 
+                                  (config.sections.length === 1 && 
+                                   config.sections[0].columns.some(col => 
+                                     col.header.includes("Hongos") || 
+                                     col.header.includes("Coliformes") || 
+                                     col.header.includes("Salmonella")));
+                                     
+        console.log("¿Es tabla de microbiología?", isMicrobiologiaTable);
+                                     
+        if (isMicrobiologiaTable) {
+          // Renderizar tabla microbiológica en formato tabular
+          renderMicrobiologiaTable(doc, config, data, pageWidth);
+        } else {
+          // Para cada fila de datos en la tabla avanzada (formato original)
+          data.forEach((row, rowIndex) => {
+            // Verificar que tengamos datos válidos
+            if (!row || typeof row !== 'object') return;
+            
+            // Crear un rectángulo con borde para cada fila
+            const startY = doc.y;
+            
+            // Agregar número de fila con mejor formato
+            doc.roundedRect(40, doc.y - 5, pageWidth - 80, 22, 3)
+               .fillAndStroke('#f0f0f0', '#cccccc');
                
-            doc.fillColor('#333333').fontSize(9).font('Helvetica-Bold')
-               .text(`${section.title}`, 60, doc.y, { continued: false });
+            doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold')
+               .text(`Fila ${rowIndex + 1}`, 50, doc.y + 5, { continued: false });
             
-            doc.moveDown(0.8);
+            doc.moveDown(1.2);
             
-            // Crear un grid de 2 columnas para las propiedades
-            let leftX = 60;
-            let rightX = 300;
-            let currentY = doc.y;
-            let itemCount = 0;
-            const itemsPerColumn = Math.ceil(section.columns.length / 2);
-            
-            // Columnas de esta sección
-            section.columns.forEach((column, colIndex) => {
-              const columnId = column.id;
-              const columnHeader = column.header;
-              let cellValue = row[columnId] || '';
-              
-              // Calcular posición X e Y
-              const currentX = (itemCount < itemsPerColumn) ? leftX : rightX;
-              
-              if (itemCount === itemsPerColumn) {
-                // Reiniciar Y para la segunda columna
-                currentY = doc.y - (itemCount * 18);
-              }
-              
-              // Formatear valor según tipo
-              if (column.type === 'date' && cellValue) {
-                try {
-                  cellValue = new Date(cellValue).toLocaleDateString('es-MX');
-                } catch (e) {
-                  console.error("Error al formatear fecha en tabla:", e);
-                }
-              } else if (column.type === 'checkbox') {
-                cellValue = cellValue ? 'Sí' : 'No';
-              } else if (column.type === 'select' && column.options) {
-                // Buscar la etiqueta correspondiente al valor
-                const option = column.options.find(opt => opt.value === cellValue);
-                if (option) {
-                  cellValue = option.label;
-                }
-              }
-              
-              // Mostrar nombre de columna y valor con mejor formato
-              doc.y = currentY + (itemCount % itemsPerColumn) * 18;
-              
-              // Rectángulo gris claro para el fondo
-              doc.rect(currentX - 3, doc.y - 2, 230, 16)
-                 .fillAndStroke('#f9f9f9', '#eeeeee');
-              
-              // Nombre de la columna en negrita
-              doc.fillColor('#333333').fontSize(8).font('Helvetica-Bold')
-                 .text(`${columnHeader}:`, currentX, doc.y, { continued: true });
-              
-              // Valor
-              doc.font('Helvetica')
-                 .text(` ${cellValue}`);
+            // Iterar por cada sección del config
+            config.sections.forEach(section => {
+              // Título de la sección con color de fondo
+              doc.rect(50, doc.y - 2, pageWidth - 100, 20)
+                 .fillAndStroke('#e0e0e0', '#d0d0d0');
                  
-              itemCount++;
+              doc.fillColor('#333333').fontSize(9).font('Helvetica-Bold')
+                 .text(`${section.title}`, 60, doc.y, { continued: false });
+              
+              doc.moveDown(0.8);
+              
+              // Crear un grid de 2 columnas para las propiedades
+              let leftX = 60;
+              let rightX = 300;
+              let currentY = doc.y;
+              let itemCount = 0;
+              const itemsPerColumn = Math.ceil(section.columns.length / 2);
+              
+              // Columnas de esta sección
+              section.columns.forEach((column, colIndex) => {
+                const columnId = column.id;
+                const columnHeader = column.header;
+                let cellValue = row[columnId] || '';
+                
+                // Calcular posición X e Y
+                const currentX = (itemCount < itemsPerColumn) ? leftX : rightX;
+                
+                if (itemCount === itemsPerColumn) {
+                  // Reiniciar Y para la segunda columna
+                  currentY = doc.y - (itemCount * 18);
+                }
+                
+                // Formatear valor según tipo
+                if (column.type === 'date' && cellValue) {
+                  try {
+                    cellValue = new Date(cellValue).toLocaleDateString('es-MX');
+                  } catch (e) {
+                    console.error("Error al formatear fecha en tabla:", e);
+                  }
+                } else if (column.type === 'checkbox') {
+                  cellValue = cellValue ? 'Sí' : 'No';
+                } else if (column.type === 'select' && column.options) {
+                  // Buscar la etiqueta correspondiente al valor
+                  const option = column.options.find(opt => opt.value === cellValue);
+                  if (option) {
+                    cellValue = option.label;
+                  }
+                }
+                
+                // Mostrar nombre de columna y valor con mejor formato
+                doc.y = currentY + (itemCount % itemsPerColumn) * 18;
+                
+                // Rectángulo gris claro para el fondo
+                doc.rect(currentX - 3, doc.y - 2, 230, 16)
+                   .fillAndStroke('#f9f9f9', '#eeeeee');
+                
+                // Nombre de la columna en negrita
+                doc.fillColor('#333333').fontSize(8).font('Helvetica-Bold')
+                   .text(`${columnHeader}:`, currentX, doc.y, { continued: true });
+                
+                // Valor
+                doc.font('Helvetica')
+                   .text(` ${cellValue}`);
+                   
+                itemCount++;
+              });
+              
+              doc.moveDown(0.3);
             });
             
-            doc.moveDown(0.3);
-          });
-          
-          // Calcular la altura máxima para establecer el separador
-          doc.moveDown(1);
-          
-          // Separador entre filas con mejor estilo
-          if (rowIndex < data.length - 1) {
-            // Dibujamos una línea decorativa entre filas
-            doc.moveTo(50, doc.y)
-               .lineTo(pageWidth - 50, doc.y)
-               .lineWidth(0.5)
-               .dash(3, { space: 2 })
-               .stroke('#aaaaaa');
-               
-            // Restaurar configuración de línea
-            doc.undash();
-            doc.lineWidth(1);
+            // Calcular la altura máxima para establecer el separador
+            doc.moveDown(1);
             
-            // Espacio extra entre filas
-            doc.moveDown(1.5);
-          }
-        });
+            // Separador entre filas con mejor estilo
+            if (rowIndex < data.length - 1) {
+              // Dibujamos una línea decorativa entre filas
+              doc.moveTo(50, doc.y)
+                 .lineTo(pageWidth - 50, doc.y)
+                 .lineWidth(0.5)
+                 .dash(3, { space: 2 })
+                 .stroke('#aaaaaa');
+                 
+              // Restaurar configuración de línea
+              doc.undash();
+              doc.lineWidth(1);
+              
+              // Espacio extra entre filas
+              doc.moveDown(1.5);
+            }
+          });
+        }
         
         // Espacio entre tablas
         if (tableIndex < advancedTables.length - 1) {
           doc.moveDown(2);
         }
       });
+      
+      // Función para renderizar una tabla microbiológica en formato tabular
+      function renderMicrobiologiaTable(doc, config, data, pageWidth) {
+        console.log("Renderizando tabla de microbiología con formato tabular");
+        
+        const tableWidth = pageWidth - 100;
+        const section = config.sections[0]; // Tomamos la primera sección
+        
+        // Calcular anchos de columnas
+        const columnCount = section.columns.length;
+        const columnDefaultWidth = Math.floor(tableWidth / columnCount);
+        
+        // Acumular el ancho total real (respetando width en px)
+        let totalWidth = 0;
+        let columnsWithWidth = 0;
+        
+        // Primero identificamos cuántas columnas tienen width definido
+        section.columns.forEach(column => {
+          if (column.width && column.width.includes('px')) {
+            const width = parseInt(column.width);
+            if (!isNaN(width)) {
+              totalWidth += width;
+              columnsWithWidth++;
+            }
+          }
+        });
+        
+        // Calcular ancho para columnas sin width específico
+        const remainingWidth = tableWidth - totalWidth;
+        const remainingColumns = columnCount - columnsWithWidth;
+        const defaultColumnWidth = remainingColumns > 0 ? Math.floor(remainingWidth / remainingColumns) : columnDefaultWidth;
+        
+        // Variable para controlar la posición X actual
+        let x = 50;
+        let y = doc.y;
+        
+        // Calcular altura para celdas (un poco más alta para cabeceras)
+        const headerHeight = 25;
+        const rowHeight = 20;
+        
+        // Dibujar fondo de la cabecera
+        doc.rect(x, y, tableWidth, headerHeight)
+           .fillAndStroke('#e0e0e0', '#cccccc');
+        
+        // Dibujar encabezados (columnas)
+        x = 50; // Resetear posición X
+        section.columns.forEach((column, index) => {
+          // Determinar ancho de esta columna
+          let colWidth;
+          if (column.width && column.width.includes('px')) {
+            colWidth = parseInt(column.width);
+            if (isNaN(colWidth)) colWidth = defaultColumnWidth;
+          } else {
+            colWidth = defaultColumnWidth;
+          }
+          
+          // Dibujar el texto del encabezado
+          doc.fillColor('#000000').fontSize(8).font('Helvetica-Bold')
+             .text(column.header, x + 3, y + 8, { 
+               width: colWidth - 6,
+               align: 'center',
+               height: headerHeight - 10
+             });
+          
+          // Dibujar línea vertical (excepto para la última columna)
+          if (index < columnCount - 1) {
+            doc.moveTo(x + colWidth, y)
+               .lineTo(x + colWidth, y + headerHeight)
+               .stroke('#cccccc');
+          }
+          
+          // Actualizar posición X para la siguiente columna
+          x += colWidth;
+        });
+        
+        // Actualizar posición Y para comenzar las filas de datos
+        y += headerHeight;
+        doc.y = y;
+        
+        // Dibujar filas de datos
+        data.forEach((row, rowIndex) => {
+          // Verificar que tengamos datos válidos para esta fila
+          if (!row || typeof row !== 'object') return;
+          
+          // Resetear posición X para comenzar la fila
+          x = 50;
+          y = doc.y;
+          
+          // Alternar colores de fondo para las filas
+          const fillColor = rowIndex % 2 === 0 ? '#f5f5f5' : '#ffffff';
+          
+          // Dibujar fondo de la fila
+          doc.rect(x, y, tableWidth, rowHeight)
+             .fillAndStroke(fillColor, '#cccccc');
+          
+          // Dibujar cada celda
+          section.columns.forEach((column, colIndex) => {
+            // Determinar ancho de esta columna
+            let colWidth;
+            if (column.width && column.width.includes('px')) {
+              colWidth = parseInt(column.width);
+              if (isNaN(colWidth)) colWidth = defaultColumnWidth;
+            } else {
+              colWidth = defaultColumnWidth;
+            }
+            
+            // Obtener y formatear el valor de la celda
+            let cellValue = row[column.id] || '';
+            
+            // Formatear valor según tipo
+            if (column.type === 'date' && cellValue) {
+              try {
+                cellValue = new Date(cellValue).toLocaleDateString('es-MX');
+              } catch (e) {
+                console.error("Error al formatear fecha en tabla:", e);
+              }
+            } else if (column.type === 'checkbox') {
+              cellValue = cellValue ? 'Sí' : 'No';
+            } else if (column.type === 'select' && column.options) {
+              // Buscar la etiqueta correspondiente al valor
+              const option = column.options.find(opt => opt.value === cellValue);
+              if (option) {
+                cellValue = option.label;
+              }
+            }
+            
+            // Dibujar el texto de la celda
+            doc.fillColor('#000000').fontSize(8).font('Helvetica')
+               .text(cellValue.toString(), x + 3, y + 6, { 
+                 width: colWidth - 6,
+                 align: 'center',
+                 height: rowHeight - 8
+               });
+            
+            // Dibujar línea vertical (excepto para la última columna)
+            if (colIndex < columnCount - 1) {
+              doc.moveTo(x + colWidth, y)
+                 .lineTo(x + colWidth, y + rowHeight)
+                 .stroke('#cccccc');
+            }
+            
+            // Actualizar posición X para la siguiente celda
+            x += colWidth;
+          });
+          
+          // Actualizar posición Y para la siguiente fila
+          doc.y += rowHeight;
+        });
+        
+        // Agregar espacio después de la tabla
+        doc.moveDown(2);
+      }
     }
   } else {
     // Si no tiene estructura definida, mostrar los datos crudos
