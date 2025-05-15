@@ -717,20 +717,60 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   // Función para importar una plantilla JSON personalizada
   // Método para aplicar directamente la plantilla de Microbiología Horizontal
   const handleApplyMicrobiologiaTemplate = () => {
-    console.log("Aplicando plantilla de Microbiología directamente");
-    // Obtener la configuración directamente del template
-    const microTemplate = TABLE_TEMPLATES.find(t => t.name === "Análisis Microbiológico Horizontal");
-    if (!microTemplate) {
-      console.error("No se encontró la plantilla de Microbiología");
-      return;
-    }
+    console.log("Aplicando plantilla de Microbiología Horizontal - MÉTODO DIRECTO");
     
-    // Crear una copia profunda de la configuración
-    const config = JSON.parse(JSON.stringify(microTemplate.config));
-    console.log("Aplicando plantilla de Microbiología:", config);
+    // Definimos la plantilla manualmente para evitar cualquier problema de referencias
+    const directConfig = {
+      rows: 3,
+      dynamicRows: true,
+      sections: [
+        {
+          title: "Análisis Microbiológico",
+          columns: [
+            { id: "fecha", header: "Fecha", type: "date", width: "120px" },
+            { id: "producto", header: "Producto", type: "product", width: "150px" },
+            { id: "lote", header: "Lote", type: "text", width: "100px" },
+            { id: "fcaducidad", header: "Fecha de caducidad", type: "date", width: "150px" },
+            { 
+              id: "hongos", 
+              header: "Hongos y Levaduras", 
+              type: "select", 
+              width: "120px",
+              options: [
+                { label: "Si", value: "Si" },
+                { label: "No", value: "No" },
+                { label: "NA", value: "NA" }
+              ]
+            },
+            { 
+              id: "coliformes", 
+              header: "Coliformes", 
+              type: "select", 
+              width: "120px",
+              options: [
+                { label: "Si", value: "Si" },
+                { label: "No", value: "No" },
+                { label: "NA", value: "NA" }
+              ]
+            },
+            { 
+              id: "staph", 
+              header: "Staphylococos", 
+              type: "select", 
+              width: "120px",
+              options: [
+                { label: "Si", value: "Si" },
+                { label: "No", value: "No" },
+                { label: "NA", value: "NA" }
+              ]
+            }
+          ]
+        }
+      ]
+    };
     
-    // Aplicar directamente sin sanitización
-    onChange(config);
+    // Aplicar directamente sin sanitización ni transformaciones
+    onChange(directConfig);
     
     toast({
       title: "Plantilla aplicada",

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
-import { Plus, Trash, Save, AlertCircle } from "lucide-react";
+import { Plus, Trash, Save, AlertCircle, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -120,69 +120,72 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     enabled: true,
   });
   
-  // Si no hay configuración, corregir el problema
-  if (!config) {
-    // En lugar de mostrar un error, usamos una configuración básica por defecto
-    console.log("Configuración de tabla no encontrada, usando configuración por defecto");
-    const defaultConfig: AdvancedTableConfig = {
-      rows: 3,
-      dynamicRows: true,
-      sections: [{
-        title: "Microbiología",
-        columns: [
-          { id: "col1", header: "Fecha", type: "date", width: "120px" },
-          { id: "col2", header: "Producto", type: "text", width: "150px" },
-          { id: "col3", header: "Observación", type: "text", width: "200px" }
-        ]
-      }]
-    };
-    
-    // Reemplazamos la configuración
-    // @ts-ignore - Sabemos que estamos modificando un campo que debería ser readonly
-    field.advancedTableConfig = defaultConfig;
-    
+  // Si no hay configuración o no hay secciones, mostrar mensaje simplificado
+  if (!config || !config.sections || config.sections.length === 0) {
+    console.warn("Error en configuración de tabla avanzada:", field);
     return (
-      <div className="p-2 border rounded">
-        <div className="flex items-center mb-2 p-2 bg-green-50 border border-green-200 rounded">
-          <Info className="h-4 w-4 text-green-500 mr-2" />
-          <p className="text-sm text-green-700">Tabla reparada automáticamente con configuración básica</p>
+      <div className="text-red-500 p-4 border border-red-200 rounded bg-red-50">
+        <div className="flex items-center mb-2">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          <p className="font-semibold">Error: Tabla no configurada correctamente</p>
         </div>
-        <AdvancedTableViewer field={field} value={value} onChange={onChange} readOnly={readOnly} />
+        <p className="text-sm text-red-700 mt-2">
+          Por favor elimina este campo e intenta crear uno nuevo con la plantilla "Microbiología".
+        </p>
       </div>
     );
   }
-  
-  // Si faltan secciones, añadir una sección por defecto
-  if (!config.sections || config.sections.length === 0) {
-    console.log("Configuración de tabla sin secciones, añadiendo sección por defecto");
-    // @ts-ignore - Modificamos la configuración directamente
-    config.sections = [{
-      title: "Microbiología",
-      columns: [
-        { id: "col1", header: "Fecha", type: "date", width: "120px" },
-        { id: "col2", header: "Producto", type: "text", width: "150px" },
-        { id: "col3", header: "Observación", type: "text", width: "200px" }
-      ]
-    }];
-  }
 
-  // Inicializar datos si están vacíos
+  // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
   useEffect(() => {
     console.log("AdvancedTableViewer useEffect - Valor recibido:", value);
     
-    if (!tableData.length && config.rows && config.rows > 0) {
-      // Crear filas iniciales vacías
-      const initialData = Array(config.rows).fill({}).map(() => ({}));
-      console.log("Inicializando tabla con filas vacías:", initialData);
-      setTableData(initialData);
-      onChange(JSON.parse(JSON.stringify(initialData)));
-    } else if (value && Array.isArray(value) && value.length > 0 && 
-               JSON.stringify(value) !== JSON.stringify(tableData)) {
-      // Actualizar si el valor externo cambia
-      console.log("Actualizando tableData con valor externo:", value);
-      setTableData(JSON.parse(JSON.stringify(value)));
+    try {
+      // Crear un objeto vacío para usar como plantilla de fila
+      const defaultRowTemplate: Record<string, any> = {};
+      
+      // Para mayor robustez, pre-inicializamos todas las columnas con valores vacíos apropiados
+      if (config.sections) {
+        config.sections.forEach(section => {
+          if (section.columns) {
+            section.columns.forEach(column => {
+              // Asignamos valores por defecto según el tipo
+              switch(column.type) {
+                case "number":
+                  defaultRowTemplate[column.id] = null;
+                  break;
+                case "checkbox":
+                  defaultRowTemplate[column.id] = false;
+                  break;
+                case "select":
+                  defaultRowTemplate[column.id] = "";
+                  break;
+                default:
+                  defaultRowTemplate[column.id] = "";
+              }
+            });
+          }
+        });
+      }
+      
+      if ((!value || !Array.isArray(value) || value.length === 0) && config.rows && config.rows > 0) {
+        // Crear filas iniciales vacías con todas las columnas pre-inicializadas
+        const initialData = Array(config.rows).fill(0).map(() => ({...defaultRowTemplate}));
+        console.log("Inicializando tabla con filas pre-inicializadas:", initialData);
+        setTableData(initialData);
+        onChange(JSON.parse(JSON.stringify(initialData)));
+      } else if (value && Array.isArray(value) && value.length > 0) {
+        // Actualizar si el valor externo cambia pero asegurando que cada fila tenga todas las propiedades
+        console.log("Actualizando tableData con valor externo:", value);
+        const normalizedData = value.map(row => ({...defaultRowTemplate, ...row}));
+        setTableData(normalizedData);
+      }
+    } catch (error) {
+      console.error("Error al inicializar tabla avanzada:", error);
+      // En caso de error, inicializamos con datos vacíos
+      setTableData([{}]);
     }
-  }, [config.rows, value]);
+  }, [config.rows, config.sections, value]);
   
   // Obtener el valor de referencia de otra columna para cálculos automáticos
   const getSourceValue = (rowIndex: number, sourceColumnId: string) => {
