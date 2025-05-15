@@ -804,13 +804,26 @@ function generatePDFContent(
            .fillAndStroke('#e0e0e0', '#cccccc');
         
         // Dibujar encabezados (columnas)
-        x = 50; // Resetear posición X
+        x = leftMargin; // Resetear posición X al margen dinámico
         section.columns.forEach((column, index) => {
           // Determinar ancho de esta columna
           let colWidth;
           if (column.width && column.width.includes('px')) {
-            colWidth = parseInt(column.width);
-            if (isNaN(colWidth)) colWidth = defaultColumnWidth;
+            // Extraer el valor numérico del ancho en píxeles
+            const pixelWidth = parseInt(column.width);
+            
+            if (!isNaN(pixelWidth)) {
+              // Aplicar factor de escala para el PDF (aprox. 1px web = 0.75pt en PDF)
+              // En horizontal usamos un factor de escala más bajo para que quepa todo
+              const scaleFactor = isLandscape ? 1600 : 1200;
+              colWidth = Math.floor((pixelWidth / scaleFactor) * tableWidth);
+              
+              // Asegurar un ancho mínimo y máximo razonable
+              if (colWidth < 35) colWidth = 35;
+              if (colWidth > tableWidth / 3) colWidth = Math.floor(tableWidth / 3);
+            } else {
+              colWidth = defaultColumnWidth;
+            }
           } else {
             colWidth = defaultColumnWidth;
           }
@@ -844,7 +857,7 @@ function generatePDFContent(
           if (!row || typeof row !== 'object') return;
           
           // Resetear posición X para comenzar la fila
-          x = 50;
+          x = leftMargin;
           y = doc.y;
           
           // Alternar colores de fondo para las filas
@@ -856,11 +869,22 @@ function generatePDFContent(
           
           // Dibujar cada celda
           section.columns.forEach((column, colIndex) => {
-            // Determinar ancho de esta columna
+            // Determinar ancho de esta columna - usar la misma lógica que en los encabezados
             let colWidth;
             if (column.width && column.width.includes('px')) {
-              colWidth = parseInt(column.width);
-              if (isNaN(colWidth)) colWidth = defaultColumnWidth;
+              const pixelWidth = parseInt(column.width);
+              
+              if (!isNaN(pixelWidth)) {
+                // Usar el mismo factor de escala que usamos en los encabezados
+                const scaleFactor = isLandscape ? 1600 : 1200;
+                colWidth = Math.floor((pixelWidth / scaleFactor) * tableWidth);
+                
+                // Asegurar un ancho mínimo y máximo razonable
+                if (colWidth < 35) colWidth = 35;
+                if (colWidth > tableWidth / 3) colWidth = Math.floor(tableWidth / 3);
+              } else {
+                colWidth = defaultColumnWidth;
+              }
             } else {
               colWidth = defaultColumnWidth;
             }
