@@ -1815,6 +1815,260 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API para recetas de productos
+  
+  // Obtener todas las recetas
+  app.get("/api/recipes", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+    try {
+      const recipes = await storage.getAllProductRecipes();
+      res.json(recipes);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Obtener recetas por producto
+  app.get("/api/products/:productId/recipes", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "ID de producto inválido" });
+      }
+      
+      const recipes = await storage.getProductRecipesByProductId(productId);
+      res.json(recipes);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Obtener una receta específica
+  app.get("/api/recipes/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+    try {
+      const recipeId = parseInt(req.params.id);
+      if (isNaN(recipeId)) {
+        return res.status(400).json({ message: "ID de receta inválido" });
+      }
+      
+      const recipe = await storage.getProductRecipe(recipeId);
+      if (!recipe) {
+        return res.status(404).json({ message: "Receta no encontrada" });
+      }
+      
+      // Obtener los ingredientes de la receta
+      const ingredients = await storage.getRecipeIngredientsByRecipeId(recipeId);
+      
+      res.json({
+        ...recipe,
+        ingredients
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Crear nueva receta
+  app.post("/api/recipes", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const { productId, name, baseQuantity, ingredients } = req.body;
+      
+      if (!productId || !name) {
+        return res.status(400).json({ message: "Producto y nombre son obligatorios" });
+      }
+      
+      // Verificar que el producto existe
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      
+      // Crear la receta
+      const recipe = await storage.createProductRecipe({
+        productId,
+        name,
+        baseQuantity: baseQuantity || 100,
+        createdBy: req.user?.id || 0
+      });
+      
+      // Si hay ingredientes, crearlos también
+      if (ingredients && Array.isArray(ingredients)) {
+        for (const ingredient of ingredients) {
+          await storage.createRecipeIngredient({
+            recipeId: recipe.id,
+            materialName: ingredient.materialName,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit || 'kg'
+          });
+        }
+      }
+      
+      // Obtener la receta con sus ingredientes
+      const recipeWithIngredients = {
+        ...recipe,
+        ingredients: await storage.getRecipeIngredientsByRecipeId(recipe.id)
+      };
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "create",
+        resourceType: "recipe",
+        resourceId: recipe.id,
+        details: { name: recipe.name, productId: recipe.productId }
+      });
+      
+      res.status(201).json(recipeWithIngredients);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Actualizar receta
+  app.put("/api/recipes/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const recipeId = parseInt(req.params.id);
+      if (isNaN(recipeId)) {
+        return res.status(400).json({ message: "ID de receta inválido" });
+      }
+      
+      // Verificar que la receta existe
+      const recipe = await storage.getProductRecipe(recipeId);
+      if (!recipe) {
+        return res.status(404).json({ message: "Receta no encontrada" });
+      }
+      
+      const { name, baseQuantity, ingredients } = req.body;
+      
+      // Actualizar la receta
+      const updatedRecipe = await storage.updateProductRecipe(recipeId, {
+        name,
+        baseQuantity
+      });
+      
+      // Actualizar ingredientes si se proporcionaron
+      if (ingredients && Array.isArray(ingredients)) {
+        // Eliminar ingredientes existentes
+        const existingIngredients = await storage.getRecipeIngredientsByRecipeId(recipeId);
+        for (const ingredient of existingIngredients) {
+          await storage.deleteRecipeIngredient(ingredient.id);
+        }
+        
+        // Crear nuevos ingredientes
+        for (const ingredient of ingredients) {
+          await storage.createRecipeIngredient({
+            recipeId: recipeId,
+            materialName: ingredient.materialName,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit || 'kg'
+          });
+        }
+      }
+      
+      // Obtener la receta actualizada con sus ingredientes
+      const recipeWithIngredients = {
+        ...updatedRecipe,
+        ingredients: await storage.getRecipeIngredientsByRecipeId(recipeId)
+      };
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "update",
+        resourceType: "recipe",
+        resourceId: recipeId,
+        details: { name: recipe.name, productId: recipe.productId }
+      });
+      
+      res.json(recipeWithIngredients);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Eliminar receta
+  app.delete("/api/recipes/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const recipeId = parseInt(req.params.id);
+      if (isNaN(recipeId)) {
+        return res.status(400).json({ message: "ID de receta inválido" });
+      }
+      
+      // Verificar que la receta existe
+      const recipe = await storage.getProductRecipe(recipeId);
+      if (!recipe) {
+        return res.status(404).json({ message: "Receta no encontrada" });
+      }
+      
+      // Eliminar los ingredientes primero
+      const ingredients = await storage.getRecipeIngredientsByRecipeId(recipeId);
+      for (const ingredient of ingredients) {
+        await storage.deleteRecipeIngredient(ingredient.id);
+      }
+      
+      // Luego eliminar la receta
+      await storage.deleteProductRecipe(recipeId);
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user?.id || 0,
+        action: "delete",
+        resourceType: "recipe",
+        resourceId: recipeId,
+        details: { name: recipe.name, productId: recipe.productId }
+      });
+      
+      res.json({ message: "Receta eliminada correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Endpoint para obtener los ingredientes de una receta por nombre del producto 
+  // (facilita el autocompletado por nombre en los formularios)
+  app.get("/api/recipes/by-product-name/:productName", async (req, res, next) => {
+    try {
+      const productName = req.params.productName;
+      
+      // Buscar productos que coincidan con el nombre
+      const products = await storage.getAllProducts();
+      const product = products.find(p => p.name === productName);
+      
+      if (!product) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      
+      // Buscar recetas para este producto
+      const recipes = await storage.getProductRecipesByProductId(product.id);
+      
+      if (recipes.length === 0) {
+        return res.status(404).json({ message: "No hay recetas para este producto" });
+      }
+      
+      // Tomamos la primera receta (podríamos implementar alguna lógica para decidir cuál usar)
+      const recipe = recipes[0];
+      
+      // Obtener los ingredientes
+      const ingredients = await storage.getRecipeIngredientsByRecipeId(recipe.id);
+      
+      // Formatear los datos para facilitar su uso en el frontend
+      const formattedIngredients = ingredients.reduce((acc, ingredient) => {
+        acc[ingredient.materialName] = ingredient.quantity;
+        return acc;
+      }, {} as Record<string, string>);
+      
+      res.json({
+        productId: product.id,
+        productName: product.name,
+        recipeId: recipe.id,
+        recipeName: recipe.name,
+        baseQuantity: recipe.baseQuantity,
+        ingredients: formattedIngredients
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
