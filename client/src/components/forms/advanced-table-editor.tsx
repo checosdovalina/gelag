@@ -575,6 +575,61 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     (value && value.initialData) ? value.initialData : Array((value && value.rows) || 3).fill({}).map(() => ({}))
   );
 
+  // Función para importar una plantilla JSON personalizada
+  const handleImportCustomTemplate = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  // Función para procesar el archivo seleccionado
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsedData = JSON.parse(content);
+        
+        // Verificar que el archivo contiene la estructura esperada
+        if (parsedData && parsedData.advancedTableConfig) {
+          const config = parsedData.advancedTableConfig;
+          
+          // Aplicar la configuración importada
+          updateValue(config);
+          
+          toast({
+            title: "Plantilla importada",
+            description: `Se importó "${parsedData.name || 'Plantilla personalizada'}" exitosamente`,
+            variant: "default",
+          });
+          
+          // Cambiar a la vista previa
+          setActiveTab("preview");
+          setTabsVisited(prev => ({...prev, preview: true}));
+        } else {
+          throw new Error("Formato de archivo incorrecto");
+        }
+      } catch (error) {
+        console.error("Error al procesar el archivo:", error);
+        toast({
+          title: "Error al importar",
+          description: "El archivo no tiene el formato correcto",
+          variant: "destructive",
+        });
+      }
+      
+      // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
   // Función para actualizar valor
   const updateValue = useCallback((newValue: Partial<AdvancedTableConfig>) => {
     onChange({
@@ -1586,7 +1641,27 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
           
           {/* Pestaña de Plantillas */}
           <TabsContent value="templates" className="space-y-4 mt-4">
-            <ScrollArea className="h-[500px] pr-4">
+            <div className="mb-4 flex justify-between items-center">
+              <h3 className="text-lg font-medium">Plantillas disponibles</h3>
+              <div className="flex items-center gap-2">
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={handleImportCustomTemplate}
+                  className="flex items-center gap-2"
+                >
+                  <FileSpreadsheet className="h-4 w-4" /> Importar Plantilla
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".json"
+                  className="hidden"
+                />
+              </div>
+            </div>
+            <ScrollArea className="h-[450px] pr-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {TABLE_TEMPLATES.map((template, index) => (
                   <Card 
