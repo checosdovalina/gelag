@@ -238,9 +238,43 @@ function renderAdvancedTable(
     });
   }
   
-  // Dibujar encabezados
-  doc.fillColor("#2a4d69")
-     .rect(40, currentY, tableWidth, 25)
+  // Identificar los encabezados específicos para microbiología y mapearlos a nombres de análisis
+  const microbiologyHeaders: Record<string, string> = {
+    "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
+    "28e24f6f": "Mesófilo",
+    "3084603f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
+    "3084603": "Coliformes",
+    "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
+    "39c28f8": "E. Coli",
+    "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
+    "a2a4db54": "Producto",
+    "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
+    "a3e4f9fa": "Fecha",
+    "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
+    "a4ca5ad": "Salmonella",
+    "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
+    "a835a31b": "Listeria",
+    "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
+    "c0a838ef": "Lote",
+    "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho/Lev.",
+    "cdd9ae3f": "Moho/Lev.",
+    "ff43d9d4-8b06-4668-a403-18e9dc165a45": "Resultado",
+    "ff43d9d4": "Resultado"
+  };
+  
+  // Actualizar los nombres de columnas conocidas
+  columnIds.forEach(id => {
+    // Buscar si este ID o una parte de él coincide con alguno de los encabezados de microbiología
+    Object.keys(microbiologyHeaders).forEach(key => {
+      if (id.includes(key)) {
+        columnNames[id] = microbiologyHeaders[key];
+      }
+    });
+  });
+  
+  // Dibujar encabezados con mejor formato
+  doc.fillColor("#1a365d") // Azul más oscuro para encabezados
+     .rect(40, currentY, tableWidth, 30) // Altura mayor para encabezados
      .fill();
   
   let currentX = 40;
@@ -248,33 +282,51 @@ function renderAdvancedTable(
   
   columnIds.forEach(id => {
     const width = columnWidths[id];
+    
+    // Nombre legible para la columna
+    let headerName = columnNames[id];
+    
+    // Si es un ID corto y no tenemos un nombre legible, intentar hacer matching parcial
+    if (headerName.includes("...") || headerName === id) {
+      // Intentar encontrar un encabezado de microbiología que coincida parcialmente
+      const shortId = id.split('-')[0]; // Primera parte del UUID
+      if (microbiologyHeaders[shortId]) {
+        headerName = microbiologyHeaders[shortId];
+      }
+    }
+    
+    // Dibujar el texto del encabezado con fondo centrado verticalmente
     doc.text(
-      columnNames[id],
+      headerName,
       currentX + 3,
-      currentY + 8,
+      currentY + 10, // Centrado vertical mejorado
       {
         width: width - 6,
         align: 'center',
       }
     );
+    
     currentX += width;
   });
   
-  currentY += 25;
+  currentY += 30; // Actualizado para coincidir con la altura del encabezado
   
   // Dibujar filas de datos
   value.forEach((row, rowIndex) => {
-    // Fondo alternado
+    // Altura estándar para filas de datos
+    const rowHeight = 28; // Filas un poco más altas para mejor visualización
+    
+    // Fondo alternado con color más suave
     if (rowIndex % 2 === 0) {
-      doc.fillColor("#f8f8f8")
-         .rect(40, currentY, tableWidth, 25)
+      doc.fillColor("#f5f7fa") // Color más suave para mejorar legibilidad
+         .rect(40, currentY, tableWidth, rowHeight)
          .fill();
     }
     
     // Borde de la fila
-    doc.strokeColor("#dddddd")
+    doc.strokeColor("#e2e8f0") // Color de borde más suave
        .lineWidth(0.5)
-       .rect(40, currentY, tableWidth, 25)
+       .rect(40, currentY, tableWidth, rowHeight)
        .stroke();
     
     // Textos
@@ -285,9 +337,9 @@ function renderAdvancedTable(
       const width = columnWidths[id];
       
       // Dibujar separador vertical
-      doc.strokeColor("#dddddd")
+      doc.strokeColor("#e2e8f0") // Color consistente con el borde de fila
          .moveTo(currentX, currentY)
-         .lineTo(currentX, currentY + 25)
+         .lineTo(currentX, currentY + rowHeight)
          .stroke();
       
       // Formatear valor con mejor presentación
@@ -354,7 +406,7 @@ function renderAdvancedTable(
       doc.text(
         displayValue,
         currentX + 5, // Más margen a la izquierda
-        currentY + 8,
+        currentY + 10, // Centrado vertical para filas más altas
         {
           width: width - 10, // Más margen a ambos lados
           align: align,
@@ -365,11 +417,11 @@ function renderAdvancedTable(
       currentX += width;
     });
     
-    currentY += 25;
+    currentY += rowHeight; // Usar la misma altura de fila definida arriba
     
     // Verificar si necesitamos una nueva página
-    if (currentY > doc.page.height - 50) {
-      doc.addPage();
+    if (currentY > doc.page.height - 60) { // Mayor margen para evitar cortes
+      doc.addPage({ layout: 'landscape', margin: 40 }); // Mantener el mismo formato
       currentY = 50;
     }
   });
