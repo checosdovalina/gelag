@@ -74,19 +74,7 @@ function renderAdvancedTable(
     return startY + 20; // No hay datos que mostrar
   }
   
-  // Mapeo específico para columnas de microbiología
-  const microbiologyHeaders: Record<string, string> = {
-    // IDs exactos de la tabla
-    "28e24f6f": "Mesófilo",
-    "3084603": "Coliformes",
-    "39c28f8": "E. Coli",
-    "a2a4db54": "Producto",
-    "a3e4f9fa": "Fecha",
-    "a4ca5ad": "Salmonella",
-    "a835a31b": "Listeria",
-    "c0a838ef": "Lote",
-    "ff43d9d4": "Resultado"
-  };
+  // Ya no necesitamos este mapeo aquí ya que lo definimos dentro de renderAdvancedTable
 
   // Título de la tabla con mejor estilo
   doc.fontSize(14)
@@ -112,7 +100,29 @@ function renderAdvancedTable(
   
   // Buscar nombres de columnas más apropiados
   const columnNames: Record<string, string> = {};
+  
+  // Definir mapeo específico para microbiología
+  // Estos mapeos son para IDs exactos que aparecen en la interfaz de usuario
+  const microbiologyHeaders: Record<string, string> = {
+    "28e24f6f": "Mesófilo",
+    "3084603": "Coliformes", 
+    "39c28f8": "E. Coli",
+    "a2a4db54": "Producto",
+    "a3e4f9fa": "Fecha",
+    "a4ca5ad": "Salmonella",
+    "a835a31b": "Listeria",
+    "c0a838ef": "Lote",
+    "ff43d9d4": "Resultado"
+  };
+  
   columnIds.forEach(id => {
+    // Primero verificar si este ID está en nuestro mapeo específico
+    if (microbiologyHeaders[id]) {
+      columnNames[id] = microbiologyHeaders[id];
+      return;
+    }
+    
+    // Si no, proceder con la lógica existente
     // Mapeo de IDs conocidos a nombres legibles
     const knownIds: Record<string, string> = {
       "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
@@ -252,57 +262,12 @@ function renderAdvancedTable(
     });
   }
   
-  // Identificar los encabezados exactos que aparecen en la tabla de microbiología (basado en la captura de pantalla)
-  const microbiologyHeaders: Record<string, string> = {
-    // Encabezados exactos que se ven en el reporte
-    "28e24f6f": "Mesófilo",
-    "3084603": "Coliformes",
-    "39c28f8": "E. Coli",
-    "a2a4db54": "Producto",
-    "a3e4f9fa": "Fecha",
-    "a4ca5ad": "Salmonella",
-    "a835a31b": "Listeria",
-    "c0a838ef": "Lote",
-    "cdd9ae3f": "Moho/Lev.",
-    "ff43d9d4": "Resultado",
-    
-    // Versiones completas de UUID para mayor robustez
-    "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
-    "3084603f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
-    "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
-    "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
-    "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
-    "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
-    "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
-    "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
-    "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho/Lev.",
-    "ff43d9d4-8b06-4668-a403-18e9dc165a45": "Resultado"
-  };
+  // Ya no necesitamos esta definición aquí, la hemos movido a la función renderAdvancedTable
   
-  // Actualizar los nombres de columnas conocidas
-  // Primero comprobar si el ID completo existe en los encabezados de microbiología
+  // Actualizar los nombres de columnas conocidas - lógica simplificada
+  // Ya que ahora manejamos los encabezados específicamente en renderAdvancedTable
   columnIds.forEach(id => {
-    // 1. Comprobar si tenemos un mapeo exacto para este ID
-    if (microbiologyHeaders[id]) {
-      columnNames[id] = microbiologyHeaders[id];
-      return;
-    }
-    
-    // 2. Si no hay mapeo exacto, buscar coincidencias parciales
-    // Extraer primera parte del ID (antes del guión)
-    const shortId = id.split('-')[0];
-    if (microbiologyHeaders[shortId]) {
-      columnNames[id] = microbiologyHeaders[shortId];
-      return;
-    }
-    
-    // 3. Comprobar si alguna parte del ID coincide con nuestros mapeos
-    for (const key of Object.keys(microbiologyHeaders)) {
-      if (id.includes(key)) {
-        columnNames[id] = microbiologyHeaders[key];
-        return;
-      }
-    }
+    // Dejamos la lógica vacía aquí ya que manejamos la lógica específica en el contexto correcto
   });
   
   // Dibujar encabezados con mejor formato
