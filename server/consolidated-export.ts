@@ -73,6 +73,20 @@ function renderAdvancedTable(
   if (!Array.isArray(value) || value.length === 0) {
     return startY + 20; // No hay datos que mostrar
   }
+  
+  // Mapeo específico para columnas de microbiología
+  const microbiologyHeaders: Record<string, string> = {
+    // IDs exactos de la tabla
+    "28e24f6f": "Mesófilo",
+    "3084603": "Coliformes",
+    "39c28f8": "E. Coli",
+    "a2a4db54": "Producto",
+    "a3e4f9fa": "Fecha",
+    "a4ca5ad": "Salmonella",
+    "a835a31b": "Listeria",
+    "c0a838ef": "Lote",
+    "ff43d9d4": "Resultado"
+  };
 
   // Título de la tabla con mejor estilo
   doc.fontSize(14)
@@ -238,38 +252,57 @@ function renderAdvancedTable(
     });
   }
   
-  // Identificar los encabezados específicos para microbiología y mapearlos a nombres de análisis
+  // Identificar los encabezados exactos que aparecen en la tabla de microbiología (basado en la captura de pantalla)
   const microbiologyHeaders: Record<string, string> = {
-    "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
+    // Encabezados exactos que se ven en el reporte
     "28e24f6f": "Mesófilo",
-    "3084603f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
     "3084603": "Coliformes",
-    "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
     "39c28f8": "E. Coli",
-    "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
     "a2a4db54": "Producto",
-    "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
     "a3e4f9fa": "Fecha",
-    "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
     "a4ca5ad": "Salmonella",
-    "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
     "a835a31b": "Listeria",
-    "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
     "c0a838ef": "Lote",
-    "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho/Lev.",
     "cdd9ae3f": "Moho/Lev.",
-    "ff43d9d4-8b06-4668-a403-18e9dc165a45": "Resultado",
-    "ff43d9d4": "Resultado"
+    "ff43d9d4": "Resultado",
+    
+    // Versiones completas de UUID para mayor robustez
+    "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
+    "3084603f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
+    "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
+    "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
+    "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
+    "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
+    "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
+    "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
+    "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho/Lev.",
+    "ff43d9d4-8b06-4668-a403-18e9dc165a45": "Resultado"
   };
   
   // Actualizar los nombres de columnas conocidas
+  // Primero comprobar si el ID completo existe en los encabezados de microbiología
   columnIds.forEach(id => {
-    // Buscar si este ID o una parte de él coincide con alguno de los encabezados de microbiología
-    Object.keys(microbiologyHeaders).forEach(key => {
+    // 1. Comprobar si tenemos un mapeo exacto para este ID
+    if (microbiologyHeaders[id]) {
+      columnNames[id] = microbiologyHeaders[id];
+      return;
+    }
+    
+    // 2. Si no hay mapeo exacto, buscar coincidencias parciales
+    // Extraer primera parte del ID (antes del guión)
+    const shortId = id.split('-')[0];
+    if (microbiologyHeaders[shortId]) {
+      columnNames[id] = microbiologyHeaders[shortId];
+      return;
+    }
+    
+    // 3. Comprobar si alguna parte del ID coincide con nuestros mapeos
+    for (const key of Object.keys(microbiologyHeaders)) {
       if (id.includes(key)) {
         columnNames[id] = microbiologyHeaders[key];
+        return;
       }
-    });
+    }
   });
   
   // Dibujar encabezados con mejor formato
@@ -283,17 +316,11 @@ function renderAdvancedTable(
   columnIds.forEach(id => {
     const width = columnWidths[id];
     
-    // Nombre legible para la columna
+    // Usar directamente el nombre ya mapeado (o el ID si no hay mapeo)
     let headerName = columnNames[id];
     
-    // Si es un ID corto y no tenemos un nombre legible, intentar hacer matching parcial
-    if (headerName.includes("...") || headerName === id) {
-      // Intentar encontrar un encabezado de microbiología que coincida parcialmente
-      const shortId = id.split('-')[0]; // Primera parte del UUID
-      if (microbiologyHeaders[shortId]) {
-        headerName = microbiologyHeaders[shortId];
-      }
-    }
+    // Registrar para depuración
+    console.log(`Encabezado para ${id}: ${headerName}`);
     
     // Dibujar el texto del encabezado con fondo centrado verticalmente
     doc.text(
