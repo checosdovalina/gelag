@@ -368,6 +368,35 @@ const TABLE_TEMPLATES = [
       dynamicRows: true,
       sections: [
         {
+          title: "Información General",
+          columns: [
+            { 
+              id: uuidv4(), 
+              header: "Fecha", 
+              type: "date", 
+              width: "120px" 
+            },
+            { 
+              id: uuidv4(), 
+              header: "Producto", 
+              type: "product", 
+              width: "200px" 
+            },
+            { 
+              id: uuidv4(), 
+              header: "Folio", 
+              type: "text", 
+              width: "120px" 
+            },
+            { 
+              id: uuidv4(), 
+              header: "Fecha de Caducidad", 
+              type: "date", 
+              width: "150px" 
+            }
+          ]
+        },
+        {
           title: "Análisis Microbiológico",
           columns: [
             { 
