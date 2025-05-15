@@ -829,10 +829,10 @@ async function generatePDFAndSend(
     // Avanzamos a la siguiente fila
     currentY += rowHeight;
     
-    // Si hay tablas avanzadas, mostrarlas en una sección separada
+    // Si hay tablas avanzadas, mostrarlas inmediatamente después del registro en la misma hoja
     if (advancedTablesForThisEntry.length > 0) {
-      // Separador
-      currentY += 20;
+      // Separador pequeño
+      currentY += 10;
       
       // Si no hay suficiente espacio, pasar a la siguiente página
       if (currentY > doc.page.height - 150) {
@@ -840,22 +840,19 @@ async function generatePDFAndSend(
         currentY = 40;
       }
       
-      // Título de sección
-      doc.fontSize(12)
+      // Título de sección incluido junto al registro
+      doc.fontSize(11)
          .font('Helvetica-Bold')
          .fillColor('#2a4d69')
-         .text(`Detalle de Tablas Dinámicas - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
+         .text(`Tablas de datos adicionales - ${entry.folioNumber || `Formulario #${entry.id}`}`, 40, currentY, { 
            width: pageWidth - 80,
            align: 'center'
          });
       
-      currentY += 20;
+      currentY += 15;
       
-      // Renderizar cada tabla avanzada
+      // Renderizar cada tabla avanzada directamente debajo del registro
       for (const table of advancedTablesForThisEntry) {
-        // Espacio adicional antes de la tabla
-        currentY += 15;
-        
         // Verificar si necesitamos pasar a una nueva página
         if (currentY > doc.page.height - 150) {
           doc.addPage({ layout: 'landscape', margin: 40 });
@@ -871,6 +868,9 @@ async function generatePDFAndSend(
           pageWidth,
           currentY
         );
+        
+        // Menos espacio entre tablas si hay más de una
+        currentY += 10;
       }
     }
   }
