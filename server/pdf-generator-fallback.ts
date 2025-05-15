@@ -47,10 +47,10 @@ export async function generatePDFFallback(
         const logoPath = path.resolve('./public/assets/gelag-logo.png');
         if (fs.existsSync(logoPath)) {
           doc.image(logoPath, {
-            fit: [120, 60],
+            fit: [80, 40], // Reducido el tamaño del logo
             align: 'center'
           });
-          doc.moveDown();
+          doc.moveDown(0.5); // Menos espacio vertical
         }
       } catch (logoError) {
         console.error('Error al añadir logo:', logoError);
@@ -92,7 +92,7 @@ function generatePDFContent(
   const statusLabel = getStatusLabel(entry.status).toUpperCase();
   
   // Título del documento centrado en la parte superior con estado al lado si aplica
-  doc.fillColor('#000000').fontSize(18).font('Helvetica-Bold');
+  doc.fillColor('#000000').fontSize(14).font('Helvetica-Bold'); // Reducido de 18 a 14
   
   // Título original y manejo especial para formularios con "PRODUCTO TERMINADO"
   let formTitle = template.name.toUpperCase();
