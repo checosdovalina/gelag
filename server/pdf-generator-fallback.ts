@@ -757,38 +757,98 @@ function generatePDFContent(
         // Tomamos la primera sección
         const section = config.sections[0];
         
-        // Calcular anchos de columnas
+        // Calcular anchos de columnas optimizados para el formato microbiológico
         const columnCount = section.columns.length;
         
         // Ajuste de tamaño dependiendo de orientación para asegurar que todo quepa
-        const scale = isLandscape ? 0.8 : 1.0; // Reducir tamaño un 20% en horizontal
-        const columnDefaultWidth = Math.floor((tableWidth / columnCount) * scale);
+        const scale = isLandscape ? 0.85 : 1.0; // Reducir tamaño un 15% en horizontal para mejor visualización
         
-        // Titulo con tamaño más pequeño
-        doc.fontSize(isLandscape ? 9 : 12).font('Helvetica-Bold')
+        // Definir un título más descriptivo y con mejor formato
+        doc.fontSize(isLandscape ? 10 : 12).font('Helvetica-Bold')
+          .text('TABLAS DE DATOS ADICIONALES', { align: 'center' });
+        doc.moveDown(0.2);
+        
+        // Añadir línea horizontal para separar título de la tabla
+        doc.moveTo(leftMargin, doc.y)
+           .lineTo(pageWidth - leftMargin, doc.y)
+           .stroke();
+        doc.moveDown(0.3);
+        
+        // Subtítulo de la tabla
+        doc.fontSize(isLandscape ? 9 : 10).font('Helvetica-Bold')
           .text('Registro', { align: 'center' });
-        doc.moveDown(0.2); // Muy poco espacio después del título
+        doc.moveDown(0.2); // Muy poco espacio después del subtítulo
         
-        // Acumular el ancho total real (respetando width en px pero ajustando escala)
-        let totalWidth = 0;
-        let columnsWithWidth = 0;
+        // Crear distribución de anchos basada en la importancia de las columnas
+        // Anchos personalizados por tipo de columna
+        const columnWidthMap = {
+          'fecha': 0.12,         // Fecha - pequeña
+          'producto': 0.18,      // Producto - mediana
+          'lote': 0.12,          // Lote - pequeña
+          'caducidad': 0.12,     // Fecha caducidad - pequeña
+          'analisis': 0.13,      // Columnas de análisis - un poco más de espacio
+          'resultado': 0.13      // Resultados - un poco más de espacio
+        };
         
-        // Primero identificamos cuántas columnas tienen width definido
-        section.columns.forEach(column => {
-          if (column.width && column.width.includes('px')) {
-            const width = parseInt(column.width);
-            if (!isNaN(width)) {
-              // Aplicar factor de escala a los anchos definidos
-              totalWidth += width * scale;
-              columnsWithWidth++;
-            }
+        // Columna por defecto si no se identifica
+        const defaultColumnWidthFactor = 0.15;
+        const defaultColumnWidth = Math.floor(tableWidth * defaultColumnWidthFactor * scale);
+        
+        // Función para determinar el tipo de columna basado en su encabezado
+        function getColumnType(headerText) {
+          const header = headerText.toLowerCase();
+          
+          if (header.includes('fecha') && !header.includes('caducidad')) {
+            return 'fecha';
+          } else if (header.includes('producto') || header.includes('descripción')) {
+            return 'producto';
+          } else if (header.includes('lote') || header.includes('codigo')) {
+            return 'lote';
+          } else if (header.includes('caducidad') || header.includes('vencimiento')) {
+            return 'caducidad';
+          } else if (header.includes('hongos') || header.includes('levaduras') || 
+                    header.includes('coliformes') || header.includes('mesofílicos')) {
+            return 'analisis';
+          } else if (header.includes('si') || header.includes('no') || 
+                    header.includes('resultado') || header.includes('cumple')) {
+            return 'resultado';
           }
+          
+          return 'default';
+        }
+        
+        // Calcular anchos de columna basados en el tipo detectado o en la configuración original
+        const columnWidths = [];
+        let totalCalculatedWidth = 0;
+        
+        section.columns.forEach(column => {
+          // Obtener tipo de columna por su encabezado
+          const columnType = getColumnType(column.header);
+          const widthFactor = columnWidthMap[columnType] || defaultColumnWidthFactor;
+          
+          // Calcular ancho proporcional para esta columna
+          const calculatedWidth = Math.floor(tableWidth * widthFactor * scale);
+          columnWidths.push(calculatedWidth);
+          totalCalculatedWidth += calculatedWidth;
         });
         
-        // Calcular ancho para columnas sin width específico
-        const remainingWidth = tableWidth - totalWidth;
-        const remainingColumns = columnCount - columnsWithWidth;
-        const defaultColumnWidth = remainingColumns > 0 ? Math.floor(remainingWidth / remainingColumns) : columnDefaultWidth;
+        // Ajustar anchos para asegurar que el total sea exactamente el ancho de la tabla
+        if (totalCalculatedWidth !== tableWidth) {
+          const diff = tableWidth - totalCalculatedWidth;
+          // Distribuir la diferencia entre todas las columnas
+          const adjustPerColumn = Math.floor(diff / columnCount);
+          
+          // Aplicar ajuste a todas las columnas
+          for (let i = 0; i < columnWidths.length; i++) {
+            columnWidths[i] += adjustPerColumn;
+          }
+          
+          // Si queda un residuo, añadirlo a la última columna
+          const remainder = diff - (adjustPerColumn * columnCount);
+          if (remainder !== 0 && columnWidths.length > 0) {
+            columnWidths[columnWidths.length - 1] += remainder;
+          }
+        }
         
         // Variable para controlar la posición X actual
         let x = leftMargin;
@@ -806,27 +866,8 @@ function generatePDFContent(
         // Dibujar encabezados (columnas)
         x = leftMargin; // Resetear posición X al margen dinámico
         section.columns.forEach((column, index) => {
-          // Determinar ancho de esta columna
-          let colWidth;
-          if (column.width && column.width.includes('px')) {
-            // Extraer el valor numérico del ancho en píxeles
-            const pixelWidth = parseInt(column.width);
-            
-            if (!isNaN(pixelWidth)) {
-              // Aplicar factor de escala para el PDF (aprox. 1px web = 0.75pt en PDF)
-              // En horizontal usamos un factor de escala más bajo para que quepa todo
-              const scaleFactor = isLandscape ? 1600 : 1200;
-              colWidth = Math.floor((pixelWidth / scaleFactor) * tableWidth);
-              
-              // Asegurar un ancho mínimo y máximo razonable
-              if (colWidth < 35) colWidth = 35;
-              if (colWidth > tableWidth / 3) colWidth = Math.floor(tableWidth / 3);
-            } else {
-              colWidth = defaultColumnWidth;
-            }
-          } else {
-            colWidth = defaultColumnWidth;
-          }
+          // Usar el ancho calculado para esta columna
+          const colWidth = columnWidths[index] || defaultColumnWidth;
           
           // Dibujar el texto del encabezado
           doc.fillColor('#000000').fontSize(isLandscape ? 7 : 8).font('Helvetica-Bold')
@@ -869,25 +910,8 @@ function generatePDFContent(
           
           // Dibujar cada celda
           section.columns.forEach((column, colIndex) => {
-            // Determinar ancho de esta columna - usar la misma lógica que en los encabezados
-            let colWidth;
-            if (column.width && column.width.includes('px')) {
-              const pixelWidth = parseInt(column.width);
-              
-              if (!isNaN(pixelWidth)) {
-                // Usar el mismo factor de escala que usamos en los encabezados
-                const scaleFactor = isLandscape ? 1600 : 1200;
-                colWidth = Math.floor((pixelWidth / scaleFactor) * tableWidth);
-                
-                // Asegurar un ancho mínimo y máximo razonable
-                if (colWidth < 35) colWidth = 35;
-                if (colWidth > tableWidth / 3) colWidth = Math.floor(tableWidth / 3);
-              } else {
-                colWidth = defaultColumnWidth;
-              }
-            } else {
-              colWidth = defaultColumnWidth;
-            }
+            // Usar el ancho calculado para esta columna (igual que en los encabezados)
+            const colWidth = columnWidths[colIndex] || defaultColumnWidth;
             
             // Obtener y formatear el valor de la celda
             let cellValue = row[column.id] || '';
