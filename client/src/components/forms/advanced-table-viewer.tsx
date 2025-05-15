@@ -498,18 +498,24 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     try {
       if (!config.dynamicRows) {
         console.log("[removeRow] Filas dinámicas no están habilitadas, no se puede eliminar fila");
+        notifyTableUpdate("No se pueden eliminar filas de esta tabla", "info");
         return;
       }
       
       if (tableData.length <= 1) {
         console.log("[removeRow] No se puede eliminar la única fila de la tabla");
+        notifyTableUpdate("Se requiere al menos una fila en la tabla", "info");
         return;
       }
+      
+      setIsSaving(true);
       
       // Crear una copia profunda para evitar referencias
       const currentData = JSON.parse(JSON.stringify(tableData));
       if (index < 0 || index >= currentData.length) {
         console.error("[removeRow] Índice fuera de rango:", index, "longitud:", currentData.length);
+        notifyTableUpdate("Error: índice de fila fuera de rango", "error");
+        setIsSaving(false);
         return;
       }
       
@@ -517,7 +523,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       
       console.log("[removeRow] ⚠️ FORZANDO eliminación de fila", index, "Datos actualizados:", newData);
       
-      // Actualizar los datos locales
+      // Actualizar los datos locales inmediatamente
       setTableData(newData);
       
       // Notificar al componente padre con una pequeña demora
@@ -530,36 +536,23 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           console.log("[removeRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
           onChange(finalData);
           
-          // Crear un mensaje visual temporal de confirmación
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
-          toast.innerHTML = `<span class="mr-1">●</span> Fila eliminada`;
-          document.body.appendChild(toast);
+          // Usar el sistema de notificaciones de shadcn
+          notifyTableUpdate("Fila eliminada correctamente", "success");
           
-          // Eliminar mensaje después de 1 segundo
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 1000);
+          setIsSaving(false);
         } catch (error) {
           console.error("[removeRow] ❌ Error al propagar cambios:", error);
           
-          // Mensaje de error visual
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
-          toast.innerHTML = '<span class="mr-1">●</span> Error al eliminar fila';
-          document.body.appendChild(toast);
+          // Usar el sistema de notificaciones de shadcn
+          notifyTableUpdate("Error al eliminar fila", "error");
           
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 2000);
+          setIsSaving(false);
         }
-      }, 100); // Aumentado a 100ms para mayor seguridad
+      }, 150); // Aumentado a 150ms para mayor seguridad
     } catch (error) {
       console.error("[removeRow] ❌ Error crítico en la función:", error);
+      notifyTableUpdate("Error crítico al eliminar fila", "error");
+      setIsSaving(false);
     }
   };
 
@@ -742,8 +735,9 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       type="button"
                       variant="ghost"
                       size="icon"
+                      disabled={isSaving}
                       onClick={() => removeRow(rowIndex)}
-                      className="h-8 w-8 text-red-500 hover:text-red-700"
+                      className={`h-8 w-8 ${isSaving ? 'text-gray-400' : 'text-red-500 hover:text-red-700'}`}
                       tabIndex={-1}
                     >
                       <Trash className="h-4 w-4" />
@@ -764,7 +758,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     <Button 
                       type="button" 
                       variant="outline" 
-                      size="sm" 
+                      size="sm"
+                      disabled={isSaving}
                       onClick={addRow}
                     >
                       <Plus className="h-4 w-4 mr-1" /> Agregar Fila
@@ -773,42 +768,54 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     <Button 
                       type="button" 
                       variant="default" 
-                      size="sm" 
+                      size="sm"
+                      disabled={isSaving} 
                       onClick={() => {
                         try {
+                          setIsSaving(true);
+                          
                           // Forzar una copia profunda y actualización
-                          console.log("[saveTable] Guardando tabla con datos:", tableData);
-                          const copyData = JSON.parse(JSON.stringify(tableData));
-                          onChange(copyData);
+                          console.log("[saveTable] ⚠️ FORZANDO guardado de tabla con datos:", tableData);
                           
-                          // Mensaje de confirmación visual
-                          const toast = document.createElement('div');
-                          toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-                          toast.innerHTML = 'Tabla guardada correctamente';
-                          document.body.appendChild(toast);
+                          // Crear una copia totalmente independiente
+                          const jsonString = JSON.stringify(tableData);
+                          const copyData = JSON.parse(jsonString);
                           
-                          // Eliminar mensaje después de 2 segundos
+                          // Dar tiempo al servidor para procesar
                           setTimeout(() => {
-                            document.body.removeChild(toast);
-                          }, 2000);
+                            try {
+                              // Actualizar los datos en el padre
+                              console.log("[saveTable] Enviando datos:", copyData);
+                              onChange(copyData);
+                              
+                              // Notificar éxito
+                              notifyTableUpdate("Tabla guardada correctamente", "success");
+                              
+                              setIsSaving(false);
+                            } catch (error) {
+                              console.error("[saveTable] Error al guardar tabla:", error);
+                              notifyTableUpdate("Error al guardar tabla", "error");
+                              setIsSaving(false);
+                            }
+                          }, 150);
                         } catch (error) {
-                          console.error("[saveTable] Error al guardar tabla:", error);
-                          
-                          // Mensaje de error visual
-                          const toast = document.createElement('div');
-                          toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-                          toast.innerHTML = 'Error al guardar tabla';
-                          document.body.appendChild(toast);
-                          
-                          // Eliminar mensaje después de 2 segundos
-                          setTimeout(() => {
-                            document.body.removeChild(toast);
-                          }, 2000);
+                          console.error("[saveTable] Error crítico al guardar tabla:", error);
+                          notifyTableUpdate("Error crítico al guardar tabla", "error");
+                          setIsSaving(false);
                         }
                       }}
                       className="bg-blue-500 hover:bg-blue-600 text-white"
                     >
-                      Guardar Tabla
+                      {isSaving ? (
+                        <>
+                          <span className="animate-pulse mr-2 inline-block h-4 w-4 rounded-full border-2 border-white border-t-transparent"></span>
+                          Guardando...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-1" /> Guardar Tabla
+                        </>
+                      )}
                     </Button>
                   </div>
                 </TableCell>
