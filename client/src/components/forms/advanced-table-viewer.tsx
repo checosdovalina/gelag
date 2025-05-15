@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { 
   Table,
   TableBody,
@@ -13,10 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash, Save, AlertCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 // Interfaces para productos y empleados
 interface Product {
@@ -96,7 +97,18 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   readOnly = false
 }) => {
   const config = field.advancedTableConfig;
+  const { toast } = useToast();
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Función para notificaciones de actualización de tabla
+  const notifyTableUpdate = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    toast({
+      title: message,
+      variant: type === 'error' ? 'destructive' : type === 'info' ? 'default' : 'default',
+      description: type === 'error' ? 'Intente nuevamente' : '',
+    });
+  }, [toast]);
   
   // Obtener la lista de empleados y productos para selectores
   const { data: employees = [], isLoading: loadingEmployees } = useQuery<Employee[]>({
@@ -255,6 +267,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     try {
       console.log("[updateCell] 🔄 Actualizando celda en fila", rowIndex, "columna", columnId, "valor:", value, "tipo:", typeof value);
       
+      setIsSaving(true);
+      
       // Realizar una copia profunda de los datos actuales
       const newData = JSON.parse(JSON.stringify(tableData));
       
@@ -314,7 +328,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // SIEMPRE actualizar el estado, independientemente de si cambiaron los datos
       console.log("[updateCell] ⚠️ Actualizando datos de tabla:", newData);
       
-      // Actualizamos los datos locales
+      // Actualizamos los datos locales inmediatamente
       setTableData(newData);
       
       // Importante: usamos un retraso mayor para asegurar que la actualización 
@@ -329,36 +343,23 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           console.log("[updateCell] ⚠️ FORZANDO propagación de cambios al componente padre:", finalData);
           onChange(finalData);
           
-          // Crear un mensaje visual temporal de confirmación
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
-          toast.innerHTML = `<span class="mr-1">●</span> Celda actualizada`;
-          document.body.appendChild(toast);
+          // Uso del sistema de notificaciones de shadcn
+          notifyTableUpdate("Celda actualizada", "success");
           
-          // Eliminar mensaje después de 1 segundo
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 1000);
+          setIsSaving(false);
         } catch (error) {
           console.error("[updateCell] ❌ Error al propagar cambios:", error);
           
-          // Mensaje de error visual
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
-          toast.innerHTML = '<span class="mr-1">●</span> Error al actualizar';
-          document.body.appendChild(toast);
+          // Uso del sistema de notificaciones de shadcn
+          notifyTableUpdate("Error al actualizar celda", "error");
           
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 2000);
+          setIsSaving(false);
         }
-      }, 100); // Aumentado a 100ms
+      }, 150); // Aumentado a 150ms para mayor seguridad
     } catch (error) {
       console.error("[updateCell] ❌ Error crítico en la función:", error);
+      notifyTableUpdate("Error crítico al actualizar", "error");
+      setIsSaving(false);
     }
   };
   
@@ -445,8 +446,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     try {
       if (!config.dynamicRows) {
         console.log("[addRow] Filas dinámicas no están habilitadas, no se puede agregar fila");
+        notifyTableUpdate("No se pueden añadir filas a esta tabla", "info");
         return;
       }
+      
+      setIsSaving(true);
       
       // Crear una copia profunda para evitar referencias
       const currentData = JSON.parse(JSON.stringify(tableData));
@@ -456,7 +460,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       const newData = [...currentData, newRow];
       console.log("[addRow] ⚠️ FORZANDO actualización con nueva fila. Datos:", newData);
       
-      // Actualizar el estado local
+      // Actualizar el estado local inmediatamente
       setTableData(newData);
       
       // Notificar al componente padre con una pequeña demora MAYOR
@@ -469,36 +473,23 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           console.log("[addRow] ⚠️ FORZANDO propagación al componente padre:", finalData);
           onChange(finalData);
           
-          // Crear un mensaje visual temporal de confirmación
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-md shadow-lg z-50 flex items-center text-xs';
-          toast.innerHTML = `<span class="mr-1">●</span> Fila agregada correctamente`;
-          document.body.appendChild(toast);
+          // Usar el sistema de notificaciones de shadcn
+          notifyTableUpdate("Fila agregada correctamente", "success");
           
-          // Eliminar mensaje después de 1 segundo
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 1000);
+          setIsSaving(false);
         } catch (error) {
           console.error("[addRow] ❌ Error al propagar cambios:", error);
           
-          // Mensaje de error visual
-          const toast = document.createElement('div');
-          toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center';
-          toast.innerHTML = '<span class="mr-1">●</span> Error al agregar fila';
-          document.body.appendChild(toast);
+          // Usar el sistema de notificaciones de shadcn
+          notifyTableUpdate("Error al agregar fila", "error");
           
-          setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
-          }, 2000);
+          setIsSaving(false);
         }
-      }, 100); // Aumentado a 100ms para mayor seguridad
+      }, 150); // Aumentado a 150ms para mayor seguridad
     } catch (error) {
       console.error("[addRow] ❌ Error crítico en la función:", error);
+      notifyTableUpdate("Error crítico al agregar fila", "error");
+      setIsSaving(false);
     }
   };
 
