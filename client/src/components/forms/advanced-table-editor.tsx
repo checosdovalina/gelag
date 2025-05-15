@@ -647,13 +647,88 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     reader.readAsText(file);
   };
   
+  // Función para limpiar y validar configuración de tabla
+  const sanitizeTableConfig = useCallback((config: Partial<AdvancedTableConfig>): AdvancedTableConfig => {
+    // Si no hay configuración, crear una por defecto
+    if (!config) {
+      return { 
+        rows: 3, 
+        dynamicRows: true, 
+        sections: [{ 
+          title: "Sección 1", 
+          columns: [{ id: uuidv4(), header: "Columna 1", type: "text" }] 
+        }] 
+      };
+    }
+    
+    try {
+      // Crear copia profunda para evitar modificar el original
+      const sanitized = JSON.parse(JSON.stringify(config));
+      
+      // Asegurar que properties requeridas existan
+      sanitized.rows = sanitized.rows || 3;
+      sanitized.dynamicRows = sanitized.dynamicRows !== undefined ? sanitized.dynamicRows : true;
+      sanitized.sections = sanitized.sections || [];
+      
+      // Sanitizar cada sección
+      sanitized.sections = sanitized.sections.map((section: TableSection) => {
+        return {
+          ...section,
+          title: section.title || "Sección",
+          columns: (section.columns || []).map((col: any) => ({
+            id: col.id || uuidv4(),
+            header: col.header || "Columna",
+            type: col.type || "text",
+            width: col.width || "150px",
+            ...(col.options ? { options: col.options } : {}),
+            ...(col.validation ? { validation: col.validation } : {})
+          }))
+        };
+      });
+      
+      return sanitized as AdvancedTableConfig;
+    } catch (error) {
+      console.error("Error al sanitizar la configuración de la tabla:", error);
+      // En caso de error, devolver una configuración básica
+      return { 
+        rows: 3, 
+        dynamicRows: true, 
+        sections: [{ 
+          title: "Sección 1", 
+          columns: [{ id: uuidv4(), header: "Columna 1", type: "text" }] 
+        }] 
+      };
+    }
+  }, []);
+  
   // Función para actualizar valor
   const updateValue = useCallback((newValue: Partial<AdvancedTableConfig>) => {
-    onChange({
-      ...value,
-      ...newValue
-    });
-  }, [value, onChange]);
+    try {
+      // Combinar con el valor existente
+      const combinedValue = {
+        ...value,
+        ...newValue
+      };
+      
+      // Sanitizar el valor combinado
+      const sanitizedValue = sanitizeTableConfig(combinedValue);
+      
+      // Enviar una copia limpia al padre
+      const safeValue = JSON.parse(JSON.stringify(sanitizedValue));
+      
+      // Pequeño retraso para asegurar que se procese correctamente
+      setTimeout(() => {
+        onChange(safeValue);
+      }, 50);
+    } catch (error) {
+      console.error("Error al actualizar el valor de la tabla:", error);
+      // En caso de error, tratar de usar el valor original
+      onChange({
+        ...value,
+        ...newValue
+      });
+    }
+  }, [value, onChange, sanitizeTableConfig]);
 
   // Agregar una nueva sección
   const addSection = () => {

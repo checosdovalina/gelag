@@ -151,23 +151,55 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
     });
     
     // Enviar los datos actualizados
-    const updatedData = {
-      ...data,
-      fields: fieldsWithDisplayProps
-    };
-    
-    console.log('Enviando formulario con datos:', updatedData);
-    
-    // Log detallado para debugging
-    console.log('Campos enviados al servidor:');
-    updatedData.fields.forEach((field, index) => {
-      console.log(`Campo #${index+1} - ID: ${field.id}`);
-      console.log(`  Label: ${field.label}`);
-      console.log(`  DisplayName: ${field.displayName}`);
-      console.log(`  DisplayOrder: ${field.displayOrder}`);
-    });
-    
-    onSave(updatedData);
+    try {
+      const processedFields = fieldsWithDisplayProps.map(field => {
+        // Procesar especialmente los campos de tabla avanzada
+        if (field.type === 'advancedTable' && field.advancedTableConfig) {
+          console.log(`Procesando tabla avanzada para guardar: ${field.id}`);
+          
+          // Crear una copia profunda para evitar problemas de referencia
+          return {
+            ...field,
+            advancedTableConfig: JSON.parse(JSON.stringify(field.advancedTableConfig))
+          };
+        }
+        return field;
+      });
+      
+      const updatedData = {
+        ...data,
+        fields: processedFields
+      };
+      
+      // Crear una versión final segura con copia profunda
+      const safeData = JSON.parse(JSON.stringify(updatedData));
+      
+      console.log('Enviando formulario con datos procesados:', safeData);
+      
+      // Log detallado para debugging
+      console.log('Campos enviados al servidor:');
+      safeData.fields.forEach((field: any, index: number) => {
+        console.log(`Campo #${index+1} - ID: ${field.id}, Tipo: ${field.type}`);
+        console.log(`  Label: ${field.label}`);
+        console.log(`  DisplayName: ${field.displayName}`);
+        console.log(`  DisplayOrder: ${field.displayOrder}`);
+        if (field.type === 'advancedTable') {
+          console.log(`  Tabla avanzada con ${field.advancedTableConfig?.sections?.length || 0} secciones`);
+        }
+      });
+      
+      // Enviar con un pequeño retraso para garantizar que todo esté listo
+      setTimeout(() => {
+        onSave(safeData);
+      }, 100);
+    } catch (error) {
+      console.error("Error al procesar el formulario para guardar:", error);
+      // Intentar un enfoque alternativo en caso de error
+      onSave({
+        title: data.title,
+        fields: fieldsWithDisplayProps
+      });
+    }
   };
 
   // Handle drag and drop reordering
@@ -649,12 +681,27 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                 value={field.value}
                                                 onChange={(newConfig) => {
                                                   // Asegurarse de que el campo esté correctamente configurado
-                                                  const safeCopy = JSON.parse(JSON.stringify(newConfig));
-                                                  form.setValue(`fields.${index}.advancedTableConfig`, safeCopy, {
-                                                    shouldDirty: true,
-                                                    shouldTouch: true,
-                                                    shouldValidate: true
-                                                  });
+                                                  try {
+                                                    console.log("FormBuilder: recibiendo nueva configuración de tabla avanzada", newConfig);
+                                                    
+                                                    // Hacer una copia profunda y segura del objeto
+                                                    const safeCopy = JSON.parse(JSON.stringify(newConfig));
+                                                    
+                                                    // Forzar actualización del campo en el formulario
+                                                    setTimeout(() => {
+                                                      form.setValue(`fields.${index}.advancedTableConfig`, safeCopy, {
+                                                        shouldDirty: true,
+                                                        shouldTouch: true,
+                                                        shouldValidate: true
+                                                      });
+                                                      
+                                                      // Marcar el formulario como modificado
+                                                      form.trigger();
+                                                      console.log("FormBuilder: actualización aplicada con éxito");
+                                                    }, 100);
+                                                  } catch (error) {
+                                                    console.error("FormBuilder: Error al actualizar configuración de tabla", error);
+                                                  }
                                                 }}
                                               />
                                               <FormMessage />
