@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import PDFDocument from 'pdfkit';
+import { getMicrobiologyHeaderName } from './microbiology-headers';
 
 /**
  * Función para exportar datos consolidados de múltiples formularios a PDF o Excel
@@ -98,80 +99,19 @@ function renderAdvancedTable(
   const firstRow = value[0];
   const columnIds = Object.keys(firstRow);
   
-  // Buscar nombres de columnas más apropiados
+  // Mostrar IDs de columnas para depuración
+  console.log("IDs de columnas encontrados:", columnIds);
+  
+  // Crear el mapeo de IDs a nombres legibles
   const columnNames: Record<string, string> = {};
   
-  // Definir mapeo específico para microbiología
-  // Estos mapeos son para IDs exactos que aparecen en la interfaz de usuario
-  const microbiologyHeaders: Record<string, string> = {
-    "28e24f6f": "Mesófilo",
-    "3084603": "Coliformes", 
-    "39c28f8": "E. Coli",
-    "a2a4db54": "Producto",
-    "a3e4f9fa": "Fecha",
-    "a4ca5ad": "Salmonella",
-    "a835a31b": "Listeria",
-    "c0a838ef": "Lote",
-    "ff43d9d4": "Resultado"
-  };
-  
+  // Asignar nombres a columnas utilizando el helper de microbiología
   columnIds.forEach(id => {
-    // Primero verificar si este ID está en nuestro mapeo específico
-    if (microbiologyHeaders[id]) {
-      columnNames[id] = microbiologyHeaders[id];
-      return;
-    }
+    // Obtener nombre legible con nuestra función especializada
+    columnNames[id] = getMicrobiologyHeaderName(id);
     
-    // Si no, proceder con la lógica existente
-    // Mapeo de IDs conocidos a nombres legibles
-    const knownIds: Record<string, string> = {
-      "28e24f6f-8bfa-4bca-a92e-a4b2fe8f54d0": "Mesófilo",
-      "30846f03f-9a6c-4db3-b66e-e61f1f5f1986": "Coliformes",
-      "39c28f85-6e6c-43a9-9e20-5cf19da74a4a": "E. Coli",
-      "a2a4db54-2a42-4c63-856e-7bb8e4538c32": "Producto",
-      "a3e4f9fa-30f9-4fba-bd0a-9ee6ae3e6029": "Fecha",
-      "a4ca5ad3-2b8f-40ce-bb11-aad3a1f2a93b": "Salmonella",
-      "a835a31b-2b3e-477c-b06c-e50f6deb12f3": "Listeria",
-      "c0a838ef-9c65-46b1-a419-7a51a2b42152": "Lote",
-      "cdd9ae3f-8fe5-44e4-89b3-72c06ad12a58": "Moho y Lev."
-    };
-    
-    // Intentar encontrar un nombre amigable
-    let readableName;
-    
-    // Primero revisar si es un ID exacto conocido
-    if (knownIds[id]) {
-      readableName = knownIds[id];
-    }
-    // Verificar si es un ID parcial (contiene alguna cadena conocida)
-    else if (id.includes("producto") || id.toLowerCase().includes("product")) {
-      readableName = "Producto";
-    }
-    else if (id.includes("fecha") || id.toLowerCase().includes("date") || id.toLowerCase().includes("fech")) {
-      readableName = "Fecha";
-    }
-    else if (id.includes("folio") || id.toLowerCase().includes("code")) {
-      readableName = "Folio";
-    }
-    else if (id.includes("lote") || id.toLowerCase().includes("batch") || id.toLowerCase().includes("lot")) {
-      readableName = "Lote";
-    }
-    else if (id.includes("version") || id.toLowerCase().includes("vers")) {
-      readableName = "Versión";
-    }
-    else if (id.toLowerCase().includes("observa") || id.toLowerCase().includes("coment")) {
-      readableName = "Observaciones";
-    }
-    else {
-      // Intentar hacer más legible el ID
-      readableName = id.split('-')[0];
-      // Si sigue siendo muy largo, truncarlo
-      if (readableName.length > 10) {
-        readableName = readableName.substring(0, 8) + "...";
-      }
-    }
-    
-    columnNames[id] = readableName;
+    // Registrar resultado del mapeo para depuración
+    console.log(`Columna '${id}' mapeada a: '${columnNames[id]}'`);
   });
   
   // Calcular anchos de columna
@@ -262,12 +202,10 @@ function renderAdvancedTable(
     });
   }
   
-  // Ya no necesitamos esta definición aquí, la hemos movido a la función renderAdvancedTable
-  
-  // Actualizar los nombres de columnas conocidas - lógica simplificada
-  // Ya que ahora manejamos los encabezados específicamente en renderAdvancedTable
+  // Asignar nombres legibles a las columnas
   columnIds.forEach(id => {
-    // Dejamos la lógica vacía aquí ya que manejamos la lógica específica en el contexto correcto
+    // Usar nuestra función especializada
+    columnNames[id] = getMicrobiologyHeaderName(id);
   });
   
   // Dibujar encabezados con mejor formato
