@@ -537,6 +537,163 @@ function generatePDFContent(
       
       doc.moveDown(1.5);
     });
+    
+    // Procesar las tablas avanzadas después de todas las secciones
+    if (advancedTables.length > 0) {
+      // Crear una nueva página para las tablas avanzadas
+      doc.addPage();
+      
+      // Título para la sección de tablas con estilo mejorado
+      doc.fontSize(16).font('Helvetica-Bold').fillColor('#000')
+         .text('TABLAS DE DATOS ADICIONALES', {
+           align: 'center',
+           width: pageWidth - 100
+         });
+      
+      // Agregar una línea decorativa bajo el título
+      const titleWidth = 300;
+      const titleLineY = doc.y + 5;
+      const titleLineX = (pageWidth - titleWidth) / 2;
+      
+      doc.moveTo(titleLineX, titleLineY)
+         .lineTo(titleLineX + titleWidth, titleLineY)
+         .lineWidth(1)
+         .stroke();
+      
+      doc.moveDown(1);
+      
+      // Renderizar cada tabla avanzada
+      advancedTables.forEach((tableData, tableIndex) => {
+        const field = tableData.field;
+        const data = tableData.data;
+        const config = field.advancedTableConfig;
+        
+        if (!config || !config.sections || !Array.isArray(data)) {
+          console.log("Tabla avanzada sin configuración válida o sin datos");
+          return; // Saltamos esta tabla
+        }
+        
+        // Título de la tabla (etiqueta del campo)
+        const tableLabel = field.displayName || field.label;
+        doc.fontSize(12).font('Helvetica-Bold')
+           .text(tableLabel, { align: 'center'});
+        
+        doc.moveDown(0.5);
+        
+        // Para cada fila de datos en la tabla avanzada
+        data.forEach((row, rowIndex) => {
+          // Verificar que tengamos datos válidos
+          if (!row || typeof row !== 'object') return;
+          
+          // Crear un rectángulo con borde para cada fila
+          const startY = doc.y;
+          
+          // Agregar número de fila con mejor formato
+          doc.roundedRect(40, doc.y - 5, pageWidth - 80, 22, 3)
+             .fillAndStroke('#f0f0f0', '#cccccc');
+             
+          doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold')
+             .text(`Fila ${rowIndex + 1}`, 50, doc.y + 5, { continued: false });
+          
+          doc.moveDown(1.2);
+          
+          // Iterar por cada sección del config
+          config.sections.forEach(section => {
+            // Título de la sección con color de fondo
+            doc.rect(50, doc.y - 2, pageWidth - 100, 20)
+               .fillAndStroke('#e0e0e0', '#d0d0d0');
+               
+            doc.fillColor('#333333').fontSize(9).font('Helvetica-Bold')
+               .text(`${section.title}`, 60, doc.y, { continued: false });
+            
+            doc.moveDown(0.8);
+            
+            // Crear un grid de 2 columnas para las propiedades
+            let leftX = 60;
+            let rightX = 300;
+            let currentY = doc.y;
+            let itemCount = 0;
+            const itemsPerColumn = Math.ceil(section.columns.length / 2);
+            
+            // Columnas de esta sección
+            section.columns.forEach((column, colIndex) => {
+              const columnId = column.id;
+              const columnHeader = column.header;
+              let cellValue = row[columnId] || '';
+              
+              // Calcular posición X e Y
+              const currentX = (itemCount < itemsPerColumn) ? leftX : rightX;
+              
+              if (itemCount === itemsPerColumn) {
+                // Reiniciar Y para la segunda columna
+                currentY = doc.y - (itemCount * 18);
+              }
+              
+              // Formatear valor según tipo
+              if (column.type === 'date' && cellValue) {
+                try {
+                  cellValue = new Date(cellValue).toLocaleDateString('es-MX');
+                } catch (e) {
+                  console.error("Error al formatear fecha en tabla:", e);
+                }
+              } else if (column.type === 'checkbox') {
+                cellValue = cellValue ? 'Sí' : 'No';
+              } else if (column.type === 'select' && column.options) {
+                // Buscar la etiqueta correspondiente al valor
+                const option = column.options.find(opt => opt.value === cellValue);
+                if (option) {
+                  cellValue = option.label;
+                }
+              }
+              
+              // Mostrar nombre de columna y valor con mejor formato
+              doc.y = currentY + (itemCount % itemsPerColumn) * 18;
+              
+              // Rectángulo gris claro para el fondo
+              doc.rect(currentX - 3, doc.y - 2, 230, 16)
+                 .fillAndStroke('#f9f9f9', '#eeeeee');
+              
+              // Nombre de la columna en negrita
+              doc.fillColor('#333333').fontSize(8).font('Helvetica-Bold')
+                 .text(`${columnHeader}:`, currentX, doc.y, { continued: true });
+              
+              // Valor
+              doc.font('Helvetica')
+                 .text(` ${cellValue}`);
+                 
+              itemCount++;
+            });
+            
+            doc.moveDown(0.3);
+          });
+          
+          // Calcular la altura máxima para establecer el separador
+          doc.moveDown(1);
+          
+          // Separador entre filas con mejor estilo
+          if (rowIndex < data.length - 1) {
+            // Dibujamos una línea decorativa entre filas
+            doc.moveTo(50, doc.y)
+               .lineTo(pageWidth - 50, doc.y)
+               .lineWidth(0.5)
+               .dash(3, { space: 2 })
+               .stroke('#aaaaaa');
+               
+            // Restaurar configuración de línea
+            doc.undash();
+            doc.lineWidth(1);
+            
+            // Espacio extra entre filas
+            doc.moveDown(1.5);
+          }
+        });
+        
+        // Espacio entre tablas
+        if (tableIndex < advancedTables.length - 1) {
+          doc.moveDown(2);
+        }
+      });
+    }
   } else {
     // Si no tiene estructura definida, mostrar los datos crudos
     doc.fontSize(12).font('Helvetica-Bold').text('Datos del formulario');
