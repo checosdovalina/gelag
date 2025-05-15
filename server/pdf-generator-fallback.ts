@@ -779,15 +779,16 @@ function generatePDFContent(
           .text('Registro', { align: 'center' });
         doc.moveDown(0.2); // Muy poco espacio después del subtítulo
         
-        // Crear distribución de anchos basada en la importancia de las columnas
-        // Anchos personalizados por tipo de columna
-        const columnWidthMap = {
-          'fecha': 0.12,         // Fecha - pequeña
-          'producto': 0.18,      // Producto - mediana
-          'lote': 0.12,          // Lote - pequeña
-          'caducidad': 0.12,     // Fecha caducidad - pequeña
-          'analisis': 0.13,      // Columnas de análisis - un poco más de espacio
-          'resultado': 0.13      // Resultados - un poco más de espacio
+        // Crear distribución de anchos basada en la imagen de referencia
+        // Anchos personalizados por tipo de columna (como porcentaje del ancho total)
+        const columnWidthMap: Record<string, number> = {
+          'fecha': 0.11,        // Fecha - más compacta (como en la imagen)
+          'producto': 0.16,     // Producto - ancho medio (ligeramente más ancho)
+          'lote': 0.09,         // Lote - muy compacta (como en la imagen)
+          'caducidad': 0.11,    // Fecha caducidad - compacta pero legible
+          'analisis': 0.11,     // Columnas de análisis - tamaño uniforme
+          'resultado': 0.11,    // Resultados - tamaño uniforme para Si/No
+          'default': 0.11       // Valor por defecto para columnas no identificadas
         };
         
         // Columna por defecto si no se identifica
@@ -807,7 +808,10 @@ function generatePDFContent(
           } else if (header.includes('caducidad') || header.includes('vencimiento')) {
             return 'caducidad';
           } else if (header.includes('hongos') || header.includes('levaduras') || 
-                    header.includes('coliformes') || header.includes('mesofílicos')) {
+                    header.includes('coliforme') || header.includes('mesofílico') ||
+                    header.includes('staphylococcus') || header.includes('staphylococo') ||
+                    header.includes('salmonella') || header.includes('mohos') ||
+                    header.includes('listeria') || header.includes('microorganismo')) {
             return 'analisis';
           } else if (header.includes('si') || header.includes('no') || 
                     header.includes('resultado') || header.includes('cumple')) {
