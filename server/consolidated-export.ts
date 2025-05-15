@@ -10,6 +10,55 @@ import PDFDocument from 'pdfkit';
 /**
  * Función para exportar datos consolidados de múltiples formularios a PDF o Excel
  */
+/**
+ * Función especial para formatear los datos de tablas avanzadas en la vista homologada
+ */
+function formatAdvancedTableValue(value: any, fieldId: string, fieldLabel: string): string {
+  if (!Array.isArray(value)) {
+    return '[Tabla inválida]';
+  }
+  
+  try {
+    // Caso especial para tablas de microbiología
+    if (fieldId.includes("42ed44a8") || fieldLabel.toLowerCase().includes("microbiolog")) {
+      // Formatear tabla de microbiología (mostrar producto y número de análisis positivos)
+      const rows = value;
+      
+      if (rows.length > 0) {
+        const firstRow = rows[0];
+        let productName = '';
+        let positiveResults = 0;
+        let totalAnalyses = 0;
+        
+        // Buscar campos relevantes
+        Object.entries(firstRow).forEach(([key, val]) => {
+          // Producto (buscar campo clave o campo con "producto" en su ID)
+          if (key.includes("producto") || key.includes("a2a4db54")) {
+            productName = String(val);
+          }
+          
+          // Contar análisis con resultados
+          if (typeof val === 'string' && ['Si', 'No', 'NA'].includes(val)) {
+            totalAnalyses++;
+            if (val === 'Si') {
+              positiveResults++;
+            }
+          }
+        });
+        
+        return `${productName} (${positiveResults}/${totalAnalyses} análisis positivos)`;
+      } else {
+        return "Sin datos";
+      }
+    } else {
+      // Otras tablas: mostrar resumen de filas
+      return `${value.length} registros`;
+    }
+  } catch (e) {
+    return `${value.length} filas`;
+  }
+}
+
 export async function exportConsolidatedForms(req: Request, res: Response, next: NextFunction) {
   try {
     const { templateId, entryIds, format, fileName, selectedFields, fieldOrder } = req.body;
@@ -168,6 +217,10 @@ async function generatePDFAndSend(
     }
   });
   
+  // Identificar campos de tablas avanzadas
+  const advancedTableFields: string[] = [];
+  const advancedTableConfigs: Record<string, any> = {};
+  
   // Mapear IDs de campo a etiquetas legibles
   commonFields.forEach(fieldId => {
     let label = fieldId;
@@ -176,6 +229,12 @@ async function generatePDFAndSend(
       const field = template.structure.fields.find((f: any) => f.id === fieldId);
       if (field) {
         label = field.label || field.displayName || fieldId;
+        
+        // Identificar y guardar configuración de campos de tipo advancedTable
+        if (field.type === 'advancedTable' && field.advancedTableConfig) {
+          advancedTableFields.push(fieldId);
+          advancedTableConfigs[fieldId] = field.advancedTableConfig;
+        }
       }
     }
     
@@ -413,7 +472,10 @@ async function generatePDFAndSend(
       } else if (typeof value === 'boolean') {
         displayValue = value ? 'Sí' : 'No';
       } else if (typeof value === 'object') {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && advancedTableFields.includes(field)) {
+          // Usar la función especializada para tablas avanzadas
+          displayValue = formatAdvancedTableValue(value, field, fieldLabels[field]);
+        } else if (Array.isArray(value)) {
           displayValue = value.join(', ');
         } else {
           try {
