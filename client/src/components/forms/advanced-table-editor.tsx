@@ -2110,16 +2110,16 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   type="button"
                   variant="default"
                   onClick={() => {
-                    // Crear una tabla de temperaturas
+                    // Crear una tabla de horas
                     const horaColumnId = uuidv4();
-                    const tempColumnId = uuidv4();
+                    const valorColumnId = uuidv4();
                     
                     const config = {
                       rows: 7,
                       dynamicRows: false,
                       sections: [
                         {
-                          title: "Temperatura",
+                          title: "Horas",
                           colspan: 2,
                           columns: [
                             {
@@ -2130,40 +2130,36 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               readOnly: true
                             },
                             {
-                              id: tempColumnId,
-                              header: "°C",
-                              type: "number",
-                              width: "80px",
-                              validation: {
-                                min: 0,
-                                max: 200
-                              }
+                              id: valorColumnId,
+                              header: "",
+                              type: "text",
+                              width: "150px"
                             }
                           ]
                         }
                       ],
                       initialData: [
-                        { [horaColumnId]: "Hora 0", [tempColumnId]: "" },
-                        { [horaColumnId]: "Hora 1", [tempColumnId]: "" },
-                        { [horaColumnId]: "Hora 2", [tempColumnId]: "" },
-                        { [horaColumnId]: "Hora 3", [tempColumnId]: "" },
-                        { [horaColumnId]: "Hora 4", [tempColumnId]: "" }, 
-                        { [horaColumnId]: "Hora 5", [tempColumnId]: "" },
-                        { [horaColumnId]: "Fin", [tempColumnId]: "" }
+                        { [horaColumnId]: "Hora 0", [valorColumnId]: "" },
+                        { [horaColumnId]: "Hora 1", [valorColumnId]: "" },
+                        { [horaColumnId]: "Hora 2", [valorColumnId]: "" },
+                        { [horaColumnId]: "Hora 3", [valorColumnId]: "" },
+                        { [horaColumnId]: "Hora 4", [valorColumnId]: "" }, 
+                        { [horaColumnId]: "Hora 5", [valorColumnId]: "" },
+                        { [horaColumnId]: "Fin", [valorColumnId]: "" }
                       ]
                     };
                     
                     onChange(config);
                     toast({
-                      title: "Tabla de temperaturas creada",
-                      description: "Se ha agregado una tabla para registrar temperaturas por hora",
+                      title: "Tabla de horas creada",
+                      description: "Se ha agregado una tabla para registrar valores por hora",
                     });
                     setActiveTab("preview");
                     setTabsVisited(prev => ({...prev, preview: true}));
                   }}
                   className="flex items-center gap-2 ml-2 bg-blue-600 hover:bg-blue-700"
                 >
-                  <Thermometer className="h-4 w-4" /> Tabla de Temperaturas
+                  <Thermometer className="h-4 w-4" /> Tabla de Horas
                 </Button>
                 
                 <input
