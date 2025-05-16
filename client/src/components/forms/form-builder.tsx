@@ -418,14 +418,14 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                             title: "Horas",
                             columns: [
                               {
-                                id: uuidv4(),
+                                id: "hora-column",
                                 header: "Hora",
                                 type: "text",
                                 width: "100px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: "valor-column",
                                 header: "",
                                 type: "text",
                                 width: "150px"
@@ -434,13 +434,13 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                           }
                         ],
                         initialData: [
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Fin" }
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 0" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 1" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 2" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 3" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 4" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Hora 5" },
+                          { "__ROW_ID__": uuidv4(), "hora-column": "Fin" }
                         ]
                       }
                     };
@@ -470,14 +470,14 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                             title: "Manómetro",
                             columns: [
                               {
-                                id: uuidv4(),
+                                id: "hora-column-psi",
                                 header: "Hora",
                                 type: "text",
                                 width: "100px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: "psi-column",
                                 header: "PSI",
                                 type: "number" as "text" | "number" | "select" | "checkbox" | "date" | "time" | "employee" | "product",
                                 width: "100px"
@@ -486,13 +486,13 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                           }
                         ],
                         initialData: [
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Fin" }
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 0" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 1" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 2" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 3" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 4" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Hora 5" },
+                          { "__ROW_ID__": uuidv4(), "hora-column-psi": "Fin" }
                         ]
                       }
                     };
@@ -509,6 +509,17 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   type="button"
                   onClick={() => {
                     // Crear una tabla de verificación de calidad
+                    const horaCalidadId = "hora-calidad";
+                    const brixId = "grados-brix";
+                    const temperaturaId = "temperatura-calidad";
+                    const texturaId = "textura";
+                    const colorId = "color";
+                    const viscosidadId = "viscosidad";
+                    const olorId = "olor";
+                    const saborId = "sabor";
+                    const materialExtranoId = "material-extrano";
+                    const statusId = "status";
+                    
                     const newField: FormField = {
                       id: uuidv4(),
                       type: "advancedTable",
@@ -522,63 +533,63 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                             title: "Verificación de Calidad",
                             columns: [
                               {
-                                id: uuidv4(),
+                                id: horaCalidadId,
                                 header: "Hora",
                                 type: "text",
                                 width: "70px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: brixId,
                                 header: "Grados Brix",
                                 type: "text", 
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: temperaturaId,
                                 header: "Temperatura",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: texturaId,
                                 header: "Textura",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: colorId,
                                 header: "Color",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: viscosidadId,
                                 header: "Viscosidad",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: olorId,
                                 header: "Olor",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: saborId,
                                 header: "Sabor",
                                 type: "text",
                                 width: "100px"
                               },
                               {
-                                id: uuidv4(),
+                                id: materialExtranoId,
                                 header: "Material Extraño",
                                 type: "text",
                                 width: "120px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: statusId,
                                 header: "Status",
                                 type: "text",
                                 width: "100px"
@@ -587,15 +598,15 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                           }
                         ],
                         initialData: [
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora", "Grados Brix": "65° a 68° Brix", "Temperatura": "70°C a 95°C", "Material Extraño": "" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "Fin", "Material Extraño": "N/A" },
-                          { "__ROW_ID__": uuidv4(), "Hora": "", "Material Extraño": "N/A" }
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora", [brixId]: "65° a 68° Brix", [temperaturaId]: "70°C a 95°C", [materialExtranoId]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 0", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 1", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 2", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 3", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 4", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Hora 5", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "Fin", [materialExtranoId]: "N/A" },
+                          { "__ROW_ID__": uuidv4(), [horaCalidadId]: "", [materialExtranoId]: "N/A" }
                         ]
                       }
                     };
