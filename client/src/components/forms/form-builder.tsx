@@ -1233,10 +1233,18 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" type="button">
+            <Button 
+              variant="outline" 
+              type="button" 
+              onClick={() => window.location.href = "/forms"}
+            >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              onClick={form.handleSubmit(onSubmit)}
+            >
               {isLoading ? "Guardando..." : "Guardar Formulario"}
             </Button>
           </div>
