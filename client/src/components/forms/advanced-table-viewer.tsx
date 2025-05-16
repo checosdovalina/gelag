@@ -409,7 +409,48 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             if (!isNaN(liters) && liters > 0) {
               // Actualizar todas las filas de materia prima basado en el producto y litros
               console.log("[updateCell] Calculando materias primas para producto:", value, "litros:", liters);
-              updateRawMaterials(value, liters);
+              
+              // Calcular cantidades según fórmula
+              try {
+                const calculatedAmounts = calculateIngredientAmounts(value, liters);
+                
+                if (Object.keys(calculatedAmounts).length > 0) {
+                  // Buscar la sección de Materia Prima
+                  const materiaPrimaSection = config.sections?.find(section => 
+                    section.title.toLowerCase().includes('materia') || 
+                    section.title.toLowerCase().includes('prima')
+                  );
+                  
+                  if (materiaPrimaSection) {
+                    // Obtener columnas de materia prima y kilos
+                    const mpColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('materia') || 
+                      col.header.toLowerCase().includes('prima')
+                    );
+                    
+                    const kilosColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('kilo')
+                    );
+                    
+                    if (mpColumn && kilosColumn) {
+                      // Recorrer las filas y actualizar cantidades
+                      for (let idx = 1; idx < newData.length; idx++) {
+                        const row = newData[idx];
+                        const ingredientName = row[mpColumn.id];
+                        if (ingredientName && calculatedAmounts[ingredientName] !== undefined) {
+                          // Actualizar kilos según la fórmula
+                          newData[idx][kilosColumn.id] = calculatedAmounts[ingredientName].toFixed(3);
+                        }
+                      }
+                      
+                      // Notificación
+                      notifyTableUpdate(`Cantidades actualizadas automáticamente para ${value}`, 'info');
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error("Error al aplicar fórmula:", error);
+              }
               return; // Permitimos que updateRawMaterials actualice los datos
             }
           }
