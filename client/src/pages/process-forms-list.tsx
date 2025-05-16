@@ -46,9 +46,13 @@ export default function ProcessFormsList() {
   const { user } = useAuth();
   const { forms, isLoading, deleteFormMutation } = useProductionForms();
   
-  const canCreateForms = user && ["superadmin", "admin", "produccion"].includes(user.role);
-  const canEditForms = user && ["superadmin", "admin", "produccion", "calidad"].includes(user.role);
-  const canDeleteForms = user && ["superadmin"].includes(user.role);
+  // Normalizamos el rol a minúsculas para evitar problemas de coincidencia
+  const userRole = user?.role.toLowerCase();
+
+  // Incluimos los gerentes en las reglas de permisos
+  const canCreateForms = user && ["superadmin", "admin", "produccion", "gerente_produccion"].includes(userRole);
+  const canEditForms = user && ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"].includes(userRole);
+  const canDeleteForms = user && ["superadmin"].includes(userRole);
   
   const handleCreate = () => {
     navigate("/production-form");
