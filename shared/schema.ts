@@ -393,6 +393,7 @@ export const productionForms = pgTable("production_forms", {
   responsible: text("responsible").notNull(), // Responsable
   folio: text("folio").notNull(), // Número de folio
   status: text("status").$type<ProductionFormStatus>().notNull().default(ProductionFormStatus.DRAFT),
+  lotNumber: text("lot_number"), // Número de lote
   ingredients: json("ingredients"), // Lista de ingredientes calculados
   ingredientTimes: json("ingredient_times"), // Horas de adición de ingredientes
   
