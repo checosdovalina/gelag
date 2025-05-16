@@ -753,6 +753,29 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           se calcularán los kilos de materia prima correspondientes.
         </div>
       )}
+      
+      {/* Botón para calcular automáticamente las cantidades según fórmula */}
+      {tableMode !== 'viewOnly' && productColumn && litersColumn && (
+        <div className="px-2 py-2 border-b">
+          <FormulaCalculatorButton
+            tableData={tableData}
+            productColumnId={productColumn.id}
+            litersColumnId={litersColumn.id}
+            materiaPrimaColumnId={(allColumns.find(col => 
+              col.header?.toLowerCase().includes('materia')) || {id: ''}).id}
+            kilosColumnId={(allColumns.find(col => 
+              col.header?.toLowerCase().includes('kilo')) || {id: ''}).id}
+            onUpdate={(newData) => {
+              setTableData(newData);
+              setIsSaving(true);
+              setTimeout(() => {
+                onChange(JSON.parse(JSON.stringify(newData)));
+              }, 300);
+            }}
+            onNotify={notifyTableUpdate}
+          />
+        </div>
+      )}
       <div className="relative mb-1 text-xs text-muted-foreground flex justify-end pr-3">
         <span>
           <MoveHorizontal className="h-3 w-3 inline mr-1" />
