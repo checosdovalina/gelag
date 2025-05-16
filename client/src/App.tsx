@@ -7,6 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { UserRole } from "@shared/schema";
+import Sidebar from "@/components/sidebar";
+import MobileNav from "@/components/mobile-nav";
 
 // Pages
 import NotFound from "@/pages/not-found";
@@ -25,61 +27,95 @@ import EmployeesPage from "@/pages/employees-page-new";
 import ProductionFormPage from "@/pages/production-form-page";
 import ProcessFormsList from "@/pages/process-forms-list";
 
+// Componente wrapper para rutas protegidas que incluye el sidebar
+function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar className="hidden md:flex" />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <MobileNav />
+        <main className="flex-1 overflow-y-auto p-4">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// Versión modificada del ProtectedRoute que incluye el layout
+function ProtectedRouteWithLayout(props: {
+  path: string;
+  component: () => React.JSX.Element;
+  allowedRoles?: UserRole[];
+}) {
+  return (
+    <ProtectedRoute
+      path={props.path}
+      allowedRoles={props.allowedRoles}
+      component={() => (
+        <ProtectedLayout>
+          <props.component />
+        </ProtectedLayout>
+      )}
+    />
+  );
+}
+
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={Dashboard} />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout path="/" component={Dashboard} />
+      <ProtectedRouteWithLayout 
         path="/users" 
         component={UsersPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/form-editor" 
         component={FormEditor} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute path="/forms" component={FormsPage} />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout path="/forms" component={FormsPage} />
+      <ProtectedRouteWithLayout 
         path="/form-capture" 
         component={FormCapture} 
         allowedRoles={[UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/form-import" 
         component={FormImportPage} 
         allowedRoles={[UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/reports" 
         component={ReportsPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.VIEWER]} 
       />
-      <ProtectedRoute path="/captured-forms" component={CapturedFormsPage} />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout path="/captured-forms" component={CapturedFormsPage} />
+      <ProtectedRouteWithLayout 
         path="/settings" 
         component={SettingsPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/products" 
         component={ProductsPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/employees" 
         component={EmployeesPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/production-form/:id" 
         component={ProductionFormPage} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/production-form" 
         component={ProductionFormPage} 
       />
-      <ProtectedRoute 
+      <ProtectedRouteWithLayout 
         path="/process-forms" 
         component={ProcessFormsList} 
       />
