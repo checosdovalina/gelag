@@ -2106,6 +2106,66 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   <FileSpreadsheet className="h-4 w-4" /> Plantilla Microbiología
                 </Button>
                 
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => {
+                    // Crear una tabla de temperaturas
+                    const horaColumnId = uuidv4();
+                    const tempColumnId = uuidv4();
+                    
+                    const config = {
+                      rows: 7,
+                      dynamicRows: false,
+                      sections: [
+                        {
+                          title: "Temperatura",
+                          colspan: 2,
+                          columns: [
+                            {
+                              id: horaColumnId,
+                              header: "Hora",
+                              type: "text",
+                              width: "100px",
+                              readOnly: true
+                            },
+                            {
+                              id: tempColumnId,
+                              header: "°C",
+                              type: "number",
+                              width: "80px",
+                              validation: {
+                                min: 0,
+                                max: 200
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      initialData: [
+                        { [horaColumnId]: "Hora 0", [tempColumnId]: "" },
+                        { [horaColumnId]: "Hora 1", [tempColumnId]: "" },
+                        { [horaColumnId]: "Hora 2", [tempColumnId]: "" },
+                        { [horaColumnId]: "Hora 3", [tempColumnId]: "" },
+                        { [horaColumnId]: "Hora 4", [tempColumnId]: "" }, 
+                        { [horaColumnId]: "Hora 5", [tempColumnId]: "" },
+                        { [horaColumnId]: "Fin", [tempColumnId]: "" }
+                      ]
+                    };
+                    
+                    onChange(config);
+                    toast({
+                      title: "Tabla de temperaturas creada",
+                      description: "Se ha agregado una tabla para registrar temperaturas por hora",
+                    });
+                    setActiveTab("preview");
+                    setTabsVisited(prev => ({...prev, preview: true}));
+                  }}
+                  className="flex items-center gap-2 ml-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Thermometer className="h-4 w-4" /> Tabla de Temperaturas
+                </Button>
+                
                 <input
                   type="file"
                   ref={fileInputRef}
