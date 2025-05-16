@@ -441,8 +441,11 @@ export const productionForms = pgTable("production_forms", {
 
 export const insertProductionFormSchema = createInsertSchema(productionForms).omit({
   id: true,
+  createdBy: true,
   createdAt: true,
-  updatedAt: true
+  updatedAt: true,
+  updatedBy: true,
+  folio: true // El folio se genera automáticamente
 });
 
 export type ProductionForm = typeof productionForms.$inferSelect;
