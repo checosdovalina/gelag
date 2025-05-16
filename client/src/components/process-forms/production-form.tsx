@@ -21,7 +21,7 @@ import { Info, AlertTriangle, Clock, Edit2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Definiciones de tipos
-export type UserRole = "production_manager" | "operator" | "quality_manager";
+export type UserRole = "production_manager" | "operator" | "quality_manager" | null;
 
 export interface ProductRecipe {
   id: string;
@@ -97,21 +97,25 @@ const PRODUCTS: ProductRecipe[] = [
 ];
 
 // Mapeo de roles de usuario a roles de aplicación
-const mapUserRoleToAppRole = (userRole: string): UserRole | null => {
+const mapUserRoleToAppRole = (userRole: string): UserRole => {
   // Normalizar el rol a minúsculas para evitar problemas con mayúsculas/minúsculas
   const normalizedRole = userRole.toLowerCase();
   
-  const roleMap: Record<string, UserRole> = {
-    "superadmin": "production_manager",
-    "admin": "production_manager",
-    "produccion": "operator",
-    "gerente_produccion": "production_manager",
-    "calidad": "quality_manager",
-    "gerente_calidad": "quality_manager",
-    "viewer": null
-  };
+  if (normalizedRole === "superadmin" || normalizedRole === "admin" || normalizedRole === "gerente_produccion") {
+    return "production_manager";
+  }
   
-  return roleMap[normalizedRole] || null;
+  if (normalizedRole === "produccion") {
+    return "operator";
+  }
+  
+  if (normalizedRole === "calidad" || normalizedRole === "gerente_calidad") {
+    return "quality_manager";
+  }
+  
+  // Por defecto, asignamos un rol de operator para evitar errores
+  // Esto permite al menos ver el formulario
+  return "operator";
 };
 
 // Definición de secciones del formulario
@@ -169,7 +173,8 @@ export default function ProductionForm({
   );
   
   // Determinar rol del usuario actual
-  const currentUserRole = user ? mapUserRoleToAppRole(user.role) : null;
+  // Siempre tendremos un rol válido ahora que hemos cambiado la función de mapeo
+  const currentUserRole = user ? mapUserRoleToAppRole(user.role) : "operator";
   
   // Verificar si el usuario puede editar una sección
   const canEditSection = (sectionId: string): boolean => {
