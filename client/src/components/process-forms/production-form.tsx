@@ -98,6 +98,9 @@ const PRODUCTS: ProductRecipe[] = [
 
 // Mapeo de roles de usuario a roles de aplicación
 const mapUserRoleToAppRole = (userRole: string): UserRole | null => {
+  // Normalizar el rol a minúsculas para evitar problemas con mayúsculas/minúsculas
+  const normalizedRole = userRole.toLowerCase();
+  
   const roleMap: Record<string, UserRole> = {
     "superadmin": "production_manager",
     "admin": "production_manager",
@@ -108,7 +111,7 @@ const mapUserRoleToAppRole = (userRole: string): UserRole | null => {
     "viewer": null
   };
   
-  return roleMap[userRole] || null;
+  return roleMap[normalizedRole] || null;
 };
 
 // Definición de secciones del formulario
@@ -171,13 +174,16 @@ export default function ProductionForm({
   // Verificar si el usuario puede editar una sección
   const canEditSection = (sectionId: string): boolean => {
     if (readOnly) return false;
-    if (!user || !currentUserRole) return false;
+    if (!user) return false;
     
     const section = PRODUCTION_FORM_SECTIONS.find(s => s.id === sectionId);
     if (!section) return false;
     
-    // SuperAdmin puede editar cualquier sección
-    if (user.role === "SuperAdmin") return true;
+    // SuperAdmin/superadmin puede editar cualquier sección
+    if (user.role.toLowerCase() === "superadmin") return true;
+    
+    // Si el usuario no tiene un rol asignado, no puede editar
+    if (!currentUserRole) return false;
     
     return section.allowedRoles.includes(currentUserRole);
   };
