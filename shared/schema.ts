@@ -85,6 +85,14 @@ export enum FormWorkflowStatus {
   REJECTED = "rejected"         // Rechazado
 }
 
+// Production form status enum
+export enum ProductionFormStatus {
+  DRAFT = "draft",              // Borrador inicial
+  IN_PROGRESS = "in_progress",  // En proceso de producción
+  PENDING_REVIEW = "pending_review", // Esperando revisión de calidad
+  COMPLETED = "completed"       // Proceso completado
+}
+
 // Form data schema (completed forms)
 export const formEntries = pgTable("form_entries", {
   id: serial("id").primaryKey(),
@@ -373,3 +381,66 @@ export type InsertProductRecipe = z.infer<typeof insertProductRecipeSchema>;
 
 export type RecipeIngredient = typeof recipeIngredients.$inferSelect;
 export type InsertRecipeIngredient = z.infer<typeof insertRecipeIngredientSchema>;
+
+// Tabla para formularios de producción por secciones
+export const productionForms = pgTable("production_forms", {
+  id: serial("id").primaryKey(),
+  productId: text("product_id").notNull(), // ID del producto seleccionado
+  liters: integer("liters").notNull(), // Litros a producción
+  date: text("date").notNull(), // Fecha de producción
+  responsible: text("responsible").notNull(), // Responsable
+  folio: text("folio").notNull(), // Número de folio
+  status: text("status").$type<ProductionFormStatus>().notNull().default(ProductionFormStatus.DRAFT),
+  ingredients: json("ingredients"), // Lista de ingredientes calculados
+  ingredientTimes: json("ingredient_times"), // Horas de adición de ingredientes
+  
+  // Sección de seguimiento de proceso
+  startTime: text("start_time"), // Hora inicio
+  endTime: text("end_time"), // Hora término
+  temperature: json("temperature"), // Temperaturas
+  pressure: json("pressure"), // Manómetro
+  hourTracking: json("hour_tracking"), // Tabla de hora
+  
+  // Sección de verificación de calidad
+  qualityTimes: json("quality_times"), // Horas de verificación
+  brix: json("brix"), // Grados Brix
+  qualityTemp: json("quality_temp"), // Temperatura
+  texture: json("texture"), // Textura
+  color: json("color"), // Color
+  viscosity: json("viscosity"), // Viscosidad
+  smell: json("smell"), // Olor
+  taste: json("taste"), // Sabor
+  statusCheck: json("status_check"), // Status
+  
+  // Sección de destino de producto
+  destinationType: json("destination_type"), // Tipo de Cajeta
+  destinationKilos: json("destination_kilos"), // Kilos
+  destinationProduct: json("destination_product"), // Producto
+  destinationEstimation: json("destination_estimation"), // Estimación
+  totalKilos: text("total_kilos"), // Total Kilos
+  liberationFolio: text("liberation_folio"), // Folio de liberación
+  
+  // Sección de datos de liberación
+  cP: text("cp"), // cP
+  cmConsistometer: text("cm_consistometer"), // Cm en consistómetro
+  finalBrix: text("final_brix"), // Grados Brix finales
+  yield: text("yield"), // Rendimiento
+  startState: text("start_state"), // Estado al inicio (colador)
+  endState: text("end_state"), // Estado al final (colador)
+  signatureUrl: text("signature_url"), // URL de la firma del responsable
+  
+  // Metadatos
+  createdBy: integer("created_by").notNull(), // Usuario que creó el formulario
+  updatedBy: integer("updated_by"), // Último usuario que lo modificó
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductionFormSchema = createInsertSchema(productionForms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type ProductionForm = typeof productionForms.$inferSelect;
+export type InsertProductionForm = z.infer<typeof insertProductionFormSchema>;
