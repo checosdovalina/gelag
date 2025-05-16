@@ -1241,9 +1241,9 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
               Cancelar
             </Button>
             <Button 
-              type="submit" 
+              type="button" 
               disabled={isLoading}
-              onClick={form.handleSubmit(onSubmit)}
+              onClick={() => onSave(form.getValues())}
             >
               {isLoading ? "Guardando..." : "Guardar Formulario"}
             </Button>
