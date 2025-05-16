@@ -7,8 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { UserRole } from "@shared/schema";
-import Sidebar from "@/components/sidebar";
-import MobileNav from "@/components/mobile-nav";
+import MainLayout from "@/components/layout/main-layout";
 
 // Pages
 import NotFound from "@/pages/not-found";
@@ -27,12 +26,12 @@ import EmployeesPage from "@/pages/employees-page-new";
 import ProductionFormPage from "@/pages/production-form-page";
 import ProcessFormsList from "@/pages/process-forms-list";
 
-// Componente wrapper para rutas protegidas que incluye el sidebar
+// Componente wrapper para rutas protegidas
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex-1 overflow-y-auto p-4">
+    <MainLayout>
       {children}
-    </main>
+    </MainLayout>
   );
 }
 
