@@ -757,23 +757,94 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       {/* Botón para calcular automáticamente las cantidades según fórmula */}
       {!readOnly && productColumn && litersColumn && (
         <div className="px-2 py-2 border-b">
-          <FormulaCalculator
-            tableData={tableData}
-            productColumnId={productColumn.id}
-            litersColumnId={litersColumn.id}
-            materiaPrimaColumnId={(allColumns.find(col => 
-              col.header?.toLowerCase().includes('materia')) || {id: ''}).id}
-            kilosColumnId={(allColumns.find(col => 
-              col.header?.toLowerCase().includes('kilo')) || {id: ''}).id}
-            onUpdate={(newData) => {
-              setTableData(newData);
-              setIsSaving(true);
-              setTimeout(() => {
-                onChange(JSON.parse(JSON.stringify(newData)));
-              }, 300);
-            }}
-            onNotify={notifyTableUpdate}
-          />
+          <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md border">
+            <div className="text-sm">
+              <span className="text-muted-foreground">
+                Seleccione un producto e ingrese los litros para calcular las cantidades automáticamente
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                // Obtener la primera fila (encabezado)
+                const firstRow = tableData[0] || {};
+                const productName = firstRow[productColumn.id];
+                const litersValue = parseFloat(firstRow[litersColumn.id] || '0');
+                
+                if (!productName || isNaN(litersValue) || litersValue <= 0) {
+                  notifyTableUpdate("Por favor seleccione un producto y especifique los litros", "error");
+                  return;
+                }
+                
+                try {
+                  // Calcular cantidades según fórmula
+                  const calculatedAmounts = calculateIngredientAmounts(productName, litersValue);
+                  
+                  if (Object.keys(calculatedAmounts).length === 0) {
+                    notifyTableUpdate(`No se encontró una fórmula para ${productName}`, "error");
+                    return;
+                  }
+                  
+                  // Buscar la sección de Materia Prima
+                  const materiaPrimaSection = config.sections?.find(section => 
+                    section.title.toLowerCase().includes('materia') || 
+                    section.title.toLowerCase().includes('prima')
+                  );
+                  
+                  // Obtener columnas de materia prima y kilos
+                  const mpColumn = materiaPrimaSection?.columns.find(col => 
+                    col.header.toLowerCase().includes('materia') || 
+                    col.header.toLowerCase().includes('prima')
+                  );
+                  
+                  const kilosColumn = materiaPrimaSection?.columns.find(col => 
+                    col.header.toLowerCase().includes('kilo')
+                  );
+                  
+                  if (!mpColumn || !kilosColumn) {
+                    notifyTableUpdate("No se encontraron las columnas necesarias", "error");
+                    return;
+                  }
+                  
+                  // Crear copia de los datos
+                  const newData = JSON.parse(JSON.stringify(tableData));
+                  
+                  // Recorrer las filas y actualizar cantidades
+                  let updatedCount = 0;
+                  for (let idx = 1; idx < newData.length; idx++) {
+                    const row = newData[idx];
+                    const ingredientName = row[mpColumn.id];
+                    if (ingredientName && calculatedAmounts[ingredientName] !== undefined) {
+                      // Actualizar kilos según la fórmula
+                      newData[idx][kilosColumn.id] = calculatedAmounts[ingredientName].toFixed(3);
+                      updatedCount++;
+                    }
+                  }
+                  
+                  if (updatedCount > 0) {
+                    // Actualizar datos
+                    setTableData(newData);
+                    setIsSaving(true);
+                    setTimeout(() => {
+                      onChange(JSON.parse(JSON.stringify(newData)));
+                    }, 300);
+                    
+                    notifyTableUpdate(`Se actualizaron ${updatedCount} ingredientes según la fórmula de ${productName}`, "success");
+                  } else {
+                    notifyTableUpdate("No se encontraron ingredientes que coincidan con la fórmula", "error");
+                  }
+                } catch (error) {
+                  console.error("Error al aplicar fórmula:", error);
+                  notifyTableUpdate("Error al calcular ingredientes", "error");
+                }
+              }}
+              className="flex items-center"
+            >
+              <Calculator className="h-4 w-4 mr-1" />
+              <span>Calcular ingredientes</span>
+            </Button>
+          </div>
         </div>
       )}
       <div className="relative mb-1 text-xs text-muted-foreground flex justify-end pr-3">
