@@ -444,4 +444,5 @@ export const insertProductionFormSchema = createInsertSchema(productionForms).om
   updatedAt: true
 });
 
-
+export type ProductionForm = typeof productionForms.$inferSelect;
+export type InsertProductionForm = z.infer<typeof insertProductionFormSchema>;
