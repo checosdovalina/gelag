@@ -2631,8 +2631,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               };
                             });
                             
-                            // Asignamos los nuevos datos
-                            newValue.initialData = newData;
+                            // CORRECCIÓN CRÍTICA: Asignamos los nuevos datos preservando estructura
+                            const completeValue = {
+                              ...newValue,                  // Mantener toda la estructura existente
+                              initialData: newData,         // Actualizar solo los datos
+                              rows: Math.max(newValue.rows || 3, newData.length),
+                              // Siempre asegurarnos que tiene las secciones definidas
+                              sections: newValue.sections || []
+                            };
                             
                             // Simular la carga de datos con tiempo de espera para visualizar el proceso
                             toast({
@@ -2640,8 +2646,9 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               description: "Añadiendo listado de productos a la tabla",
                             });
                             
-                            // Actualizar solo después del toast
-                            onChange(newValue);
+                            // Copia profunda y uso de updateValue para preservar estructura
+                            // Método seguro para enviar la estructura completa
+                            updateValue({ initialData: newData });
                             
                             toast({
                               title: "Productos agregados",

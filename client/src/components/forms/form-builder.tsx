@@ -696,6 +696,8 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                     // FLUJO REVISADO: Primero verificar si hay datos iniciales, en cuyo caso preservar estructura existente
                                                     
                                                     // 1. Verificar si tiene datos iniciales (incluso si no tiene secciones)
+                                                    // CORRECCIÓN: Mejoramos detección de datos iniciales con mayor precisión
+                                                    console.log("Validando datos iniciales de configuración:", configToSave);
                                                     const hasInitialData = configToSave.initialData && Array.isArray(configToSave.initialData) && configToSave.initialData.length > 0;
                                                     
                                                     // 2. Obtener configuración actual (si existe)
@@ -711,9 +713,10 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                         rows: Math.max(currentConfig.rows || 3, configToSave.initialData.length)
                                                       };
                                                     }
-                                                    // Caso 2: No tiene secciones propias pero hay datos iniciales - usar estructura existente
+                                                    // Caso 2: No tiene secciones propias pero hay datos iniciales - usar estructura existente 
                                                     else if (hasInitialData && (!configToSave.sections || configToSave.sections.length === 0)) {
                                                       console.log("Recibidos solo datos iniciales, verificando estructura existente");
+                                                      console.log("DATOS RECIBIDOS:", JSON.stringify(configToSave));
                                                       
                                                       // MODIFICACIÓN CRÍTICA: Tratar de encontrar la estructura en el formulario completo, no solo en este campo
                                                       // Asumimos que estamos recibiendo materias primas que deben aplicarse a la tabla avanzada existente
