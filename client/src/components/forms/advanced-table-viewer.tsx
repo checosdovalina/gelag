@@ -451,7 +451,16 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
               } catch (error) {
                 console.error("Error al aplicar fórmula:", error);
               }
-              return; // Permitimos que updateRawMaterials actualice los datos
+              // Guardar los cambios después de aplicar la fórmula
+              setTableData(newData);
+              // Programar guardado con retardo para dar tiempo a React
+              setTimeout(() => {
+                console.log("[updateCell] ⚠️ Programando guardado de datos");
+                setIsSaving(true);
+                // Manualmente propagar actualización al componente padre
+                onChange(JSON.parse(JSON.stringify(newData)));
+              }, 300);
+              return;
             }
           }
         } 
@@ -466,8 +475,60 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             if (productValue) {
               // Actualizar todas las filas de materia prima basado en el producto y litros
               console.log("[updateCell] Calculando materias primas para producto:", productValue, "litros:", liters);
-              updateRawMaterials(productValue, liters);
-              return; // Permitimos que updateRawMaterials actualice los datos
+              
+              try {
+                // Calcular cantidades según fórmula
+                const calculatedAmounts = calculateIngredientAmounts(productValue, liters);
+                
+                if (Object.keys(calculatedAmounts).length > 0) {
+                  // Buscar la sección de Materia Prima
+                  const materiaPrimaSection = config.sections?.find(section => 
+                    section.title.toLowerCase().includes('materia') || 
+                    section.title.toLowerCase().includes('prima')
+                  );
+                  
+                  if (materiaPrimaSection) {
+                    // Obtener columnas de materia prima y kilos
+                    const mpColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('materia') || 
+                      col.header.toLowerCase().includes('prima')
+                    );
+                    
+                    const kilosColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('kilo')
+                    );
+                    
+                    if (mpColumn && kilosColumn) {
+                      // Recorrer las filas y actualizar cantidades
+                      for (let idx = 1; idx < newData.length; idx++) {
+                        const row = newData[idx];
+                        const ingredientName = row[mpColumn.id];
+                        if (ingredientName && calculatedAmounts[ingredientName] !== undefined) {
+                          // Actualizar kilos según la fórmula
+                          newData[idx][kilosColumn.id] = calculatedAmounts[ingredientName].toFixed(3);
+                        }
+                      }
+                      
+                      // Guardar los cambios después de aplicar la fórmula
+                      setTableData(newData);
+                      
+                      // Programar guardado con retardo para dar tiempo a React
+                      setTimeout(() => {
+                        console.log("[updateCell] ⚠️ Programando guardado de datos");
+                        setIsSaving(true);
+                        // Manualmente propagar actualización al componente padre
+                        onChange(JSON.parse(JSON.stringify(newData)));
+                      }, 300);
+                      
+                      // Notificación
+                      notifyTableUpdate(`Cantidades actualizadas automáticamente para ${productValue}`, 'info');
+                      return;
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error("Error al aplicar fórmula:", error);
+              }
             }
           }
         }
