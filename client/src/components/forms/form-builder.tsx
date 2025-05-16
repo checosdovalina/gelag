@@ -715,6 +715,10 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                     else if (hasInitialData && (!configToSave.sections || configToSave.sections.length === 0)) {
                                                       console.log("Recibidos solo datos iniciales, verificando estructura existente");
                                                       
+                                                      // MODIFICACIÓN CRÍTICA: Tratar de encontrar la estructura en el formulario completo, no solo en este campo
+                                                      // Asumimos que estamos recibiendo materias primas que deben aplicarse a la tabla avanzada existente
+                                                      
+                                                      // Primero buscamos en este campo
                                                       if (hasCurrentSections) {
                                                         // Usar estructura actual con nuevos datos
                                                         configToSave = {
@@ -723,22 +727,57 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                           rows: Math.max(currentConfig.rows || 3, configToSave.initialData.length)
                                                         };
                                                         console.log("Aplicando nuevos datos iniciales a estructura existente");
-                                                      } else {
-                                                        // No hay estructura previa ni actual - crear estructura básica
-                                                        console.log("No hay estructura previa, creando estructura por defecto con datos iniciales");
-                                                        configToSave = {
-                                                          rows: configToSave.initialData.length || 3,
-                                                          dynamicRows: true,
-                                                          sections: [
-                                                            {
-                                                              title: "Datos",
-                                                              columns: [
-                                                                { id: "valor", header: "Valor", type: "text", width: "200px" }
-                                                              ]
+                                                      } 
+                                                      // Si no encontramos estructura aquí, buscar en el formulario completo 
+                                                      else {
+                                                        // SOLUCIÓN ALTERNATIVA: Intentar recuperar la estructura desde otra parte del form
+                                                        const formData = form.getValues();
+                                                        
+                                                        // Verificar si hay una tabla avanzada en el formulario
+                                                        let foundStructure = false;
+                                                        
+                                                        // Buscar un campo existente con estructura de tabla avanzada
+                                                        if (formData && typeof formData === 'object') {
+                                                          for (const key in formData) {
+                                                            const item = formData[key];
+                                                            if (item && 
+                                                                typeof item === 'object' && 
+                                                                item.sections && 
+                                                                Array.isArray(item.sections) && 
+                                                                item.sections.length > 0) {
+                                                              
+                                                              // Encontramos una estructura de tabla, usarla como base
+                                                              configToSave = {
+                                                                ...item,
+                                                                initialData: configToSave.initialData,
+                                                                rows: Math.max(item.rows || 3, configToSave.initialData.length)
+                                                              };
+                                                              
+                                                              console.log("Recuperada estructura desde otro campo del formulario");
+                                                              foundStructure = true;
+                                                              break;
                                                             }
-                                                          ],
-                                                          initialData: configToSave.initialData
-                                                        };
+                                                          }
+                                                        }
+                                                        
+                                                        // Si tampoco encontramos estructura en el form, último recurso
+                                                        if (!foundStructure) {
+                                                          console.log("Ninguna estructura encontrada, creando por defecto");
+                                                          configToSave = {
+                                                            rows: configToSave.initialData.length || 3,
+                                                            dynamicRows: true,
+                                                            sections: [
+                                                              {
+                                                                title: "Materia Prima",
+                                                                columns: [
+                                                                  { id: "materia", header: "Materia Prima", type: "text", width: "200px", readOnly: true },
+                                                                  { id: "cantidad", header: "Cantidad", type: "number", width: "100px" }
+                                                                ]
+                                                              }
+                                                            ],
+                                                            initialData: configToSave.initialData
+                                                          };
+                                                        }
                                                       }
                                                     }
                                                     // Caso 3: Tiene su propia estructura de secciones - usarla directamente
