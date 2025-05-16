@@ -13,10 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form";
-import { Plus, Trash, Save, AlertCircle, Info, MoveHorizontal } from "lucide-react";
+import { Plus, Trash, Save, AlertCircle, Info, MoveHorizontal, Calculator } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import FormulaHelper from "./formula-helper";
+import { calculateIngredientAmounts } from "@/data/product-formulas";
 
 // Interfaces para productos y empleados
 interface Product {
@@ -343,8 +345,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // Verificar si es un campo de proceso o litros para actualizar las materias primas
       const column = allColumns.find(col => col.id === columnId);
       if (column) {
-        // Si es columna de producto, recalcular
-        if (column.type === 'product') {
+        // Si es columna de producto, recalcular ingredientes automáticamente
+        if (column.type === 'product' && rowIndex === 0) {
           // Buscar columna de litros (asumiendo que tiene "litros" en el nombre)
           const litersColumn = allColumns.find(col => 
             col.header?.toLowerCase().includes('litro') || 
@@ -352,6 +354,57 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           );
           
           if (litersColumn) {
+            // Obtener valor actual de litros
+            const litersValue = newData[rowIndex][litersColumn.id];
+            const litersNum = parseFloat(litersValue);
+            
+            // Si hay un valor válido de litros, calcular automáticamente según la fórmula
+            if (!isNaN(litersNum) && litersNum > 0) {
+              console.log(`Aplicando fórmula para ${value} con ${litersNum} litros`);
+              
+              try {
+                // Calcular cantidades según fórmula
+                const calculatedAmounts = calculateIngredientAmounts(value, litersNum);
+                
+                if (Object.keys(calculatedAmounts).length > 0) {
+                  // Buscar la sección de Materia Prima
+                  const materiaPrimaSection = config.sections?.find(section => 
+                    section.title.toLowerCase().includes('materia') || 
+                    section.title.toLowerCase().includes('prima')
+                  );
+                  
+                  if (materiaPrimaSection) {
+                    // Obtener columnas de materia prima y kilos
+                    const mpColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('materia') || 
+                      col.header.toLowerCase().includes('prima')
+                    );
+                    
+                    const kilosColumn = materiaPrimaSection.columns.find(col => 
+                      col.header.toLowerCase().includes('kilo')
+                    );
+                    
+                    if (mpColumn && kilosColumn) {
+                      // Recorrer las filas y actualizar cantidades
+                      newData.forEach((row, idx) => {
+                        if (idx === 0) return; // Saltamos la primera fila (proceso)
+                        
+                        const ingredientName = row[mpColumn.id];
+                        if (ingredientName && calculatedAmounts[ingredientName] !== undefined) {
+                          // Actualizar kilos según la fórmula
+                          newData[idx][kilosColumn.id] = calculatedAmounts[ingredientName].toFixed(3);
+                        }
+                      });
+                      
+                      // Notificación
+                      notifyTableUpdate(`Cantidades actualizadas automáticamente para ${value}`, 'info');
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error("Error al aplicar fórmula:", error);
+              }
+            }
             const liters = parseFloat(newData[0]?.[litersColumn.id] || '0');
             if (!isNaN(liters) && liters > 0) {
               // Actualizar todas las filas de materia prima basado en el producto y litros
