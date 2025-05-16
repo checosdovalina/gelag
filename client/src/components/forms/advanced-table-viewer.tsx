@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import FormulaHelper from "./formula-helper";
+import FormulaCalculatorButton from "./formula-calculator-button";
 import { calculateIngredientAmounts } from "@/data/product-formulas";
 
 // Interfaces para productos y empleados
