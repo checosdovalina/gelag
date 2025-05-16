@@ -22,6 +22,7 @@ import SettingsPage from "@/pages/settings-page";
 import CapturedFormsPage from "@/pages/captured-forms-page";
 import ProductsPage from "@/pages/products-page-new";
 import EmployeesPage from "@/pages/employees-page-new";
+import ProductionFormPage from "@/pages/production-form-page";
 
 function Router() {
   return (
@@ -68,6 +69,10 @@ function Router() {
         path="/employees" 
         component={EmployeesPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/production-form" 
+        component={ProductionFormPage} 
       />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
