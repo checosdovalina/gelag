@@ -405,7 +405,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   type="button"
                   onClick={() => {
                     // Crear una tabla de horas
-                    const newField = {
+                    const newField: FormField = {
                       id: uuidv4(),
                       type: "advancedTable",
                       label: "Tabla de Horas",
@@ -457,7 +457,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   type="button"
                   onClick={() => {
                     // Crear una tabla de manómetro
-                    const newField = {
+                    const newField: FormField = {
                       id: uuidv4(),
                       type: "advancedTable",
                       label: "Tabla de Manómetro",
@@ -479,7 +479,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                               {
                                 id: uuidv4(),
                                 header: "PSI",
-                                type: "number",
+                                type: "number" as "text" | "number" | "select" | "checkbox" | "date" | "time" | "employee" | "product",
                                 width: "100px"
                               }
                             ]
@@ -509,7 +509,7 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   type="button"
                   onClick={() => {
                     // Crear una tabla de verificación de calidad
-                    const newField = {
+                    const newField: FormField = {
                       id: uuidv4(),
                       type: "advancedTable",
                       label: "Verificación de Calidad",
@@ -605,6 +605,76 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                 >
                   <ArrowUpDown className="h-4 w-4" />
                   Tabla de Verificación de Calidad
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    // Crear una tabla de microbiología
+                    const newField: FormField = {
+                      id: uuidv4(),
+                      type: "advancedTable",
+                      label: "Microbiología",
+                      required: false,
+                      advancedTableConfig: {
+                        rows: 8,
+                        dynamicRows: false,
+                        sections: [
+                          {
+                            title: "Análisis Microbiológico",
+                            columns: [
+                              {
+                                id: uuidv4(),
+                                header: "Parámetro",
+                                type: "text",
+                                width: "180px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Especificación",
+                                type: "text",
+                                width: "180px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Resultado",
+                                type: "text",
+                                width: "180px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Cumple",
+                                type: "select",
+                                width: "100px",
+                                options: [
+                                  { label: "Sí", value: "Sí" },
+                                  { label: "No", value: "No" }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        initialData: [
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Mesófilos aerobios", "Especificación": "< 10 UFC/g" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Coliformes totales", "Especificación": "< 3 NMP/g" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Coliformes fecales", "Especificación": "Ausente" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Hongos y levaduras", "Especificación": "< 10 UFC/g" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "E. coli", "Especificación": "Ausente" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Salmonella", "Especificación": "Ausente en 25g" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "S. aureus", "Especificación": "Ausente" },
+                          { "__ROW_ID__": uuidv4(), "Parámetro": "Listeria monocytogenes", "Especificación": "Ausente en 25g" }
+                        ]
+                      }
+                    };
+                    append(newField);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                  Tabla de Microbiología
                 </Button>
               </div>
             )}
