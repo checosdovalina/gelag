@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useProducts } from "@/hooks/use-products";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Info, AlertTriangle, Clock, Edit2 } from "lucide-react";
+import { Info, AlertTriangle, Clock, Edit2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Definiciones de tipos
@@ -358,11 +359,39 @@ export default function ProductionForm({
                         <SelectValue placeholder="Seleccione un proceso" />
                       </SelectTrigger>
                       <SelectContent>
-                        {PRODUCTS.map(product => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
+                        {(() => {
+                          // Usar el hook de productos para obtener la lista de productos por categoría
+                          const { products, isLoading, error } = useProducts();
+                          
+                          // Filtrar productos por categoría "Tipo de Cajeta"
+                          const cajetaProducts = products?.filter(product => 
+                            product.category === "Tipo de Cajeta") || [];
+                          
+                          if (isLoading) {
+                            return (
+                              <div className="flex items-center justify-center p-4">
+                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                <span className="ml-2">Cargando productos...</span>
+                              </div>
+                            );
+                          }
+                          
+                          if (error || cajetaProducts.length === 0) {
+                            // Fallback a los productos por defecto si hay error o no hay productos de cajeta
+                            return PRODUCTS.map(product => (
+                              <SelectItem key={product.id} value={product.id}>
+                                {product.name}
+                              </SelectItem>
+                            ));
+                          }
+                          
+                          // Mostrar productos de categoría "Tipo de Cajeta"
+                          return cajetaProducts.map(product => (
+                            <SelectItem key={product.id} value={product.id.toString()}>
+                              {product.name}
+                            </SelectItem>
+                          ));
+                        })()}
                       </SelectContent>
                     </Select>
                   </div>
