@@ -2097,10 +2097,15 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                     "Conito"
                   ];
                   
-                  // Encontrar el índice de la sección de Proceso
+                  // Encontrar el índice de la sección de Proceso (más flexible con el nombre)
                   const procesoIndex = value?.sections?.findIndex(s => 
                     s.title.toLowerCase().includes("proceso")
                   ) || -1;
+                  
+                  console.log("Buscando sección de Proceso:", { 
+                    secciones: value?.sections?.map(s => s.title),
+                    procesoIndex 
+                  });
                   
                   if (procesoIndex !== -1) {
                     // Encontrar la columna de producto
@@ -2152,11 +2157,76 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                       });
                     }
                   } else {
-                    toast({
-                      title: "No se encontró sección de Proceso",
-                      description: "Asegúrate de tener una sección llamada 'Proceso'",
-                      variant: "destructive"
-                    });
+                    // Intentar detectar una sección que pueda servir como sección de proceso
+                    // Por ejemplo, "Proceso general" o "Producción"
+                    const posibleProcesoIndex = value?.sections?.findIndex(s => 
+                      s.title.toLowerCase().includes("general") || 
+                      s.title.toLowerCase().includes("producción") ||
+                      s.title.toLowerCase().includes("produccion")
+                    ) || -1;
+                    
+                    if (posibleProcesoIndex !== -1) {
+                      // Podemos usar esta sección como sección de proceso
+                      toast({
+                        title: "Usando sección alternativa",
+                        description: `Usando "${value?.sections?.[posibleProcesoIndex]?.title}" como sección de proceso`,
+                      });
+                      
+                      // Continuar con esta sección
+                      const productoColIndex = value?.sections?.[posibleProcesoIndex]?.columns?.findIndex(c => 
+                        c.type === "product"
+                      ) || -1;
+                      
+                      if (productoColIndex !== -1) {
+                        // Definir los productos como opciones para la columna de producto
+                        const newValue = { ...value };
+                        
+                        if (newValue.sections?.[posibleProcesoIndex]?.columns?.[productoColIndex]) {
+                          // Crear opciones para cada producto 
+                          const productOptions = productos.map(producto => ({
+                            label: producto,
+                            value: producto
+                          }));
+                          
+                          // Actualizar las opciones de la columna
+                          if (newValue.sections) {
+                            newValue.sections = [...(newValue.sections || [])];
+                            if (newValue.sections[posibleProcesoIndex]?.columns) {
+                              newValue.sections[posibleProcesoIndex].columns = [...(newValue.sections[posibleProcesoIndex]?.columns || [])];
+                              
+                              // Si existe la columna, actualizar sus opciones
+                              if (newValue.sections[posibleProcesoIndex]?.columns?.[productoColIndex]) {
+                                newValue.sections[posibleProcesoIndex].columns[productoColIndex] = {
+                                  ...newValue.sections[posibleProcesoIndex].columns[productoColIndex],
+                                  options: productOptions
+                                };
+                              }
+                            }
+                          }
+                          
+                          // Notificar al usuario
+                          toast({
+                            title: "Productos configurados",
+                            description: `Se han configurado ${productos.length} productos para selección`,
+                          });
+                          
+                          // Actualizar el valor
+                          onChange(newValue);
+                        }
+                      } else {
+                        toast({
+                          title: "No se encontró columna de producto",
+                          description: "Asegúrate de tener una columna de tipo 'product' en la sección",
+                          variant: "destructive"
+                        });
+                      }
+                    } else {
+                      toast({
+                        title: "No se encontró sección de Proceso",
+                        description: "Asegúrate de tener una sección llamada 'Proceso' o 'Proceso general'",
+                        variant: "destructive"
+                      });
+                    }
                   }
                 }}
               >
@@ -2494,17 +2564,34 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                             const materiaPrimaColIndex = 0; // Primera columna - Materia Prima
                             
                             // Preparamos los datos iniciales (esto simula el llenado real de la tabla)
-                            newValue.initialData = newValue.initialData || [];
+                            // Aseguramos que initialData sea un array de objetos
+                            if (!Array.isArray(newValue.initialData)) {
+                              newValue.initialData = [];
+                            }
                             
-                            // Por cada producto, creamos una entrada en los datos iniciales
-                            productos.forEach((producto, index) => {
-                              // La clave es section-row-column (ej: 1-0-0 sería sección 1, fila 0, columna 0)
-                              const cellKey = `${materiaPrimaIndex}-${index}-${materiaPrimaColIndex}`;
-                              
-                              if (typeof newValue.initialData === 'object') {
-                                (newValue.initialData as Record<string, any>)[cellKey] = producto;
-                              }
+                            // Obtenemos la columna donde pondremos los nombres de las materias primas
+                            const materiaPrimaSection = newValue.sections?.[materiaPrimaIndex];
+                            if (!materiaPrimaSection || !materiaPrimaSection.columns || materiaPrimaSection.columns.length === 0) {
+                              toast({
+                                title: "Error en configuración",
+                                description: "La sección de materias primas no tiene columnas definidas",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                            
+                            // Obtenemos el ID de la primera columna (para nombres de materias primas)
+                            const materiaPrimaColumnId = materiaPrimaSection.columns[0].id;
+                            
+                            // Creamos un objeto por cada producto para añadir a initialData
+                            const newData = productos.map(producto => {
+                              return {
+                                [materiaPrimaColumnId]: producto
+                              };
                             });
+                            
+                            // Asignamos los nuevos datos
+                            newValue.initialData = newData;
                             
                             // Simular la carga de datos con tiempo de espera para visualizar el proceso
                             toast({
