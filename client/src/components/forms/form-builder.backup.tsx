@@ -683,15 +683,30 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                 Usa el editor para configurar las secciones y columnas de la tabla
                                               </FormDescription>
                                               <AdvancedTableEditor
-                                                value={field.value || { rows: 3, dynamicRows: true, sections: [] }}
+                                                value={field.value || { rows: 3, dynamicRows: true }}
                                                 onChange={(newConfig) => {
-                                                  console.log("FormBuilder: recibiendo nueva configuración de tabla", newConfig);
-                                                  form.setValue(`fields.${index}.advancedTableConfig`, newConfig);
-                                                }}
-                                              />
-                                              <FormMessage />
-                                            </FormItem>
-                                          );
+                                                  // Procesamiento simple para evitar errores
+                                                  console.log("FormBuilder: recibiendo nueva configuración de tabla avanzada", newConfig);
+                                                  
+                                                  // Solo aplicar la actualización sin procesamiento complejo
+                                                  setTimeout(() => {
+                                                    form.setValue(`fields.${index}.advancedTableConfig`, newConfig, {
+                                                      shouldDirty: true,
+                                                      shouldTouch: true
+                                                    });
+                                                    console.log("FormBuilder: actualización aplicada con éxito");
+                                                  }, 300);
+                                                    
+                                                    // FLUJO REVISADO: Primero verificar si hay datos iniciales, en cuyo caso preservar estructura existente
+                                                    
+                                                    // 1. Verificar si tiene datos iniciales (incluso si no tiene secciones)
+                                                    // CORRECCIÓN: Mejoramos detección de datos iniciales con mayor precisión
+                                                    console.log("Validando datos iniciales de configuración:", configToSave);
+                                                    const hasInitialData = configToSave.initialData && Array.isArray(configToSave.initialData) && configToSave.initialData.length > 0;
+                                                    
+                                                    // 2. Obtener configuración actual (si existe)
+                                                    const currentConfig = field.value || {};
+                                                    const hasCurrentSections = currentConfig && currentConfig.sections && currentConfig.sections.length > 0;
                                                     
                                                     // Caso 1: Tiene datos iniciales y hay una estructura existente - preservar estructura, actualizar datos
                                                     if (hasInitialData && hasCurrentSections) {
