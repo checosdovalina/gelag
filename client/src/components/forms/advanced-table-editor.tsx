@@ -1309,7 +1309,14 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     setPreviewData(newData);
     
     // También actualizar los datos iniciales en la configuración
-    updateValue({ initialData: newData });
+    // CORRECCIÓN: Preservar estructura completa de la tabla
+    const currentStructure = value || {};
+    const completeValue = {
+      ...currentStructure,    // Mantener toda la estructura existente
+      initialData: newData    // Actualizar solo los datos
+    };
+    // Método seguro para enviar la estructura completa
+    onChange(JSON.parse(JSON.stringify(completeValue)));
   };
 
   // Agregar fila en modo dinámico
