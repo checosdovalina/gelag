@@ -63,6 +63,12 @@ export default function MobileNav({ className }: MobileNavProps) {
       show: true,
     },
     {
+      title: "Formularios de Proceso",
+      href: "/process-forms",
+      icon: <FileText className="h-5 w-5" />,
+      show: isAdmin || isSuperAdmin || isProduction || isQuality,
+    },
+    {
       title: "Capturar Datos",
       href: "/form-capture",
       icon: <PenLine className="h-5 w-5" />,

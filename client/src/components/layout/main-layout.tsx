@@ -40,13 +40,13 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
   };
 
   // Determinar si el usuario tiene permisos para acceder a funcionalidades específicas
-  const canCreateForms = user && ["SuperAdmin"].includes(user.role);
-  const canAccessForms = user && ["SuperAdmin", "Admin", "Production", "ProductionManager", "Quality", "QualityManager", "Viewer"].includes(user.role);
-  const canAccessProcessForms = user && ["SuperAdmin", "Admin", "Production", "ProductionManager", "Quality", "QualityManager", "Viewer"].includes(user.role);
-  const canAccessEmployees = user && ["SuperAdmin", "Admin"].includes(user.role);
-  const canAccessProducts = user && ["SuperAdmin", "Admin"].includes(user.role);
-  const canAccessExports = user && ["SuperAdmin", "Admin"].includes(user.role);
-  const canAccessUsers = user && ["SuperAdmin", "Admin"].includes(user.role);
+  const canCreateForms = user && ["superadmin"].includes(user.role);
+  const canAccessForms = user && ["superadmin", "admin", "produccion", "gerente_produccion", "calidad", "gerente_calidad", "viewer"].includes(user.role);
+  const canAccessProcessForms = user && ["superadmin", "admin", "produccion", "gerente_produccion", "calidad", "gerente_calidad"].includes(user.role);
+  const canAccessEmployees = user && ["superadmin", "admin"].includes(user.role);
+  const canAccessProducts = user && ["superadmin", "admin"].includes(user.role);
+  const canAccessExports = user && ["superadmin", "admin"].includes(user.role);
+  const canAccessUsers = user && ["superadmin", "admin"].includes(user.role);
 
   return (
     <div className="flex min-h-screen flex-col">
