@@ -491,6 +491,29 @@ export default function FormEditor() {
                     formId={formId ? Number(formId) : undefined}
                   />
                 </CardContent>
+                <div className="p-4 flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setLocation("/forms")}>
+                    Cancelar
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (formStructure) {
+                        // Guardar los metadatos del formulario usando la función onMetadataSubmit
+                        onMetadataSubmit(form.getValues());
+                      } else {
+                        toast({
+                          title: "Error",
+                          description: "No se puede guardar un formulario sin estructura",
+                          variant: "destructive"
+                        });
+                      }
+                    }}
+                    disabled={createMutation.isPending || updateMutation.isPending}
+                  >
+                    {createMutation.isPending || updateMutation.isPending ? 
+                      "Guardando..." : "Guardar Formulario"}
+                  </Button>
+                </div>
               </Card>
             )}
           </TabsContent>
