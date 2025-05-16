@@ -103,7 +103,7 @@ const mapUserRoleToAppRole = (userRole: string): UserRole | null => {
     "admin": "production_manager",
     "produccion": "operator",
     "gerente_produccion": "production_manager",
-    "calidad": "operator",
+    "calidad": "quality_manager",
     "gerente_calidad": "quality_manager",
     "viewer": null
   };
@@ -479,7 +479,6 @@ export default function ProductionForm({
                     <tr>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Materia Prima</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Kilos</th>
-                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Hora</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -488,24 +487,11 @@ export default function ProductionForm({
                         <tr key={index} className="border-t">
                           <td className="px-4 py-3">{ingredient.name}</td>
                           <td className="px-4 py-3">{ingredient.quantity.toFixed(3)}</td>
-                          <td className="px-4 py-3">
-                            <Input
-                              type="time"
-                              value={(formData.ingredientTimes && formData.ingredientTimes[index]) || ""}
-                              onChange={(e) => {
-                                const updatedTimes = [...(formData.ingredientTimes || [])];
-                                updatedTimes[index] = e.target.value;
-                                handleChange("ingredientTimes", updatedTimes);
-                              }}
-                              disabled={!canEditSection("raw-materials") || readOnly}
-                              className="w-32"
-                            />
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3} className="px-4 py-3 text-center text-muted-foreground">
+                        <td colSpan={2} className="px-4 py-3 text-center text-muted-foreground">
                           Seleccione un proceso y litros para ver las materias primas
                         </td>
                       </tr>
