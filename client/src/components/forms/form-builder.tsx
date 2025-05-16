@@ -622,7 +622,66 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                   variant="outline"
                   type="button"
                   onClick={() => {
+                    // Crear una tabla de temperatura
+                    const horaColumnTemp = "hora-temp";
+                    const valorTempColumn = "valor-temp";
+                    const newField: FormField = {
+                      id: uuidv4(),
+                      type: "advancedTable",
+                      label: "Tabla de Temperatura",
+                      required: false,
+                      advancedTableConfig: {
+                        rows: 7,
+                        dynamicRows: false,
+                        sections: [
+                          {
+                            title: "Temperatura",
+                            columns: [
+                              {
+                                id: horaColumnTemp,
+                                header: "Hora",
+                                type: "text",
+                                width: "100px",
+                                readOnly: true
+                              },
+                              {
+                                id: valorTempColumn,
+                                header: "°C",
+                                type: "number" as "text" | "number" | "select" | "checkbox" | "date" | "time" | "employee" | "product",
+                                width: "100px"
+                              }
+                            ]
+                          }
+                        ],
+                        initialData: [
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 0", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 1", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 2", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 3", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 4", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Hora 5", [valorTempColumn]: "" },
+                          { "__ROW_ID__": uuidv4(), [horaColumnTemp]: "Fin", [valorTempColumn]: "" }
+                        ]
+                      }
+                    };
+                    append(newField);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                  Tabla de Temperatura
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
                     // Crear una tabla de microbiología
+                    const parametroColumn = "parametro-micro";
+                    const especificacionColumn = "especificacion-micro";
+                    const resultadoColumn = "resultado-micro";
+                    const cumpleColumn = "cumple-micro";
+                    
                     const newField: FormField = {
                       id: uuidv4(),
                       type: "advancedTable",
@@ -636,27 +695,27 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                             title: "Análisis Microbiológico",
                             columns: [
                               {
-                                id: uuidv4(),
+                                id: parametroColumn,
                                 header: "Parámetro",
                                 type: "text",
                                 width: "180px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: especificacionColumn,
                                 header: "Especificación",
                                 type: "text",
                                 width: "180px",
                                 readOnly: true
                               },
                               {
-                                id: uuidv4(),
+                                id: resultadoColumn,
                                 header: "Resultado",
                                 type: "text",
                                 width: "180px"
                               },
                               {
-                                id: uuidv4(),
+                                id: cumpleColumn,
                                 header: "Cumple",
                                 type: "select",
                                 width: "100px",
@@ -669,14 +728,14 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                           }
                         ],
                         initialData: [
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Mesófilos aerobios", "Especificación": "< 10 UFC/g" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Coliformes totales", "Especificación": "< 3 NMP/g" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Coliformes fecales", "Especificación": "Ausente" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Hongos y levaduras", "Especificación": "< 10 UFC/g" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "E. coli", "Especificación": "Ausente" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Salmonella", "Especificación": "Ausente en 25g" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "S. aureus", "Especificación": "Ausente" },
-                          { "__ROW_ID__": uuidv4(), "Parámetro": "Listeria monocytogenes", "Especificación": "Ausente en 25g" }
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Mesófilos aerobios", [especificacionColumn]: "< 10 UFC/g" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Coliformes totales", [especificacionColumn]: "< 3 NMP/g" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Coliformes fecales", [especificacionColumn]: "Ausente" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Hongos y levaduras", [especificacionColumn]: "< 10 UFC/g" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "E. coli", [especificacionColumn]: "Ausente" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Salmonella", [especificacionColumn]: "Ausente en 25g" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "S. aureus", [especificacionColumn]: "Ausente" },
+                          { "__ROW_ID__": uuidv4(), [parametroColumn]: "Listeria monocytogenes", [especificacionColumn]: "Ausente en 25g" }
                         ]
                       }
                     };
