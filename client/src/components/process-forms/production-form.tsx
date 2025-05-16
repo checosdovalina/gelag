@@ -404,15 +404,28 @@ export default function ProductionForm({
                   </div>
                 </div>
                 
-                <div className="col-span-2">
-                  <Label htmlFor="folio">Folio</Label>
-                  <Input
-                    id="folio"
-                    value={formData.folio || ""}
-                    placeholder="Folio automático"
-                    disabled={true}
-                    className="font-semibold"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="folio">Folio</Label>
+                    <Input
+                      id="folio"
+                      value={formData.folio || ""}
+                      placeholder="Folio automático"
+                      disabled={true}
+                      className="font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lotNumber" className="text-yellow-600 font-medium">Número de Lote</Label>
+                    <Input
+                      id="lotNumber"
+                      value={formData.lotNumber || ""}
+                      onChange={(e) => handleChange("lotNumber", e.target.value)}
+                      placeholder="Ingrese el número de lote"
+                      disabled={!canEditSection("general-info") || readOnly}
+                      className="font-medium"
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>

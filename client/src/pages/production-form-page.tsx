@@ -14,7 +14,8 @@ const DEFAULT_FORM_DATA = {
   liters: 500,
   date: new Date().toISOString().split('T')[0],
   responsible: "",
-  status: ProductionFormStatus.DRAFT
+  status: ProductionFormStatus.DRAFT,
+  lotNumber: "", // Añadimos el campo para número de lote
 };
 
 export default function ProductionFormPage() {
