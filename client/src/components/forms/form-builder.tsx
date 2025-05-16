@@ -399,6 +399,213 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                 <Button variant="outline" onClick={() => addField("group")}>
                   Grupo
                 </Button>
+                
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    // Crear una tabla de horas
+                    const newField = {
+                      id: uuidv4(),
+                      type: "advancedTable",
+                      label: "Tabla de Horas",
+                      required: false,
+                      advancedTableConfig: {
+                        rows: 7,
+                        dynamicRows: false,
+                        sections: [
+                          {
+                            title: "Horas",
+                            columns: [
+                              {
+                                id: uuidv4(),
+                                header: "Hora",
+                                type: "text",
+                                width: "100px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "",
+                                type: "text",
+                                width: "150px"
+                              }
+                            ]
+                          }
+                        ],
+                        initialData: [
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Fin" }
+                        ]
+                      }
+                    };
+                    append(newField);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                  Tabla de Horas
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    // Crear una tabla de manómetro
+                    const newField = {
+                      id: uuidv4(),
+                      type: "advancedTable",
+                      label: "Tabla de Manómetro",
+                      required: false,
+                      advancedTableConfig: {
+                        rows: 7,
+                        dynamicRows: false,
+                        sections: [
+                          {
+                            title: "Manómetro",
+                            columns: [
+                              {
+                                id: uuidv4(),
+                                header: "Hora",
+                                type: "text",
+                                width: "100px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "PSI",
+                                type: "number",
+                                width: "100px"
+                              }
+                            ]
+                          }
+                        ],
+                        initialData: [
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Fin" }
+                        ]
+                      }
+                    };
+                    append(newField);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                  Tabla de Manómetro
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    // Crear una tabla de verificación de calidad
+                    const newField = {
+                      id: uuidv4(),
+                      type: "advancedTable",
+                      label: "Verificación de Calidad",
+                      required: false,
+                      advancedTableConfig: {
+                        rows: 9,
+                        dynamicRows: false,
+                        sections: [
+                          {
+                            title: "Verificación de Calidad",
+                            columns: [
+                              {
+                                id: uuidv4(),
+                                header: "Hora",
+                                type: "text",
+                                width: "70px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Grados Brix",
+                                type: "text", 
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Temperatura",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Textura",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Color",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Viscosidad",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Olor",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Sabor",
+                                type: "text",
+                                width: "100px"
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Material Extraño",
+                                type: "text",
+                                width: "120px",
+                                readOnly: true
+                              },
+                              {
+                                id: uuidv4(),
+                                header: "Status",
+                                type: "text",
+                                width: "100px"
+                              }
+                            ]
+                          }
+                        ],
+                        initialData: [
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora", "Grados Brix": "65° a 68° Brix", "Temperatura": "70°C a 95°C", "Material Extraño": "" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 0", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 1", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 2", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 3", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 4", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Hora 5", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "Fin", "Material Extraño": "N/A" },
+                          { "__ROW_ID__": uuidv4(), "Hora": "", "Material Extraño": "N/A" }
+                        ]
+                      }
+                    };
+                    append(newField);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                  Tabla de Verificación de Calidad
+                </Button>
               </div>
             )}
 
