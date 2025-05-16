@@ -2162,6 +2162,66 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   <Thermometer className="h-4 w-4" /> Tabla de Horas
                 </Button>
                 
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => {
+                    // Crear una tabla de manómetros
+                    const horaColumnId = uuidv4();
+                    const psiColumnId = uuidv4();
+                    
+                    const config = {
+                      rows: 7,
+                      dynamicRows: false,
+                      sections: [
+                        {
+                          title: "Manómetro",
+                          colspan: 2,
+                          columns: [
+                            {
+                              id: horaColumnId,
+                              header: "Hora",
+                              type: "text",
+                              width: "100px",
+                              readOnly: true
+                            },
+                            {
+                              id: psiColumnId,
+                              header: "PSI",
+                              type: "number",
+                              width: "100px",
+                              validation: {
+                                min: 0,
+                                max: 1000
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      initialData: [
+                        { [horaColumnId]: "Hora 0", [psiColumnId]: "" },
+                        { [horaColumnId]: "Hora 1", [psiColumnId]: "" },
+                        { [horaColumnId]: "Hora 2", [psiColumnId]: "" },
+                        { [horaColumnId]: "Hora 3", [psiColumnId]: "" },
+                        { [horaColumnId]: "Hora 4", [psiColumnId]: "" }, 
+                        { [horaColumnId]: "Hora 5", [psiColumnId]: "" },
+                        { [horaColumnId]: "Fin", [psiColumnId]: "" }
+                      ]
+                    };
+                    
+                    onChange(config);
+                    toast({
+                      title: "Tabla de manómetro creada",
+                      description: "Se ha agregado una tabla para registrar presión (PSI) por hora",
+                    });
+                    setActiveTab("preview");
+                    setTabsVisited(prev => ({...prev, preview: true}));
+                  }}
+                  className="flex items-center gap-2 ml-2 bg-green-600 hover:bg-green-700"
+                >
+                  <Thermometer className="h-4 w-4" /> Tabla de Manómetro
+                </Button>
+                
                 <input
                   type="file"
                   ref={fileInputRef}
