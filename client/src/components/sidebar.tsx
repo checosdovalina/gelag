@@ -77,7 +77,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Formularios de Proceso",
       href: "/process-forms",
       icon: <ClipboardCheck className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || isProduction || isQuality,
+      show: isAdmin || isSuperAdmin || isProduction || isQuality || isProductionManager || isQualityManager,
     },
     {
       title: "Capturar Datos",
