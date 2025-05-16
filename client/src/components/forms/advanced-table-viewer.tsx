@@ -755,7 +755,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       )}
       
       {/* Botón para calcular automáticamente las cantidades según fórmula */}
-      {tableMode !== 'viewOnly' && productColumn && litersColumn && (
+      {!readOnly && productColumn && litersColumn && (
         <div className="px-2 py-2 border-b">
           <FormulaCalculatorButton
             tableData={tableData}
