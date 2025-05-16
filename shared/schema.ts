@@ -166,6 +166,8 @@ export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
+// Aquí solo añadir tipos adicionales si es necesario
+
 export type FormTemplate = typeof formTemplates.$inferSelect;
 export type InsertFormTemplate = z.infer<typeof insertFormTemplateSchema>;
 
@@ -442,5 +444,4 @@ export const insertProductionFormSchema = createInsertSchema(productionForms).om
   updatedAt: true
 });
 
-export type ProductionForm = typeof productionForms.$inferSelect;
-export type InsertProductionForm = z.infer<typeof insertProductionFormSchema>;
+

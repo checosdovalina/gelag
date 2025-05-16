@@ -34,7 +34,7 @@ interface ProcessForm {
   productId: string;
   liters: number;
   date: string;
-  status: ProcessFormStatus;
+  status: ProductionFormStatus;
   createdBy: number;
   createdAt: string;
   folio: string;
@@ -69,7 +69,7 @@ export default function ProcessFormsList() {
   };
   
   // Función para mostrar badges de estado
-  const getStatusBadge = (status: ProcessFormStatus) => {
+  const getStatusBadge = (status: ProductionFormStatus) => {
     switch (status) {
       case ProductionFormStatus.DRAFT:
         return <Badge variant="outline">Borrador</Badge>;
