@@ -98,12 +98,13 @@ const PRODUCTS: ProductRecipe[] = [
 // Mapeo de roles de usuario a roles de aplicación
 const mapUserRoleToAppRole = (userRole: string): UserRole | null => {
   const roleMap: Record<string, UserRole> = {
-    "SuperAdmin": "production_manager",
-    "Admin": "production_manager",
-    "Production": "operator",
-    "ProductionManager": "production_manager",
-    "Quality": "operator",
-    "QualityManager": "quality_manager"
+    "superadmin": "production_manager",
+    "admin": "production_manager",
+    "produccion": "operator",
+    "gerente_produccion": "production_manager",
+    "calidad": "operator",
+    "gerente_calidad": "quality_manager",
+    "viewer": null
   };
   
   return roleMap[userRole] || null;
