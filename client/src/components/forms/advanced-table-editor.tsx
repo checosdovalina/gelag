@@ -319,6 +319,15 @@ const TABLE_TEMPLATES = [
             }
           ]
         }
+      ],
+      initialData: [
+        { "hora-column": "Hora 0", "temp-column": "" },
+        { "hora-column": "Hora 1", "temp-column": "" },
+        { "hora-column": "Hora 2", "temp-column": "" },
+        { "hora-column": "Hora 3", "temp-column": "" },
+        { "hora-column": "Hora 4", "temp-column": "" }, 
+        { "hora-column": "Hora 5", "temp-column": "" },
+        { "hora-column": "Fin", "temp-column": "" }
       ]
     }
   },
