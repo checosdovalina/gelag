@@ -2459,10 +2459,18 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                               
                               // Actualizar los datos de preview y el valor del formulario
                               setPreviewData(newData);
-                              updateValue({ 
-                                initialData: newData,
-                                rows: newData.length
-                              });
+                              
+                              // CORRECCIÓN IMPORTANTE: Necesitamos preservar la estructura completa
+                              // y pasar un objeto completo para evitar que se reemplace con plantilla predeterminada
+                              const currentStructure = value || {};
+                              const newValue = {
+                                ...currentStructure,         // Mantener toda la estructura existente
+                                initialData: newData,        // Actualizar solo los datos
+                                rows: newData.length         // Y el número de filas
+                              };
+                              
+                              // Método seguro para enviar la estructura completa
+                              onChange(JSON.parse(JSON.stringify(newValue)));
                               
                               toast({
                                 title: "Materias primas agregadas",
