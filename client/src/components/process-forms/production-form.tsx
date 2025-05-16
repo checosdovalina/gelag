@@ -434,13 +434,51 @@ export default function ProductionForm({
                   
                   <div>
                     <Label htmlFor="responsible">Responsable</Label>
-                    <Input
-                      id="responsible"
+                    <Select
                       value={formData.responsible || ""}
-                      onChange={(e) => handleChange("responsible", e.target.value)}
-                      placeholder="Nombre del responsable"
+                      onValueChange={(value) => handleChange("responsible", value)}
                       disabled={!canEditSection("general-info") || readOnly}
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione un operador" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(() => {
+                          // Usar nuestros datos de usuarios actuales
+                          const { users, isLoading, error } = useUsers();
+                          
+                          // Filtrar solo operadores (usuarios con rol "produccion")
+                          const operators = users?.filter(user => 
+                            user.role.toLowerCase() === 'produccion' || 
+                            user.role.toLowerCase() === 'operador') || [];
+                          
+                          if (isLoading) {
+                            return (
+                              <div className="flex items-center justify-center p-4">
+                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                <span className="ml-2">Cargando operadores...</span>
+                              </div>
+                            );
+                          }
+                          
+                          if (error || operators.length === 0) {
+                            // Fallback: permitir entrada manual si no hay operadores
+                            return (
+                              <SelectItem value="manual">
+                                Ingrese manualmente
+                              </SelectItem>
+                            );
+                          }
+                          
+                          // Mostrar lista de operadores
+                          return operators.map(operator => (
+                            <SelectItem key={operator.id} value={operator.name}>
+                              {operator.name}
+                            </SelectItem>
+                          ));
+                        })()}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 
