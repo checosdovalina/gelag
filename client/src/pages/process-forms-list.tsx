@@ -1,12 +1,9 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest } from "@/lib/queryClient";
+import { useProductionForms } from "@/hooks/use-production-form";
 import MainLayout from "@/components/layout/main-layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -16,396 +13,183 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  FileText, 
-  Plus, 
-  Search, 
-  ClipboardList, 
-  Clock, 
-  CheckCircle2,
-  FileCheck
-} from "lucide-react";
-import { ProcessFormStatus } from "@/components/process-forms/process-form-editor";
-
-// Templates disponibles para formularios de proceso
-const PROCESS_TEMPLATES = [
-  { id: 5, name: "PR-PR-01-04 - Ficha técnica de Producción", description: "Formulario para registrar el proceso de producción diario con verificación de calidad" },
-  { id: 6, name: "CA-RE-01-01 - Buenas Prácticas de Manufactura", description: "Lista de verificación de BPM para el área de producción" }
-];
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Loader2, Plus, MoreHorizontal, FileEdit, Trash2 } from "lucide-react";
+import { ProductionFormStatus } from "@shared/schema";
 
 interface ProcessForm {
   id: number;
-  templateId: number;
-  templateName: string;
+  productId: string;
+  liters: number;
+  date: string;
   status: ProcessFormStatus;
-  createdBy: {
-    id: number;
-    name: string;
-  };
+  createdBy: number;
   createdAt: string;
-  updatedAt: string;
-  folioNumber: number;
+  folio: string;
+  responsible: string;
 }
 
 export default function ProcessFormsList() {
-  const [_, setLocation] = useLocation();
+  const [_, navigate] = useLocation();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-
-  // Obtener la lista de formularios de proceso
-  const { data: forms, isLoading } = useQuery({
-    queryKey: ['/api/process-forms', activeTab, searchQuery, selectedTemplate],
-    queryFn: async () => {
+  const { forms, isLoading, deleteFormMutation } = useProductionForms();
+  
+  const canCreateForms = user && ["superadmin", "admin", "produccion"].includes(user.role);
+  const canEditForms = user && ["superadmin", "admin", "produccion", "calidad"].includes(user.role);
+  const canDeleteForms = user && ["superadmin"].includes(user.role);
+  
+  const handleCreate = () => {
+    navigate("/production-form");
+  };
+  
+  const handleEdit = (id: number) => {
+    navigate(`/production-form/${id}`);
+  };
+  
+  const handleDelete = async (id: number) => {
+    if (window.confirm("¿Está seguro de que desea eliminar este formulario?")) {
       try {
-        // Por ahora, simularemos la respuesta ya que no tenemos el endpoint real
-        // En un entorno de producción, esto debería apuntar a un endpoint real
-        
-        // Simulación de datos para demostración
-        const mockForms: ProcessForm[] = [
-          {
-            id: 1,
-            templateId: 5,
-            templateName: "PR-PR-01-04 - Ficha técnica de Producción",
-            status: ProcessFormStatus.DRAFT,
-            createdBy: {
-              id: 1,
-              name: "Super Admin"
-            },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            folioNumber: 1
-          },
-          {
-            id: 2,
-            templateId: 5,
-            templateName: "PR-PR-01-04 - Ficha técnica de Producción",
-            status: ProcessFormStatus.IN_PROGRESS,
-            createdBy: {
-              id: 1,
-              name: "Super Admin"
-            },
-            createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Ayer
-            updatedAt: new Date().toISOString(),
-            folioNumber: 2
-          },
-          {
-            id: 3,
-            templateId: 6,
-            templateName: "CA-RE-01-01 - Buenas Prácticas de Manufactura",
-            status: ProcessFormStatus.PENDING_REVIEW,
-            createdBy: {
-              id: 2,
-              name: "Admin"
-            },
-            createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), // Hace 2 días
-            updatedAt: new Date().toISOString(),
-            folioNumber: 1
-          }
-        ];
-        
-        // Filtrar por estado
-        let filtered = [...mockForms];
-        if (activeTab !== "all") {
-          filtered = filtered.filter(form => form.status === activeTab);
-        }
-        
-        // Filtrar por búsqueda (nombre de plantilla o folio)
-        if (searchQuery) {
-          const query = searchQuery.toLowerCase();
-          filtered = filtered.filter(form => 
-            form.templateName.toLowerCase().includes(query) || 
-            form.folioNumber.toString().includes(query)
-          );
-        }
-        
-        // Filtrar por plantilla seleccionada
-        if (selectedTemplate) {
-          filtered = filtered.filter(form => form.templateId.toString() === selectedTemplate);
-        }
-        
-        return filtered;
+        await deleteFormMutation.mutateAsync(id);
       } catch (error) {
-        console.error("Error fetching forms:", error);
-        return [];
+        console.error("Error al eliminar formulario:", error);
       }
     }
-  });
-
-  // Función para obtener la etiqueta y variante de estado
+  };
+  
+  // Función para mostrar badges de estado
   const getStatusBadge = (status: ProcessFormStatus) => {
-    const statusMap: Record<ProcessFormStatus, { label: string, variant: "default" | "outline" | "secondary" | "destructive" }> = {
-      [ProcessFormStatus.DRAFT]: { label: "Borrador", variant: "outline" },
-      [ProcessFormStatus.IN_PROGRESS]: { label: "En Progreso", variant: "default" },
-      [ProcessFormStatus.PENDING_REVIEW]: { label: "Pendiente de Revisión", variant: "secondary" },
-      [ProcessFormStatus.COMPLETED]: { label: "Completado", variant: "outline" }
-    };
-    
-    return statusMap[status] || { label: "Desconocido", variant: "outline" };
+    switch (status) {
+      case ProductionFormStatus.DRAFT:
+        return <Badge variant="outline">Borrador</Badge>;
+      case ProductionFormStatus.IN_PROGRESS:
+        return <Badge variant="default">En Progreso</Badge>;
+      case ProductionFormStatus.PENDING_REVIEW:
+        return <Badge variant="secondary">Pendiente de Revisión</Badge>;
+      case ProductionFormStatus.COMPLETED:
+        return <Badge variant="success">Completado</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
-
-  // Formatear fecha
+  
+  // Función para formatear fechas
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
   };
-
-  // Crear un nuevo formulario de proceso
-  const handleCreateForm = (templateId: number) => {
-    setLocation(`/process-forms/new/${templateId}`);
-  };
-
-  // Editar un formulario existente
-  const handleEditForm = (formId: number) => {
-    setLocation(`/process-forms/${formId}`);
-  };
-
+  
   return (
     <MainLayout title="Formularios de Proceso">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Formularios de Proceso</h1>
-          
-          {/* Selector de plantilla para crear nuevo formulario */}
-          <div className="flex items-center gap-2">
-            <Select 
-              value={selectedTemplate} 
-              onValueChange={setSelectedTemplate}
-            >
-              <SelectTrigger className="w-[280px]">
-                <SelectValue placeholder="Filtrar por plantilla" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Todas las plantillas</SelectItem>
-                {PROCESS_TEMPLATES.map(template => (
-                  <SelectItem key={template.id} value={template.id.toString()}>
-                    {template.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <div className="relative">
-              <Select
-                onValueChange={(value) => handleCreateForm(parseInt(value))}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <Plus className="mr-2 h-4 w-4" />
-                  <span>Nuevo formulario</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {PROCESS_TEMPLATES.map(template => (
-                    <SelectItem key={template.id} value={template.id.toString()}>
-                      {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Formularios de Producción</CardTitle>
+            <CardDescription>
+              Gestione formularios de producción con diferentes secciones para cada rol de usuario.
+            </CardDescription>
+          </div>
+          {canCreateForms && (
+            <Button onClick={handleCreate}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Formulario
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          </div>
-        </div>
-        
-        {/* Búsqueda y filtros */}
-        <div className="flex justify-between gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Buscar por nombre o folio..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-        
-        {/* Tabs para filtrar por estado */}
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="all" className="flex items-center gap-2">
-              <ClipboardList className="h-4 w-4" />
-              <span>Todos</span>
-            </TabsTrigger>
-            <TabsTrigger value={ProcessFormStatus.DRAFT} className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              <span>Borradores</span>
-            </TabsTrigger>
-            <TabsTrigger value={ProcessFormStatus.IN_PROGRESS} className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>En Progreso</span>
-            </TabsTrigger>
-            <TabsTrigger value={ProcessFormStatus.PENDING_REVIEW} className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Pendientes de Revisión</span>
-            </TabsTrigger>
-            <TabsTrigger value={ProcessFormStatus.COMPLETED} className="flex items-center gap-2">
-              <FileCheck className="h-4 w-4" />
-              <span>Completados</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="all" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Todos los formularios de proceso</CardTitle>
-                <CardDescription>
-                  Lista de todos los formularios de proceso en el sistema
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                ) : (
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Folio</TableHead>
-                          <TableHead>Plantilla</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Creado por</TableHead>
-                          <TableHead>Fecha</TableHead>
-                          <TableHead>Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {forms && forms.length > 0 ? (
-                          forms.map((form) => {
-                            const { label, variant } = getStatusBadge(form.status);
-                            return (
-                              <TableRow key={form.id}>
-                                <TableCell className="font-medium">
-                                  {form.folioNumber}
-                                </TableCell>
-                                <TableCell>{form.templateName}</TableCell>
-                                <TableCell>
-                                  <Badge variant={variant}>{label}</Badge>
-                                </TableCell>
-                                <TableCell>{form.createdBy.name}</TableCell>
-                                <TableCell>{formatDate(form.createdAt)}</TableCell>
-                                <TableCell>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleEditForm(form.id)}
-                                  >
-                                    Editar
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center">
-                              No se encontraron formularios
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* Contenido para cada estado (mismo contenido, diferentes filtros) */}
-          {[
-            ProcessFormStatus.DRAFT,
-            ProcessFormStatus.IN_PROGRESS,
-            ProcessFormStatus.PENDING_REVIEW,
-            ProcessFormStatus.COMPLETED
-          ].map(status => {
-            const { label } = getStatusBadge(status);
-            return (
-              <TabsContent key={status} value={status} className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Formularios en estado: {label}</CardTitle>
-                    <CardDescription>
-                      Formularios de proceso filtrados por estado: {label}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {isLoading ? (
-                      <div className="space-y-2">
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                      </div>
-                    ) : (
-                      <div className="rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Folio</TableHead>
-                              <TableHead>Plantilla</TableHead>
-                              <TableHead>Creado por</TableHead>
-                              <TableHead>Fecha</TableHead>
-                              <TableHead>Acciones</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {forms && forms.length > 0 ? (
-                              forms.map((form) => (
-                                <TableRow key={form.id}>
-                                  <TableCell className="font-medium">
-                                    {form.folioNumber}
-                                  </TableCell>
-                                  <TableCell>{form.templateName}</TableCell>
-                                  <TableCell>{form.createdBy.name}</TableCell>
-                                  <TableCell>{formatDate(form.createdAt)}</TableCell>
-                                  <TableCell>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => handleEditForm(form.id)}
-                                    >
-                                      Editar
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              ))
-                            ) : (
-                              <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
-                                  No se encontraron formularios en estado: {label}
-                                </TableCell>
-                              </TableRow>
+          ) : !forms || forms.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <p className="mb-4 text-muted-foreground">
+                No hay formularios de producción disponibles.
+              </p>
+              {canCreateForms && (
+                <Button variant="outline" onClick={handleCreate}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Crear primer formulario
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Folio</TableHead>
+                    <TableHead>Proceso</TableHead>
+                    <TableHead>Litros</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Responsable</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {forms.map((form) => (
+                    <TableRow key={form.id}>
+                      <TableCell className="font-medium">{form.folio}</TableCell>
+                      <TableCell>{form.productId}</TableCell>
+                      <TableCell>{form.liters}</TableCell>
+                      <TableCell>{formatDate(form.date)}</TableCell>
+                      <TableCell>{form.responsible}</TableCell>
+                      <TableCell>{getStatusBadge(form.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Acciones</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {canEditForms && (
+                              <DropdownMenuItem onClick={() => handleEdit(form.id)}>
+                                <FileEdit className="mr-2 h-4 w-4" />
+                                Editar
+                              </DropdownMenuItem>
                             )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            );
-          })}
-        </Tabs>
-      </div>
+                            {canDeleteForms && (
+                              <DropdownMenuItem 
+                                onClick={() => handleDelete(form.id)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Eliminar
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </MainLayout>
   );
 }

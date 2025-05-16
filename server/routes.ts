@@ -15,6 +15,14 @@ import {
   ProductionFormStatus,
   insertProductionFormSchema
 } from "@shared/schema";
+import { 
+  getProductionForms,
+  getProductionFormById,
+  createProductionForm,
+  updateProductionForm,
+  updateProductionFormStatus,
+  deleteProductionForm
+} from './production-forms';
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -2092,6 +2100,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
         baseQuantity: recipe.baseQuantity,
         ingredients: formattedIngredients
       });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Usamos las funciones de producción importadas al inicio del archivo
+
+  // Rutas para formularios de producción por secciones
+  app.get("/api/production-forms", async (req, res, next) => {
+    try {
+      return await getProductionForms(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/production-forms/:id", async (req, res, next) => {
+    try {
+      return await getProductionFormById(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/production-forms", async (req, res, next) => {
+    try {
+      // Validamos los datos con el esquema
+      const formData = insertProductionFormSchema.parse(req.body);
+      
+      // Procedemos a crear el formulario
+      return await createProductionForm(req, res);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.put("/api/production-forms/:id", async (req, res, next) => {
+    try {
+      return await updateProductionForm(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.patch("/api/production-forms/:id/status", async (req, res, next) => {
+    try {
+      // Validamos que el status sea válido
+      if (!Object.values(ProductionFormStatus).includes(req.body.status)) {
+        return res.status(400).json({ message: "Estado no válido" });
+      }
+      
+      return await updateProductionFormStatus(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete("/api/production-forms/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+    try {
+      return await deleteProductionForm(req, res);
     } catch (error) {
       next(error);
     }
