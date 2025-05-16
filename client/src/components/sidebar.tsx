@@ -31,14 +31,15 @@ export default function Sidebar({ className }: SidebarProps) {
     return null;
   }
 
-  // Usamos strings directamente para comparar los roles
-  const isAdmin = user.role === "admin";
-  const isSuperAdmin = user.role === "superadmin";
-  const isProduction = user.role === "produccion";
-  const isQuality = user.role === "calidad";
-  const isProductionManager = user.role === "gerente_produccion";
-  const isQualityManager = user.role === "gerente_calidad";
-  const isViewer = user.role === "viewer";
+  // Usamos strings directamente para comparar los roles, normalizando a minúsculas para evitar problemas
+  const userRole = user.role.toLowerCase();
+  const isAdmin = userRole === "admin";
+  const isSuperAdmin = userRole === "superadmin";
+  const isProduction = userRole === "produccion";
+  const isQuality = userRole === "calidad";
+  const isProductionManager = userRole === "gerente_produccion";
+  const isQualityManager = userRole === "gerente_calidad";
+  const isViewer = userRole === "viewer";
   const canCaptureData = isAdmin || isProduction || isQuality || isSuperAdmin || isProductionManager || isQualityManager;
 
   const navItems = [

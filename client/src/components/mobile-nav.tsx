@@ -31,14 +31,15 @@ export default function MobileNav({ className }: MobileNavProps) {
     return null;
   }
 
-  // Usamos strings directamente para comparar los roles
-  const isAdmin = user.role === "admin";
-  const isSuperAdmin = user.role === "superadmin";
-  const isProduction = user.role === "produccion";
-  const isQuality = user.role === "calidad";
-  const isProductionManager = user.role === "gerente_produccion";
-  const isQualityManager = user.role === "gerente_calidad";
-  const isViewer = user.role === "viewer";
+  // Usamos strings directamente para comparar los roles, normalizando a minúsculas para evitar problemas
+  const userRole = user.role.toLowerCase();
+  const isAdmin = userRole === "admin";
+  const isSuperAdmin = userRole === "superadmin";
+  const isProduction = userRole === "produccion";
+  const isQuality = userRole === "calidad";
+  const isProductionManager = userRole === "gerente_produccion";
+  const isQualityManager = userRole === "gerente_calidad";
+  const isViewer = userRole === "viewer";
   const canCaptureData = isAdmin || isSuperAdmin || isProduction || isQuality || isProductionManager || isQualityManager;
 
   const navItems = [
@@ -82,7 +83,7 @@ export default function MobileNav({ className }: MobileNavProps) {
       title: "Reportes",
       href: "/reports",
       icon: <BarChart3 className="h-5 w-5" />,
-      show: isAdmin || user.role === UserRole.SUPERADMIN || user.role === UserRole.VIEWER,
+      show: isAdmin || isSuperAdmin || isViewer,
     },
     {
       title: "Configuración",
