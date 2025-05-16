@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Calculator } from "lucide-react";
 import { calculateIngredientAmounts } from "@/data/product-formulas";
 
-interface FormulaCalculatorButtonProps {
+interface FormulaCalculatorProps {
   tableData: any[];
   productColumnId: string;
   litersColumnId: string;
@@ -13,7 +13,7 @@ interface FormulaCalculatorButtonProps {
   onNotify: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
-const FormulaCalculatorButton: React.FC<FormulaCalculatorButtonProps> = ({
+const FormulaCalculator: React.FC<FormulaCalculatorProps> = ({
   tableData,
   productColumnId,
   litersColumnId,
@@ -49,7 +49,7 @@ const FormulaCalculatorButton: React.FC<FormulaCalculatorButtonProps> = ({
       if (Object.keys(calculatedAmounts).length === 0) {
         onNotify(
           `No se encontró una fórmula para el producto "${productName}"`, 
-          "destructive"
+          "error"
         );
         return;
       }
@@ -72,7 +72,7 @@ const FormulaCalculatorButton: React.FC<FormulaCalculatorButtonProps> = ({
       if (updatedCount === 0) {
         onNotify(
           "No se encontraron ingredientes que coincidan con la fórmula", 
-          "destructive"
+          "error"
         );
         return;
       }
@@ -88,7 +88,7 @@ const FormulaCalculatorButton: React.FC<FormulaCalculatorButtonProps> = ({
       console.error("Error al aplicar fórmula:", error);
       onNotify(
         "Error al aplicar la fórmula", 
-        "destructive"
+        "error"
       );
     }
   };
@@ -121,4 +121,4 @@ const FormulaCalculatorButton: React.FC<FormulaCalculatorButtonProps> = ({
   );
 };
 
-export default FormulaCalculatorButton;
+export default FormulaCalculator;

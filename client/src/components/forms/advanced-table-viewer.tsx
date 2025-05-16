@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import FormulaHelper from "./formula-helper";
-import FormulaCalculatorButton from "./formula-calculator-button";
+import FormulaCalculator from "./formula-calculator";
 import { calculateIngredientAmounts } from "@/data/product-formulas";
 
 // Interfaces para productos y empleados
@@ -757,7 +757,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       {/* Botón para calcular automáticamente las cantidades según fórmula */}
       {!readOnly && productColumn && litersColumn && (
         <div className="px-2 py-2 border-b">
-          <FormulaCalculatorButton
+          <FormulaCalculator
             tableData={tableData}
             productColumnId={productColumn.id}
             litersColumnId={litersColumn.id}
