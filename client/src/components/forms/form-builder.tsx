@@ -693,23 +693,61 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                                     // Verificar si la configuración tiene secciones, si no, proporcionarle una configuración básica
                                                     let configToSave = { ...newConfig };
                                                     
-                                                    // Verificar si es solo metadata (initialData) o si hay que preservar la configuración actual
-                                                    if (configToSave.initialData && Array.isArray(configToSave.initialData) && configToSave.initialData.length > 0) {
-                                                      console.log("Detectados datos iniciales sin afectar la estructura de la tabla");
-                                                      // Preservar la configuración actual y solo actualizar initialData
-                                                      const currentConfig = field.value || {};
-                                                      if (currentConfig.sections && currentConfig.sections.length > 0) {
-                                                        // Mantener la estructura y solo actualizar initialData
+                                                    // FLUJO REVISADO: Primero verificar si hay datos iniciales, en cuyo caso preservar estructura existente
+                                                    
+                                                    // 1. Verificar si tiene datos iniciales (incluso si no tiene secciones)
+                                                    const hasInitialData = configToSave.initialData && Array.isArray(configToSave.initialData) && configToSave.initialData.length > 0;
+                                                    
+                                                    // 2. Obtener configuración actual (si existe)
+                                                    const currentConfig = field.value || {};
+                                                    const hasCurrentSections = currentConfig && currentConfig.sections && currentConfig.sections.length > 0;
+                                                    
+                                                    // Caso 1: Tiene datos iniciales y hay una estructura existente - preservar estructura, actualizar datos
+                                                    if (hasInitialData && hasCurrentSections) {
+                                                      console.log("Actualizando datos iniciales manteniendo estructura existente");
+                                                      configToSave = {
+                                                        ...currentConfig,
+                                                        initialData: configToSave.initialData,
+                                                        rows: Math.max(currentConfig.rows || 3, configToSave.initialData.length)
+                                                      };
+                                                    }
+                                                    // Caso 2: No tiene secciones propias pero hay datos iniciales - usar estructura existente
+                                                    else if (hasInitialData && (!configToSave.sections || configToSave.sections.length === 0)) {
+                                                      console.log("Recibidos solo datos iniciales, verificando estructura existente");
+                                                      
+                                                      if (hasCurrentSections) {
+                                                        // Usar estructura actual con nuevos datos
                                                         configToSave = {
                                                           ...currentConfig,
                                                           initialData: configToSave.initialData,
                                                           rows: Math.max(currentConfig.rows || 3, configToSave.initialData.length)
                                                         };
-                                                        console.log("Manteniendo estructura existente, actualizando solo datos:", configToSave);
+                                                        console.log("Aplicando nuevos datos iniciales a estructura existente");
+                                                      } else {
+                                                        // No hay estructura previa ni actual - crear estructura básica
+                                                        console.log("No hay estructura previa, creando estructura por defecto con datos iniciales");
+                                                        configToSave = {
+                                                          rows: configToSave.initialData.length || 3,
+                                                          dynamicRows: true,
+                                                          sections: [
+                                                            {
+                                                              title: "Datos",
+                                                              columns: [
+                                                                { id: "valor", header: "Valor", type: "text", width: "200px" }
+                                                              ]
+                                                            }
+                                                          ],
+                                                          initialData: configToSave.initialData
+                                                        };
                                                       }
                                                     }
-                                                    // Si no hay secciones o están vacías, y no es solo una actualización de datos, crear una configuración básica
-                                                    else if (!configToSave.sections || configToSave.sections.length === 0) {
+                                                    // Caso 3: Tiene su propia estructura de secciones - usarla directamente
+                                                    else if (configToSave.sections && configToSave.sections.length > 0) {
+                                                      console.log("Usando configuración con estructura propia");
+                                                      // No hacer nada, usar la configuración tal cual viene
+                                                    }
+                                                    // Caso 4: No tiene secciones ni datos iniciales - usar plantilla por defecto
+                                                    else {
                                                       console.log("Configuración sin secciones detectada, aplicando configuración por defecto");
                                                       configToSave = {
                                                         rows: configToSave.rows || 3,

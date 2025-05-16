@@ -973,11 +973,37 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
   // Función para actualizar valor
   const updateValue = useCallback((newValue: Partial<AdvancedTableConfig>) => {
     try {
-      // Vamos a ignorar completamente el valor existente y simplemente reemplazarlo
-      // Esto garantiza que no haya problema de referencias compartidas o sanitización
+      // Modificación crítica: Ahora tomamos en cuenta los datos existentes
+      // Si solo actualizamos initialData o ciertos campos, preservamos la estructura actual
+      const currentValue = value || {};
       
-      // Crear una copia profunda del nuevo valor
-      const safeValue = JSON.parse(JSON.stringify(newValue));
+      // Combinar con valores actuales cuando sea una actualización parcial
+      // Si tiene initialData pero no sections, preservar la estructura existente
+      const hasOnlyInitialData = newValue.initialData && !newValue.sections;
+      
+      let combinedValue: any;
+      
+      if (hasOnlyInitialData && currentValue.sections) {
+        // Caso especial para cambios en solo initialData (mantener estructura)
+        console.log("updateValue - Preservando estructura existente al actualizar datos");
+        combinedValue = {
+          ...currentValue,
+          initialData: newValue.initialData,
+          rows: newValue.rows || currentValue.rows,
+        };
+      } else {
+        // Cualquier otro caso, usar el nuevo valor pero convertirlo en un valor completo de tabla
+        console.log("updateValue - Usando nueva configuración completa");
+        combinedValue = {
+          rows: newValue.rows || currentValue.rows || 3,
+          dynamicRows: newValue.dynamicRows !== undefined ? newValue.dynamicRows : currentValue.dynamicRows,
+          sections: newValue.sections || currentValue.sections || [],
+          initialData: newValue.initialData || currentValue.initialData
+        };
+      }
+      
+      // Crear una copia profunda del valor combinado
+      const safeValue = JSON.parse(JSON.stringify(combinedValue));
       
       // Enviar directamente sin delay
       onChange(safeValue);
@@ -986,7 +1012,7 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
       // Intentar al menos establecer algo
       onChange(newValue);
     }
-  }, [onChange]);
+  }, [onChange, value]);
 
   // Agregar una nueva sección
   const addSection = () => {
