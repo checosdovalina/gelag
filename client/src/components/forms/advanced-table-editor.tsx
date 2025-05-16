@@ -45,7 +45,8 @@ import {
   ChevronRight,
   ChevronLeft,
   LayoutTemplate,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Thermometer
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -288,6 +289,39 @@ const PRODUCT_MATERIALS = {
 
 // Plantillas predefinidas para tipos comunes de tablas
 const TABLE_TEMPLATES = [
+  {
+    name: "Tabla de Temperaturas",
+    icon: <Thermometer className="h-4 w-4 mr-2" />,
+    config: {
+      rows: 7, 
+      dynamicRows: false,
+      sections: [
+        {
+          title: "Temperatura",
+          colspan: 2,
+          columns: [
+            {
+              id: "hora-column",
+              header: "Hora",
+              type: "text",
+              width: "100px",
+              readOnly: true
+            },
+            {
+              id: "temp-column",
+              header: "°C",
+              type: "number",
+              width: "80px",
+              validation: {
+                min: 0,
+                max: 200
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
   {
     name: "Análisis Microbiológico Horizontal",
     icon: <FileSpreadsheet className="h-4 w-4 mr-2" />,
