@@ -2222,6 +2222,127 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
                   <Thermometer className="h-4 w-4" /> Tabla de Manómetro
                 </Button>
                 
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => {
+                    // Crear una tabla de verificación de calidad
+                    // Crear IDs para cada columna
+                    const horaColumnId = uuidv4();
+                    const brixColumnId = uuidv4();
+                    const tempColumnId = uuidv4();
+                    const texturaColumnId = uuidv4();
+                    const colorColumnId = uuidv4();
+                    const viscosidadColumnId = uuidv4();
+                    const olorColumnId = uuidv4();
+                    const saborColumnId = uuidv4();
+                    const materialColumnId = uuidv4();
+                    const statusColumnId = uuidv4();
+                    
+                    const config = {
+                      rows: 9,
+                      dynamicRows: false,
+                      sections: [
+                        {
+                          title: "Verificación de Calidad",
+                          colspan: 10,
+                          columns: [
+                            {
+                              id: horaColumnId,
+                              header: "Hora",
+                              type: "text",
+                              width: "70px",
+                              readOnly: true
+                            },
+                            {
+                              id: brixColumnId,
+                              header: "Grados Brix",
+                              type: "text", 
+                              width: "100px"
+                            },
+                            {
+                              id: tempColumnId,
+                              header: "Temperatura",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: texturaColumnId,
+                              header: "Textura",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: colorColumnId,
+                              header: "Color",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: viscosidadColumnId,
+                              header: "Viscosidad",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: olorColumnId,
+                              header: "Olor",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: saborColumnId,
+                              header: "Sabor",
+                              type: "text",
+                              width: "100px"
+                            },
+                            {
+                              id: materialColumnId,
+                              header: "Material Extraño",
+                              type: "text",
+                              width: "120px",
+                              readOnly: true
+                            },
+                            {
+                              id: statusColumnId,
+                              header: "Status",
+                              type: "text",
+                              width: "100px"
+                            }
+                          ]
+                        }
+                      ],
+                      initialData: [
+                        { 
+                          [horaColumnId]: "Hora", 
+                          [brixColumnId]: "65° a 68° Brix", 
+                          [tempColumnId]: "70°C a 95°C",
+                          [materialColumnId]: ""
+                        },
+                        { [horaColumnId]: "Hora 0", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "Hora 1", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "Hora 2", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "Hora 3", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "Hora 4", [materialColumnId]: "N/A" }, 
+                        { [horaColumnId]: "Hora 5", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "Fin", [materialColumnId]: "N/A" },
+                        { [horaColumnId]: "", [materialColumnId]: "N/A" }
+                      ]
+                    };
+                    
+                    onChange(config);
+                    toast({
+                      title: "Tabla de verificación de calidad creada",
+                      description: "Se ha agregado una tabla completa para el control de calidad",
+                    });
+                    setActiveTab("preview");
+                    setTabsVisited(prev => ({...prev, preview: true}));
+                  }}
+                  className="flex items-center gap-2 ml-2 bg-yellow-600 hover:bg-yellow-700"
+                >
+                  <ListChecks className="h-4 w-4" /> Verificación de Calidad
+                </Button>
+                
                 <input
                   type="file"
                   ref={fileInputRef}
