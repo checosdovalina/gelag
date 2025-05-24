@@ -175,13 +175,24 @@ export default function ProductionForm({
   
   // Auto-guardar cuando se cambia de pestaña
   const handleTabChange = (newTab: string) => {
-    // Guardar automáticamente antes de cambiar de pestaña
-    onSave({
+    const dataToSave = {
       ...formData,
       status,
       lastUpdatedBy: user?.id,
       lastUpdatedAt: new Date().toISOString()
-    });
+    };
+    
+    // Log temporal para debugging
+    console.log("Datos enviados al cambiar pestaña:", JSON.stringify({
+      startTime: dataToSave.startTime,
+      endTime: dataToSave.endTime,
+      hourTracking: dataToSave.hourTracking,
+      temperature: dataToSave.temperature,
+      pressure: dataToSave.pressure
+    }, null, 2));
+    
+    // Guardar automáticamente antes de cambiar de pestaña
+    onSave(dataToSave);
     
     setActiveTab(newTab);
     
