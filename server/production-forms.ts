@@ -136,6 +136,9 @@ export async function updateProductionForm(req: Request, res: Response) {
       return res.status(404).json({ message: "Formulario no encontrado" });
     }
     
+    // Log de los datos recibidos para debugging
+    console.log("Datos recibidos para actualización:", JSON.stringify(req.body, null, 2));
+    
     // Actualizar el formulario
     const [updatedForm] = await db.update(productionForms)
       .set({
@@ -145,6 +148,8 @@ export async function updateProductionForm(req: Request, res: Response) {
       })
       .where(eq(productionForms.id, id))
       .returning();
+    
+    console.log("Formulario actualizado:", JSON.stringify(updatedForm, null, 2));
     
     return res.json(updatedForm);
   } catch (error) {
