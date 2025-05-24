@@ -3,10 +3,12 @@ import { useLocation, useRoute } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import ProductionForm, { ProductionFormStatus } from "@/components/process-forms/production-form";
+import ProductionForm from "@/components/process-forms/production-form";
+import { ProductionFormStatus } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useProductionForm, useProductionForms } from "@/hooks/use-production-form";
+import SidebarLayout from "@/components/layout/sidebar-layout";
 
 // Datos iniciales para un nuevo formulario
 const DEFAULT_FORM_DATA = {
@@ -91,7 +93,7 @@ export default function ProductionFormPage() {
   }
   
   return (
-    <div className="container py-6">
+    <SidebarLayout title={isNewForm ? "Nuevo Formulario de Producción" : `Formulario de Producción - ${form?.folio || ''}`}>
       <div className="space-y-6">
         <Button
           variant="outline"
@@ -131,6 +133,6 @@ export default function ProductionFormPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </SidebarLayout>
   );
 }
