@@ -173,6 +173,24 @@ export default function ProductionForm({
     initialData.status || ProductionFormStatus.DRAFT
   );
   
+  // Auto-guardar cuando se cambia de pestaña
+  const handleTabChange = (newTab: string) => {
+    // Guardar automáticamente antes de cambiar de pestaña
+    onSave({
+      ...formData,
+      status,
+      lastUpdatedBy: user?.id,
+      lastUpdatedAt: new Date().toISOString()
+    });
+    
+    setActiveTab(newTab);
+    
+    toast({
+      title: "Datos guardados automáticamente",
+      description: "Los cambios se han guardado al cambiar de sección"
+    });
+  };
+  
   // Determinar rol del usuario actual
   // Siempre tendremos un rol válido ahora que hemos cambiado la función de mapeo
   const currentUserRole = user ? mapUserRoleToAppRole(user.role) : "operator";
@@ -331,7 +349,7 @@ export default function ProductionForm({
       )}
       
       {/* Navegación por pestañas para las secciones */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid grid-cols-6">
           {PRODUCTION_FORM_SECTIONS.map(section => (
             <TabsTrigger 
