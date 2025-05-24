@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useProductionForms } from "@/hooks/use-production-form";
-import MainLayout from "@/components/layout/main-layout";
+import SidebarLayout from "@/components/layout/sidebar-layout";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -103,7 +103,7 @@ export default function ProcessFormsList() {
   };
   
   return (
-    <MainLayout title="Formularios de Proceso">
+    <SidebarLayout title="Formularios de Proceso">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -194,6 +194,6 @@ export default function ProcessFormsList() {
           )}
         </CardContent>
       </Card>
-    </MainLayout>
+    </SidebarLayout>
   );
 }
