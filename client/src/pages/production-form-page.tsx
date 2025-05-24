@@ -27,7 +27,7 @@ export default function ProductionFormPage() {
   const { toast } = useToast();
   
   // Estado para el formulario que se está editando
-  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
+  const [formData, setFormData] = useState<any>(DEFAULT_FORM_DATA);
   const [isNewForm, setIsNewForm] = useState(true);
   
   // Hooks para interactuar con los formularios
@@ -38,10 +38,19 @@ export default function ProductionFormPage() {
   
   // Cargar datos si estamos editando un formulario existente
   useEffect(() => {
-    if (form && match) {
-      setFormData(form);
+    if (form && match && !isLoadingForm) {
+      // Solo cargar datos del servidor la primera vez o si no hay datos locales
+      setFormData(prevData => {
+        // Si los datos actuales son solo los datos por defecto, cargar desde el servidor
+        if (JSON.stringify(prevData) === JSON.stringify(DEFAULT_FORM_DATA) || 
+            !prevData.id) {
+          return form;
+        }
+        // Si ya hay datos modificados localmente, mantenerlos
+        return prevData;
+      });
       setIsNewForm(false);
-    } else if (user) {
+    } else if (user && !match) {
       // Si es un nuevo formulario, agregar el nombre del usuario actual como responsable
       setFormData(prevData => ({
         ...prevData,
@@ -49,7 +58,7 @@ export default function ProductionFormPage() {
       }));
       setIsNewForm(true);
     }
-  }, [form, match, user]);
+  }, [form, match, user, isLoadingForm]);
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
@@ -75,6 +84,7 @@ export default function ProductionFormPage() {
         // Actualizar formulario existente
         if (match && params?.id) {
           await updateFormMutation.mutateAsync(data);
+          // Actualizar el estado local con los datos guardados
           setFormData(data);
         }
       }
