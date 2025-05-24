@@ -191,14 +191,7 @@ export default function ProductionForm({
       lastUpdatedAt: new Date().toISOString()
     };
     
-    // Log temporal para debugging
-    console.log("Datos enviados al cambiar pestaña:", JSON.stringify({
-      startTime: dataToSave.startTime,
-      endTime: dataToSave.endTime,
-      hourTracking: dataToSave.hourTracking,
-      temperature: dataToSave.temperature,
-      pressure: dataToSave.pressure
-    }, null, 2));
+
     
     // Guardar automáticamente antes de cambiar de pestaña
     onSave(dataToSave);
