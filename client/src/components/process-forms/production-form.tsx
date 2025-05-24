@@ -168,7 +168,16 @@ export default function ProductionForm({
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("general-info");
-  const [formData, setFormData] = useState<any>(initialData);
+  const [formData, setFormData] = useState<any>({
+    // Inicializar campos base
+    ...initialData,
+    // Asegurar que los campos de tiempo existan
+    startTime: initialData.startTime || "",
+    endTime: initialData.endTime || "",
+    hourTracking: initialData.hourTracking || Array(7).fill(""),
+    temperature: initialData.temperature || Array(7).fill(""),
+    pressure: initialData.pressure || Array(7).fill(""),
+  });
   const [status, setStatus] = useState<ProductionFormStatus>(
     initialData.status || ProductionFormStatus.DRAFT
   );
