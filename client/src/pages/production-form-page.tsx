@@ -36,20 +36,16 @@ export default function ProductionFormPage() {
   );
   const { createFormMutation } = useProductionForms();
   
+  // Referencia para saber si ya se cargaron los datos iniciales
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+
   // Cargar datos si estamos editando un formulario existente
   useEffect(() => {
-    if (form && match && !isLoadingForm) {
-      // Solo cargar datos del servidor la primera vez o si no hay datos locales
-      setFormData(prevData => {
-        // Si los datos actuales son solo los datos por defecto, cargar desde el servidor
-        if (JSON.stringify(prevData) === JSON.stringify(DEFAULT_FORM_DATA) || 
-            !prevData.id) {
-          return form;
-        }
-        // Si ya hay datos modificados localmente, mantenerlos
-        return prevData;
-      });
+    if (form && match && !isLoadingForm && !hasLoadedInitialData) {
+      // Solo cargar datos del servidor la primera vez
+      setFormData(form);
       setIsNewForm(false);
+      setHasLoadedInitialData(true);
     } else if (user && !match) {
       // Si es un nuevo formulario, agregar el nombre del usuario actual como responsable
       setFormData(prevData => ({
@@ -58,7 +54,7 @@ export default function ProductionFormPage() {
       }));
       setIsNewForm(true);
     }
-  }, [form, match, user, isLoadingForm]);
+  }, [form, match, user, isLoadingForm, hasLoadedInitialData]);
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
