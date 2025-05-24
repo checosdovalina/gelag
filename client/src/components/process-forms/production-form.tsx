@@ -215,10 +215,10 @@ export default function ProductionForm({
   
   // Manejar cambios en los campos
   const handleChange = (field: string, value: any) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [field]: value
-    });
+    }));
   };
   
   // Manejar guardado del formulario
