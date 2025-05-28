@@ -2487,19 +2487,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </div>
             </div>
 
-            <div class="section-divider">
-              <span class="section-title">INGREDIENTES Y MATERIAS PRIMAS</span>
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              INGREDIENTES Y MATERIAS PRIMAS
             </div>
 
-            <table class="ingredients-table">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
               <thead>
-                <tr>
-                  <th>Ingrediente</th>
-                  <th>Cantidad</th>
-                  <th>Unidad</th>
-                  <th>Lote</th>
-                  <th>Fecha de caducidad</th>
-                  <th>Observaciones</th>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Ingrediente</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Cantidad</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Unidad</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Lote</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Fecha de caducidad</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Observaciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -2512,28 +2512,265 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     if (Array.isArray(ingredients) && ingredients.length > 0) {
                       return ingredients.map((ing: any) => 
                         `<tr>
-                          <td>${ing.name || 'N/A'}</td>
-                          <td>${ing.quantity || 'N/A'}</td>
-                          <td>${ing.unit || 'N/A'}</td>
-                          <td>-</td>
-                          <td>-</td>
-                          <td>-</td>
+                          <td style="border: 1px solid #000; padding: 8px;">${ing.name || 'N/A'}</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.quantity || 'N/A'}</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.unit || 'N/A'}</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
                         </tr>`
                       ).join('');
                     }
-                    return '<tr><td colspan="6" style="text-align: center;">No hay ingredientes registrados</td></tr>';
+                    return '<tr><td colspan="6" style="text-align: center; border: 1px solid #000; padding: 8px;">No hay ingredientes registrados</td></tr>';
                   } catch (e) {
-                    return '<tr><td colspan="6" style="text-align: center;">Error al cargar ingredientes</td></tr>';
+                    return '<tr><td colspan="6" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar ingredientes</td></tr>';
                   }
                 })()}
               </tbody>
             </table>
 
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              PARÁMETROS DE PROCESO
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Parámetro</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor inicial</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor final</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Especificación</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 10%;">Conforme</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Hora de inicio</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startTime || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Hora de finalización</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endTime || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Brix final</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.finalBrix || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">65° ± 2°</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Viscosidad (cP)</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.cP || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">2000-3000 cP</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Rendimiento</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.yield || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">≥ 90%</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              CONTROL DE CALIDAD
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Hora</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Grados Brix</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Temperatura</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Color</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Viscosidad</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Olor</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Sabor</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Material Extraño</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(() => {
+                  try {
+                    const qualityTimes = Array.isArray(productionForm.qualityTimes) ? productionForm.qualityTimes : [];
+                    const brix = Array.isArray(productionForm.brix) ? productionForm.brix : [];
+                    const qualityTemp = Array.isArray(productionForm.qualityTemp) ? productionForm.qualityTemp : [];
+                    const color = Array.isArray(productionForm.color) ? productionForm.color : [];
+                    const viscosity = Array.isArray(productionForm.viscosity) ? productionForm.viscosity : [];
+                    const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
+                    const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
+                    
+                    let rows = '';
+                    for (let i = 0; i < Math.max(qualityTimes.length, 8); i++) {
+                      rows += `<tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${qualityTimes[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${brix[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${qualityTemp[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${color[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${viscosity[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${smell[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${taste[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">N/A</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                      </tr>`;
+                    }
+                    return rows;
+                  } catch (e) {
+                    return '<tr><td colspan="9" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar datos de calidad</td></tr>';
+                  }
+                })()}
+              </tbody>
+            </table>
+
+            <!-- Sección de Destino de Producto -->
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              DESTINO DE PRODUCTO
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Tipo de Cajeta</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Kilos</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Producto</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Estimación</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(() => {
+                  try {
+                    const destinationType = Array.isArray(productionForm.destinationType) ? productionForm.destinationType : [];
+                    const destinationKilos = Array.isArray(productionForm.destinationKilos) ? productionForm.destinationKilos : [];
+                    const destinationProduct = Array.isArray(productionForm.destinationProduct) ? productionForm.destinationProduct : [];
+                    const destinationEstimation = Array.isArray(productionForm.destinationEstimation) ? productionForm.destinationEstimation : [];
+                    
+                    let rows = '';
+                    for (let i = 0; i < Math.max(destinationType.length, 4); i++) {
+                      rows += `<tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${destinationType[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${destinationKilos[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${destinationProduct[i] || '-'}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${destinationEstimation[i] || '-'}</td>
+                      </tr>`;
+                    }
+                    return rows;
+                  } catch (e) {
+                    return '<tr><td colspan="4" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar datos de destino</td></tr>';
+                  }
+                })()}
+              </tbody>
+            </table>
+
+            <!-- Sección de Datos de Liberación -->
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              DATOS DE LIBERACIÓN
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 15%;">Total Kilos</td>
+                  <td style="border: 1px solid #000; padding: 8px; width: 25%;">${productionForm.totalKilos || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Folio de liberación</td>
+                  <td style="border: 1px solid #000; padding: 8px; width: 40%;">${productionForm.liberationFolio || '-'}</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Rendimiento</td>
+                  <td style="border: 1px solid #000; padding: 8px;">${productionForm.yield || '-'}%</td>
+                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold;" colspan="2"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">cP</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Cm en consistómetro</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Grados Brix</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.cP || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.cmConsistometer || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.finalBrix || '-'}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Colador</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Bueno</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Malo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'good' ? '✓' : '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'bad' ? '✓' : '-'}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Área de Notas -->
+            <div style="margin: 30px 0;">
+              <strong>Notas:</strong>
+              <div style="border: 1px solid #000; min-height: 100px; padding: 10px; margin-top: 10px;">
+                ${productionForm.qualityObservations && Array.isArray(productionForm.qualityObservations) 
+                  ? productionForm.qualityObservations.filter(obs => obs && obs.trim() !== '').join(', ') 
+                  : 'Sin observaciones registradas'}
+              </div>
+            </div>
+
+            <!-- Sección de Firmas -->
+            <div style="margin-top: 50px;">
+              <table style="width: 100%; margin-top: 50px;">
+                <tr>
+                  <td style="width: 33%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
+                    ${productionForm.signatureUrl ? 'FIRMA PRESENTE' : ''}
+                  </td>
+                  <td style="width: 34%;"></td>
+                  <td style="width: 33%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
+                    Aprueba
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: center; padding-top: 10px; font-size: 11px;">
+                    <strong>Operador de Producción</strong><br>
+                    ${creatorName}
+                  </td>
+                  <td></td>
+                  <td style="text-align: center; padding-top: 10px; font-size: 11px;">
+                    <strong>Gerente de Calidad</strong><br>
+                    Nombre: ________________
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 40px; border-top: 1px solid #000; padding-top: 15px; font-size: 10px; text-align: center;">
+              Documento generado automáticamente por el sistema de gestión de formularios.<br>
+              © 2025 GELAG S.A DE C.V - Todos los derechos reservados - ID: ${productionForm.id}
+            </div>
+
             <!-- PÁGINA 2 -->
             <div class="page-break">
-              <div class="section-divider">
-                <span class="section-title">PARÁMETROS DE PROCESO</span>
-              </div>
 
               <table class="process-table">
                 <thead>
