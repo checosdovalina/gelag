@@ -2192,6 +2192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <head>
             <meta charset="UTF-8">
             <title>Formulario de Producción - ${productionForm.productId}</title>
+            <!-- PDF GENERADO: ${timestamp} - VERSION LIMPIA SIN CONTROL DE CALIDAD -->
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body { 
@@ -2870,6 +2871,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           </html>
         `;
 
+        // Debug: Mostrar parte del HTML para verificar que no tiene CONTROL DE CALIDAD
+        console.log("HTML generado (primeros 3000 caracteres):", htmlContent.substring(0, 3000));
+        console.log("¿Contiene 'CONTROL DE CALIDAD'?", htmlContent.includes('CONTROL DE CALIDAD'));
+        console.log("¿Contiene 'pH:'?", htmlContent.includes('pH:'));
+        
         // Enviar HTML que el frontend convertirá a PDF
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.send(htmlContent);
