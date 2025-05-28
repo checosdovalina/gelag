@@ -285,12 +285,13 @@ export default function ProductionForm({
       if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
         newStatus = ProductionFormStatus.IN_PROGRESS;
       }
-    } else if (currentUserRole === "produccion") {
+    } else if (currentUserRole === "operator") {
       // Operador: si completa seguimiento → PENDIENTE DE REVISIÓN
       if ((formData.startTime || formData.temperature?.some((t: string) => t) || 
            formData.pressure?.some((p: string) => p)) && 
           (status === ProductionFormStatus.IN_PROGRESS || status === ProductionFormStatus.DRAFT)) {
         newStatus = ProductionFormStatus.PENDING_REVIEW;
+        console.log("¡Cambiando estado a PENDING_REVIEW!");
       }
     } else if (currentUserRole === "gerente_calidad" || currentUserRole === "calidad") {
       // Gerente de Calidad: si completa verificación → COMPLETADO
