@@ -2581,7 +2581,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
+            <!-- Sección de Control de Proceso -->
+            <div style="margin: 30px 0;">
+              <!-- Fila de Hora Inicio y Hora Término -->
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <tr>
+                  <td style="width: 50%; padding-right: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; border: 2px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 10px; text-align: center; background-color: #d0d0d0; font-weight: bold; font-size: 14px;">Hora Inicio</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="border: 1px solid #000; padding: 20px; text-align: center; font-size: 16px; font-weight: bold; min-height: 40px;">${productionForm.startTime || ''}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td style="width: 50%; padding-left: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; border: 2px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 10px; text-align: center; background-color: #d0d0d0; font-weight: bold; font-size: 14px;">Hora Término</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="border: 1px solid #000; padding: 20px; text-align: center; font-size: 16px; font-weight: bold; min-height: 40px;">${productionForm.endTime || ''}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
+              <!-- Fila de las tres tablas: Temperatura, Manómetro, Horas -->
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <!-- Tabla Temperatura -->
+                  <td style="width: 33%; padding-right: 10px; vertical-align: top;">
+                    <table style="width: 100%; border-collapse: collapse; border: 2px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #d0d0d0; font-weight: bold; font-size: 12px;">Temperatura</th>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #ffffff; font-size: 12px; width: 80px;">°C</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${(() => {
+                          try {
+                            let temps = productionForm.temperature || [];
+                            if (typeof temps === 'string') {
+                              temps = JSON.parse(temps);
+                            }
+                            const labels = ['Hora 0', 'Hora 1', 'Hora 2', 'Hora 3', 'Hora 4', 'Hora 5', 'Fin'];
+                            return labels.map((label, index) => 
+                              `<tr>
+                                <td style="border: 1px solid #000; padding: 6px; font-size: 11px;">${label}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center; font-size: 11px;">${temps[index] || ''}</td>
+                              </tr>`
+                            ).join('');
+                          } catch (e) {
+                            return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 6px;">Error</td></tr>';
+                          }
+                        })()}
+                      </tbody>
+                    </table>
+                  </td>
+
+                  <!-- Tabla Manómetro -->
+                  <td style="width: 33%; padding: 0 5px; vertical-align: top;">
+                    <table style="width: 100%; border-collapse: collapse; border: 2px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #d0d0d0; font-weight: bold; font-size: 12px;">Manómetro</th>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #ffffff; font-size: 12px; width: 80px;">PSI</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${(() => {
+                          try {
+                            let pressures = productionForm.pressure || [];
+                            if (typeof pressures === 'string') {
+                              pressures = JSON.parse(pressures);
+                            }
+                            const labels = ['Hora 0', 'Hora 1', 'Hora 2', 'Hora 3', 'Hora 4', 'Hora 5', 'Fin'];
+                            return labels.map((label, index) => 
+                              `<tr>
+                                <td style="border: 1px solid #000; padding: 6px; font-size: 11px;">${label}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center; font-size: 11px;">${pressures[index] || ''}</td>
+                              </tr>`
+                            ).join('');
+                          } catch (e) {
+                            return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 6px;">Error</td></tr>';
+                          }
+                        })()}
+                      </tbody>
+                    </table>
+                  </td>
+
+                  <!-- Tabla Horas -->
+                  <td style="width: 34%; padding-left: 10px; vertical-align: top;">
+                    <table style="width: 100%; border-collapse: collapse; border: 2px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #d0d0d0; font-weight: bold; font-size: 12px;">Horas</th>
+                          <th style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #ffffff; font-size: 12px; width: 80px;"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${(() => {
+                          try {
+                            let hours = productionForm.hourTracking || [];
+                            if (typeof hours === 'string') {
+                              hours = JSON.parse(hours);
+                            }
+                            const labels = ['Hora 0', 'Hora 1', 'Hora 2', 'Hora 3', 'Hora 4', 'Hora 5', 'Fin'];
+                            return labels.map((label, index) => 
+                              `<tr>
+                                <td style="border: 1px solid #000; padding: 6px; font-size: 11px;">${label}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center; font-size: 11px;">${hours[index] || ''}</td>
+                              </tr>`
+                            ).join('');
+                          } catch (e) {
+                            return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 6px;">Error</td></tr>';
+                          }
+                        })()}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </div>
 
             <!-- Tabla de Verificación de Calidad del Producto -->
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #d0d0d0; border: 1px solid #000;">
