@@ -42,6 +42,13 @@ export default function ProductionFormPage() {
   // Cargar datos si estamos editando un formulario existente
   useEffect(() => {
     if (form && match && !isLoadingForm) {
+      // Log temporal para verificar qué datos llegan del servidor
+      console.log("Datos del servidor:", {
+        responsible: form.responsible,
+        lotNumber: form.lotNumber,
+        folio: form.folio
+      });
+      
       // SIEMPRE cargar los datos más recientes del servidor cuando cambie el usuario
       setFormData(form);
       setIsNewForm(false);
