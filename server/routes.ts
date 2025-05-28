@@ -2529,6 +2529,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
+              PARÁMETROS DE PROCESO
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Parámetro</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor inicial</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor final</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Especificación</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 10%;">Conforme</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Hora de inicio</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startTime || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Hora de finalización</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endTime || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Brix final</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.finalBrix || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">65° ± 2°</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Viscosidad (cP)</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.cP || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">2000-3000 cP</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px;">Rendimiento</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.yield || '-'}</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">≥ 90%</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                </tr>
+              </tbody>
+            </table>
+
             <!-- Layout usando tabla principal para compatibilidad con PDF -->
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               <tr>
