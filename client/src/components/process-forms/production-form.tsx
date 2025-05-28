@@ -271,22 +271,22 @@ export default function ProductionForm({
     // Determinar el nuevo estado basado en el rol y datos completados
     let newStatus = status;
     
-    if (currentUserRole === "production_manager") {
+    if (currentUserRole === "gerente_produccion") {
       // Gerente de Producción: si completa información general → EN PROCESO
       if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
         newStatus = ProductionFormStatus.IN_PROGRESS;
       }
-    } else if (currentUserRole === "operator") {
-      // Operador: si completa seguimiento → PENDIENTE DE CALIDAD
+    } else if (currentUserRole === "produccion") {
+      // Operador: si completa seguimiento → PENDIENTE DE REVISIÓN
       if ((formData.startTime || formData.temperature?.some((t: string) => t) || 
            formData.pressure?.some((p: string) => p)) && 
-          status === ProductionFormStatus.IN_PROGRESS) {
-        newStatus = ProductionFormStatus.PENDING_QUALITY;
+          (status === ProductionFormStatus.IN_PROGRESS || status === ProductionFormStatus.DRAFT)) {
+        newStatus = ProductionFormStatus.PENDING_REVIEW;
       }
-    } else if (currentUserRole === "quality_manager") {
+    } else if (currentUserRole === "gerente_calidad" || currentUserRole === "calidad") {
       // Gerente de Calidad: si completa verificación → COMPLETADO
       if ((formData.finalBrix || formData.cP || formData.yield) && 
-          status === ProductionFormStatus.PENDING_QUALITY) {
+          status === ProductionFormStatus.PENDING_REVIEW) {
         newStatus = ProductionFormStatus.COMPLETED;
       }
     }
@@ -302,10 +302,8 @@ export default function ProductionForm({
       const statusNames = {
         [ProductionFormStatus.DRAFT]: "Borrador",
         [ProductionFormStatus.IN_PROGRESS]: "En Proceso",
-        [ProductionFormStatus.PENDING_QUALITY]: "Pendiente de Calidad", 
-        [ProductionFormStatus.COMPLETED]: "Completado",
-        [ProductionFormStatus.SIGNED]: "Firmado",
-        [ProductionFormStatus.APPROVED]: "Aprobado"
+        [ProductionFormStatus.PENDING_REVIEW]: "Pendiente de Revisión", 
+        [ProductionFormStatus.COMPLETED]: "Completado"
       };
       message = `Estado actualizado automáticamente a: ${statusNames[newStatus]}`;
       setStatus(newStatus);
