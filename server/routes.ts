@@ -29,7 +29,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
-import puppeteer from "puppeteer";
+import PDFDocument from "pdfkit";
 import fs from 'fs';
 import { User } from "@shared/schema";
 
@@ -2186,127 +2186,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("Generando PDF de formulario de producción:", productionForm);
         
         try {
-          // Crear HTML para el PDF
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>Formulario de Producción</title>
-              <style>
-                body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-                .section { margin-bottom: 25px; }
-                .section-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; background-color: #f5f5f5; padding: 8px; }
-                .field { margin-bottom: 8px; }
-                .field-label { font-weight: bold; display: inline-block; min-width: 120px; }
-                .field-value { display: inline-block; }
-                .ingredients { margin-left: 20px; }
-                .ingredient-item { margin-bottom: 5px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f5f5f5; }
-              </style>
-            </head>
-            <body>
-              <div class="header">
-                <h1>FORMULARIO DE PRODUCCIÓN</h1>
-                <p>Generado el: ${new Date().toLocaleString('es-ES')}</p>
-              </div>
-
-              <div class="section">
-                <div class="section-title">INFORMACIÓN GENERAL</div>
-                <div class="field">
-                  <span class="field-label">Producto:</span>
-                  <span class="field-value">${productionForm.productId}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Litros:</span>
-                  <span class="field-value">${productionForm.liters}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Fecha:</span>
-                  <span class="field-value">${productionForm.date}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Responsable:</span>
-                  <span class="field-value">${productionForm.responsible}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Lote:</span>
-                  <span class="field-value">${productionForm.lotNumber}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Estado:</span>
-                  <span class="field-value">${productionForm.status}</span>
-                </div>
-              </div>
-
-              <div class="section">
-                <div class="section-title">INGREDIENTES</div>
-                <div class="ingredients">
-                  ${productionForm.ingredients.map((ing: any) => 
-                    `<div class="ingredient-item">• ${ing.name}: ${ing.quantity} ${ing.unit}</div>`
-                  ).join('')}
-                </div>
-              </div>
-
-              <div class="section">
-                <div class="section-title">DATOS DEL PROCESO</div>
-                <div class="field">
-                  <span class="field-label">Hora inicio:</span>
-                  <span class="field-value">${productionForm.startTime}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Hora fin:</span>
-                  <span class="field-value">${productionForm.endTime}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Brix final:</span>
-                  <span class="field-value">${productionForm.finalBrix}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">cP:</span>
-                  <span class="field-value">${productionForm.cP}</span>
-                </div>
-                <div class="field">
-                  <span class="field-label">Rendimiento:</span>
-                  <span class="field-value">${productionForm.yield}</span>
-                </div>
-              </div>
-            </body>
-            </html>
-          `;
-
-          // Generar PDF con Puppeteer
-          const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-          });
+          // Crear PDF con PDFKit
+          const doc = new PDFDocument({ margin: 50 });
           
-          const page = await browser.newPage();
-          await page.setContent(htmlContent);
-          
-          const pdfBuffer = await page.pdf({
-            format: 'A4',
-            printBackground: true,
-            margin: {
-              top: '20mm',
-              bottom: '20mm',
-              left: '15mm',
-              right: '15mm'
-            }
-          });
-          
-          await browser.close();
-
           // Configurar headers para descarga
           res.setHeader('Content-Type', 'application/pdf');
           res.setHeader('Content-Disposition', `attachment; filename="Formulario_Produccion_${productionForm.productId}_${productionForm.date.replace(/[\/\\:*?"<>|]/g, "_")}.pdf"`);
-          res.setHeader('Content-Length', pdfBuffer.length);
           
-          // Enviar el PDF
-          res.end(pdfBuffer);
+          // Pipe del documento al response
+          doc.pipe(res);
+          
+          // Título principal
+          doc.fontSize(20).font('Helvetica-Bold').text('FORMULARIO DE PRODUCCIÓN', { align: 'center' });
+          doc.moveDown();
+          doc.fontSize(10).font('Helvetica').text(`Generado el: ${new Date().toLocaleString('es-ES')}`, { align: 'center' });
+          doc.moveDown(2);
+          
+          // Línea separadora
+          doc.strokeColor('#333333').lineWidth(2).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+          doc.moveDown();
+          
+          // Sección: Información General
+          doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000')
+             .text('INFORMACIÓN GENERAL', { underline: true });
+          doc.moveDown();
+          
+          const fields = [
+            ['Producto:', productionForm.productId],
+            ['Litros:', productionForm.liters.toString()],
+            ['Fecha:', productionForm.date],
+            ['Responsable:', productionForm.responsible],
+            ['Lote:', productionForm.lotNumber],
+            ['Estado:', productionForm.status]
+          ];
+          
+          fields.forEach(([label, value]) => {
+            doc.fontSize(11).font('Helvetica-Bold').text(label, 70, doc.y, { continued: true, width: 120 });
+            doc.font('Helvetica').text(value || 'N/A', { width: 350 });
+            doc.moveDown(0.5);
+          });
+          
+          doc.moveDown();
+          
+          // Sección: Ingredientes
+          doc.fontSize(14).font('Helvetica-Bold').text('INGREDIENTES', { underline: true });
+          doc.moveDown();
+          
+          if (productionForm.ingredients && productionForm.ingredients.length > 0) {
+            productionForm.ingredients.forEach((ing: any) => {
+              doc.fontSize(11).font('Helvetica')
+                 .text(`• ${ing.name}: ${ing.quantity} ${ing.unit}`, 90);
+              doc.moveDown(0.3);
+            });
+          } else {
+            doc.fontSize(11).font('Helvetica').text('No hay ingredientes registrados', 90);
+          }
+          
+          doc.moveDown();
+          
+          // Sección: Datos del Proceso
+          doc.fontSize(14).font('Helvetica-Bold').text('DATOS DEL PROCESO', { underline: true });
+          doc.moveDown();
+          
+          const processFields = [
+            ['Hora inicio:', productionForm.startTime],
+            ['Hora fin:', productionForm.endTime],
+            ['Brix final:', productionForm.finalBrix],
+            ['cP:', productionForm.cP],
+            ['Rendimiento:', productionForm.yield]
+          ];
+          
+          processFields.forEach(([label, value]) => {
+            doc.fontSize(11).font('Helvetica-Bold').text(label, 70, doc.y, { continued: true, width: 120 });
+            doc.font('Helvetica').text(value || 'N/A', { width: 350 });
+            doc.moveDown(0.5);
+          });
+          
+          // Finalizar el documento
+          doc.end();
           
         } catch (error) {
           console.error("Error generando PDF:", error);
