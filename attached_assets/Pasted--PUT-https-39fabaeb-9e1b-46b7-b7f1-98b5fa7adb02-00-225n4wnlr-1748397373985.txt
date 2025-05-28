@@ -1,0 +1,38 @@
+ 
+            
+            
+           PUT https://39fabaeb-9e1b-46b7-b7f1-98b5fa7adb02-00-225n4wnlrrvi6.worf.replit.dev/api/production-forms/2 500 (Internal Server Error)
+apiRequest @ /src/lib/queryClient.ts:9
+mutationFn @ /src/hooks/use-produ…t=1748395759031:154
+fn @ /@fs/home/runner/wor….js?v=2f74ef84:1189
+run @ /@fs/home/runner/wor…y.js?v=2f74ef84:494
+start @ /@fs/home/runner/wor…y.js?v=2f74ef84:536
+execute @ /@fs/home/runner/wor….js?v=2f74ef84:1225
+await in execute
+mutate @ /@fs/home/runner/wor….js?v=2f74ef84:2630
+handleSave @ /src/pages/productio…?t=1748395919607:85
+handleTabChange @ /src/components/proc…t=1748394927184:175
+(anonymous) @ /@fs/home/runner/wor…4W.js?v=2f74ef84:27
+(anonymous) @ /@fs/home/runner/wor…OY.js?v=2f74ef84:28
+(anonymous) @ @radix-ui_react-tabs.js:151
+handleEvent @ /@fs/home/runner/wor…4W.js?v=2f74ef84:13
+overrideProps.<computed> @ /@fs/home/runner/wor…X.js?v=2f74ef84:115
+callCallback2 @ /@fs/home/runner/wor….js?v=2f74ef84:3674
+invokeGuardedCallbackDev @ /@fs/home/runner/wor….js?v=2f74ef84:3699
+invokeGuardedCallback @ /@fs/home/runner/wor….js?v=2f74ef84:3733
+invokeGuardedCallbackAndCatchFirstError @ /@fs/home/runner/wor….js?v=2f74ef84:3736
+executeDispatch @ /@fs/home/runner/wor….js?v=2f74ef84:7014
+processDispatchQueueItemsInOrder @ /@fs/home/runner/wor….js?v=2f74ef84:7034
+processDispatchQueue @ /@fs/home/runner/wor….js?v=2f74ef84:7043
+dispatchEventsForPlugins @ /@fs/home/runner/wor….js?v=2f74ef84:7051
+(anonymous) @ /@fs/home/runner/wor….js?v=2f74ef84:7174
+batchedUpdates$1 @ /@fs/home/runner/wor…js?v=2f74ef84:18913
+batchedUpdates @ /@fs/home/runner/wor….js?v=2f74ef84:3579
+dispatchEventForPluginEventSystem @ /@fs/home/runner/wor….js?v=2f74ef84:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ /@fs/home/runner/wor….js?v=2f74ef84:5478
+dispatchEvent @ /@fs/home/runner/wor….js?v=2f74ef84:5472
+dispatchDiscreteEvent @ /@fs/home/runner/wor….js?v=2f74ef84:5449Understand this error
+ Error al guardar el formulario: Error: 500: {"message":"Error al actualizar formulario de producción"}
+    at throwIfResNotOk (/src/lib/queryClient.ts:5:11)
+    at async apiRequest (/src/lib/queryClient.ts:15:3)
+    at async Object.mutationFn (/src/hooks/use-production-form.tsx?t=1748395759031:154:19)
