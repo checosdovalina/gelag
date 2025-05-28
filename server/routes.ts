@@ -2152,6 +2152,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Exportar formulario de producción en PDF
   app.get("/api/production-forms/:id/export", async (req, res, next) => {
     try {
+      // Prevenir caché del navegador para forzar regeneración del PDF
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "ID inválido" });
@@ -2509,7 +2516,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                       return ingredients.map((ing: any) => 
                         `<tr>
                           <td style="border: 1px solid #000; padding: 8px;">${ing.name || 'N/A'}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.quantity || ''} ${ing.unit || 'kg'}</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.quantity || '0'} ${ing.unit || 'kg'}</td>
                         </tr>`
                       ).join('');
                     }
