@@ -29,6 +29,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
+import PDFDocument from "pdfkit";
 import fs from 'fs';
 import { User } from "@shared/schema";
 
@@ -2184,7 +2185,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (format === "pdf") {
         console.log("Generando PDF para formulario:", productionForm);
         
-        const PDFDocument = require("pdfkit");
         const doc = new PDFDocument({ margin: 50 });
         
         // Set response headers for PDF
