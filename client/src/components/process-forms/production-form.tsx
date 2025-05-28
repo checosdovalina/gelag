@@ -250,6 +250,37 @@ export default function ProductionForm({
       ...prev,
       [field]: value
     }));
+    
+    // Auto-cambio de estado basado en el workflow
+    autoUpdateStatus(field, value);
+  };
+  
+  // Función para auto-actualizar estado según el workflow
+  const autoUpdateStatus = (field: string, value: any) => {
+    if (!user) return;
+    
+    const userRole = mapUserRoleToAppRole(user.role);
+    
+    // Gerente de Producción: Al llenar información general -> IN_PROGRESS
+    if (userRole === "production_manager" && 
+        (field === "responsible" || field === "lotNumber") && 
+        value && status === ProductionFormStatus.DRAFT) {
+      setStatus(ProductionFormStatus.IN_PROGRESS);
+    }
+    
+    // Operador: Al completar seguimiento de proceso -> PENDING_REVIEW
+    if (userRole === "operator" && 
+        (field === "startTime" || field === "endTime" || field === "temperature" || field === "pressure") && 
+        value && status === ProductionFormStatus.IN_PROGRESS) {
+      setStatus(ProductionFormStatus.PENDING_REVIEW);
+    }
+    
+    // Gerente de Calidad: Al completar verificación -> COMPLETED
+    if (userRole === "quality_manager" && 
+        (field === "finalBrix" || field === "yield" || field === "cP") && 
+        value && status === ProductionFormStatus.PENDING_REVIEW) {
+      setStatus(ProductionFormStatus.COMPLETED);
+    }
   };
   
   // Manejar guardado del formulario
