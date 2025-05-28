@@ -186,10 +186,8 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.endState !== undefined) updateFields.endState = req.body.endState;
     if (req.body.signatureUrl !== undefined) updateFields.signatureUrl = req.body.signatureUrl;
     
-    // Campos de control
-    updateFields.updatedAt = new Date();
+    // Campos de control - sin incluir timestamps automáticos que causan problemas
     updateFields.updatedBy = req.user?.id;
-    updateFields.lastUpdatedAt = new Date();
     updateFields.lastUpdatedBy = req.user?.id;
     
     console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
