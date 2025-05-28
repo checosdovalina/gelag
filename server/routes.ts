@@ -2412,44 +2412,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
           </head>
           <body>
             <!-- PÁGINA 1 -->
+            <!-- Header estilo GELAG exacto -->
             <div class="header-container">
-              <div class="header-top">
-                <div class="header-title">PR-PR-01-04 - FORMULARIO DE PRODUCCIÓN</div>
-                <div class="company-info">
-                  GELAG S.A DE C.V BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
+              <!-- Título del formulario -->
+              <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px;">
+                PR-PR-01-04 - FORMULARIO DE PRODUCCIÓN
+              </div>
+              
+              <!-- Información de la empresa y logo -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size: 32px; font-weight: bold; color: #e74c3c; font-family: Arial;">
+                  gelag
                 </div>
-                <div class="logo-section">
-                  <div class="logo-text">gelag</div>
+                <div style="text-align: center; font-size: 11px; flex-grow: 1; margin: 0 20px;">
+                  GELAG S.A DE C.V BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
                 </div>
               </div>
               
-              <div class="header-fields">
+              <!-- Campos del header en dos columnas -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; border-top: 1px solid #000; padding-top: 15px;">
                 <div>
-                  <div class="header-field">
-                    <span class="header-field-label">Folio:</span>
-                    <span class="header-field-value">${productionForm.id}</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 80px;">Folio:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.id}</span>
                   </div>
-                  <div class="header-field">
-                    <span class="header-field-label">Fecha:</span>
-                    <span class="header-field-value">${productionForm.date}</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 80px;">Fecha:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.date}</span>
                   </div>
-                  <div class="header-field">
-                    <span class="header-field-label">Estado:</span>
-                    <span class="header-field-value">${productionForm.status}</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 80px;">Estado:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.status}</span>
                   </div>
                 </div>
                 <div>
-                  <div class="header-field">
-                    <span class="header-field-label">Creado por:</span>
-                    <span class="header-field-value">${productionForm.responsible}</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 120px;">Creado por:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.responsible}</span>
                   </div>
-                  <div class="header-field">
-                    <span class="header-field-label">Departamento:</span>
-                    <span class="header-field-value">Producción</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 120px;">Departamento:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">Producción</span>
                   </div>
-                  <div class="header-field">
-                    <span class="header-field-label">Lote:</span>
-                    <span class="header-field-value">${productionForm.lotNumber}</span>
+                  <div style="display: flex; margin-bottom: 8px;">
+                    <span style="font-weight: bold; min-width: 120px;">Lote:</span>
+                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.lotNumber}</span>
                   </div>
                 </div>
               </div>
