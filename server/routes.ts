@@ -2155,13 +2155,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "ID inválido" });
       }
 
-      // Por ahora, redirigir a la vista del formulario
-      // Más adelante se puede generar un PDF real
-      res.json({ 
-        success: true, 
-        redirect: `/production-form/${id}`,
-        message: "Formulario de producción disponible para visualización"
-      });
+      const format = req.query.format || "pdf";
+      
+      // Obtener el formulario de producción
+      const productionForm = await storage.getProductionForm(id);
+      if (!productionForm) {
+        return res.status(404).json({ message: "Formulario de producción no encontrado" });
+      }
+
+      // Obtener información del usuario creador
+      const creator = await storage.getUser(productionForm.createdBy);
+      const creatorName = creator?.name || "Usuario desconocido";
+
+      if (format === "pdf") {
+        const PDFDocument = require("pdfkit");
+        const doc = new PDFDocument();
+        
+        // Set response headers for PDF
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="Formulario_Produccion_${productionForm.productId}_${productionForm.date}.pdf"`);
+        
+        // Pipe the PDF to the response
+        doc.pipe(res);
+        
+        // Add content to PDF
+        doc.fontSize(16).text("Formulario de Producción", 50, 50);
+        doc.fontSize(12);
+        
+        // Información general
+        let yPosition = 80;
+        doc.text(`Producto: ${productionForm.productId}`, 50, yPosition);
+        yPosition += 20;
+        doc.text(`Litros: ${productionForm.liters}`, 50, yPosition);
+        yPosition += 20;
+        doc.text(`Fecha: ${productionForm.date}`, 50, yPosition);
+        yPosition += 20;
+        doc.text(`Responsable: ${productionForm.responsible || creatorName}`, 50, yPosition);
+        yPosition += 20;
+        doc.text(`Lote: ${productionForm.lotNumber || "No asignado"}`, 50, yPosition);
+        yPosition += 20;
+        doc.text(`Estado: ${productionForm.status}`, 50, yPosition);
+        yPosition += 30;
+        
+        // Ingredientes
+        if (productionForm.ingredients && productionForm.ingredients.length > 0) {
+          doc.text("Ingredientes:", 50, yPosition);
+          yPosition += 20;
+          
+          productionForm.ingredients.forEach((ingredient: any) => {
+            doc.text(`• ${ingredient.name}: ${ingredient.quantity} ${ingredient.unit}`, 70, yPosition);
+            yPosition += 15;
+          });
+          yPosition += 15;
+        }
+        
+        // Datos del proceso
+        doc.text("Datos del Proceso:", 50, yPosition);
+        yPosition += 20;
+        doc.text(`Hora inicio: ${productionForm.startTime || "No registrada"}`, 70, yPosition);
+        yPosition += 15;
+        doc.text(`Hora fin: ${productionForm.endTime || "No registrada"}`, 70, yPosition);
+        yPosition += 15;
+        doc.text(`Brix final: ${productionForm.finalBrix || "No registrado"}`, 70, yPosition);
+        yPosition += 15;
+        doc.text(`cP: ${productionForm.cP || "No registrado"}`, 70, yPosition);
+        yPosition += 15;
+        doc.text(`Rendimiento: ${productionForm.yield || "No calculado"}`, 70, yPosition);
+        
+        // Finalize the PDF
+        doc.end();
+        
+      } else {
+        // Para Excel, devolver JSON por ahora
+        res.json({
+          success: true,
+          data: productionForm,
+          message: "Datos del formulario de producción"
+        });
+      }
 
     } catch (error) {
       console.error("Error al exportar formulario de producción:", error);
