@@ -2719,22 +2719,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <!-- Sección de Notas -->
-            <div style="margin: 20px 0;">
-              <div style="display: flex;">
-                <div style="width: 70%; margin-right: 20px;">
-                  <strong style="font-size: 12px;">Notas:</strong>
-                  <div style="border: 1px solid #000; min-height: 80px; padding: 8px; margin-top: 5px; font-size: 11px;">
-                    
-                  </div>
-                </div>
-                <div style="width: 30%;">
-                  <div style="border: 1px solid #000; text-align: right; padding: 8px; font-size: 11px;">
-                    <strong>Aprueba</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
+
 
             <!-- Sección de Destino de Producto -->
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
@@ -2812,25 +2797,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             </table>
 
             <!-- Área de Notas -->
-            <div style="margin: 30px 0;">
-              <strong>Notas:</strong>
-              <div style="border: 1px solid #000; min-height: 100px; padding: 10px; margin-top: 10px;">
-                ${productionForm.qualityObservations && Array.isArray(productionForm.qualityObservations) 
-                  ? productionForm.qualityObservations.filter(obs => obs && obs.trim() !== '').join(', ') 
-                  : 'Sin observaciones registradas'}
-              </div>
-            </div>
+
 
             <!-- Sección de Firmas -->
             <div style="margin-top: 50px;">
               <table style="width: 100%; margin-top: 50px;">
                 <tr>
-                  <td style="width: 33%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
+                  <td style="width: 50%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
                     ${productionForm.signatureUrl ? 'FIRMA PRESENTE' : ''}
                   </td>
-                  <td style="width: 34%;"></td>
-                  <td style="width: 33%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
-                    Aprueba
+                  <td style="width: 50%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
+                    
                   </td>
                 </tr>
                 <tr>
@@ -2838,7 +2815,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     <strong>Operador de Producción</strong><br>
                     ${creatorName}
                   </td>
-                  <td></td>
                   <td style="text-align: center; padding-top: 10px; font-size: 11px;">
                     <strong>Gerente de Calidad</strong><br>
                     Nombre: ________________
