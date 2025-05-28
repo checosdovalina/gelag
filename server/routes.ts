@@ -2881,7 +2881,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Buscar líneas específicas que contienen CONTROL DE CALIDAD
         const lines = htmlContent.split('\n');
         lines.forEach((line, index) => {
-          if (line.includes('CONTROL DE CALIDAD')) {
+          if (line.includes('CONTROL DE CALIDAD') || line.includes('FIRMAS Y AUTORIZACIONES')) {
             console.log(`Línea ${index + 1}: ${line.trim()}`);
           }
         });
