@@ -2529,109 +2529,196 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
-              PARÁMETROS DE PROCESO
+            <!-- Layout de 3 columnas para Materia Prima y controles de proceso -->
+            <div style="display: flex; width: 100%; margin: 20px 0;">
+              <!-- Columna 1: Materia Prima -->
+              <div style="width: 25%; margin-right: 15px;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                  <thead>
+                    <tr style="background-color: #d0d0d0;">
+                      <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Materia Prima</th>
+                      <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Kilos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${(() => {
+                      try {
+                        let ingredients = productionForm.ingredients;
+                        if (typeof ingredients === 'string') {
+                          ingredients = JSON.parse(ingredients);
+                        }
+                        if (Array.isArray(ingredients) && ingredients.length > 0) {
+                          return ingredients.map((ing: any) => 
+                            `<tr>
+                              <td style="border: 1px solid #000; padding: 4px; font-size: 11px;">${ing.name || 'N/A'}</td>
+                              <td style="border: 1px solid #000; padding: 4px; text-align: center; font-size: 11px;">${ing.quantity || ''}</td>
+                            </tr>`
+                          ).join('');
+                        }
+                        return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">No hay ingredientes</td></tr>';
+                      } catch (e) {
+                        return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">Error</td></tr>';
+                      }
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Columna 2: Campos de Hora Inicio/Término -->
+              <div style="width: 40%; margin-right: 15px;">
+                <div style="margin-bottom: 15px;">
+                  <div style="display: flex; margin-bottom: 10px;">
+                    <div style="width: 50%; margin-right: 10px;">
+                      <div style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Inicio</div>
+                      <div style="border: 1px solid #000; border-top: none; padding: 15px; text-align: center; min-height: 30px;">${productionForm.startTime || ''}</div>
+                    </div>
+                    <div style="width: 50%;">
+                      <div style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Término</div>
+                      <div style="border: 1px solid #000; border-top: none; padding: 15px; text-align: center; min-height: 30px;">${productionForm.endTime || ''}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tablas de Temperatura, Manómetro y Horas -->
+                <div style="display: flex; margin-bottom: 15px;">
+                  <!-- Temperatura -->
+                  <div style="width: 33%; margin-right: 5px;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Temperatura</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____°C</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____°C</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Manómetro -->
+                  <div style="width: 33%; margin-right: 5px;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Manómetro</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____PSI</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Horas -->
+                  <div style="width: 34%;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                      <thead>
+                        <tr>
+                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Horas</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____PSI</td></tr>
+                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____PSI</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Columna 3: Espacio para otras secciones -->
+              <div style="width: 35%;">
+                <!-- Reservado para contenido adicional -->
+              </div>
             </div>
 
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
+            <!-- Tabla de Verificación de Calidad del Producto -->
+            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #d0d0d0; border: 1px solid #000;">
+              Verificación de Calidad del Producto
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 20px;">
               <thead>
-                <tr style="background-color: #f0f0f0;">
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Parámetro</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor inicial</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Valor final</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 25%;">Especificación</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 10%;">Conforme</th>
+                <tr style="background-color: #d0d0d0;">
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Hora</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Grados Brix</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Temperatura</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Textura</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Color</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Viscosidad</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Olor</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Sabor</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Material Extraño</th>
+                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="border: 1px solid #000; padding: 8px;">Hora de inicio</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startTime || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">65° Brix</td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">70°C a 95°C</td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">N/A</td>
+                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
                 </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px;">Hora de finalización</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endTime || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">Según programación</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
-                </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px;">Brix final</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.finalBrix || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">65° ± 2°</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
-                </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px;">Viscosidad (cP)</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.cP || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">2000-3000 cP</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
-                </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px;">Rendimiento</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.yield || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">≥ 90%</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">✓</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
-              CONTROL DE CALIDAD
-            </div>
-
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
-              <thead>
-                <tr style="background-color: #f0f0f0;">
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Hora</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Grados Brix</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Temperatura</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Color</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Viscosidad</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Olor</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Sabor</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Material Extraño</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Status</th>
-                </tr>
-              </thead>
-              <tbody>
                 ${(() => {
-                  try {
-                    const qualityTimes = Array.isArray(productionForm.qualityTimes) ? productionForm.qualityTimes : [];
-                    const brix = Array.isArray(productionForm.brix) ? productionForm.brix : [];
-                    const qualityTemp = Array.isArray(productionForm.qualityTemp) ? productionForm.qualityTemp : [];
-                    const color = Array.isArray(productionForm.color) ? productionForm.color : [];
-                    const viscosity = Array.isArray(productionForm.viscosity) ? productionForm.viscosity : [];
-                    const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
-                    const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
-                    
-                    let rows = '';
-                    for (let i = 0; i < Math.max(qualityTimes.length, 8); i++) {
-                      rows += `<tr>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${qualityTimes[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${brix[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${qualityTemp[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${color[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${viscosity[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${smell[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${taste[i] || '-'}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">N/A</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                      </tr>`;
-                    }
-                    return rows;
-                  } catch (e) {
-                    return '<tr><td colspan="9" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar datos de calidad</td></tr>';
+                  let rows = '';
+                  for (let i = 0; i < 7; i++) {
+                    rows += `<tr>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">N/A</td>
+                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
+                    </tr>`;
                   }
+                  return rows;
                 })()}
               </tbody>
             </table>
+
+            <!-- Sección de Notas -->
+            <div style="margin: 20px 0;">
+              <div style="display: flex;">
+                <div style="width: 70%; margin-right: 20px;">
+                  <strong style="font-size: 12px;">Notas:</strong>
+                  <div style="border: 1px solid #000; min-height: 80px; padding: 8px; margin-top: 5px; font-size: 11px;">
+                    
+                  </div>
+                </div>
+                <div style="width: 30%;">
+                  <div style="border: 1px solid #000; text-align: right; padding: 8px; font-size: 11px;">
+                    <strong>Aprueba</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Sección de Destino de Producto -->
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
