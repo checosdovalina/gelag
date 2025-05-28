@@ -2494,12 +2494,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
               <thead>
                 <tr style="background-color: #f0f0f0;">
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Ingrediente</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Cantidad</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Unidad</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Lote</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Fecha de caducidad</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Observaciones</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 70%;">Ingrediente</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 30%;">Cantidad</th>
                 </tr>
               </thead>
               <tbody>
@@ -2513,17 +2509,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
                       return ingredients.map((ing: any) => 
                         `<tr>
                           <td style="border: 1px solid #000; padding: 8px;">${ing.name || 'N/A'}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.quantity || 'N/A'}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.unit || 'N/A'}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">${ing.quantity || ''} ${ing.unit || 'kg'}</td>
                         </tr>`
                       ).join('');
                     }
-                    return '<tr><td colspan="6" style="text-align: center; border: 1px solid #000; padding: 8px;">No hay ingredientes registrados</td></tr>';
+                    return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 8px;">No hay ingredientes registrados</td></tr>';
                   } catch (e) {
-                    return '<tr><td colspan="6" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar ingredientes</td></tr>';
+                    return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 8px;">Error al cargar ingredientes</td></tr>';
                   }
                 })()}
               </tbody>
