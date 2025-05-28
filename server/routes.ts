@@ -2183,95 +2183,470 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const creatorName = "Usuario Ejemplo";
 
       if (format === "pdf") {
-        console.log("Generando PDF de formulario de producción:", productionForm);
+        console.log("Generando HTML para PDF de formulario de producción:", productionForm);
         
-        try {
-          // Crear PDF con PDFKit
-          const doc = new PDFDocument({ margin: 50 });
-          
-          // Configurar headers para descarga
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename="Formulario_Produccion_${productionForm.productId}_${productionForm.date.replace(/[\/\\:*?"<>|]/g, "_")}.pdf"`);
-          
-          // Pipe del documento al response
-          doc.pipe(res);
-          
-          // Título principal
-          doc.fontSize(20).font('Helvetica-Bold').text('FORMULARIO DE PRODUCCIÓN', { align: 'center' });
-          doc.moveDown();
-          doc.fontSize(10).font('Helvetica').text(`Generado el: ${new Date().toLocaleString('es-ES')}`, { align: 'center' });
-          doc.moveDown(2);
-          
-          // Línea separadora
-          doc.strokeColor('#333333').lineWidth(2).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-          doc.moveDown();
-          
-          // Sección: Información General
-          doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000')
-             .text('INFORMACIÓN GENERAL', { underline: true });
-          doc.moveDown();
-          
-          const fields = [
-            ['Producto:', productionForm.productId],
-            ['Litros:', productionForm.liters.toString()],
-            ['Fecha:', productionForm.date],
-            ['Responsable:', productionForm.responsible],
-            ['Lote:', productionForm.lotNumber],
-            ['Estado:', productionForm.status]
-          ];
-          
-          fields.forEach(([label, value]) => {
-            doc.fontSize(11).font('Helvetica-Bold').text(label, 70, doc.y, { continued: true, width: 120 });
-            doc.font('Helvetica').text(value || 'N/A', { width: 350 });
-            doc.moveDown(0.5);
-          });
-          
-          doc.moveDown();
-          
-          // Sección: Ingredientes
-          doc.fontSize(14).font('Helvetica-Bold').text('INGREDIENTES', { underline: true });
-          doc.moveDown();
-          
-          if (productionForm.ingredients && productionForm.ingredients.length > 0) {
-            productionForm.ingredients.forEach((ing: any) => {
-              doc.fontSize(11).font('Helvetica')
-                 .text(`• ${ing.name}: ${ing.quantity} ${ing.unit}`, 90);
-              doc.moveDown(0.3);
-            });
-          } else {
-            doc.fontSize(11).font('Helvetica').text('No hay ingredientes registrados', 90);
-          }
-          
-          doc.moveDown();
-          
-          // Sección: Datos del Proceso
-          doc.fontSize(14).font('Helvetica-Bold').text('DATOS DEL PROCESO', { underline: true });
-          doc.moveDown();
-          
-          const processFields = [
-            ['Hora inicio:', productionForm.startTime],
-            ['Hora fin:', productionForm.endTime],
-            ['Brix final:', productionForm.finalBrix],
-            ['cP:', productionForm.cP],
-            ['Rendimiento:', productionForm.yield]
-          ];
-          
-          processFields.forEach(([label, value]) => {
-            doc.fontSize(11).font('Helvetica-Bold').text(label, 70, doc.y, { continued: true, width: 120 });
-            doc.font('Helvetica').text(value || 'N/A', { width: 350 });
-            doc.moveDown(0.5);
-          });
-          
-          // Finalizar el documento
-          doc.end();
-          
-        } catch (error) {
-          console.error("Error generando PDF:", error);
-          res.status(500).json({ 
-            message: "Error al generar PDF", 
-            error: error instanceof Error ? error.message : "Error desconocido" 
-          });
-        }
+        // Crear HTML completo con header estilo GELAG y información completa
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>Formulario de Producción - ${productionForm.productId}</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { 
+                font-family: 'Arial', sans-serif; 
+                font-size: 12px;
+                line-height: 1.4; 
+                color: #000;
+                background: white;
+                padding: 30px;
+              }
+              
+              /* Header estilo GELAG */
+              .header-container {
+                border: 2px solid #000;
+                margin-bottom: 30px;
+                page-break-inside: avoid;
+              }
+              
+              .header-top {
+                background-color: #f8f9fa;
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #000;
+              }
+              
+              .header-title {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 5px;
+              }
+              
+              .company-info {
+                font-size: 11px;
+                margin-bottom: 10px;
+              }
+              
+              .logo-section {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+              }
+              
+              .logo-text {
+                font-size: 24px;
+                font-weight: bold;
+                color: #e74c3c;
+              }
+              
+              .header-fields {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                padding: 15px;
+                border-top: 1px solid #000;
+              }
+              
+              .header-field {
+                display: flex;
+                margin-bottom: 8px;
+              }
+              
+              .header-field-label {
+                font-weight: bold;
+                min-width: 100px;
+              }
+              
+              .header-field-value {
+                flex: 1;
+                border-bottom: 1px solid #000;
+                padding-bottom: 2px;
+              }
+              
+              /* Secciones del contenido */
+              .content-section {
+                margin-bottom: 30px;
+                page-break-inside: avoid;
+              }
+              
+              .section-divider {
+                text-align: center;
+                margin: 20px 0;
+                position: relative;
+              }
+              
+              .section-divider::before,
+              .section-divider::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                width: 45%;
+                height: 1px;
+                background: #000;
+              }
+              
+              .section-divider::before { left: 0; }
+              .section-divider::after { right: 0; }
+              
+              .section-title {
+                background: white;
+                padding: 0 20px;
+                font-weight: bold;
+                font-size: 14px;
+              }
+              
+              .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 20px;
+              }
+              
+              .field-row {
+                display: flex;
+                margin-bottom: 10px;
+              }
+              
+              .field-label {
+                font-weight: bold;
+                min-width: 120px;
+              }
+              
+              .field-value {
+                flex: 1;
+                border-bottom: 1px solid #000;
+                padding-bottom: 2px;
+              }
+              
+              /* Tabla de ingredientes */
+              .ingredients-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+              }
+              
+              .ingredients-table th,
+              .ingredients-table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+              }
+              
+              .ingredients-table th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+              }
+              
+              /* Tabla de datos del proceso */
+              .process-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+              }
+              
+              .process-table th,
+              .process-table td {
+                border: 1px solid #000;
+                padding: 10px;
+                text-align: center;
+              }
+              
+              .process-table th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+              }
+              
+              /* Sección de firmas */
+              .signatures-section {
+                margin-top: 50px;
+                page-break-inside: avoid;
+              }
+              
+              .signatures-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 40px;
+                margin-top: 30px;
+              }
+              
+              .signature-box {
+                text-align: center;
+              }
+              
+              .signature-line {
+                border-top: 2px solid #000;
+                margin-top: 50px;
+                padding-top: 8px;
+                font-size: 11px;
+                font-weight: bold;
+              }
+              
+              .signature-date {
+                margin-top: 20px;
+                font-size: 10px;
+              }
+              
+              /* Footer */
+              .footer {
+                position: fixed;
+                bottom: 20px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 10px;
+                color: #666;
+              }
+              
+              /* Páginas */
+              .page-break {
+                page-break-before: always;
+              }
+              
+              @media print {
+                body { margin: 0; padding: 15px; }
+                .page-break { page-break-before: always; }
+              }
+            </style>
+          </head>
+          <body>
+            <!-- PÁGINA 1 -->
+            <div class="header-container">
+              <div class="header-top">
+                <div class="header-title">PR-PR-01-04 - FORMULARIO DE PRODUCCIÓN</div>
+                <div class="company-info">
+                  GELAG S.A DE C.V BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
+                </div>
+                <div class="logo-section">
+                  <div class="logo-text">gelag</div>
+                </div>
+              </div>
+              
+              <div class="header-fields">
+                <div>
+                  <div class="header-field">
+                    <span class="header-field-label">Folio:</span>
+                    <span class="header-field-value">${productionForm.id}</span>
+                  </div>
+                  <div class="header-field">
+                    <span class="header-field-label">Fecha:</span>
+                    <span class="header-field-value">${productionForm.date}</span>
+                  </div>
+                  <div class="header-field">
+                    <span class="header-field-label">Estado:</span>
+                    <span class="header-field-value">${productionForm.status}</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="header-field">
+                    <span class="header-field-label">Creado por:</span>
+                    <span class="header-field-value">${productionForm.responsible}</span>
+                  </div>
+                  <div class="header-field">
+                    <span class="header-field-label">Departamento:</span>
+                    <span class="header-field-value">Producción</span>
+                  </div>
+                  <div class="header-field">
+                    <span class="header-field-label">Lote:</span>
+                    <span class="header-field-value">${productionForm.lotNumber}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-divider">
+              <span class="section-title">DATOS GENERALES</span>
+            </div>
+
+            <div class="content-section">
+              <div class="info-grid">
+                <div>
+                  <div class="field-row">
+                    <span class="field-label">Producto:</span>
+                    <span class="field-value">${productionForm.productId}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Volumen (L):</span>
+                    <span class="field-value">${productionForm.liters}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Fecha de producción:</span>
+                    <span class="field-value">${productionForm.date}</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="field-row">
+                    <span class="field-label">Responsable:</span>
+                    <span class="field-value">${productionForm.responsible}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Número de lote:</span>
+                    <span class="field-value">${productionForm.lotNumber}</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Estado del proceso:</span>
+                    <span class="field-value">${productionForm.status}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-divider">
+              <span class="section-title">INGREDIENTES Y MATERIAS PRIMAS</span>
+            </div>
+
+            <table class="ingredients-table">
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Cantidad</th>
+                  <th>Unidad</th>
+                  <th>Lote</th>
+                  <th>Fecha de caducidad</th>
+                  <th>Observaciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${productionForm.ingredients && productionForm.ingredients.length > 0 
+                  ? productionForm.ingredients.map((ing: any) => 
+                      `<tr>
+                        <td>${ing.name}</td>
+                        <td>${ing.quantity}</td>
+                        <td>${ing.unit}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>`
+                    ).join('')
+                  : '<tr><td colspan="6" style="text-align: center;">No hay ingredientes registrados</td></tr>'
+                }
+              </tbody>
+            </table>
+
+            <!-- PÁGINA 2 -->
+            <div class="page-break">
+              <div class="section-divider">
+                <span class="section-title">PARÁMETROS DE PROCESO</span>
+              </div>
+
+              <table class="process-table">
+                <thead>
+                  <tr>
+                    <th>Parámetro</th>
+                    <th>Valor inicial</th>
+                    <th>Valor final</th>
+                    <th>Especificación</th>
+                    <th>Conforme</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Hora de inicio</td>
+                    <td>${productionForm.startTime || '-'}</td>
+                    <td>-</td>
+                    <td>Según programación</td>
+                    <td>✓</td>
+                  </tr>
+                  <tr>
+                    <td>Hora de finalización</td>
+                    <td>-</td>
+                    <td>${productionForm.endTime || '-'}</td>
+                    <td>Según programación</td>
+                    <td>✓</td>
+                  </tr>
+                  <tr>
+                    <td>Brix final</td>
+                    <td>-</td>
+                    <td>${productionForm.finalBrix || '-'}</td>
+                    <td>65° ± 2°</td>
+                    <td>✓</td>
+                  </tr>
+                  <tr>
+                    <td>Viscosidad (cP)</td>
+                    <td>-</td>
+                    <td>${productionForm.cP || '-'}</td>
+                    <td>2000-3000 cP</td>
+                    <td>✓</td>
+                  </tr>
+                  <tr>
+                    <td>Rendimiento</td>
+                    <td>-</td>
+                    <td>${productionForm.yield || '-'}</td>
+                    <td>≥ 90%</td>
+                    <td>✓</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="section-divider">
+                <span class="section-title">CONTROL DE CALIDAD</span>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <div class="field-row">
+                    <span class="field-label">pH:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Densidad:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Color:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="field-row">
+                    <span class="field-label">Sabor:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Textura:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Apariencia:</span>
+                    <span class="field-value">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="signatures-section">
+                <div class="section-divider">
+                  <span class="section-title">FIRMAS Y AUTORIZACIONES</span>
+                </div>
+                
+                <div class="signatures-grid">
+                  <div class="signature-box">
+                    <div class="signature-line">Supervisor de Producción</div>
+                    <div class="signature-date">Fecha: _______________</div>
+                  </div>
+                  <div class="signature-box">
+                    <div class="signature-line">Control de Calidad</div>
+                    <div class="signature-date">Fecha: _______________</div>
+                  </div>
+                  <div class="signature-box">
+                    <div class="signature-line">Gerente de Producción</div>
+                    <div class="signature-date">Fecha: _______________</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              Documento generado automáticamente por el sistema de captura de formularios.<br>
+              © 2025 GELAG S.A DE C.V - Todos los derechos reservados - ID: ${productionForm.id}
+            </div>
+          </body>
+          </html>
+        `;
+
+        // Enviar HTML que el frontend convertirá a PDF
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.send(htmlContent);
         
       } else {
         // Para Excel, devolver JSON por ahora
