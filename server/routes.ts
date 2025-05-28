@@ -2877,13 +2877,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("¿Contiene 'CONTROL DE CALIDAD'?", htmlContent.includes('CONTROL DE CALIDAD'));
         console.log("¿Contiene 'pH:'?", htmlContent.includes('pH:'));
         console.log("¿Contiene 'FIRMAS Y AUTORIZACIONES'?", htmlContent.includes('FIRMAS Y AUTORIZACIONES'));
+        
+        // Buscar líneas específicas que contienen CONTROL DE CALIDAD
+        const lines = htmlContent.split('\n');
+        lines.forEach((line, index) => {
+          if (line.includes('CONTROL DE CALIDAD')) {
+            console.log(`Línea ${index + 1}: ${line.trim()}`);
+          }
+        });
         console.log("===========================");
         
-        // Enviar HTML que el frontend convertirá a PDF con headers especiales para evitar cache
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('X-PDF-Version', timestamp.toString());
-        res.setHeader('Vary', 'User-Agent');
-        res.send(htmlContent);
+        // Verificar si se solicita descarga directa de PDF
+        const download = req.query.download === 'true';
+        
+        if (download) {
+          // Generar PDF usando puppeteer
+          const puppeteer = require('puppeteer');
+          
+          try {
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            
+            const page = await browser.newPage();
+            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+            
+            const pdfBuffer = await page.pdf({
+              format: 'Letter',
+              margin: {
+                top: '0.5in',
+                right: '0.5in',
+                bottom: '0.5in',
+                left: '0.5in'
+              },
+              printBackground: true
+            });
+            
+            await browser.close();
+            
+            // Enviar PDF como descarga
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="Formulario_Produccion_${productionForm.folio}_${Date.now()}.pdf"`);
+            res.send(pdfBuffer);
+            
+          } catch (error) {
+            console.error('Error generando PDF:', error);
+            res.status(500).json({ message: 'Error al generar PDF' });
+          }
+        } else {
+          // Vista previa HTML con botón de descarga
+          const htmlWithDownload = htmlContent.replace(
+            '<body>',
+            `<body>
+              <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="window.open(window.location.href + '&download=true', '_blank')">
+                📥 Descargar PDF
+              </div>`
+          );
+          
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('X-PDF-Version', timestamp.toString());
+          res.setHeader('Vary', 'User-Agent');
+          res.send(htmlWithDownload);
+        }
         
       } else {
         // Para Excel, devolver JSON por ahora
