@@ -2153,10 +2153,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/production-forms/:id/export", async (req, res, next) => {
     try {
       // Prevenir caché del navegador para forzar regeneración del PDF
+      const timestamp = Date.now();
       res.set({
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Cache-Control': 'no-cache, no-store, must-revalidate, private',
         'Pragma': 'no-cache',
-        'Expires': '0'
+        'Expires': '0',
+        'Last-Modified': new Date().toUTCString(),
+        'ETag': `"${timestamp}"`
       });
 
       const id = parseInt(req.params.id);
@@ -2826,7 +2829,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <!-- Footer -->
             <div style="margin-top: 40px; border-top: 1px solid #000; padding-top: 15px; font-size: 10px; text-align: center;">
               Documento generado automáticamente por el sistema de gestión de formularios.<br>
-              © 2025 GELAG S.A DE C.V - Todos los derechos reservados - ID: ${productionForm.id}
+              © 2025 GELAG S.A DE C.V - Todos los derechos reservados - ID: ${productionForm.id}<br>
+              Generado: ${new Date().toLocaleString('es-MX')} - v${timestamp}
             </div>
 
             <!-- PÁGINA 2 -->
