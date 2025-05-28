@@ -131,6 +131,8 @@ export function useProductionForm(id?: number) {
   } = useQuery<ProductionForm>({
     queryKey: ['/api/production-forms', id],
     enabled: !!id, // Solo ejecutar si hay un ID
+    staleTime: 0, // Siempre considerar datos como obsoletos para refrescar automáticamente
+    refetchOnWindowFocus: true, // Refrescar al cambiar ventana/tab
   });
 
   // Actualizar un formulario existente
