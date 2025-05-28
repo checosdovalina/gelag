@@ -2179,8 +2179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Obtener información del usuario creador
-      const creator = await storage.getUser(productionForm.createdBy);
-      const creatorName = creator?.name || "Usuario desconocido";
+      const creatorName = "Usuario Ejemplo";
 
       if (format === "pdf") {
         console.log("Generando PDF para formulario:", productionForm);
