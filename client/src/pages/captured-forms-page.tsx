@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -145,6 +145,12 @@ export default function CapturedFormsPage() {
     queryKey: ["/api/form-entries"],
     enabled: !!user,
   });
+
+  // Fetch production forms
+  const { data: productionForms } = useQuery<any[]>({
+    queryKey: ["/api/production-forms"],
+    enabled: !!user,
+  });
   
   // Fetch templates for filter and display
   const { data: templates } = useQuery<FormTemplate[]>({
@@ -259,13 +265,36 @@ export default function CapturedFormsPage() {
     }
   };
 
-  // Apply filters to entries
-  const filteredEntries = entries
-    ? entries.filter(entry => {
+  // Combinar formularios regulares y formularios de proceso
+  const combinedForms = React.useMemo(() => {
+    const regularForms = entries || [];
+    const processForms = (productionForms || []).map(form => ({
+      id: form.id,
+      formTemplateId: -1, // ID especial para formularios de proceso
+      data: form,
+      createdBy: form.createdBy,
+      createdAt: form.createdAt,
+      updatedAt: form.updatedAt,
+      department: "Producción",
+      status: form.status,
+      folioNumber: form.folio,
+      workflowStatus: form.status,
+      formType: "production", // Identificador especial
+      formName: `Formulario de Producción - ${form.productId}` // Nombre personalizado
+    }));
+    
+    return [...regularForms, ...processForms];
+  }, [entries, productionForms]);
+
+  // Apply filters to combined entries
+  const filteredEntries = combinedForms
+    ? combinedForms.filter(entry => {
         // Text search (nombre del formulario)
         const hasSearchTerm = 
           searchTerm === "" || 
-          (templates?.find(t => t.id === entry.formTemplateId)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+          (entry.formType === "production" 
+            ? entry.formName?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false
+            : templates?.find(t => t.id === entry.formTemplateId)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
         
         // Content search (búsqueda en el contenido del formulario)
         const passesContentSearch = contentSearchTerm === "" || searchInFormContent(entry, contentSearchTerm);
