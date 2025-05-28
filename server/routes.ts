@@ -2529,125 +2529,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <!-- Layout de 3 columnas para Materia Prima y controles de proceso -->
-            <div style="display: flex; width: 100%; margin: 20px 0;">
-              <!-- Columna 1: Materia Prima -->
-              <div style="width: 25%; margin-right: 15px;">
-                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
-                  <thead>
-                    <tr style="background-color: #d0d0d0;">
-                      <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Materia Prima</th>
-                      <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Kilos</th>
+            <!-- Layout usando tabla principal para compatibilidad con PDF -->
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              <tr>
+                <!-- Columna 1: Materia Prima -->
+                <td style="width: 30%; vertical-align: top; padding-right: 15px;">
+                  <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                    <thead>
+                      <tr style="background-color: #d0d0d0;">
+                        <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Materia Prima</th>
+                        <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 12px;">Kilos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${(() => {
+                        try {
+                          let ingredients = productionForm.ingredients;
+                          if (typeof ingredients === 'string') {
+                            ingredients = JSON.parse(ingredients);
+                          }
+                          if (Array.isArray(ingredients) && ingredients.length > 0) {
+                            return ingredients.map((ing: any) => 
+                              `<tr>
+                                <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">${ing.name || 'N/A'}</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-size: 10px;">${ing.quantity || ''}</td>
+                              </tr>`
+                            ).join('');
+                          }
+                          return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">No hay ingredientes</td></tr>';
+                        } catch (e) {
+                          return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">Error</td></tr>';
+                        }
+                      })()}
+                    </tbody>
+                  </table>
+                </td>
+
+                <!-- Columna 2: Campos de control -->
+                <td style="width: 70%; vertical-align: top;">
+                  <!-- Fila de Hora Inicio y Término -->
+                  <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                    <tr>
+                      <td style="width: 50%; padding-right: 10px;">
+                        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                          <tr>
+                            <td style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Inicio</td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid #000; padding: 15px; text-align: center; min-height: 30px; font-size: 14px;">${productionForm.startTime || ''}</td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td style="width: 50%;">
+                        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                          <tr>
+                            <td style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Término</td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid #000; padding: 15px; text-align: center; min-height: 30px; font-size: 14px;">${productionForm.endTime || ''}</td>
+                          </tr>
+                        </table>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    ${(() => {
-                      try {
-                        let ingredients = productionForm.ingredients;
-                        if (typeof ingredients === 'string') {
-                          ingredients = JSON.parse(ingredients);
-                        }
-                        if (Array.isArray(ingredients) && ingredients.length > 0) {
-                          return ingredients.map((ing: any) => 
-                            `<tr>
-                              <td style="border: 1px solid #000; padding: 4px; font-size: 11px;">${ing.name || 'N/A'}</td>
-                              <td style="border: 1px solid #000; padding: 4px; text-align: center; font-size: 11px;">${ing.quantity || ''}</td>
-                            </tr>`
-                          ).join('');
-                        }
-                        return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">No hay ingredientes</td></tr>';
-                      } catch (e) {
-                        return '<tr><td colspan="2" style="text-align: center; border: 1px solid #000; padding: 4px;">Error</td></tr>';
-                      }
-                    })()}
-                  </tbody>
-                </table>
-              </div>
+                  </table>
 
-              <!-- Columna 2: Campos de Hora Inicio/Término -->
-              <div style="width: 40%; margin-right: 15px;">
-                <div style="margin-bottom: 15px;">
-                  <div style="display: flex; margin-bottom: 10px;">
-                    <div style="width: 50%; margin-right: 10px;">
-                      <div style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Inicio</div>
-                      <div style="border: 1px solid #000; border-top: none; padding: 15px; text-align: center; min-height: 30px;">${productionForm.startTime || ''}</div>
-                    </div>
-                    <div style="width: 50%;">
-                      <div style="border: 1px solid #000; padding: 8px; text-align: center; background-color: #f0f0f0; font-weight: bold; font-size: 12px;">Hora Término</div>
-                      <div style="border: 1px solid #000; border-top: none; padding: 15px; text-align: center; min-height: 30px;">${productionForm.endTime || ''}</div>
-                    </div>
-                  </div>
-                </div>
+                  <!-- Fila de Temperatura, Manómetro y Horas -->
+                  <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                      <!-- Temperatura -->
+                      <td style="width: 33%; padding-right: 5px; vertical-align: top;">
+                        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                          <thead>
+                            <tr>
+                              <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Temperatura</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 0 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 1 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 2 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 3 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 4 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 5 ____°C</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Fin ____°C</td></tr>
+                          </tbody>
+                        </table>
+                      </td>
 
-                <!-- Tablas de Temperatura, Manómetro y Horas -->
-                <div style="display: flex; margin-bottom: 15px;">
-                  <!-- Temperatura -->
-                  <div style="width: 33%; margin-right: 5px;">
-                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
-                      <thead>
-                        <tr>
-                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Temperatura</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____°C</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____°C</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
+                      <!-- Manómetro -->
+                      <td style="width: 33%; padding: 0 2px; vertical-align: top;">
+                        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                          <thead>
+                            <tr>
+                              <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Manómetro</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 0 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 1 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 2 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 3 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 4 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 5 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Fin ____PSI</td></tr>
+                          </tbody>
+                        </table>
+                      </td>
 
-                  <!-- Manómetro -->
-                  <div style="width: 33%; margin-right: 5px;">
-                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
-                      <thead>
-                        <tr>
-                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Manómetro</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____PSI</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Horas -->
-                  <div style="width: 34%;">
-                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
-                      <thead>
-                        <tr>
-                          <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Horas</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 0 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 1 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 2 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 3 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 4 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Hora 5 ____PSI</td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px; font-size: 10px;">Fin ____PSI</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Columna 3: Espacio para otras secciones -->
-              <div style="width: 35%;">
-                <!-- Reservado para contenido adicional -->
-              </div>
-            </div>
+                      <!-- Horas -->
+                      <td style="width: 34%; padding-left: 5px; vertical-align: top;">
+                        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                          <thead>
+                            <tr>
+                              <th style="border: 1px solid #000; padding: 4px; font-weight: bold; font-size: 11px; background-color: #f0f0f0;">Horas</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 0 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 1 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 2 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 3 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 4 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Hora 5 ____PSI</td></tr>
+                            <tr><td style="border: 1px solid #000; padding: 2px; font-size: 9px;">Fin ____PSI</td></tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
 
             <!-- Tabla de Verificación de Calidad del Producto -->
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #d0d0d0; border: 1px solid #000;">
