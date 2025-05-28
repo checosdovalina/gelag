@@ -2147,6 +2147,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Exportar formulario de producción en PDF
+  app.get("/api/production-forms/:id/export", async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      // Por ahora, redirigir a la vista del formulario
+      // Más adelante se puede generar un PDF real
+      res.json({ 
+        success: true, 
+        redirect: `/production-form/${id}`,
+        message: "Formulario de producción disponible para visualización"
+      });
+
+    } catch (error) {
+      console.error("Error al exportar formulario de producción:", error);
+      next(error);
+    }
+  });
+
   app.patch("/api/production-forms/:id/status", async (req, res, next) => {
     try {
       // Validamos que el status sea válido

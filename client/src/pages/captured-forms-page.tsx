@@ -365,11 +365,13 @@ export default function CapturedFormsPage() {
         description: `Preparando el formulario para descarga en formato ${format.toUpperCase()}.`
       });
       
-      const response = await apiRequest(
-        "GET",
-        `/api/form-entries/${entry.id}/export?format=${format}`,
-        null
-      );
+      // Determinar la ruta correcta según el tipo de formulario
+      const isProductionForm = (entry as any).formType === "production";
+      const exportUrl = isProductionForm 
+        ? `/api/production-forms/${entry.id}/export?format=${format}`
+        : `/api/form-entries/${entry.id}/export?format=${format}`;
+      
+      const response = await apiRequest("GET", exportUrl, null);
       
       // Create a URL for the blob response
       const blob = await response.blob();
