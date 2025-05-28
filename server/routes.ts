@@ -2838,40 +2838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-              <div class="section-divider">
-                <span class="section-title">CONTROL DE CALIDAD</span>
-              </div>
 
-              <div class="info-grid">
-                <div>
-                  <div class="field-row">
-                    <span class="field-label">pH:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                  <div class="field-row">
-                    <span class="field-label">Densidad:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                  <div class="field-row">
-                    <span class="field-label">Color:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                </div>
-                <div>
-                  <div class="field-row">
-                    <span class="field-label">Sabor:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                  <div class="field-row">
-                    <span class="field-label">Textura:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                  <div class="field-row">
-                    <span class="field-label">Apariencia:</span>
-                    <span class="field-value">-</span>
-                  </div>
-                </div>
-              </div>
 
               <div class="signatures-section">
                 <div class="section-divider">
