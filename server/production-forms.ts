@@ -139,26 +139,24 @@ export async function updateProductionForm(req: Request, res: Response) {
     // Log de los datos recibidos para debugging
     console.log("Datos recibidos para actualización:", JSON.stringify(req.body, null, 2));
     
-    // Preparar datos para actualización, asegurando que las fechas estén en formato correcto
+    // Preparar datos para actualización, excluyendo campos de timestamp que manejamos automáticamente
     const updateData = { ...req.body };
     
-    // Convertir fechas string a objetos Date si es necesario
-    if (updateData.createdAt && typeof updateData.createdAt === 'string') {
-      updateData.createdAt = new Date(updateData.createdAt);
-    }
-    if (updateData.updatedAt && typeof updateData.updatedAt === 'string') {
-      updateData.updatedAt = new Date(updateData.updatedAt);
-    }
-    if (updateData.lastUpdatedAt && typeof updateData.lastUpdatedAt === 'string') {
-      delete updateData.lastUpdatedAt; // Este campo lo manejamos nosotros
-    }
+    // Excluir campos de timestamp que el servidor maneja automáticamente
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+    delete updateData.lastUpdatedAt;
+    delete updateData.lastUpdatedBy;
+    delete updateData.createdBy; // No permitir cambiar el creador
     
     // Actualizar el formulario
     const [updatedForm] = await db.update(productionForms)
       .set({
         ...updateData,
         updatedAt: new Date(),
-        updatedBy: req.user?.id
+        updatedBy: req.user?.id,
+        lastUpdatedAt: new Date(),
+        lastUpdatedBy: req.user?.id
       })
       .where(eq(productionForms.id, id))
       .returning();
