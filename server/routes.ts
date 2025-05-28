@@ -2162,6 +2162,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Obtener el formulario de producción real de la base de datos
       const [productionForm] = await db.select().from(productionForms).where(eq(productionForms.id, id));
       
+      console.log("Datos RAW de la base de datos:", productionForm);
+      
       if (!productionForm) {
         return res.status(404).json({ message: "Formulario de producción no encontrado" });
       }
