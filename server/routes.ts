@@ -2872,12 +2872,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `;
 
         // Debug: Mostrar parte del HTML para verificar que no tiene CONTROL DE CALIDAD
-        console.log("HTML generado (primeros 3000 caracteres):", htmlContent.substring(0, 3000));
+        console.log("=== DEBUG PDF GENERATION ===");
+        console.log("Timestamp:", timestamp);
         console.log("¿Contiene 'CONTROL DE CALIDAD'?", htmlContent.includes('CONTROL DE CALIDAD'));
         console.log("¿Contiene 'pH:'?", htmlContent.includes('pH:'));
+        console.log("¿Contiene 'FIRMAS Y AUTORIZACIONES'?", htmlContent.includes('FIRMAS Y AUTORIZACIONES'));
+        console.log("===========================");
         
-        // Enviar HTML que el frontend convertirá a PDF
+        // Enviar HTML que el frontend convertirá a PDF con headers especiales para evitar cache
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('X-PDF-Version', timestamp.toString());
+        res.setHeader('Vary', 'User-Agent');
         res.send(htmlContent);
         
       } else {
