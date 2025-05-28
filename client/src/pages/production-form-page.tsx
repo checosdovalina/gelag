@@ -53,8 +53,14 @@ export default function ProductionFormPage() {
         responsible: user.name || user.username
       }));
       setIsNewForm(true);
+    } else if (user && formData.responsible === "") {
+      // Si ya hay un formulario cargado pero no tiene responsable, usar el usuario actual
+      setFormData(prevData => ({
+        ...prevData,
+        responsible: user.name || user.username
+      }));
     }
-  }, [form, match, user, isLoadingForm, hasLoadedInitialData]);
+  }, [form, match, user, isLoadingForm, hasLoadedInitialData, formData.responsible]);
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
