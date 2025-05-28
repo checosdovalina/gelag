@@ -182,26 +182,9 @@ export default function ProductionForm({
     initialData.status || ProductionFormStatus.DRAFT
   );
   
-  // Auto-guardar cuando se cambia de pestaña
+  // Cambiar de pestaña sin auto-guardado
   const handleTabChange = (newTab: string) => {
-    const dataToSave = {
-      ...formData,
-      status,
-      lastUpdatedBy: user?.id,
-      lastUpdatedAt: new Date().toISOString()
-    };
-    
-
-    
-    // Guardar automáticamente antes de cambiar de pestaña
-    onSave(dataToSave);
-    
     setActiveTab(newTab);
-    
-    toast({
-      title: "Datos guardados automáticamente",
-      description: "Los cambios se han guardado al cambiar de sección"
-    });
   };
   
   // Determinar rol del usuario actual
