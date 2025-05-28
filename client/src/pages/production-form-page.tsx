@@ -41,8 +41,8 @@ export default function ProductionFormPage() {
 
   // Cargar datos si estamos editando un formulario existente
   useEffect(() => {
-    if (form && match && !isLoadingForm && !hasLoadedInitialData) {
-      // Solo cargar datos del servidor la primera vez
+    if (form && match && !isLoadingForm) {
+      // SIEMPRE cargar los datos más recientes del servidor cuando cambie el usuario
       setFormData(form);
       setIsNewForm(false);
       setHasLoadedInitialData(true);
@@ -53,14 +53,8 @@ export default function ProductionFormPage() {
         responsible: user.name || user.username
       }));
       setIsNewForm(true);
-    } else if (user && formData.responsible === "") {
-      // Si ya hay un formulario cargado pero no tiene responsable, usar el usuario actual
-      setFormData(prevData => ({
-        ...prevData,
-        responsible: user.name || user.username
-      }));
     }
-  }, [form, match, user, isLoadingForm, hasLoadedInitialData, formData.responsible]);
+  }, [form, match, user, isLoadingForm]);
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
