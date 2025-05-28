@@ -194,9 +194,31 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
     
-    // Actualizar el formulario
+    // Actualizar usando SQL directo para evitar problemas de tipos
+    const updateQuery = `
+      UPDATE production_forms 
+      SET 
+        ${Object.keys(updateFields).filter(key => 
+          !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(key)
+        ).map(key => `${key.replace(/([A-Z])/g, '_$1').toLowerCase()} = $${Object.keys(updateFields).indexOf(key) + 1}`).join(', ')}
+      WHERE id = $${Object.keys(updateFields).length + 1}
+      RETURNING *
+    `;
+    
+    const values = Object.values(updateFields).filter((_, index) => 
+      !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(Object.keys(updateFields)[index])
+    );
+    values.push(id);
+    
+    // Fallback: usar el método original pero solo con campos seguros
+    const safeFields = Object.fromEntries(
+      Object.entries(updateFields).filter(([key]) => 
+        !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(key)
+      )
+    );
+    
     const [updatedForm] = await db.update(productionForms)
-      .set(updateFields)
+      .set(safeFields)
       .where(eq(productionForms.id, id))
       .returning();
     
