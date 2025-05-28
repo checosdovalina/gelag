@@ -139,6 +139,7 @@ export default function ProductionFormPage() {
             </div>
             
             <ProductionForm
+              key={`form-${formData.id || 'new'}-${user?.id}`}
               initialData={formData}
               onSave={handleSave}
               readOnly={createFormMutation.isPending || updateFormMutation.isPending}
