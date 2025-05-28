@@ -280,7 +280,7 @@ export default function ProductionForm({
     // Determinar el nuevo estado basado en el rol y datos completados
     let newStatus = status;
     
-    if (currentUserRole === "gerente_produccion") {
+    if (currentUserRole === "production_manager") {
       // Gerente de Producción: si completa información general → EN PROCESO
       if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
         newStatus = ProductionFormStatus.IN_PROGRESS;
@@ -293,7 +293,7 @@ export default function ProductionForm({
         newStatus = ProductionFormStatus.PENDING_REVIEW;
         console.log("¡Cambiando estado a PENDING_REVIEW!");
       }
-    } else if (currentUserRole === "gerente_calidad" || currentUserRole === "calidad") {
+    } else if (currentUserRole === "quality_manager") {
       // Gerente de Calidad: si completa verificación → COMPLETADO
       if ((formData.finalBrix || formData.cP || formData.yield) && 
           status === ProductionFormStatus.PENDING_REVIEW) {
