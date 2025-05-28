@@ -2826,26 +2826,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <!-- Sección de Datos de Liberación -->
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
-              DATOS DE LIBERACIÓN
-            </div>
 
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
-              <tbody>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 15%;">Total Kilos</td>
-                  <td style="border: 1px solid #000; padding: 8px; width: 25%;">${productionForm.totalKilos || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 20%;">Folio de liberación</td>
-                  <td style="border: 1px solid #000; padding: 8px; width: 40%;">${productionForm.liberationFolio || '-'}</td>
-                </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Rendimiento</td>
-                  <td style="border: 1px solid #000; padding: 8px;">${productionForm.yield || '-'}%</td>
-                  <td style="border: 1px solid #000; padding: 8px; font-weight: bold;" colspan="2"></td>
-                </tr>
-              </tbody>
-            </table>
 
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
               <thead>
