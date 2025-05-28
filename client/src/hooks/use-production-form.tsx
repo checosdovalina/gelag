@@ -147,7 +147,19 @@ export function useProductionForm(id?: number) {
   const updateFormMutation = useMutation({
     mutationFn: async (data: Partial<ProductionForm>) => {
       if (!id) throw new Error("ID de formulario no proporcionado");
-      const res = await apiRequest('PUT', `/api/production-forms/${id}`, data);
+      
+      // Limpiar datos para evitar problemas con timestamps
+      const {
+        id: dataId,
+        createdAt,
+        updatedAt,
+        lastUpdatedAt,
+        lastUpdatedBy,
+        createdBy,
+        ...cleanData
+      } = data;
+      
+      const res = await apiRequest('PUT', `/api/production-forms/${id}`, cleanData);
       return await res.json();
     },
     onSuccess: () => {
