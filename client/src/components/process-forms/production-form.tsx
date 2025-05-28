@@ -268,6 +268,15 @@ export default function ProductionForm({
   
   // Manejar guardado del formulario con cambio automático de estado
   const handleSave = () => {
+    // Debug: verificar rol actual
+    console.log("Rol actual del usuario:", currentUserRole);
+    console.log("Estado actual:", status);
+    console.log("Datos de seguimiento:", {
+      startTime: formData.startTime,
+      hasTemperature: formData.temperature?.some((t: string) => t),
+      hasPressure: formData.pressure?.some((p: string) => p)
+    });
+    
     // Determinar el nuevo estado basado en el rol y datos completados
     let newStatus = status;
     
