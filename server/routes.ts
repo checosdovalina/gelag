@@ -2192,7 +2192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <head>
             <meta charset="UTF-8">
             <title>Formulario de Producción - ${productionForm.productId}</title>
-            <!-- PDF GENERADO: ${timestamp} - VERSION LIMPIA SIN CONTROL DE CALIDAD -->
+            <!-- PDF GENERADO: ${timestamp} - VERSION LIMPIA -->
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body { 
@@ -2841,26 +2841,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-              <div class="signatures-section">
-                <div class="section-divider">
-                  <span class="section-title">FIRMAS Y AUTORIZACIONES</span>
-                </div>
-                
-                <div class="signatures-grid">
-                  <div class="signature-box">
-                    <div class="signature-line">Supervisor de Producción</div>
-                    <div class="signature-date">Fecha: _______________</div>
-                  </div>
-                  <div class="signature-box">
-                    <div class="signature-line">Control de Calidad</div>
-                    <div class="signature-date">Fecha: _______________</div>
-                  </div>
-                  <div class="signature-box">
-                    <div class="signature-line">Gerente de Producción</div>
-                    <div class="signature-date">Fecha: _______________</div>
-                  </div>
-                </div>
+              <!-- Sección del Colador -->
+              <div class="section-divider">
+                <span class="section-title">COLADOR</span>
               </div>
+              
+              <table class="ingredients-table" style="margin-top: 20px;">
+                <thead>
+                  <tr>
+                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Colador</th>
+                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Bueno</th>
+                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Malo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Estado de inicio</td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'good' ? '✓' : ''}</td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'bad' ? '✓' : ''}</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Estado al final</td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'good' ? '✓' : ''}</td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'bad' ? '✓' : ''}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             <div class="footer">
