@@ -2856,54 +2856,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <!-- PÁGINA 2 -->
             <div class="page-break">
 
-              <table class="process-table">
-                <thead>
-                  <tr>
-                    <th>Parámetro</th>
-                    <th>Valor inicial</th>
-                    <th>Valor final</th>
-                    <th>Especificación</th>
-                    <th>Conforme</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Hora de inicio</td>
-                    <td>${productionForm.startTime || '-'}</td>
-                    <td>-</td>
-                    <td>Según programación</td>
-                    <td>✓</td>
-                  </tr>
-                  <tr>
-                    <td>Hora de finalización</td>
-                    <td>-</td>
-                    <td>${productionForm.endTime || '-'}</td>
-                    <td>Según programación</td>
-                    <td>✓</td>
-                  </tr>
-                  <tr>
-                    <td>Brix final</td>
-                    <td>-</td>
-                    <td>${productionForm.finalBrix || '-'}</td>
-                    <td>65° ± 2°</td>
-                    <td>✓</td>
-                  </tr>
-                  <tr>
-                    <td>Viscosidad (cP)</td>
-                    <td>-</td>
-                    <td>${productionForm.cP || '-'}</td>
-                    <td>2000-3000 cP</td>
-                    <td>✓</td>
-                  </tr>
-                  <tr>
-                    <td>Rendimiento</td>
-                    <td>-</td>
-                    <td>${productionForm.yield || '-'}</td>
-                    <td>≥ 90%</td>
-                    <td>✓</td>
-                  </tr>
-                </tbody>
-              </table>
+
 
               <div class="section-divider">
                 <span class="section-title">CONTROL DE CALIDAD</span>
