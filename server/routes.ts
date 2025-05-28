@@ -29,7 +29,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
-import PDFDocument from "pdfkit";
+import puppeteer from "puppeteer";
 import fs from 'fs';
 import { User } from "@shared/schema";
 
@@ -2183,14 +2183,138 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const creatorName = "Usuario Ejemplo";
 
       if (format === "pdf") {
-        console.log("Generando vista de formulario de producción:", productionForm);
+        console.log("Generando PDF de formulario de producción:", productionForm);
         
-        // Por ahora, retornar la información como JSON hasta que se solucione PDFKit
-        res.json({
-          message: "Formulario de producción listo para exportar",
-          data: productionForm,
-          note: "La exportación en PDF estará disponible pronto. Por ahora puedes ver los datos aquí."
-        });
+        try {
+          // Crear HTML para el PDF
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>Formulario de Producción</title>
+              <style>
+                body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                .section { margin-bottom: 25px; }
+                .section-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; background-color: #f5f5f5; padding: 8px; }
+                .field { margin-bottom: 8px; }
+                .field-label { font-weight: bold; display: inline-block; min-width: 120px; }
+                .field-value { display: inline-block; }
+                .ingredients { margin-left: 20px; }
+                .ingredient-item { margin-bottom: 5px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f5f5f5; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>FORMULARIO DE PRODUCCIÓN</h1>
+                <p>Generado el: ${new Date().toLocaleString('es-ES')}</p>
+              </div>
+
+              <div class="section">
+                <div class="section-title">INFORMACIÓN GENERAL</div>
+                <div class="field">
+                  <span class="field-label">Producto:</span>
+                  <span class="field-value">${productionForm.productId}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Litros:</span>
+                  <span class="field-value">${productionForm.liters}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Fecha:</span>
+                  <span class="field-value">${productionForm.date}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Responsable:</span>
+                  <span class="field-value">${productionForm.responsible}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Lote:</span>
+                  <span class="field-value">${productionForm.lotNumber}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Estado:</span>
+                  <span class="field-value">${productionForm.status}</span>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">INGREDIENTES</div>
+                <div class="ingredients">
+                  ${productionForm.ingredients.map((ing: any) => 
+                    `<div class="ingredient-item">• ${ing.name}: ${ing.quantity} ${ing.unit}</div>`
+                  ).join('')}
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">DATOS DEL PROCESO</div>
+                <div class="field">
+                  <span class="field-label">Hora inicio:</span>
+                  <span class="field-value">${productionForm.startTime}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Hora fin:</span>
+                  <span class="field-value">${productionForm.endTime}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Brix final:</span>
+                  <span class="field-value">${productionForm.finalBrix}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">cP:</span>
+                  <span class="field-value">${productionForm.cP}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Rendimiento:</span>
+                  <span class="field-value">${productionForm.yield}</span>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          // Generar PDF con Puppeteer
+          const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          });
+          
+          const page = await browser.newPage();
+          await page.setContent(htmlContent);
+          
+          const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: {
+              top: '20mm',
+              bottom: '20mm',
+              left: '15mm',
+              right: '15mm'
+            }
+          });
+          
+          await browser.close();
+
+          // Configurar headers para descarga
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="Formulario_Produccion_${productionForm.productId}_${productionForm.date.replace(/[\/\\:*?"<>|]/g, "_")}.pdf"`);
+          res.setHeader('Content-Length', pdfBuffer.length);
+          
+          // Enviar el PDF
+          res.end(pdfBuffer);
+          
+        } catch (error) {
+          console.error("Error generando PDF:", error);
+          res.status(500).json({ 
+            message: "Error al generar PDF", 
+            error: error instanceof Error ? error.message : "Error desconocido" 
+          });
+        }
         
       } else {
         // Para Excel, devolver JSON por ahora
