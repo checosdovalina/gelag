@@ -266,18 +266,54 @@ export default function ProductionForm({
     }
   };
   
-  // Manejar guardado del formulario
+  // Manejar guardado del formulario con cambio automático de estado
   const handleSave = () => {
+    // Determinar el nuevo estado basado en el rol y datos completados
+    let newStatus = status;
+    
+    if (currentUserRole === "production_manager") {
+      // Gerente de Producción: si completa información general → EN PROCESO
+      if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
+        newStatus = ProductionFormStatus.IN_PROGRESS;
+      }
+    } else if (currentUserRole === "operator") {
+      // Operador: si completa seguimiento → PENDIENTE DE CALIDAD
+      if ((formData.startTime || formData.temperature?.some((t: string) => t) || 
+           formData.pressure?.some((p: string) => p)) && 
+          status === ProductionFormStatus.IN_PROGRESS) {
+        newStatus = ProductionFormStatus.PENDING_QUALITY;
+      }
+    } else if (currentUserRole === "quality_manager") {
+      // Gerente de Calidad: si completa verificación → COMPLETADO
+      if ((formData.finalBrix || formData.cP || formData.yield) && 
+          status === ProductionFormStatus.PENDING_QUALITY) {
+        newStatus = ProductionFormStatus.COMPLETED;
+      }
+    }
+    
     onSave({
       ...formData,
-      status,
-      lastUpdatedBy: user?.id,
-      lastUpdatedAt: new Date().toISOString()
+      status: newStatus,
     });
+    
+    // Mostrar mensaje apropiado
+    let message = "Los cambios han sido guardados correctamente";
+    if (newStatus !== status) {
+      const statusNames = {
+        [ProductionFormStatus.DRAFT]: "Borrador",
+        [ProductionFormStatus.IN_PROGRESS]: "En Proceso",
+        [ProductionFormStatus.PENDING_QUALITY]: "Pendiente de Calidad", 
+        [ProductionFormStatus.COMPLETED]: "Completado",
+        [ProductionFormStatus.SIGNED]: "Firmado",
+        [ProductionFormStatus.APPROVED]: "Aprobado"
+      };
+      message = `Estado actualizado automáticamente a: ${statusNames[newStatus]}`;
+      setStatus(newStatus);
+    }
     
     toast({
       title: "Formulario guardado",
-      description: "Los cambios han sido guardados correctamente"
+      description: message
     });
   };
   
