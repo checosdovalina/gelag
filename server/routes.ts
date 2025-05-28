@@ -2171,7 +2171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const creatorName = creator?.name || "Usuario Desconocido";
 
       if (format === "pdf") {
-        console.log("Generando HTML para PDF de formulario de producción:", productionForm);
+        console.log("Generando PDF de formulario de producción:", productionForm);
         
         // Crear HTML completo con header estilo GELAG y información completa
         const htmlContent = `
@@ -2425,13 +2425,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               <tr>
                 <td style="padding: 15px; border-right: 1px solid black; vertical-align: top;">
                   <div style="margin-bottom: 10px;">
-                    <strong>Folio:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.id}</span>
+                    <strong>Folio:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.folio || productionForm.id}</span>
                   </div>
                   <div style="margin-bottom: 10px;">
-                    <strong>Fecha:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.date}</span>
+                    <strong>Fecha:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.date || 'N/A'}</span>
                   </div>
                   <div style="margin-bottom: 10px;">
-                    <strong>Estado:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.status}</span>
+                    <strong>Estado:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.status || 'N/A'}</span>
                   </div>
                 </td>
                 <td style="padding: 15px; vertical-align: top;">
@@ -2457,29 +2457,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 <div>
                   <div class="field-row">
                     <span class="field-label">Producto:</span>
-                    <span class="field-value">${productionForm.productId}</span>
+                    <span class="field-value">${productionForm.productId || 'N/A'}</span>
                   </div>
                   <div class="field-row">
                     <span class="field-label">Volumen (L):</span>
-                    <span class="field-value">${productionForm.liters}</span>
+                    <span class="field-value">${productionForm.liters || 'N/A'}</span>
                   </div>
                   <div class="field-row">
                     <span class="field-label">Fecha de producción:</span>
-                    <span class="field-value">${productionForm.date}</span>
+                    <span class="field-value">${productionForm.date || 'N/A'}</span>
                   </div>
                 </div>
                 <div>
                   <div class="field-row">
                     <span class="field-label">Responsable:</span>
-                    <span class="field-value">${productionForm.responsible}</span>
+                    <span class="field-value">${productionForm.responsible || creatorName}</span>
                   </div>
                   <div class="field-row">
                     <span class="field-label">Número de lote:</span>
-                    <span class="field-value">${productionForm.lotNumber}</span>
+                    <span class="field-value">${productionForm.lotNumber || 'N/A'}</span>
                   </div>
                   <div class="field-row">
                     <span class="field-label">Estado del proceso:</span>
-                    <span class="field-value">${productionForm.status}</span>
+                    <span class="field-value">${productionForm.status || 'N/A'}</span>
                   </div>
                 </div>
               </div>
@@ -2501,19 +2501,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 </tr>
               </thead>
               <tbody>
-                ${productionForm.ingredients && productionForm.ingredients.length > 0 
-                  ? productionForm.ingredients.map((ing: any) => 
-                      `<tr>
-                        <td>${ing.name}</td>
-                        <td>${ing.quantity}</td>
-                        <td>${ing.unit}</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>`
-                    ).join('')
-                  : '<tr><td colspan="6" style="text-align: center;">No hay ingredientes registrados</td></tr>'
-                }
+                ${(() => {
+                  try {
+                    let ingredients = productionForm.ingredients;
+                    if (typeof ingredients === 'string') {
+                      ingredients = JSON.parse(ingredients);
+                    }
+                    if (Array.isArray(ingredients) && ingredients.length > 0) {
+                      return ingredients.map((ing: any) => 
+                        `<tr>
+                          <td>${ing.name || 'N/A'}</td>
+                          <td>${ing.quantity || 'N/A'}</td>
+                          <td>${ing.unit || 'N/A'}</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>`
+                      ).join('');
+                    }
+                    return '<tr><td colspan="6" style="text-align: center;">No hay ingredientes registrados</td></tr>';
+                  } catch (e) {
+                    return '<tr><td colspan="6" style="text-align: center;">Error al cargar ingredientes</td></tr>';
+                  }
+                })()}
               </tbody>
             </table>
 
