@@ -130,6 +130,14 @@ export function useProductionForm(id?: number) {
     refetch
   } = useQuery<ProductionForm>({
     queryKey: ['/api/production-forms', id],
+    queryFn: async () => {
+      if (!id) throw new Error("ID requerido");
+      const res = await fetch(`/api/production-forms/${id}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error("Error al cargar formulario");
+      return await res.json();
+    },
     enabled: !!id, // Solo ejecutar si hay un ID
     staleTime: 0, // Siempre considerar datos como obsoletos para refrescar automáticamente
     refetchOnWindowFocus: true, // Refrescar al cambiar ventana/tab
