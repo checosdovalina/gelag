@@ -6,7 +6,7 @@ import {
   insertProductionFormSchema,
   ProductionFormStatus,
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 
 // Obtener todos los formularios de producción
@@ -61,7 +61,7 @@ async function generateFolio(): Promise<string> {
     const [lastForm] = await db
       .select()
       .from(productionForms)
-      .orderBy(productionForms.id, "desc")
+      .orderBy(desc(productionForms.id))
       .limit(1);
 
     let nextNumber = 1;
@@ -136,35 +136,67 @@ export async function updateProductionForm(req: Request, res: Response) {
       return res.status(404).json({ message: "Formulario no encontrado" });
     }
     
-    // Log de los datos recibidos para debugging
-    console.log("Datos recibidos para actualización:", JSON.stringify(req.body, null, 2));
+    // Actualizar solo los campos específicos sin problemas de tipo
+    const updateFields: any = {};
     
-    // Preparar datos para actualización, excluyendo todos los campos de timestamp
-    const {
-      id,
-      createdAt,
-      updatedAt,
-      lastUpdatedAt,
-      lastUpdatedBy,
-      createdBy,
-      updatedBy,
-      ...cleanData
-    } = req.body;
+    // Campos de datos principales
+    if (req.body.productId !== undefined) updateFields.productId = req.body.productId;
+    if (req.body.liters !== undefined) updateFields.liters = req.body.liters;
+    if (req.body.date !== undefined) updateFields.date = req.body.date;
+    if (req.body.responsible !== undefined) updateFields.responsible = req.body.responsible;
+    if (req.body.lotNumber !== undefined) updateFields.lotNumber = req.body.lotNumber;
+    if (req.body.status !== undefined) updateFields.status = req.body.status;
     
-    // Asegurar que el campo date sea string si es un objeto
-    if (cleanData.date && typeof cleanData.date === 'object') {
-      cleanData.date = cleanData.date.toISOString?.() || cleanData.date.toString();
-    }
+    // Campos JSON
+    if (req.body.ingredients !== undefined) updateFields.ingredients = req.body.ingredients;
+    if (req.body.ingredientTimes !== undefined) updateFields.ingredientTimes = req.body.ingredientTimes;
+    
+    // Campos de seguimiento de proceso
+    if (req.body.startTime !== undefined) updateFields.startTime = req.body.startTime;
+    if (req.body.endTime !== undefined) updateFields.endTime = req.body.endTime;
+    if (req.body.temperature !== undefined) updateFields.temperature = req.body.temperature;
+    if (req.body.pressure !== undefined) updateFields.pressure = req.body.pressure;
+    if (req.body.hourTracking !== undefined) updateFields.hourTracking = req.body.hourTracking;
+    
+    // Campos de calidad
+    if (req.body.qualityTimes !== undefined) updateFields.qualityTimes = req.body.qualityTimes;
+    if (req.body.brix !== undefined) updateFields.brix = req.body.brix;
+    if (req.body.qualityTemp !== undefined) updateFields.qualityTemp = req.body.qualityTemp;
+    if (req.body.texture !== undefined) updateFields.texture = req.body.texture;
+    if (req.body.color !== undefined) updateFields.color = req.body.color;
+    if (req.body.viscosity !== undefined) updateFields.viscosity = req.body.viscosity;
+    if (req.body.smell !== undefined) updateFields.smell = req.body.smell;
+    if (req.body.taste !== undefined) updateFields.taste = req.body.taste;
+    if (req.body.statusCheck !== undefined) updateFields.statusCheck = req.body.statusCheck;
+    
+    // Campos de destino
+    if (req.body.destinationType !== undefined) updateFields.destinationType = req.body.destinationType;
+    if (req.body.destinationKilos !== undefined) updateFields.destinationKilos = req.body.destinationKilos;
+    if (req.body.destinationProduct !== undefined) updateFields.destinationProduct = req.body.destinationProduct;
+    if (req.body.destinationEstimation !== undefined) updateFields.destinationEstimation = req.body.destinationEstimation;
+    if (req.body.totalKilos !== undefined) updateFields.totalKilos = req.body.totalKilos;
+    
+    // Campos de liberación
+    if (req.body.liberationFolio !== undefined) updateFields.liberationFolio = req.body.liberationFolio;
+    if (req.body.cP !== undefined) updateFields.cP = req.body.cP;
+    if (req.body.cmConsistometer !== undefined) updateFields.cmConsistometer = req.body.cmConsistometer;
+    if (req.body.finalBrix !== undefined) updateFields.finalBrix = req.body.finalBrix;
+    if (req.body.yield !== undefined) updateFields.yield = req.body.yield;
+    if (req.body.startState !== undefined) updateFields.startState = req.body.startState;
+    if (req.body.endState !== undefined) updateFields.endState = req.body.endState;
+    if (req.body.signatureUrl !== undefined) updateFields.signatureUrl = req.body.signatureUrl;
+    
+    // Campos de control
+    updateFields.updatedAt = new Date();
+    updateFields.updatedBy = req.user?.id;
+    updateFields.lastUpdatedAt = new Date();
+    updateFields.lastUpdatedBy = req.user?.id;
+    
+    console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
     
     // Actualizar el formulario
     const [updatedForm] = await db.update(productionForms)
-      .set({
-        ...cleanData,
-        updatedAt: new Date(),
-        updatedBy: req.user?.id,
-        lastUpdatedAt: new Date(),
-        lastUpdatedBy: req.user?.id
-      })
+      .set(updateFields)
       .where(eq(productionForms.id, id))
       .returning();
     
