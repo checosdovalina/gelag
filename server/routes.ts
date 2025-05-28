@@ -2159,28 +2159,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const format = req.query.format || "pdf";
       
-      // Por simplicidad, crear un PDF básico con datos de ejemplo
-      const productionForm = {
-        id,
-        productId: "Producto Ejemplo",
-        liters: 100,
-        date: new Date().toLocaleDateString(),
-        responsible: "Responsable Ejemplo",
-        lotNumber: "LOTE-001",
-        status: "completed",
-        startTime: "08:00",
-        endTime: "16:00",
-        finalBrix: "65°",
-        cP: "2500",
-        yield: "95%",
-        ingredients: [
-          { name: "Azúcar", quantity: "50", unit: "kg" },
-          { name: "Agua", quantity: "30", unit: "L" }
-        ]
-      };
+      // Obtener el formulario de producción real de la base de datos
+      const [productionForm] = await db.select().from(productionForms).where(eq(productionForms.id, id));
+      
+      if (!productionForm) {
+        return res.status(404).json({ message: "Formulario de producción no encontrado" });
+      }
 
       // Obtener información del usuario creador
-      const creatorName = "Usuario Ejemplo";
+      const creator = await storage.getUser(productionForm.createdBy);
+      const creatorName = creator?.name || "Usuario Desconocido";
 
       if (format === "pdf") {
         console.log("Generando HTML para PDF de formulario de producción:", productionForm);
@@ -2412,55 +2400,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
           </head>
           <body>
             <!-- PÁGINA 1 -->
-            <!-- Header estilo GELAG exacto -->
-            <div class="header-container">
-              <!-- Título del formulario -->
-              <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px;">
-                PR-PR-01-04 - FORMULARIO DE PRODUCCIÓN
-              </div>
+            <!-- Header estilo GELAG con bordes -->
+            <table style="width: 100%; border-collapse: collapse; border: 2px solid black; margin-bottom: 30px;">
+              <!-- Título principal -->
+              <tr>
+                <td colspan="2" style="text-align: center; font-weight: bold; font-size: 14px; padding: 10px; border-bottom: 1px solid black;">
+                  PR-PR-01-04 - FORMULARIO DE PRODUCCIÓN
+                </td>
+              </tr>
               
-              <!-- Información de la empresa y logo -->
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="font-size: 32px; font-weight: bold; color: #e74c3c; font-family: Arial;">
-                  gelag
-                </div>
-                <div style="text-align: center; font-size: 11px; flex-grow: 1; margin: 0 20px;">
+              <!-- Logo y información corporativa -->
+              <tr>
+                <td style="width: 150px; padding: 15px; vertical-align: middle; border-bottom: 1px solid black; border-right: 1px solid black;">
+                  <div style="font-size: 36px; font-weight: bold; color: #e74c3c; font-family: Arial, sans-serif;">
+                    gelag
+                  </div>
+                </td>
+                <td style="padding: 15px; text-align: center; font-size: 11px; vertical-align: middle; border-bottom: 1px solid black;">
                   GELAG S.A DE C.V BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.
-                </div>
-              </div>
+                </td>
+              </tr>
               
-              <!-- Campos del header en dos columnas -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; border-top: 1px solid #000; padding-top: 15px;">
-                <div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 80px;">Folio:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.id}</span>
+              <!-- Campos del formulario -->
+              <tr>
+                <td style="padding: 15px; border-right: 1px solid black; vertical-align: top;">
+                  <div style="margin-bottom: 10px;">
+                    <strong>Folio:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.id}</span>
                   </div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 80px;">Fecha:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.date}</span>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Fecha:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.date}</span>
                   </div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 80px;">Estado:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.status}</span>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Estado:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; padding-bottom: 2px;">${productionForm.status}</span>
                   </div>
-                </div>
-                <div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 120px;">Creado por:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.responsible}</span>
+                </td>
+                <td style="padding: 15px; vertical-align: top;">
+                  <div style="margin-bottom: 10px;">
+                    <strong>Creado por:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 120px; padding-bottom: 2px;">${creatorName}</span>
                   </div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 120px;">Departamento:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">Producción</span>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Departamento:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 120px; padding-bottom: 2px;">Producción</span>
                   </div>
-                  <div style="display: flex; margin-bottom: 8px;">
-                    <span style="font-weight: bold; min-width: 120px;">Lote:</span>
-                    <span style="flex: 1; border-bottom: 1px solid #000; padding-bottom: 2px;">${productionForm.lotNumber}</span>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Lote:</strong> <span style="border-bottom: 1px solid black; display: inline-block; min-width: 120px; padding-bottom: 2px;">${productionForm.lotNumber}</span>
                   </div>
-                </div>
-              </div>
-            </div>
+                </td>
+              </tr>
+            </table>
 
             <div class="section-divider">
               <span class="section-title">DATOS GENERALES</span>
