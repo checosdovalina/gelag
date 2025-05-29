@@ -2894,9 +2894,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const htmlWithDownload = htmlContent.replace(
             '<body>',
             `<body>
-              <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="window.open(window.location.href + '&download=true', '_blank')">
+              <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="downloadPDF()">
                 📥 Descargar PDF
-              </div>`
+              </div>
+              <script>
+                function downloadPDF() {
+                  const link = document.createElement('a');
+                  link.href = window.location.href + '&download=true';
+                  link.download = 'Formulario_Produccion_${productionForm.folio}_${timestamp}.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+              </script>`
           );
           
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
