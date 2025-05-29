@@ -2894,24 +2894,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const htmlWithDownload = htmlContent.replace(
             '<body>',
             `<body>
-              <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="downloadPDF()">
-                📄 Descargar Formulario
-              </div>
-              <div style="position: fixed; top: 70px; right: 20px; z-index: 1000; background: #28a745; color: white; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 12px;" onclick="window.print()">
-                🖨️ Imprimir como PDF
+              <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #dc3545; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="downloadDirectPDF()">
+                📥 Descargar PDF
               </div>
               <script>
-                function downloadPDF() {
-                  // Crear elemento de descarga
-                  const element = document.createElement('a');
-                  const htmlContent = document.documentElement.outerHTML;
-                  const file = new Blob([htmlContent], {type: 'text/html'});
-                  element.href = URL.createObjectURL(file);
-                  element.download = 'Formulario_Produccion_${productionForm.folio}_${timestamp}.html';
-                  document.body.appendChild(element);
-                  element.click();
-                  document.body.removeChild(element);
-                  URL.revokeObjectURL(element.href);
+                function downloadDirectPDF() {
+                  // Descargar PDF directamente desde el servidor
+                  const formId = '${productionForm.id}';
+                  const link = document.createElement('a');
+                  link.href = '/api/production-forms/' + formId + '/pdf';
+                  link.download = 'Formulario_Produccion_${productionForm.folio}.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
                 }
               </script>`
           );
@@ -2933,6 +2928,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error("Error al exportar formulario de producción:", error);
+      next(error);
+    }
+  });
+
+  // Production forms PDF download route
+  app.get("/api/production-forms/:id/pdf", async (req, res, next) => {
+    try {
+      const formId = parseInt(req.params.id);
+      const productionForm = await storage.getProductionForm(formId);
+      
+      if (!productionForm) {
+        return res.status(404).json({ message: "Formulario no encontrado" });
+      }
+
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument({ margin: 50, size: 'Letter' });
+      
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      
+      doc.on('end', () => {
+        const pdfBuffer = Buffer.concat(chunks);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="Formulario_Produccion_${productionForm.folio}.pdf"`);
+        res.send(pdfBuffer);
+      });
+      
+      // Header corporativo
+      doc.fontSize(18).font('Helvetica-Bold')
+         .text('GELAG S.A DE C.V', { align: 'center' });
+      doc.fontSize(14).font('Helvetica')
+         .text('FORMULARIO DE PRODUCCIÓN', { align: 'center' });
+      doc.moveDown(2);
+      
+      // Información básica
+      doc.fontSize(12).font('Helvetica-Bold');
+      doc.text(`FOLIO: ${productionForm.folio}`, 50, doc.y);
+      doc.text(`FECHA: ${productionForm.date}`, 350, doc.y - 15);
+      doc.moveDown();
+      
+      doc.font('Helvetica');
+      doc.text(`Producto: ${productionForm.productId}`);
+      doc.text(`Litros: ${productionForm.liters}`);
+      doc.text(`Responsable: ${productionForm.responsible}`);
+      doc.text(`Lote: ${productionForm.lotNumber || 'N/A'}`);
+      doc.moveDown(2);
+      
+      // Ingredientes
+      doc.fontSize(14).font('Helvetica-Bold').text('INGREDIENTES');
+      doc.moveDown(0.5);
+      doc.fontSize(10).font('Helvetica');
+      
+      const ingredients = productionForm.ingredients as any[];
+      ingredients?.forEach((ingredient) => {
+        if (ingredient.quantity > 0) {
+          doc.text(`• ${ingredient.name}: ${ingredient.quantity} ${ingredient.unit}`);
+        }
+      });
+      doc.moveDown(2);
+      
+      // Verificación de calidad
+      doc.fontSize(14).font('Helvetica-Bold').text('VERIFICACIÓN DE CALIDAD');
+      doc.moveDown(0.5);
+      
+      // Tabla de verificación
+      const times = productionForm.qualityTimes || [];
+      const brixValues = productionForm.brix || [];
+      const tempValues = productionForm.qualityTemp || [];
+      const textureValues = productionForm.texture || [];
+      const colorValues = productionForm.color || [];
+      const viscosityValues = productionForm.viscosity || [];
+      const smellValues = productionForm.smell || [];
+      const tasteValues = productionForm.taste || [];
+      const statusValues = productionForm.statusCheck || [];
+      
+      // Headers de tabla
+      const startY = doc.y;
+      doc.fontSize(8).font('Helvetica-Bold');
+      doc.text('Hora', 50, startY);
+      doc.text('Brix', 90, startY);
+      doc.text('Temp', 130, startY);
+      doc.text('Textura', 170, startY);
+      doc.text('Color', 220, startY);
+      doc.text('Viscosidad', 260, startY);
+      doc.text('Olor', 320, startY);
+      doc.text('Sabor', 360, startY);
+      doc.text('Status', 440, startY);
+      
+      let tableY = startY + 15;
+      doc.font('Helvetica');
+      
+      for (let i = 0; i < Math.max(times.length, brixValues.length, tempValues.length, statusValues.length); i++) {
+        const time = times[i] || '';
+        const brix = brixValues[i] || '';
+        const temp = tempValues[i] || '';
+        const texture = textureValues[i] || '';
+        const color = colorValues[i] || '';
+        const viscosity = viscosityValues[i] || '';
+        const smell = smellValues[i] || '';
+        const taste = tasteValues[i] || '';
+        const status = statusValues[i] || '';
+        
+        if (time || brix || temp || texture || color || viscosity || smell || taste || status) {
+          doc.text(time, 50, tableY);
+          doc.text(brix, 90, tableY);
+          doc.text(temp, 130, tableY);
+          doc.text(texture, 170, tableY);
+          doc.text(color, 220, tableY);
+          doc.text(viscosity, 260, tableY);
+          doc.text(smell, 320, tableY);
+          doc.text(taste, 360, tableY);
+          doc.text(status, 440, tableY);
+          tableY += 12;
+        }
+      }
+      
+      doc.moveDown(3);
+      
+      // Parámetros finales
+      if (productionForm.cP || productionForm.cmConsistometer || productionForm.finalBrix || productionForm.yield) {
+        doc.fontSize(14).font('Helvetica-Bold').text('PARÁMETROS FINALES');
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Helvetica');
+        
+        if (productionForm.cP) doc.text(`cP: ${productionForm.cP}`);
+        if (productionForm.cmConsistometer) doc.text(`cm Consistómetro: ${productionForm.cmConsistometer}`);
+        if (productionForm.finalBrix) doc.text(`Brix Final: ${productionForm.finalBrix}`);
+        if (productionForm.yield) doc.text(`Rendimiento: ${productionForm.yield}`);
+        
+        doc.moveDown(2);
+      }
+      
+      // Footer
+      doc.fontSize(8).font('Helvetica')
+         .text(`Documento generado automáticamente - ID: ${productionForm.id}`, { align: 'center' })
+         .text(`© 2025 GELAG S.A DE C.V - ${new Date().toLocaleString('es-MX')}`, { align: 'center' });
+      
+      doc.end();
+      
+    } catch (error) {
+      console.error('Error generando PDF:', error);
       next(error);
     }
   });
