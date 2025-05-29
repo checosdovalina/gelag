@@ -96,15 +96,25 @@ export async function createProductionForm(req: Request, res: Response) {
     // Generar folio consecutivo automáticamente
     const folio = await generateFolio();
     
-    // Insertar el nuevo formulario
-    const [newForm] = await db.insert(productionForms).values({
-      ...validatedData,
+    // Preparar datos para inserción
+    const insertData = {
+      productId: validatedData.productId,
+      liters: validatedData.liters,
+      date: validatedData.date,
+      responsible: validatedData.responsible,
       folio,
       createdBy: req.user.id,
       createdAt: new Date(),
       updatedAt: new Date(),
-      status: (validatedData.status || ProductionFormStatus.DRAFT) as any
-    }).returning();
+      status: validatedData.status || ProductionFormStatus.DRAFT,
+      // Incluir otros campos opcionales si existen
+      ...(validatedData.lotNumber && { lotNumber: validatedData.lotNumber }),
+      ...(validatedData.ingredients && { ingredients: validatedData.ingredients }),
+      ...(validatedData.ingredientTimes && { ingredientTimes: validatedData.ingredientTimes })
+    };
+
+    // Insertar el nuevo formulario
+    const [newForm] = await db.insert(productionForms).values(insertData as any).returning();
     
     return res.status(201).json(newForm);
   } catch (error) {
