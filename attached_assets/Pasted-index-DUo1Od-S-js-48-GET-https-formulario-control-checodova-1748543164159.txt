@@ -1,0 +1,126 @@
+index-DUo1Od-S.js:48 
+            
+            
+            GET https://formulario-control-checodovalina.replit.app/api/products 503 (Service Unavailable)
+(anonymous) @ index-DUo1Od-S.js:48
+i @ index-DUo1Od-S.js:48
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+(anonymous) @ index-DUo1Od-S.js:40
+setTimeout
+a @ index-DUo1Od-S.js:48
+o @ index-DUo1Od-S.js:48
+batch @ index-DUo1Od-S.js:48
+Ts @ index-DUo1Od-S.js:48
+setData @ index-DUo1Od-S.js:48
+onSuccess @ index-DUo1Od-S.js:48
+d @ index-DUo1Od-S.js:48
+Promise.then
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+gV @ index-DUo1Od-S.js:40
+j @ index-DUo1Od-S.js:25
+O @ index-DUo1Od-S.js:25
+index-DUo1Od-S.js:48 
+            
+            
+            GET https://formulario-control-checodovalina.replit.app/api/production-forms 500 (Internal Server Error)
+(anonymous) @ index-DUo1Od-S.js:48
+i @ index-DUo1Od-S.js:48
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+(anonymous) @ index-DUo1Od-S.js:40
+setTimeout
+a @ index-DUo1Od-S.js:48
+o @ index-DUo1Od-S.js:48
+batch @ index-DUo1Od-S.js:48
+Ts @ index-DUo1Od-S.js:48
+setData @ index-DUo1Od-S.js:48
+onSuccess @ index-DUo1Od-S.js:48
+d @ index-DUo1Od-S.js:48
+Promise.then
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+gV @ index-DUo1Od-S.js:40
+j @ index-DUo1Od-S.js:25
+O @ index-DUo1Od-S.js:25
+index-DUo1Od-S.js:698 Rol actual del usuario: production_manager
+index-DUo1Od-S.js:698 Estado actual: draft
+index-DUo1Od-S.js:698 Datos de seguimiento: {startTime: '', hasTemperature: false, hasPressure: false}
+index-DUo1Od-S.js:48 
+            
+            
+            POST https://formulario-control-checodovalina.replit.app/api/production-forms 500 (Internal Server Error)
+Yt @ index-DUo1Od-S.js:48
+mutationFn @ index-DUo1Od-S.js:698
+fn @ index-DUo1Od-S.js:48
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+execute @ index-DUo1Od-S.js:48
+await in execute
+mutate @ index-DUo1Od-S.js:48
+y @ index-DUo1Od-S.js:698
+y @ index-DUo1Od-S.js:698
+cZ @ index-DUo1Od-S.js:37
+dZ @ index-DUo1Od-S.js:37
+fZ @ index-DUo1Od-S.js:37
+pD @ index-DUo1Od-S.js:37
+S5 @ index-DUo1Od-S.js:37
+(anonymous) @ index-DUo1Od-S.js:37
+QE @ index-DUo1Od-S.js:40
+HB @ index-DUo1Od-S.js:37
+G1 @ index-DUo1Od-S.js:37
+NE @ index-DUo1Od-S.js:37
+_Z @ index-DUo1Od-S.js:37
+index-DUo1Od-S.js:698  Error al guardar el formulario: Error: 500: {"message":"Error al crear formulario de producción","error":"relation \"production_forms\" does not exist"}
+    at ez (index-DUo1Od-S.js:48:43039)
+    at async Yt (index-DUo1Od-S.js:48:43242)
+    at async Object.mutationFn (index-DUo1Od-S.js:698:26572)
