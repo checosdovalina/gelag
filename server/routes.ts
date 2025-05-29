@@ -1757,15 +1757,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Obtener todos los productos
   app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {
-      let products;
+      console.log("=== GET PRODUCTS ===");
+      console.log("Query params:", req.query);
+      
+      let result;
       // Si se especifica active=true, solo devolver productos activos
       if (req.query.active === 'true') {
-        products = await storage.getActiveProducts();
+        result = await db.execute(sql`
+          SELECT * FROM products WHERE is_active = true ORDER BY name
+        `);
       } else {
-        products = await storage.getAllProducts();
+        result = await db.execute(sql`
+          SELECT * FROM products ORDER BY name
+        `);
       }
-      res.json(products);
+      
+      console.log("Productos encontrados:", result.rows.length);
+      res.json(result.rows);
     } catch (error) {
+      console.error("Error al obtener productos:", error);
       next(error);
     }
   });
