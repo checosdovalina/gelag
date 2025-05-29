@@ -425,7 +425,7 @@ export const productionForms = pgTable("production_forms", {
   liberationFolio: text("liberation_folio"), // Folio de liberación
   
   // Sección de datos de liberación
-  cP: text("cp"), // cP
+  cP: text("c_p"), // cP
   cmConsistometer: text("cm_consistometer"), // Cm en consistómetro
   finalBrix: text("final_brix"), // Grados Brix finales
   yield: text("yield"), // Rendimiento
