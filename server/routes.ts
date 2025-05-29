@@ -2181,6 +2181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Obtener información del usuario creador
       const creator = await storage.getUser(productionForm.createdBy);
       const creatorName = creator?.name || "Usuario Desconocido";
+      console.log("⭐ USUARIO CREADOR OBTENIDO:", creatorName);
 
       // **GENERAR FILAS ANTES DE CUALQUIER OPERACIÓN**
       console.log("🚀 INICIANDO GENERACIÓN TEMPRANA DE FILAS");
