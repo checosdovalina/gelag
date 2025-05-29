@@ -2899,12 +2899,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </div>
               <script>
                 function downloadPDF() {
-                  // Abrir ventana de impresión del navegador
-                  const printWindow = window.open('', '_blank');
-                  printWindow.document.write(document.documentElement.outerHTML);
-                  printWindow.document.close();
-                  printWindow.focus();
-                  printWindow.print();
+                  // Crear elemento de descarga
+                  const element = document.createElement('a');
+                  const htmlContent = document.documentElement.outerHTML;
+                  const file = new Blob([htmlContent], {type: 'text/html'});
+                  element.href = URL.createObjectURL(file);
+                  element.download = 'Formulario_Produccion_${productionForm.folio}_${timestamp}.html';
+                  document.body.appendChild(element);
+                  element.click();
+                  document.body.removeChild(element);
+                  URL.revokeObjectURL(element.href);
                 }
               </script>`
           );
