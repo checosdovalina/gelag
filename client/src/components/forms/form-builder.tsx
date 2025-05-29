@@ -844,6 +844,75 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
 
                                 <FormField
                                   control={form.control}
+                                  name={`fields.${index}.type`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Tipo de Campo</FormLabel>
+                                      <Select
+                                        onValueChange={(value) => {
+                                          field.onChange(value);
+                                          // Reset specific properties when type changes
+                                          const currentField = form.getValues(`fields.${index}`);
+                                          if (value === "select" || value === "radio") {
+                                            form.setValue(`fields.${index}.options`, [...defaultOptions]);
+                                          } else if (value === "table") {
+                                            form.setValue(`fields.${index}.tableColumns`, [...defaultTableColumns]);
+                                            form.setValue(`fields.${index}.tableRows`, 3);
+                                          } else if (value === "advancedTable") {
+                                            form.setValue(`fields.${index}.advancedTableConfig`, {
+                                              rows: 3,
+                                              dynamicRows: true,
+                                              sections: [
+                                                {
+                                                  title: "Tabla de Datos",
+                                                  columns: [
+                                                    { id: "fecha", header: "Fecha", type: "date", width: "120px" },
+                                                    { id: "descripcion", header: "Descripción", type: "text", width: "200px" },
+                                                    { id: "cantidad", header: "Cantidad", type: "number", width: "100px" }
+                                                  ]
+                                                }
+                                              ]
+                                            });
+                                          } else {
+                                            // Clear type-specific properties for other types
+                                            form.setValue(`fields.${index}.options`, undefined);
+                                            form.setValue(`fields.${index}.tableColumns`, undefined);
+                                            form.setValue(`fields.${index}.tableRows`, undefined);
+                                            form.setValue(`fields.${index}.advancedTableConfig`, undefined);
+                                          }
+                                        }}
+                                        value={field.value}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar tipo" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          <SelectItem value="text">Texto</SelectItem>
+                                          <SelectItem value="textarea">Área de Texto</SelectItem>
+                                          <SelectItem value="number">Número</SelectItem>
+                                          <SelectItem value="date">Fecha</SelectItem>
+                                          <SelectItem value="time">Hora</SelectItem>
+                                          <SelectItem value="select">Lista Desplegable</SelectItem>
+                                          <SelectItem value="checkbox">Casilla de Verificación</SelectItem>
+                                          <SelectItem value="radio">Botones de Radio</SelectItem>
+                                          <SelectItem value="employee">Empleado</SelectItem>
+                                          <SelectItem value="employeeByType">Empleado por Tipo</SelectItem>
+                                          <SelectItem value="product">Producto</SelectItem>
+                                          <SelectItem value="table">Tabla</SelectItem>
+                                          <SelectItem value="evaluationMatrix">Matriz de Evaluación</SelectItem>
+                                          <SelectItem value="advancedTable">Tabla Avanzada</SelectItem>
+                                          <SelectItem value="group">Grupo</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
                                   name={`fields.${index}.description`}
                                   render={({ field }) => (
                                     <FormItem>
