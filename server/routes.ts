@@ -1781,7 +1781,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // =========== Rutas para gestión de productos ===========
   // Obtener todos los productos
-  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+  app.get("/api/products", authorize(), async (req, res, next) => {
     try {
       console.log("=== GET PRODUCTS ===");
       console.log("Query params:", req.query);
