@@ -2719,54 +2719,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               Verificación de Calidad del Producto
             </div>
 
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 20px;">
-              <thead>
-                <tr style="background-color: #d0d0d0;">
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Hora</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Grados Brix</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Temperatura</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Textura</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Color</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Viscosidad</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Olor</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Sabor</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Material Extraño</th>
-                  <th style="border: 1px solid #000; padding: 6px; font-weight: bold; font-size: 11px;">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">65° Brix</td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">70°C a 95°C</td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">N/A</td>
-                  <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                </tr>
-                ${(() => {
-                  let rows = '';
-                  for (let i = 0; i < 7; i++) {
-                    rows += `<tr>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">N/A</td>
-                      <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;"></td>
-                    </tr>`;
-                  }
-                  return rows;
-                })()}
-              </tbody>
-            </table>
+
 
 
 
