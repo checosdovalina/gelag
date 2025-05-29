@@ -2785,7 +2785,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             <!-- Datos de Verificación de Calidad -->
             <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #f0f0f0; border: 1px solid #000;">
-              VERIFICACIÓN DE CALIDAD
+              VERIFICACIÓN DE CALIDAD - DATOS REALES
             </div>
 
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
@@ -2856,16 +2856,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     
                   </td>
                 </tr>
-                <tr>
-                  <td style="text-align: center; padding-top: 10px; font-size: 11px;">
-                    <strong>Operador de Producción</strong><br>
-                    ${creatorName}
-                  </td>
-                  <td style="text-align: center; padding-top: 10px; font-size: 11px;">
-                    <strong>Gerente de Calidad</strong><br>
-                    Nombre: ________________
-                  </td>
-                </tr>
+
               </table>
             </div>
 
