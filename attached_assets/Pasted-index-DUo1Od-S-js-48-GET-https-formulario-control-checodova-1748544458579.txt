@@ -1,0 +1,97 @@
+index-DUo1Od-S.js:48 
+            
+            
+            GET https://formulario-control-checodovalina.replit.app/api/products 503 (Service Unavailable)
+(anonymous) @ index-DUo1Od-S.js:48
+i @ index-DUo1Od-S.js:48
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+(anonymous) @ index-DUo1Od-S.js:40
+setTimeout
+a @ index-DUo1Od-S.js:48
+o @ index-DUo1Od-S.js:48
+batch @ index-DUo1Od-S.js:48
+Ts @ index-DUo1Od-S.js:48
+setData @ index-DUo1Od-S.js:48
+onSuccess @ index-DUo1Od-S.js:48
+d @ index-DUo1Od-S.js:48
+Promise.then
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+gV @ index-DUo1Od-S.js:40
+j @ index-DUo1Od-S.js:25
+O @ index-DUo1Od-S.js:25
+index-DUo1Od-S.js:48 
+            
+            
+            GET https://formulario-control-checodovalina.replit.app/api/production-forms 500 (Internal Server Error)
+(anonymous) @ index-DUo1Od-S.js:48
+i @ index-DUo1Od-S.js:48
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+(anonymous) @ index-DUo1Od-S.js:40
+setTimeout
+a @ index-DUo1Od-S.js:48
+o @ index-DUo1Od-S.js:48
+batch @ index-DUo1Od-S.js:48
+Ts @ index-DUo1Od-S.js:48
+setData @ index-DUo1Od-S.js:48
+onSuccess @ index-DUo1Od-S.js:48
+d @ index-DUo1Od-S.js:48
+Promise.then
+m @ index-DUo1Od-S.js:48
+start @ index-DUo1Od-S.js:48
+fetch @ index-DUo1Od-S.js:48
+_h @ index-DUo1Od-S.js:48
+onSubscribe @ index-DUo1Od-S.js:48
+subscribe @ index-DUo1Od-S.js:48
+(anonymous) @ index-DUo1Od-S.js:48
+F5 @ index-DUo1Od-S.js:38
+O0 @ index-DUo1Od-S.js:40
+Ld @ index-DUo1Od-S.js:40
+UD @ index-DUo1Od-S.js:40
+Ac @ index-DUo1Od-S.js:38
+WJ @ index-DUo1Od-S.js:40
+Hc @ index-DUo1Od-S.js:40
+gV @ index-DUo1Od-S.js:40
+j @ index-DUo1Od-S.js:25
+O @ index-DUo1Od-S.js:25
+index-DUo1Od-S.js:698 Rol actual del usuario: production_manager
+index-DUo1Od-S.js:698 Estado actual: draft
+index-DUo1Od-S.js:698 Datos de seguimiento: {startTime: '', hasTemperature: false, hasPressure: false}

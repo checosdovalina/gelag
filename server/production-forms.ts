@@ -12,18 +12,30 @@ import { z } from "zod";
 // Obtener todos los formularios de producción
 export async function getProductionForms(req: Request, res: Response) {
   try {
+    console.log("=== GET PRODUCTION FORMS ===");
+    console.log("Usuario autenticado:", req.isAuthenticated());
+    console.log("Usuario:", req.user);
+    
     // Verificar si el usuario está autenticado
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "No autenticado" });
     }
 
+    console.log("Intentando obtener formularios de producción...");
+    
     // Obtener todos los formularios ordenados por fecha de creación descendente
     const forms = await db.select().from(productionForms).orderBy(productionForms.createdAt);
     
+    console.log("Formularios obtenidos exitosamente:", forms.length, "registros");
     return res.json(forms);
   } catch (error) {
-    console.error("Error al obtener formularios de producción:", error);
-    return res.status(500).json({ message: "Error al obtener formularios de producción" });
+    console.error("Error detallado al obtener formularios de producción:", error);
+    console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace available');
+    
+    return res.status(500).json({ 
+      message: "Error al obtener formularios de producción",
+      error: error instanceof Error ? error.message : String(error)
+    });
   }
 }
 
