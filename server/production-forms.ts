@@ -133,8 +133,21 @@ export async function createProductionForm(req: Request, res: Response) {
 
     console.log("Datos preparados para inserción:", JSON.stringify(insertData, null, 2));
 
-    // Insertar el nuevo formulario
-    const [newForm] = await db.insert(productionForms).values(insertData as any).returning();
+    // Insertar el nuevo formulario usando SQL directo
+    const result = await db.execute(sql`
+      INSERT INTO production_forms (
+        product_id, liters, date, responsible, folio, created_by, status, lot_number, ingredients, ingredient_times, created_at, updated_at
+      ) VALUES (
+        ${insertData.productId}, ${insertData.liters}, ${insertData.date}, 
+        ${insertData.responsible}, ${insertData.folio}, ${insertData.createdBy}, 
+        ${insertData.status}, ${insertData.lotNumber || null}, 
+        ${insertData.ingredients ? JSON.stringify(insertData.ingredients) : null}, 
+        ${insertData.ingredientTimes ? JSON.stringify(insertData.ingredientTimes) : null},
+        NOW(), NOW()
+      ) RETURNING *;
+    `);
+    
+    const newForm = result.rows[0];
     
     console.log("Formulario creado exitosamente:", newForm);
     return res.status(201).json(newForm);
