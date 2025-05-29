@@ -367,9 +367,11 @@ export default function CapturedFormsPage() {
       
       // Determinar la ruta correcta según el tipo de formulario
       const isProductionForm = (entry as any).formType === "production";
+      // Agregar timestamp para evitar cache del navegador y forzar regeneración
+      const timestamp = Date.now();
       const exportUrl = isProductionForm 
-        ? `/api/production-forms/${entry.id}/export?format=${format}`
-        : `/api/form-entries/${entry.id}/export?format=${format}`;
+        ? `/api/production-forms/${entry.id}/export?format=${format}&t=${timestamp}`
+        : `/api/form-entries/${entry.id}/export?format=${format}&t=${timestamp}`;
       
       const response = await apiRequest("GET", exportUrl, null);
       
