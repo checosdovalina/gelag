@@ -2895,7 +2895,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             '<body>',
             `<body>
               <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);" onclick="downloadPDF()">
-                📥 Descargar PDF
+                📄 Descargar Formulario
+              </div>
+              <div style="position: fixed; top: 70px; right: 20px; z-index: 1000; background: #28a745; color: white; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-family: Arial, sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 12px;" onclick="window.print()">
+                🖨️ Imprimir como PDF
               </div>
               <script>
                 function downloadPDF() {
