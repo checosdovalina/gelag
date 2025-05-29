@@ -2184,6 +2184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (format === "pdf") {
         console.log("Generando PDF de formulario de producción:", productionForm);
+        console.log("🚀 PUNTO DE CONTROL 1 - DESPUÉS DE LOG PRINCIPAL");
         
         console.log("=== INICIANDO GENERACIÓN DE PDF CON DATOS REALES ===");
         
