@@ -2221,8 +2221,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${viscosity}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${smell}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${taste}</td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">N/A</td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">OK</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;"></td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;"></td>
             </tr>`;
         }
       }
