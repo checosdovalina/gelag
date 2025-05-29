@@ -353,8 +353,16 @@ export default function CapturedFormsPage() {
   
   // View form details
   const handleViewForm = (entry: FormEntry) => {
-    setSelectedEntry(entry);
-    setDetailsOpen(true);
+    // Check if it's a production form
+    if ((entry as any).type === "production") {
+      // For production forms, redirect to the production form page
+      const productionId = (entry.id as string).replace("prod_", "");
+      window.open(`/production-forms/${productionId}`, '_blank');
+    } else {
+      // For regular forms, show in modal
+      setSelectedEntry(entry);
+      setDetailsOpen(true);
+    }
   };
   
   // Download form as PDF or Excel

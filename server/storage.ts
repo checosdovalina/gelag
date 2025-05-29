@@ -109,6 +109,10 @@ export interface IStorage {
   updateRecipeIngredient(id: number, data: Partial<InsertRecipeIngredient>): Promise<RecipeIngredient | undefined>;
   deleteRecipeIngredient(id: number): Promise<void>;
   
+  // Production forms methods
+  getAllProductionForms(): Promise<any[]>;
+  getProductionFormsByUser(userId: number): Promise<any[]>;
+  
   // Session store
   sessionStore: session.SessionStore;
 }
@@ -766,6 +770,21 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(recipeIngredients)
       .where(eq(recipeIngredients.id, id));
+  }
+
+  // Production forms methods
+  async getAllProductionForms(): Promise<any[]> {
+    const { productionForms } = await import("@shared/schema");
+    return await db.select().from(productionForms).orderBy(desc(productionForms.createdAt));
+  }
+
+  async getProductionFormsByUser(userId: number): Promise<any[]> {
+    const { productionForms } = await import("@shared/schema");
+    return await db
+      .select()
+      .from(productionForms)
+      .where(eq(productionForms.createdBy, userId))
+      .orderBy(desc(productionForms.createdAt));
   }
 }
 

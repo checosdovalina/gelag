@@ -640,7 +640,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/form-entries", async (req, res, next) => {
     try {
       // Filter entries based on query parameters
-      let entries;
+      let entries = [];
+      let productionForms = [];
       
       if (req.query.templateId) {
         const templateId = parseInt(req.query.templateId as string);
@@ -648,19 +649,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (req.query.userId) {
         const userId = parseInt(req.query.userId as string);
         entries = await storage.getFormEntriesByUser(userId);
+        // Also get production forms for this user
+        productionForms = await storage.getProductionFormsByUser(userId);
       } else if (req.query.department) {
         entries = await storage.getFormEntriesByDepartment(req.query.department as string);
       } else {
         // Usuarios con rol SUPERADMIN o ADMIN pueden ver todos los formularios
         if (req.user.role === UserRole.SUPERADMIN || req.user.role === UserRole.ADMIN) {
           entries = await storage.getAllFormEntries();
+          productionForms = await storage.getAllProductionForms();
         } else {
           // Para roles de PRODUCTION, QUALITY y VIEWER solo se muestran los formularios que ellos crearon
           entries = await storage.getFormEntriesByUser(req.user.id);
+          productionForms = await storage.getProductionFormsByUser(req.user.id);
         }
       }
       
-      res.json(entries);
+      // Transform production forms to match form entries structure
+      const transformedProductionForms = productionForms.map(form => ({
+        id: `prod_${form.id}`,
+        templateId: null,
+        templateName: "Formulario de Producción",
+        status: form.status,
+        submittedAt: form.createdAt,
+        submittedBy: form.createdBy,
+        submittedByName: form.responsible,
+        data: {
+          folio: form.folio,
+          productId: form.productId,
+          liters: form.liters,
+          date: form.date,
+          lotNumber: form.lotNumber
+        },
+        department: "Producción",
+        type: "production"
+      }));
+      
+      // Combine both types of forms
+      const combinedEntries = [...entries, ...transformedProductionForms];
+      
+      res.json(combinedEntries);
     } catch (error) {
       next(error);
     }
