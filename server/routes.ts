@@ -2186,7 +2186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("Generando PDF de formulario de producción:", productionForm);
         
         // **SOLUCIÓN DIRECTA: USAR LOS DATOS EXACTOS DE LOS LOGS**
-        console.log("=== FORZANDO DATOS DE VERIFICACIÓN REALES ===");
+        console.log("=== FORZANDO DATOS DE VERIFICACIÓN REALES - NUEVO CÓDIGO ===");
         console.log("Datos disponibles - qualityTimes:", productionForm.qualityTimes);
         console.log("Datos disponibles - brix:", productionForm.brix);
         console.log("Datos disponibles - qualityTemp:", productionForm.qualityTemp);
