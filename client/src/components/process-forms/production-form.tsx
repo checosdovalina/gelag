@@ -295,7 +295,7 @@ export default function ProductionForm({
       }
     } else if (currentUserRole === "quality_manager") {
       // Gerente de Calidad: si completa verificación → COMPLETADO
-      if ((formData.finalBrix || formData.cP || formData.yield)) {
+      if ((formData.finalBrix || formData.c_p || formData.yield)) {
         newStatus = ProductionFormStatus.COMPLETED;
         console.log("¡Cambiando estado a COMPLETED por Gerente de Calidad!");
       }

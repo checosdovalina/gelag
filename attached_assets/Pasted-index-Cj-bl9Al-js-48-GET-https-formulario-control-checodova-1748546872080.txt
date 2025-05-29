@@ -1,0 +1,79 @@
+index-Cj_bl9Al.js:48 
+            
+            
+            GET https://formulario-control-checodovalina.replit.app/api/products 503 (Service Unavailable)
+(anonymous) @ index-Cj_bl9Al.js:48
+i @ index-Cj_bl9Al.js:48
+m @ index-Cj_bl9Al.js:48
+start @ index-Cj_bl9Al.js:48
+fetch @ index-Cj_bl9Al.js:48
+_h @ index-Cj_bl9Al.js:48
+onSubscribe @ index-Cj_bl9Al.js:48
+subscribe @ index-Cj_bl9Al.js:48
+(anonymous) @ index-Cj_bl9Al.js:48
+F5 @ index-Cj_bl9Al.js:38
+O0 @ index-Cj_bl9Al.js:40
+Ld @ index-Cj_bl9Al.js:40
+WJ @ index-Cj_bl9Al.js:40
+Hc @ index-Cj_bl9Al.js:40
+UD @ index-Cj_bl9Al.js:40
+Ac @ index-Cj_bl9Al.js:38
+(anonymous) @ index-Cj_bl9Al.js:40
+setTimeout
+a @ index-Cj_bl9Al.js:48
+o @ index-Cj_bl9Al.js:48
+batch @ index-Cj_bl9Al.js:48
+Ts @ index-Cj_bl9Al.js:48
+setData @ index-Cj_bl9Al.js:48
+onSuccess @ index-Cj_bl9Al.js:48
+d @ index-Cj_bl9Al.js:48
+Promise.then
+m @ index-Cj_bl9Al.js:48
+start @ index-Cj_bl9Al.js:48
+fetch @ index-Cj_bl9Al.js:48
+_h @ index-Cj_bl9Al.js:48
+onSubscribe @ index-Cj_bl9Al.js:48
+subscribe @ index-Cj_bl9Al.js:48
+(anonymous) @ index-Cj_bl9Al.js:48
+F5 @ index-Cj_bl9Al.js:38
+O0 @ index-Cj_bl9Al.js:40
+Ld @ index-Cj_bl9Al.js:40
+UD @ index-Cj_bl9Al.js:40
+Ac @ index-Cj_bl9Al.js:38
+WJ @ index-Cj_bl9Al.js:40
+Hc @ index-Cj_bl9Al.js:40
+gV @ index-Cj_bl9Al.js:40
+j @ index-Cj_bl9Al.js:25
+O @ index-Cj_bl9Al.js:25
+index-Cj_bl9Al.js:698 Rol actual del usuario: production_manager
+index-Cj_bl9Al.js:698 Estado actual: draft
+index-Cj_bl9Al.js:698 Datos de seguimiento: {startTime: '', hasTemperature: false, hasPressure: false}
+index-Cj_bl9Al.js:48 
+            
+            
+            POST https://formulario-control-checodovalina.replit.app/api/production-forms 500 (Internal Server Error)
+Yt @ index-Cj_bl9Al.js:48
+mutationFn @ index-Cj_bl9Al.js:698
+fn @ index-Cj_bl9Al.js:48
+m @ index-Cj_bl9Al.js:48
+start @ index-Cj_bl9Al.js:48
+execute @ index-Cj_bl9Al.js:48
+await in execute
+mutate @ index-Cj_bl9Al.js:48
+y @ index-Cj_bl9Al.js:698
+y @ index-Cj_bl9Al.js:698
+cZ @ index-Cj_bl9Al.js:37
+dZ @ index-Cj_bl9Al.js:37
+fZ @ index-Cj_bl9Al.js:37
+pD @ index-Cj_bl9Al.js:37
+S5 @ index-Cj_bl9Al.js:37
+(anonymous) @ index-Cj_bl9Al.js:37
+QE @ index-Cj_bl9Al.js:40
+HB @ index-Cj_bl9Al.js:37
+G1 @ index-Cj_bl9Al.js:37
+NE @ index-Cj_bl9Al.js:37
+_Z @ index-Cj_bl9Al.js:37
+index-Cj_bl9Al.js:698  Error al guardar el formulario: Error: 500: {"message":"Error al crear formulario de producción","error":"column \"cp\" does not exist"}
+    at ez (index-Cj_bl9Al.js:48:43039)
+    at async Yt (index-Cj_bl9Al.js:48:43242)
+    at async Object.mutationFn (index-Cj_bl9Al.js:698:26572)
