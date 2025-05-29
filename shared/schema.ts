@@ -413,6 +413,7 @@ export const productionForms = pgTable("production_forms", {
   viscosity: json("viscosity"), // Viscosidad
   smell: json("smell"), // Olor
   taste: json("taste"), // Sabor
+  foreignMaterial: json("foreign_material"), // Material Extraño
   statusCheck: json("status_check"), // Status
   
   // Sección de destino de producto

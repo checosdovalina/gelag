@@ -2197,9 +2197,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const viscosityValues = productionForm.viscosity || [];
       const smellValues = productionForm.smell || [];
       const tasteValues = productionForm.taste || [];
+      const foreignMaterialValues = productionForm.foreignMaterial || [];
+      const statusValues = productionForm.statusCheck || [];
       
       // Generar filas solo para los datos que existen
-      for (let i = 0; i < Math.max(times.length, brixValues.length, tempValues.length); i++) {
+      for (let i = 0; i < Math.max(times.length, brixValues.length, tempValues.length, foreignMaterialValues.length, statusValues.length); i++) {
         const time = times[i] || '';
         const brix = brixValues[i] || '';
         const temp = tempValues[i] || '';
@@ -2208,9 +2210,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const viscosity = viscosityValues[i] || '';
         const smell = smellValues[i] || '';
         const taste = tasteValues[i] || '';
+        const foreignMaterial = foreignMaterialValues[i] || '';
+        const status = statusValues[i] || '';
         
         // Solo crear fila si hay al menos algún dato
-        if (time || brix || temp || texture || color || viscosity || smell || taste) {
+        if (time || brix || temp || texture || color || viscosity || smell || taste || foreignMaterial || status) {
           qualityVerificationRows += `
             <tr>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${time}</td>
@@ -2221,8 +2225,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${viscosity}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${smell}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${taste}</td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;"></td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;"></td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${foreignMaterial}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${status}</td>
             </tr>`;
         }
       }
