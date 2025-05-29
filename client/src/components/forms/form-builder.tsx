@@ -3,6 +3,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -179,6 +180,32 @@ interface FormBuilderProps {
 export default function FormBuilder({ initialFormData, onSave, isLoading = false }: FormBuilderProps) {
   const { toast } = useToast();
   const [showFieldSelector, setShowFieldSelector] = useState(false);
+
+  // Cargar lista de productos
+  const { data: products = [] } = useQuery({
+    queryKey: ['/api/products'],
+    queryFn: async () => {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error('Error al cargar productos');
+      }
+      return response.json();
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
+
+  // Cargar lista de empleados
+  const { data: employees = [] } = useQuery({
+    queryKey: ['/api/employees'],
+    queryFn: async () => {
+      const response = await fetch('/api/employees');
+      if (!response.ok) {
+        throw new Error('Error al cargar empleados');
+      }
+      return response.json();
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
 
   // Pre-process fields to add proper display properties
   const fieldsWithDisplayProps = useMemo(() => {
