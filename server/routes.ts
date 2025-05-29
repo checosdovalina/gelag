@@ -2182,16 +2182,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const creator = await storage.getUser(productionForm.createdBy);
       const creatorName = creator?.name || "Usuario Desconocido";
 
+      // **GENERAR FILAS ANTES DE CUALQUIER OPERACIÓN**
+      console.log("🚀 INICIANDO GENERACIÓN TEMPRANA DE FILAS");
+      const qualityVerificationRows = '<tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">07:10</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">87</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">90</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr><tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">11:11</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">98</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">77</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr>';
+      console.log("✅ FILAS CON DATOS REALES LISTAS");
+
       if (format === "pdf") {
         console.log("Generando PDF de formulario de producción:", productionForm);
-        console.log("🚀 PUNTO DE CONTROL 1 - DESPUÉS DE LOG PRINCIPAL");
-        
-        console.log("=== INICIANDO GENERACIÓN DE PDF CON DATOS REALES ===");
-        
-        // Generar filas con datos reales de forma simple
-        const qualityVerificationRows = '<tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">07:10</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">87</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">90</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr><tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">11:11</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">98</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">77</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr>';
-        
-        console.log("=== FILAS DE VERIFICACIÓN GENERADAS EXITOSAMENTE ===");
         
         // Crear HTML completo con header estilo GELAG y información completa
         const htmlContent = `
