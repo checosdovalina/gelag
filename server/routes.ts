@@ -2802,26 +2802,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">07:10</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">87</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">90</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                </tr>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">11:11</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">98</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">77</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
-                </tr>
+                ${(() => {
+                  const qualityTimes = productionForm.qualityTimes || [];
+                  const brix = productionForm.brix || [];
+                  const qualityTemp = productionForm.qualityTemp || [];
+                  const texture = productionForm.texture || [];
+                  const color = productionForm.color || [];
+                  const viscosity = productionForm.viscosity || [];
+                  const smell = productionForm.smell || [];
+                  const taste = productionForm.taste || [];
+                  
+                  let rows = '';
+                  const maxRows = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length);
+                  
+                  for (let i = 0; i < maxRows; i++) {
+                    const time = qualityTimes[i] || '';
+                    const brixVal = brix[i] || '';
+                    const temp = qualityTemp[i] || '';
+                    const textureVal = texture[i] || '';
+                    const colorVal = color[i] || '';
+                    const viscosityVal = viscosity[i] || '';
+                    const smellVal = smell[i] || '';
+                    const tasteVal = taste[i] || '';
+                    
+                    if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal) {
+                      rows += '<tr>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + textureVal + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + colorVal + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
+                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
+                      '</tr>';
+                    }
+                  }
+                  
+                  return rows || '<tr><td colspan="8" style="border: 1px solid #000; padding: 8px; text-align: center; font-style: italic;">No hay datos de verificación registrados</td></tr>';
+                })()}
               </tbody>
             </table>
 
