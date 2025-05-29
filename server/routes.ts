@@ -1604,6 +1604,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =========== Ruta para corregir formularios de producción ===========
+  app.get("/api/fix/production-forms", async (req, res) => {
+    try {
+      console.log("=== CORRECCIÓN DE FORMULARIOS DE PRODUCCIÓN ===");
+      
+      // Verificar y crear tabla si no existe
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS production_forms (
+          id SERIAL PRIMARY KEY,
+          product_id TEXT NOT NULL,
+          liters INTEGER NOT NULL,
+          date TEXT NOT NULL,
+          responsible TEXT NOT NULL,
+          folio TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'draft',
+          lot_number TEXT,
+          ingredients JSON,
+          ingredient_times JSON,
+          start_time TEXT,
+          end_time TEXT,
+          temperature JSON,
+          pressure JSON,
+          hour_tracking JSON,
+          quality_times JSON,
+          brix JSON,
+          quality_temp JSON,
+          texture JSON,
+          color JSON,
+          viscosity JSON,
+          smell JSON,
+          taste JSON,
+          foreign_material JSON,
+          status_check JSON,
+          destination_type JSON,
+          destination_kilos JSON,
+          destination_product JSON,
+          destination_estimation JSON,
+          total_kilos TEXT,
+          liberation_folio TEXT,
+          c_p TEXT,
+          cm_consistometer TEXT,
+          final_brix TEXT,
+          yield TEXT,
+          start_state TEXT,
+          end_state TEXT,
+          signature_url TEXT,
+          created_by INTEGER NOT NULL,
+          updated_by INTEGER,
+          last_updated_by INTEGER,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      // Verificar tabla
+      const count = await db.execute(sql`SELECT COUNT(*) as count FROM production_forms;`);
+      
+      console.log("Tabla corregida exitosamente");
+      
+      res.json({
+        status: "success",
+        message: "Tabla production_forms corregida",
+        recordCount: count.rows[0]?.count || 0
+      });
+      
+    } catch (error) {
+      console.error("Error en corrección:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Error en corrección",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // =========== Ruta de diagnóstico temporal ===========
   app.get("/api/debug/production-forms-status", async (req, res) => {
     try {
