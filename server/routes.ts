@@ -2221,6 +2221,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${viscosity}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${smell}</td>
               <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${taste}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">N/A</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">OK</td>
             </tr>`;
         }
       }
@@ -2714,10 +2716,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </table>
             </div>
 
-            <!-- Tabla de Verificación de Calidad del Producto -->
-            <div style="text-align: center; font-weight: bold; font-size: 14px; margin: 30px 0 15px 0; padding: 8px; background-color: #d0d0d0; border: 1px solid #000;">
-              Verificación de Calidad del Producto
-            </div>
+
 
 
 
@@ -2797,6 +2796,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Viscosidad</th>
                   <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Olor</th>
                   <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Sabor</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Material Extraño</th>
+                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Status</th>
                 </tr>
               </thead>
               <tbody>
