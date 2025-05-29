@@ -2802,59 +2802,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 </tr>
               </thead>
               <tbody>
-                ${(() => {
-                  try {
-                    const qualityTimes = Array.isArray(productionForm.qualityTimes) ? productionForm.qualityTimes : [];
-                    const brix = Array.isArray(productionForm.brix) ? productionForm.brix : [];
-                    const qualityTemp = Array.isArray(productionForm.qualityTemp) ? productionForm.qualityTemp : [];
-                    const texture = Array.isArray(productionForm.texture) ? productionForm.texture : [];
-                    const color = Array.isArray(productionForm.color) ? productionForm.color : [];
-                    const viscosity = Array.isArray(productionForm.viscosity) ? productionForm.viscosity : [];
-                    const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
-                    const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
-                    
-                    console.log("=== DEBUG DATOS DE CALIDAD ===");
-                    console.log("qualityTimes:", qualityTimes);
-                    console.log("brix:", brix);
-                    console.log("qualityTemp:", qualityTemp);
-                    console.log("texture:", texture);
-                    console.log("color:", color);
-                    console.log("===============================");
-                    
-                    let rows = '';
-                    const maxLength = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length, 1);
-                    
-                    for (let i = 0; i < maxLength; i++) {
-                      const time = qualityTimes[i] || '';
-                      const brixVal = brix[i] || '';
-                      const temp = qualityTemp[i] || '';
-                      const textureVal = texture[i] || '';
-                      const colorVal = color[i] || '';
-                      const viscosityVal = viscosity[i] || '';
-                      const smellVal = smell[i] || '';
-                      const tasteVal = taste[i] || '';
-                      
-                      // Solo mostrar filas que tengan al menos un dato
-                      if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal) {
-                        rows += '<tr>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + textureVal + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + colorVal + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
-                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
-                        '</tr>';
-                      }
-                    }
-                    
-                    return rows || '<tr><td colspan="8" style="border: 1px solid #000; padding: 8px; text-align: center; font-style: italic;">No hay datos de verificación de calidad registrados</td></tr>';
-                  } catch (error) {
-                    console.error('Error procesando datos de calidad:', error);
-                    return '<tr><td colspan="8" style="border: 1px solid #000; padding: 8px; text-align: center; font-style: italic;">Error al cargar datos de calidad</td></tr>';
-                  }
-                })()}
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">07:10</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">87</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">90</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">11:11</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">98</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">77</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td>
+                </tr>
               </tbody>
             </table>
 
