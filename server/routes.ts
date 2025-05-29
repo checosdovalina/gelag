@@ -1679,6 +1679,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =========== Ruta de diagnóstico de conectividad ===========
+  app.get("/api/health", async (req, res) => {
+    try {
+      console.log("=== HEALTH CHECK ===");
+      
+      // Test básico de base de datos
+      const result = await db.execute(sql`SELECT 1 as test`);
+      console.log("Database test result:", result.rows);
+      
+      res.json({ 
+        status: "ok", 
+        database: "connected",
+        timestamp: new Date().toISOString(),
+        test: result.rows[0]
+      });
+    } catch (error) {
+      console.error("Health check error:", error);
+      res.status(500).json({
+        status: "error",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // =========== Ruta temporal de productos sin autenticación ===========
   app.get("/api/products-public", async (req, res) => {
     try {
