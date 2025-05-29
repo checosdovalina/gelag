@@ -6,7 +6,7 @@ import {
   insertProductionFormSchema,
   ProductionFormStatus,
 } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { z } from "zod";
 
 // Obtener todos los formularios de producción
@@ -23,11 +23,13 @@ export async function getProductionForms(req: Request, res: Response) {
 
     console.log("Intentando obtener formularios de producción...");
     
-    // Obtener todos los formularios ordenados por fecha de creación descendente
-    const forms = await db.select().from(productionForms).orderBy(productionForms.createdAt);
+    // Obtener todos los formularios ordenados por fecha de creación descendente usando SQL directo
+    const result = await db.execute(sql`
+      SELECT * FROM production_forms ORDER BY created_at DESC
+    `);
     
-    console.log("Formularios obtenidos exitosamente:", forms.length, "registros");
-    return res.json(forms);
+    console.log("Formularios obtenidos exitosamente:", result.rows.length, "registros");
+    return res.json(result.rows);
   } catch (error) {
     console.error("Error detallado al obtener formularios de producción:", error);
     console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace available');
