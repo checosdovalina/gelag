@@ -2804,22 +2804,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 30px;">
-              <thead>
-                <tr style="background-color: #f0f0f0;">
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Colador</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Bueno</th>
-                  <th style="border: 1px solid #000; padding: 8px; font-weight: bold;">Malo</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState || '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'good' ? '✓' : '-'}</td>
-                  <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'bad' ? '✓' : '-'}</td>
-                </tr>
-              </tbody>
-            </table>
+
 
 
 
