@@ -1679,6 +1679,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =========== Ruta temporal de productos sin autenticación ===========
+  app.get("/api/products-public", async (req, res) => {
+    try {
+      console.log("=== GET PRODUCTS PUBLIC ===");
+      
+      let result;
+      if (req.query.active === 'true') {
+        result = await db.execute(sql`
+          SELECT * FROM products WHERE is_active = true ORDER BY name
+        `);
+      } else {
+        result = await db.execute(sql`
+          SELECT * FROM products ORDER BY name
+        `);
+      }
+      
+      console.log("Productos encontrados (público):", result.rows.length);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error al obtener productos (público):", error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // =========== Ruta de diagnóstico temporal ===========
   app.get("/api/debug/production-forms-status", async (req, res) => {
     try {
