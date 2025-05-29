@@ -322,7 +322,8 @@ export default function CapturedFormsPage() {
         // Template filter
         const passesTemplateFilter = 
           templateFilter === "all" || 
-          entry.formTemplateId === templateFilter;
+          (templateFilter === "production" && entry.formType === "production") ||
+          (typeof templateFilter === "number" && entry.formTemplateId === templateFilter);
         
         // Date range filter
         let passesDateFilter = true;
@@ -359,9 +360,19 @@ export default function CapturedFormsPage() {
       const productionId = (entry.id as string).replace("prod_", "");
       window.open(`/production-forms/${productionId}`, '_blank');
     } else {
-      // For regular forms, show in modal
-      setSelectedEntry(entry);
-      setDetailsOpen(true);
+      // For regular forms, find the template and show in modal
+      const template = templates?.find(t => t.id === entry.formTemplateId);
+      if (template) {
+        setSelectedEntry(entry);
+        setSelectedTemplate(template);
+        setDetailsOpen(true);
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo encontrar la plantilla para este formulario",
+          variant: "destructive"
+        });
+      }
     }
   };
   
@@ -1112,13 +1123,14 @@ export default function CapturedFormsPage() {
                   <label className="text-sm font-medium">Formulario</label>
                   <Select
                     value={templateFilter.toString()}
-                    onValueChange={(val) => setTemplateFilter(val === "all" ? "all" : parseInt(val))}
+                    onValueChange={(val) => setTemplateFilter(val === "all" ? "all" : val === "production" ? "production" : parseInt(val))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todos los formularios" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos los formularios</SelectItem>
+                      <SelectItem value="production">Formulario de Producción</SelectItem>
                       {templates?.map(template => (
                         <SelectItem key={template.id} value={template.id.toString()}>
                           {template.name}
