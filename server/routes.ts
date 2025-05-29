@@ -2820,40 +2820,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               Generado: ${new Date().toLocaleString('es-MX')} - v${timestamp}
             </div>
 
-            <!-- PÁGINA 2 -->
-            <div class="page-break">
 
-
-
-
-
-              <!-- Sección del Colador -->
-              <div class="section-divider">
-                <span class="section-title">COLADOR</span>
-              </div>
-              
-              <table class="ingredients-table" style="margin-top: 20px;">
-                <thead>
-                  <tr>
-                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Colador</th>
-                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Bueno</th>
-                    <th style="border: 1px solid #000; padding: 8px; background-color: #f0f0f0; font-weight: bold;">Malo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Estado de inicio</td>
-                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'good' ? '✓' : ''}</td>
-                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.startState === 'bad' ? '✓' : ''}</td>
-                  </tr>
-                  <tr>
-                    <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Estado al final</td>
-                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'good' ? '✓' : ''}</td>
-                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${productionForm.endState === 'bad' ? '✓' : ''}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
 
             <div class="footer">
               Documento generado automáticamente por el sistema de captura de formularios.<br>
