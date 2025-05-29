@@ -2828,16 +2828,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
                       
                       // Solo mostrar filas que tengan al menos un dato
                       if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal) {
-                        rows += \`<tr>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${time}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${brixVal}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${temp}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${textureVal}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${colorVal}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${viscosityVal}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${smellVal}</td>
-                          <td style="border: 1px solid #000; padding: 8px; text-align: center;">\${tasteVal}</td>
-                        </tr>\`;
+                        rows += '<tr>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + textureVal + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + colorVal + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
+                          '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
+                        '</tr>';
                       }
                     }
                     
