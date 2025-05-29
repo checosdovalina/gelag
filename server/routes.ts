@@ -25,7 +25,7 @@ import {
   deleteProductionForm
 } from './production-forms';
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { hashPassword } from "./auth";
 import { upload, parseExcelFile, parsePdfFile, cleanupFile } from "./file-upload";
@@ -1601,6 +1601,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       next(error);
+    }
+  });
+
+  // =========== Ruta de diagnóstico temporal ===========
+  app.get("/api/debug/production-forms-status", async (req, res) => {
+    try {
+      console.log("=== DIAGNÓSTICO DE TABLA PRODUCTION_FORMS ===");
+      
+      // Verificar si la tabla existe
+      const tableExists = await db.execute(sql`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name = 'production_forms'
+        );
+      `);
+      
+      console.log("Tabla existe:", tableExists.rows[0]?.exists);
+      
+      if (tableExists.rows[0]?.exists) {
+        // Verificar estructura de la tabla
+        const tableStructure = await db.execute(sql`
+          SELECT column_name, data_type 
+          FROM information_schema.columns 
+          WHERE table_name = 'production_forms' 
+          ORDER BY ordinal_position;
+        `);
+        
+        console.log("Estructura de la tabla:", tableStructure.rows);
+        
+        // Intentar hacer un SELECT simple
+        try {
+          const testQuery = await db.select().from(productionForms).limit(1);
+          console.log("Consulta de prueba exitosa:", testQuery.length, "registros");
+          
+          res.json({
+            status: "success",
+            tableExists: true,
+            canQuery: true,
+            structure: tableStructure.rows,
+            recordCount: testQuery.length
+          });
+        } catch (queryError) {
+          console.error("Error en consulta de prueba:", queryError);
+          res.json({
+            status: "error",
+            tableExists: true,
+            canQuery: false,
+            structure: tableStructure.rows,
+            queryError: queryError instanceof Error ? queryError.message : String(queryError)
+          });
+        }
+      } else {
+        res.json({
+          status: "error",
+          tableExists: false,
+          message: "La tabla production_forms no existe"
+        });
+      }
+      
+    } catch (error) {
+      console.error("Error en diagnóstico:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Error en diagnóstico",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
