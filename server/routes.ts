@@ -1609,48 +1609,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("=== DIAGNÓSTICO DE TABLA PRODUCTION_FORMS ===");
       
-      // Verificar si la tabla existe
+      // Verificar si la tabla existe usando SQL directo
       const tableExists = await db.execute(sql`
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
-          AND table_name = 'production_forms'
-        );
+        SELECT tablename FROM pg_tables WHERE tablename = 'production_forms';
       `);
       
-      console.log("Tabla existe:", tableExists.rows[0]?.exists);
+      console.log("Resultado búsqueda tabla:", tableExists.rows);
       
-      if (tableExists.rows[0]?.exists) {
-        // Verificar estructura de la tabla
-        const tableStructure = await db.execute(sql`
-          SELECT column_name, data_type 
-          FROM information_schema.columns 
-          WHERE table_name = 'production_forms' 
-          ORDER BY ordinal_position;
-        `);
+      if (tableExists.rows.length > 0) {
+        console.log("Tabla encontrada, probando consulta SELECT...");
         
-        console.log("Estructura de la tabla:", tableStructure.rows);
-        
-        // Intentar hacer un SELECT simple
+        // Intentar hacer un SELECT simple usando SQL directo
         try {
-          const testQuery = await db.select().from(productionForms).limit(1);
-          console.log("Consulta de prueba exitosa:", testQuery.length, "registros");
+          const testQuery = await db.execute(sql`
+            SELECT COUNT(*) as count FROM production_forms;
+          `);
           
-          res.json({
-            status: "success",
-            tableExists: true,
-            canQuery: true,
-            structure: tableStructure.rows,
-            recordCount: testQuery.length
-          });
-        } catch (queryError) {
-          console.error("Error en consulta de prueba:", queryError);
+          console.log("Consulta COUNT exitosa:", testQuery.rows);
+          
+          // Intentar consulta con Drizzle
+          try {
+            const drizzleTest = await db.select().from(productionForms).limit(1);
+            console.log("Consulta Drizzle exitosa:", drizzleTest.length, "registros");
+            
+            res.json({
+              status: "success",
+              tableExists: true,
+              canQuerySQL: true,
+              canQueryDrizzle: true,
+              recordCount: testQuery.rows[0]?.count || 0,
+              drizzleRecords: drizzleTest.length
+            });
+          } catch (drizzleError) {
+            console.error("Error en consulta Drizzle:", drizzleError);
+            res.json({
+              status: "partial_success",
+              tableExists: true,
+              canQuerySQL: true,
+              canQueryDrizzle: false,
+              recordCount: testQuery.rows[0]?.count || 0,
+              drizzleError: drizzleError instanceof Error ? drizzleError.message : String(drizzleError)
+            });
+          }
+        } catch (sqlError) {
+          console.error("Error en consulta SQL:", sqlError);
           res.json({
             status: "error",
             tableExists: true,
-            canQuery: false,
-            structure: tableStructure.rows,
-            queryError: queryError instanceof Error ? queryError.message : String(queryError)
+            canQuerySQL: false,
+            sqlError: sqlError instanceof Error ? sqlError.message : String(sqlError)
           });
         }
       } else {
