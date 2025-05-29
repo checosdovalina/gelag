@@ -90,11 +90,15 @@ export async function createProductionForm(req: Request, res: Response) {
       return res.status(401).json({ message: "No autenticado" });
     }
 
+    console.log("Datos recibidos para crear formulario:", JSON.stringify(req.body, null, 2));
+
     // Validar datos usando Zod
     const validatedData = insertProductionFormSchema.parse(req.body);
+    console.log("Datos validados:", JSON.stringify(validatedData, null, 2));
     
     // Generar folio consecutivo automáticamente
     const folio = await generateFolio();
+    console.log("Folio generado:", folio);
     
     // Preparar datos para inserción
     const insertData = {
@@ -113,16 +117,25 @@ export async function createProductionForm(req: Request, res: Response) {
       ...(validatedData.ingredientTimes && { ingredientTimes: validatedData.ingredientTimes })
     };
 
+    console.log("Datos preparados para inserción:", JSON.stringify(insertData, null, 2));
+
     // Insertar el nuevo formulario
     const [newForm] = await db.insert(productionForms).values(insertData as any).returning();
     
+    console.log("Formulario creado exitosamente:", newForm);
     return res.status(201).json(newForm);
   } catch (error) {
-    console.error("Error al crear formulario de producción:", error);
+    console.error("Error detallado al crear formulario de producción:", error);
+    console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace available');
+    
     if (error instanceof z.ZodError) {
+      console.error("Errores de validación Zod:", error.errors);
       return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
     }
-    return res.status(500).json({ message: "Error al crear formulario de producción" });
+    return res.status(500).json({ 
+      message: "Error al crear formulario de producción",
+      error: error instanceof Error ? error.message : String(error)
+    });
   }
 }
 
