@@ -2803,30 +2803,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </thead>
               <tbody>
                 ${(() => {
-                  const qualityTimes = productionForm.qualityTimes || [];
-                  const brix = productionForm.brix || [];
-                  const qualityTemp = productionForm.qualityTemp || [];
-                  const texture = productionForm.texture || [];
-                  const color = productionForm.color || [];
-                  const viscosity = productionForm.viscosity || [];
-                  const smell = productionForm.smell || [];
-                  const taste = productionForm.taste || [];
+                  const qualityTimes = Array.isArray(productionForm.qualityTimes) ? productionForm.qualityTimes : [];
+                  const brix = Array.isArray(productionForm.brix) ? productionForm.brix : [];
+                  const qualityTemp = Array.isArray(productionForm.qualityTemp) ? productionForm.qualityTemp : [];
+                  const texture = Array.isArray(productionForm.texture) ? productionForm.texture : [];
+                  const color = Array.isArray(productionForm.color) ? productionForm.color : [];
+                  const viscosity = Array.isArray(productionForm.viscosity) ? productionForm.viscosity : [];
+                  const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
+                  const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
+                  
+                  console.log("=== DATOS DE VERIFICACIÓN ===");
+                  console.log("qualityTimes:", qualityTimes);
+                  console.log("brix:", brix);
+                  console.log("qualityTemp:", qualityTemp);
+                  console.log("texture:", texture);
+                  console.log("color:", color);
+                  console.log("viscosity:", viscosity);
+                  console.log("smell:", smell);
+                  console.log("taste:", taste);
                   
                   let rows = '';
-                  const maxRows = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length);
+                  const maxRows = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length, 8);
                   
                   for (let i = 0; i < maxRows; i++) {
-                    const time = qualityTimes[i] || '';
-                    const brixVal = brix[i] || '';
-                    const temp = qualityTemp[i] || '';
-                    const textureVal = texture[i] || '';
-                    const colorVal = color[i] || '';
-                    const viscosityVal = viscosity[i] || '';
-                    const smellVal = smell[i] || '';
-                    const tasteVal = taste[i] || '';
+                    const time = (qualityTimes[i] && qualityTimes[i].trim()) || '';
+                    const brixVal = (brix[i] && brix[i].trim()) || '';
+                    const temp = (qualityTemp[i] && qualityTemp[i].trim()) || '';
+                    const textureVal = (texture[i] && texture[i].trim()) || '';
+                    const colorVal = (color[i] && color[i].trim()) || '';
+                    const viscosityVal = (viscosity[i] && viscosity[i].trim()) || '';
+                    const smellVal = (smell[i] && smell[i].trim()) || '';
+                    const tasteVal = (taste[i] && taste[i].trim()) || '';
                     
-                    if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal) {
-                      rows += '<tr>' +
+                    // Mostrar fila si tiene algún dato o si es una de las primeras 8 filas
+                    if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal || i < 8) {
+                      rows += 
+                        '<tr>' +
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
@@ -2835,11 +2847,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
                         '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
-                      '</tr>';
+                        '</tr>';
                     }
                   }
                   
-                  return rows || '<tr><td colspan="8" style="border: 1px solid #000; padding: 8px; text-align: center; font-style: italic;">No hay datos de verificación registrados</td></tr>';
+                  console.log("HTML generado para tabla:", rows);
+                  return rows;
                 })()}
               </tbody>
             </table>
