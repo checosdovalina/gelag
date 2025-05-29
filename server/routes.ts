@@ -2183,10 +2183,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const creatorName = creator?.name || "Usuario Desconocido";
       console.log("⭐ USUARIO CREADOR OBTENIDO:", creatorName);
 
-      // **GENERAR FILAS ANTES DE CUALQUIER OPERACIÓN**
-      console.log("🚀 INICIANDO GENERACIÓN TEMPRANA DE FILAS");
-      const qualityVerificationRows = '<tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">07:10</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">87</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">90</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr><tr><td style="border: 1px solid #000; padding: 8px; text-align: center;">11:11</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">98</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">77</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">ok</td></tr>';
-      console.log("✅ FILAS CON DATOS REALES LISTAS");
+      // **GENERAR FILAS USANDO DATOS REALES DE LA BASE DE DATOS**
+      console.log("🚀 GENERANDO FILAS CON DATOS REALES DE LA DB");
+      
+      let qualityVerificationRows = '';
+      
+      // Usar los datos reales del formulario
+      const times = productionForm.qualityTimes || [];
+      const brixValues = productionForm.brix || [];
+      const tempValues = productionForm.qualityTemp || [];
+      const textureValues = productionForm.texture || [];
+      const colorValues = productionForm.color || [];
+      const viscosityValues = productionForm.viscosity || [];
+      const smellValues = productionForm.smell || [];
+      const tasteValues = productionForm.taste || [];
+      
+      // Generar filas solo para los datos que existen
+      for (let i = 0; i < Math.max(times.length, brixValues.length, tempValues.length); i++) {
+        const time = times[i] || '';
+        const brix = brixValues[i] || '';
+        const temp = tempValues[i] || '';
+        const texture = textureValues[i] || '';
+        const color = colorValues[i] || '';
+        const viscosity = viscosityValues[i] || '';
+        const smell = smellValues[i] || '';
+        const taste = tasteValues[i] || '';
+        
+        // Solo crear fila si hay al menos algún dato
+        if (time || brix || temp || texture || color || viscosity || smell || taste) {
+          qualityVerificationRows += `
+            <tr>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${time}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${brix}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${temp}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${texture}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${color}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${viscosity}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${smell}</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${taste}</td>
+            </tr>`;
+        }
+      }
+      
+      console.log("✅ FILAS GENERADAS CON DATOS REALES:", qualityVerificationRows.length > 0 ? 'CON DATOS' : 'VACÍAS');
 
       if (format === "pdf") {
         console.log("Generando PDF de formulario de producción:", productionForm);
