@@ -908,17 +908,27 @@ export default function ProductionForm({
                               className="h-8 w-24"
                             />
                           </td>
-                          <td className="px-3 py-2 text-center">
-                            N/A
+                          <td className="px-3 py-2">
+                            <Input
+                              type="text"
+                              value={(formData.foreignMaterial && formData.foreignMaterial[i]) || ""}
+                              onChange={(e) => {
+                                const values = [...(formData.foreignMaterial || Array(8).fill(""))];
+                                values[i] = e.target.value;
+                                handleChange("foreignMaterial", values);
+                              }}
+                              disabled={!canEditSection("quality-verification") || readOnly}
+                              className="h-8 w-24"
+                            />
                           </td>
                           <td className="px-3 py-2">
                             <Input
                               type="text"
-                              value={(formData.status && formData.status[i]) || ""}
+                              value={(formData.statusCheck && formData.statusCheck[i]) || ""}
                               onChange={(e) => {
-                                const values = [...(formData.status || Array(8).fill(""))];
+                                const values = [...(formData.statusCheck || Array(8).fill(""))];
                                 values[i] = e.target.value;
-                                handleChange("status", values);
+                                handleChange("statusCheck", values);
                               }}
                               disabled={!canEditSection("quality-verification") || readOnly}
                               className="h-8 w-24"
