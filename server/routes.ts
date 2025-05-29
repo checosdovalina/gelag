@@ -2803,6 +2803,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </thead>
               <tbody>
                 ${(() => {
+                  // Extraer los datos de verificación de calidad directamente
                   const qualityTimes = Array.isArray(productionForm.qualityTimes) ? productionForm.qualityTimes : [];
                   const brix = Array.isArray(productionForm.brix) ? productionForm.brix : [];
                   const qualityTemp = Array.isArray(productionForm.qualityTemp) ? productionForm.qualityTemp : [];
@@ -2812,46 +2813,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
                   const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
                   
-                  console.log("=== DATOS DE VERIFICACIÓN ===");
+                  console.log("=== GENERANDO TABLA DE VERIFICACIÓN ===");
                   console.log("qualityTimes:", qualityTimes);
                   console.log("brix:", brix);
                   console.log("qualityTemp:", qualityTemp);
-                  console.log("texture:", texture);
-                  console.log("color:", color);
-                  console.log("viscosity:", viscosity);
-                  console.log("smell:", smell);
-                  console.log("taste:", taste);
                   
                   let rows = '';
-                  const maxRows = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length, 8);
+                  
+                  // Generar filas basadas en los datos disponibles
+                  const maxRows = Math.max(8, qualityTimes.length, brix.length);
                   
                   for (let i = 0; i < maxRows; i++) {
-                    const time = (qualityTimes[i] && qualityTimes[i].trim()) || '';
-                    const brixVal = (brix[i] && brix[i].trim()) || '';
-                    const temp = (qualityTemp[i] && qualityTemp[i].trim()) || '';
-                    const textureVal = (texture[i] && texture[i].trim()) || '';
-                    const colorVal = (color[i] && color[i].trim()) || '';
-                    const viscosityVal = (viscosity[i] && viscosity[i].trim()) || '';
-                    const smellVal = (smell[i] && smell[i].trim()) || '';
-                    const tasteVal = (taste[i] && taste[i].trim()) || '';
+                    const time = qualityTimes[i] || '';
+                    const brixVal = brix[i] || '';
+                    const temp = qualityTemp[i] || '';
+                    const textureVal = texture[i] || '';
+                    const colorVal = color[i] || '';
+                    const viscosityVal = viscosity[i] || '';
+                    const smellVal = smell[i] || '';
+                    const tasteVal = taste[i] || '';
                     
-                    // Mostrar fila si tiene algún dato o si es una de las primeras 8 filas
-                    if (time || brixVal || temp || textureVal || colorVal || viscosityVal || smellVal || tasteVal || i < 8) {
-                      rows += 
-                        '<tr>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + textureVal + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + colorVal + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
-                        '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
-                        '</tr>';
-                    }
+                    rows += '<tr>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + time + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + brixVal + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + temp + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + textureVal + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + colorVal + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + viscosityVal + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + smellVal + '</td>' +
+                      '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' + tasteVal + '</td>' +
+                      '</tr>';
                   }
                   
-                  console.log("HTML generado para tabla:", rows);
+                  console.log("FILAS GENERADAS:", rows.length > 0 ? "SÍ" : "NO");
                   return rows;
                 })()}
               </tbody>
