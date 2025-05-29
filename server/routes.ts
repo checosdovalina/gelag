@@ -2861,23 +2861,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </tbody>
             </table>
 
-            <!-- Área de Notas -->
 
-
-            <!-- Sección de Firmas -->
-            <div style="margin-top: 50px;">
-              <table style="width: 100%; margin-top: 50px;">
-                <tr>
-                  <td style="width: 50%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
-                    ${productionForm.signatureUrl ? 'FIRMA PRESENTE' : ''}
-                  </td>
-                  <td style="width: 50%; text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px;">
-                    
-                  </td>
-                </tr>
-
-              </table>
-            </div>
 
             <!-- Footer -->
             <div style="margin-top: 40px; border-top: 1px solid #000; padding-top: 15px; font-size: 10px; text-align: center;">
@@ -2935,11 +2919,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("¿Contiene 'CONTROL DE CALIDAD'?", htmlContent.includes('CONTROL DE CALIDAD'));
         console.log("¿Contiene 'pH:'?", htmlContent.includes('pH:'));
         console.log("¿Contiene 'FIRMAS Y AUTORIZACIONES'?", htmlContent.includes('FIRMAS Y AUTORIZACIONES'));
+        console.log("¿Contiene 'Operador de Producción'?", htmlContent.includes('Operador de Producción'));
+        console.log("¿Contiene 'Gerente de Calidad'?", htmlContent.includes('Gerente de Calidad'));
+        console.log("¿Contiene 'Marcela Tovar'?", htmlContent.includes('Marcela Tovar'));
         
-        // Buscar líneas específicas que contienen CONTROL DE CALIDAD
+        // Buscar líneas específicas que contienen términos de firmas
         const lines = htmlContent.split('\n');
         lines.forEach((line, index) => {
-          if (line.includes('CONTROL DE CALIDAD') || line.includes('FIRMAS Y AUTORIZACIONES')) {
+          if (line.includes('CONTROL DE CALIDAD') || line.includes('FIRMAS Y AUTORIZACIONES') || 
+              line.includes('Operador de Producción') || line.includes('Gerente de Calidad') ||
+              line.includes('Marcela Tovar')) {
             console.log(`Línea ${index + 1}: ${line.trim()}`);
           }
         });
