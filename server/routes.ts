@@ -639,6 +639,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Form entry routes
   app.get("/api/form-entries", async (req, res, next) => {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
       // Filter entries based on query parameters
       let entries = [];
       let productionForms = [];
@@ -650,23 +655,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const userId = parseInt(req.query.userId as string);
         entries = await storage.getFormEntriesByUser(userId);
         // Also get production forms for this user
-        productionForms = await storage.getProductionFormsByUser(userId);
+        try {
+          productionForms = await storage.getProductionFormsByUser(userId);
+        } catch (error) {
+          console.log("No production forms found for user:", userId);
+          productionForms = [];
+        }
       } else if (req.query.department) {
         entries = await storage.getFormEntriesByDepartment(req.query.department as string);
       } else {
         // Usuarios con rol SUPERADMIN o ADMIN pueden ver todos los formularios
         if (req.user.role === UserRole.SUPERADMIN || req.user.role === UserRole.ADMIN) {
           entries = await storage.getAllFormEntries();
-          productionForms = await storage.getAllProductionForms();
+          try {
+            productionForms = await storage.getAllProductionForms();
+          } catch (error) {
+            console.log("No production forms found");
+            productionForms = [];
+          }
         } else {
           // Para roles de PRODUCTION, QUALITY y VIEWER solo se muestran los formularios que ellos crearon
           entries = await storage.getFormEntriesByUser(req.user.id);
-          productionForms = await storage.getProductionFormsByUser(req.user.id);
+          try {
+            productionForms = await storage.getProductionFormsByUser(req.user.id);
+          } catch (error) {
+            console.log("No production forms found for user:", req.user.id);
+            productionForms = [];
+          }
         }
       }
       
       // Transform production forms to match form entries structure
-      const transformedProductionForms = productionForms.map(form => ({
+      const transformedProductionForms = productionForms.map((form: any) => ({
         id: `prod_${form.id}`,
         templateId: null,
         templateName: "Formulario de Producción",
@@ -690,6 +710,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(combinedEntries);
     } catch (error) {
+      console.error("Error getting form entries:", error);
       next(error);
     }
   });
