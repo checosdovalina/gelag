@@ -436,6 +436,7 @@ export const productionForms = pgTable("production_forms", {
   // Metadatos
   createdBy: integer("created_by").notNull(), // Usuario que creó el formulario
   updatedBy: integer("updated_by"), // Último usuario que lo modificó
+  lastUpdatedBy: integer("last_updated_by"), // Último usuario que actualizó (compatibilidad)
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
