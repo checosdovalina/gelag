@@ -86,7 +86,7 @@ async function generateFolio(): Promise<string> {
 export async function createProductionForm(req: Request, res: Response) {
   try {
     // Verificar si el usuario está autenticado
-    if (!req.isAuthenticated()) {
+    if (!req.isAuthenticated() || !req.user?.id) {
       return res.status(401).json({ message: "No autenticado" });
     }
 
@@ -100,10 +100,10 @@ export async function createProductionForm(req: Request, res: Response) {
     const [newForm] = await db.insert(productionForms).values({
       ...validatedData,
       folio,
-      createdBy: req.user?.id,
+      createdBy: req.user.id,
       createdAt: new Date(),
       updatedAt: new Date(),
-      status: validatedData.status || ProductionFormStatus.DRAFT
+      status: (validatedData.status || ProductionFormStatus.DRAFT) as any
     }).returning();
     
     return res.status(201).json(newForm);

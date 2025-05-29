@@ -1606,7 +1606,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // =========== Rutas para gestión de productos ===========
   // Obtener todos los productos
-  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {
       let products;
       // Si se especifica active=true, solo devolver productos activos
@@ -1622,7 +1622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Obtener un producto por ID
-  app.get("/api/products/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.get("/api/products/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {
       const productId = parseInt(req.params.id);
       if (isNaN(productId)) {
