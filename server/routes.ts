@@ -1804,6 +1804,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =========== Rutas para gestión de productos ===========
+  // Ruta temporal sin autenticación para debug
+  app.get("/api/products-debug", async (req, res, next) => {
+    try {
+      console.log("=== GET PRODUCTS DEBUG (NO AUTH) ===");
+      
+      const result = await db.execute(sql`
+        SELECT * FROM products WHERE category = 'Tipo de Cajeta' ORDER BY name
+      `);
+      
+      console.log("Productos de cajeta encontrados:", result.rows.length);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error al obtener productos debug:", error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Obtener todos los productos
   app.get("/api/products", authorize(), async (req, res, next) => {
     try {
