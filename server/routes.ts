@@ -2813,6 +2813,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     const smell = Array.isArray(productionForm.smell) ? productionForm.smell : [];
                     const taste = Array.isArray(productionForm.taste) ? productionForm.taste : [];
                     
+                    console.log("=== DEBUG DATOS DE CALIDAD ===");
+                    console.log("qualityTimes:", qualityTimes);
+                    console.log("brix:", brix);
+                    console.log("qualityTemp:", qualityTemp);
+                    console.log("texture:", texture);
+                    console.log("color:", color);
+                    console.log("===============================");
+                    
                     let rows = '';
                     const maxLength = Math.max(qualityTimes.length, brix.length, qualityTemp.length, texture.length, color.length, viscosity.length, smell.length, taste.length, 1);
                     
