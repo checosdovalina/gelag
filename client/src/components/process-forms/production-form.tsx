@@ -218,6 +218,13 @@ export default function ProductionForm({
       console.error("Error cargando receta:", error);
     }
   };
+
+  // Efecto para auto-cargar receta cuando cambie producto o litros
+  useEffect(() => {
+    if (formData.productType && formData.liters && formData.liters > 0) {
+      loadProductRecipe(formData.productType, formData.liters);
+    }
+  }, [formData.productType, formData.liters]);
   
   // Cambiar de pestaña sin auto-guardado
   const handleTabChange = (newTab: string) => {
@@ -275,12 +282,12 @@ export default function ProductionForm({
     autoUpdateStatus(field, value);
     
     // Si se cambió el producto o los litros, cargar receta automáticamente
-    if (field === "productType" || field === "liters") {
+    if (field === "productId" || field === "liters") {
       const updatedData = { ...formData, [field]: value };
-      if (updatedData.productType && updatedData.liters && updatedData.liters > 0) {
+      if (updatedData.productId && updatedData.liters && updatedData.liters > 0) {
         // Usar setTimeout para asegurar que el estado se actualice antes de cargar la receta
         setTimeout(() => {
-          loadProductRecipe(updatedData.productType, updatedData.liters);
+          loadProductRecipe(updatedData.productId, updatedData.liters);
         }, 100);
       }
     }
