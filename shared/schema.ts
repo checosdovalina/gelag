@@ -106,13 +106,13 @@ export const formEntries = pgTable("form_entries", {
   workflowStatus: text("workflow_status").$type<FormWorkflowStatus>().default(FormWorkflowStatus.INITIATED), // Estado en el flujo de trabajo
   lastUpdatedBy: integer("last_updated_by"), // Usuario que realizó la última actualización
   lotNumber: text("lot_number"), // Número de lote para referenciar relacionados
+  roleSpecificData: jsonb("role_specific_data"), // Datos específicos por rol para formularios secuenciales
   signature: text("signature"), // Base64 encoded signature image
   signedBy: integer("signed_by"), // User ID who signed the form
   signedAt: timestamp("signed_at"), // When the form was signed
   approvedBy: integer("approved_by"), // User ID who approved the form (if applicable)
   approvedAt: timestamp("approved_at"), // When the form was approved (if applicable)
   folioNumber: integer("folio_number"), // Consecutive folio number for this template
-  roleSpecificData: json("role_specific_data"), // Datos específicos por rol para formularios secuenciales
 });
 
 // Folios counter schema (tracks last folio number used per template)
