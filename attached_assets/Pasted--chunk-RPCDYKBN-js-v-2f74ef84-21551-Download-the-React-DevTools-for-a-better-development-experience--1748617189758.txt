@@ -1,0 +1,32 @@
+
+chunk-RPCDYKBN.js?v=2f74ef84:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+queryClient.ts:33 
+ GET https://formulario-control-checodovalina.replit.app/api/dashboard/stats 500 (Internal Server Error)
+form-capture.tsx:311 Uncaught TypeError: entries.map is not a function
+    at FormCapture (form-capture.tsx:311:25)
+form-capture.tsx:311 Uncaught TypeError: entries.map is not a function
+    at FormCapture (form-capture.tsx:311:25)
+chunk-RPCDYKBN.js?v=2f74ef84:14032 The above error occurred in the <FormCapture> component:
+
+    at FormCapture (https://formulario-control-checodovalina.replit.app/src/pages/form-capture.tsx:48:20)
+    at main
+    at div
+    at MainLayout (https://formulario-control-checodovalina.replit.app/src/components/layout/main-layout.tsx:38:38)
+    at ProtectedLayout (https://formulario-control-checodovalina.replit.app/src/App.tsx?v=MJDFG3sy2KBEO7r82Tyev:43:28)
+    at component
+    at Route (https://formulario-control-checodovalina.replit.app/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2f74ef84:323:16)
+    at ProtectedRoute (https://formulario-control-checodovalina.replit.app/src/lib/protected-route.tsx:22:3)
+    at ProtectedRouteWithLayout (https://formulario-control-checodovalina.replit.app/src/App.tsx?v=MJDFG3sy2KBEO7r82Tyev:57:19)
+    at Switch (https://formulario-control-checodovalina.replit.app/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2f74ef84:379:17)
+    at Router
+    at Provider (https://formulario-control-checodovalina.replit.app/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=2f74ef84:38:15)
+    at TooltipProvider (https://formulario-control-checodovalina.replit.app/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=2f74ef84:63:5)
+    at AuthProvider (https://formulario-control-checodovalina.replit.app/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://formulario-control-checodovalina.replit.app/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2f74ef84:2805:3)
+    at App (https://formulario-control-checodovalina.replit.app/src/App.tsx?v=MJDFG3sy2KBEO7r82Tyev:311:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+chunk-RPCDYKBN.js?v=2f74ef84:9129 Uncaught TypeError: entries.map is not a function
+    at FormCapture (form-capture.tsx:311:25)

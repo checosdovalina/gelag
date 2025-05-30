@@ -308,7 +308,7 @@ export default function FormCapture() {
                   </Button>
                 </div>
               ) : (
-                entries.map((entry) => {
+                (entries && Array.isArray(entries)) ? entries.map((entry) => {
                   // Find template for this entry
                   const template = templates?.find(t => t.id === entry.formTemplateId);
                   return (
@@ -333,7 +333,11 @@ export default function FormCapture() {
                       </CardContent>
                     </Card>
                   );
-                })
+                }) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    <p>No se pudieron cargar las entradas de formularios</p>
+                  </div>
+                )
               )}
             </div>
           </TabsContent>
