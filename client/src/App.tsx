@@ -58,6 +58,7 @@ function Router() {
   return (
     <Switch>
       <ProtectedRouteWithLayout path="/" component={Dashboard} />
+      <ProtectedRouteWithLayout path="/dashboard" component={Dashboard} />
       <ProtectedRouteWithLayout 
         path="/users" 
         component={UsersPage} 

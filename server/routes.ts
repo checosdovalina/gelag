@@ -1970,22 +1970,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard stats route
   app.get("/api/dashboard/stats", async (req, res, next) => {
     try {
+      console.log("[API] === GETTING DASHBOARD STATS ===");
+      
       const users = await storage.getAllUsers();
       const templates = await storage.getAllFormTemplates();
       
-      // Contar entradas de formularios reales
-      const entriesResult = await db.execute(sql`SELECT COUNT(*) as total FROM form_entries`);
-      const totalEntries = entriesResult.rows[0]?.total || 0;
+      // Contar entradas de formularios usando storage
+      let totalEntries = 0;
+      try {
+        const entries = await storage.getAllFormEntries();
+        totalEntries = entries.length;
+      } catch (entriesError) {
+        console.log("[API] Warning: Error getting form entries count:", entriesError);
+        totalEntries = 0;
+      }
       
-      res.json({
+      const stats = {
         users: users.length,
         templates: templates.length,
         entries: totalEntries,
         exports: 0 // Para futuras implementaciones de exportaciones
-      });
+      };
+      
+      console.log("[API] Dashboard stats:", stats);
+      res.json(stats);
     } catch (error) {
-      console.error("Error obteniendo estadísticas del dashboard:", error);
-      next(error);
+      console.error("[API] Error obteniendo estadísticas del dashboard:", error);
+      res.status(500).json({ 
+        message: "Error obteniendo estadísticas",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
