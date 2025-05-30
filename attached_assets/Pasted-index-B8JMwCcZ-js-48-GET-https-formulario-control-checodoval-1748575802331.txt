@@ -1,0 +1,120 @@
+index-B8JMwCcZ.js:48 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/products 500 (Internal Server Error)
+Yt @ index-B8JMwCcZ.js:48
+queryFn @ index-B8JMwCcZ.js:697
+i @ index-B8JMwCcZ.js:48
+m @ index-B8JMwCcZ.js:48
+start @ index-B8JMwCcZ.js:48
+fetch @ index-B8JMwCcZ.js:48
+_h @ index-B8JMwCcZ.js:48
+onSubscribe @ index-B8JMwCcZ.js:48
+subscribe @ index-B8JMwCcZ.js:48
+(anonymous) @ index-B8JMwCcZ.js:48
+F5 @ index-B8JMwCcZ.js:38
+O0 @ index-B8JMwCcZ.js:40
+Ld @ index-B8JMwCcZ.js:40
+WJ @ index-B8JMwCcZ.js:40
+Hc @ index-B8JMwCcZ.js:40
+UD @ index-B8JMwCcZ.js:40
+Ac @ index-B8JMwCcZ.js:38
+(anonymous) @ index-B8JMwCcZ.js:40
+setTimeout
+a @ index-B8JMwCcZ.js:48
+o @ index-B8JMwCcZ.js:48
+batch @ index-B8JMwCcZ.js:48
+Ts @ index-B8JMwCcZ.js:48
+setData @ index-B8JMwCcZ.js:48
+onSuccess @ index-B8JMwCcZ.js:48
+d @ index-B8JMwCcZ.js:48
+Promise.then
+m @ index-B8JMwCcZ.js:48
+start @ index-B8JMwCcZ.js:48
+fetch @ index-B8JMwCcZ.js:48
+_h @ index-B8JMwCcZ.js:48
+onSubscribe @ index-B8JMwCcZ.js:48
+subscribe @ index-B8JMwCcZ.js:48
+(anonymous) @ index-B8JMwCcZ.js:48
+F5 @ index-B8JMwCcZ.js:38
+O0 @ index-B8JMwCcZ.js:40
+Ld @ index-B8JMwCcZ.js:40
+UD @ index-B8JMwCcZ.js:40
+Ac @ index-B8JMwCcZ.js:38
+WJ @ index-B8JMwCcZ.js:40
+Hc @ index-B8JMwCcZ.js:40
+gV @ index-B8JMwCcZ.js:40
+j @ index-B8JMwCcZ.js:25
+O @ index-B8JMwCcZ.js:25Understand this error
+index-B8JMwCcZ.js:48 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/products 500 (Internal Server Error)
+(anonymous) @ index-B8JMwCcZ.js:48
+i @ index-B8JMwCcZ.js:48
+m @ index-B8JMwCcZ.js:48
+start @ index-B8JMwCcZ.js:48
+fetch @ index-B8JMwCcZ.js:48
+_h @ index-B8JMwCcZ.js:48
+onSubscribe @ index-B8JMwCcZ.js:48
+subscribe @ index-B8JMwCcZ.js:48
+(anonymous) @ index-B8JMwCcZ.js:48
+F5 @ index-B8JMwCcZ.js:38
+O0 @ index-B8JMwCcZ.js:40
+Ld @ index-B8JMwCcZ.js:40
+WJ @ index-B8JMwCcZ.js:40
+Hc @ index-B8JMwCcZ.js:40
+UD @ index-B8JMwCcZ.js:40
+Ac @ index-B8JMwCcZ.js:38
+(anonymous) @ index-B8JMwCcZ.js:40Understand this error
+index-B8JMwCcZ.js:48 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/dashboard/stats 500 (Internal Server Error)
+(anonymous) @ index-B8JMwCcZ.js:48
+i @ index-B8JMwCcZ.js:48
+m @ index-B8JMwCcZ.js:48
+start @ index-B8JMwCcZ.js:48
+fetch @ index-B8JMwCcZ.js:48
+_h @ index-B8JMwCcZ.js:48
+onSubscribe @ index-B8JMwCcZ.js:48
+subscribe @ index-B8JMwCcZ.js:48
+(anonymous) @ index-B8JMwCcZ.js:48
+F5 @ index-B8JMwCcZ.js:38
+O0 @ index-B8JMwCcZ.js:40
+Ld @ index-B8JMwCcZ.js:40
+WJ @ index-B8JMwCcZ.js:40
+Hc @ index-B8JMwCcZ.js:40
+UD @ index-B8JMwCcZ.js:40
+Ac @ index-B8JMwCcZ.js:38
+(anonymous) @ index-B8JMwCcZ.js:40
+setTimeout
+a @ index-B8JMwCcZ.js:48
+o @ index-B8JMwCcZ.js:48
+batch @ index-B8JMwCcZ.js:48
+Ts @ index-B8JMwCcZ.js:48
+setData @ index-B8JMwCcZ.js:48
+setQueryData @ index-B8JMwCcZ.js:48
+onSuccess @ index-B8JMwCcZ.js:418
+execute @ index-B8JMwCcZ.js:48
+await in execute
+mutate @ index-B8JMwCcZ.js:48
+(anonymous) @ index-B8JMwCcZ.js:48
+n @ index-B8JMwCcZ.js:462
+(anonymous) @ index-B8JMwCcZ.js:462
+await in (anonymous)
+cZ @ index-B8JMwCcZ.js:37
+dZ @ index-B8JMwCcZ.js:37
+fZ @ index-B8JMwCcZ.js:37
+pD @ index-B8JMwCcZ.js:37
+S5 @ index-B8JMwCcZ.js:37
+(anonymous) @ index-B8JMwCcZ.js:37
+QE @ index-B8JMwCcZ.js:40
+HB @ index-B8JMwCcZ.js:37
+G1 @ index-B8JMwCcZ.js:37
+NE @ index-B8JMwCcZ.js:37
+_Z @ index-B8JMwCcZ.js:37Understand this error
+index-B8JMwCcZ.js:48 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/products 500 (Internal Server Error)
