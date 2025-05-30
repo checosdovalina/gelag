@@ -20,7 +20,7 @@ export function useProducts() {
   };
 
   return {
-    products,
+    products: products || [],
     isLoading,
     error,
     getProductsByCategory
