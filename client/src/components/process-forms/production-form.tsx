@@ -181,6 +181,43 @@ export default function ProductionForm({
   const [status, setStatus] = useState<ProductionFormStatus>(
     initialData.status || ProductionFormStatus.DRAFT
   );
+  const [autoCalculatedIngredients, setAutoCalculatedIngredients] = useState<any[]>([]);
+  
+  // Función para cargar ingredientes automáticamente basados en producto y litros
+  const loadProductRecipe = async (productId: string, liters: number) => {
+    if (!productId || !liters || liters <= 0) {
+      setAutoCalculatedIngredients([]);
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/products/${productId}/recipe?liters=${liters}`);
+      if (response.ok) {
+        const recipeData = await response.json();
+        setAutoCalculatedIngredients(recipeData.ingredients || []);
+        
+        // Actualizar automáticamente los campos de materiales en el formulario
+        const materialsUpdate: any = {};
+        recipeData.ingredients?.forEach((ingredient: any, index: number) => {
+          materialsUpdate[`material_${index}`] = ingredient.name;
+          materialsUpdate[`quantity_${index}`] = ingredient.quantity;
+          materialsUpdate[`unit_${index}`] = ingredient.unit;
+        });
+        
+        setFormData((prev: any) => ({
+          ...prev,
+          ...materialsUpdate
+        }));
+        
+        toast({
+          title: "Materiales actualizados",
+          description: `Se cargaron ${recipeData.ingredients?.length || 0} ingredientes para ${recipeData.recipeName}`,
+        });
+      }
+    } catch (error) {
+      console.error("Error cargando receta:", error);
+    }
+  };
   
   // Cambiar de pestaña sin auto-guardado
   const handleTabChange = (newTab: string) => {
@@ -236,6 +273,14 @@ export default function ProductionForm({
     
     // Auto-cambio de estado basado en el workflow
     autoUpdateStatus(field, value);
+    
+    // Si se cambió el producto o los litros, cargar receta automáticamente
+    if (field === "productType" || field === "liters") {
+      const updatedData = { ...formData, [field]: value };
+      if (updatedData.productType && updatedData.liters && updatedData.liters > 0) {
+        loadProductRecipe(updatedData.productType, updatedData.liters);
+      }
+    }
   };
   
   // Función para auto-actualizar estado según el workflow

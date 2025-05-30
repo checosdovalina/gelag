@@ -1335,6 +1335,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta para crear recetas de productos (temporal)
+  app.get("/api/create-recipes", async (req, res) => {
+    try {
+      console.log("=== CREANDO RECETAS DE PRODUCTOS ===");
+      
+      // Primero obtener algunos productos de cajeta para crear sus recetas
+      const productos = await db.execute(sql`
+        SELECT id, name FROM products WHERE category = 'Tipo de Cajeta' LIMIT 5
+      `);
+      
+      for (const producto of productos.rows) {
+        // Crear receta para cada producto
+        const recipeResult = await db.execute(sql`
+          INSERT INTO product_recipes (product_id, name, description, created_by)
+          VALUES (${producto.id}, ${`Receta ${producto.name}`}, ${`Receta estándar para ${producto.name}`}, 1)
+          ON CONFLICT DO NOTHING
+          RETURNING id
+        `);
+        
+        if (recipeResult.rows.length > 0) {
+          const recipeId = recipeResult.rows[0].id;
+          
+          // Ingredientes básicos para cajeta (cantidades por 500 litros base)
+          const ingredientes = [
+            { name: 'Leche de Vaca', quantity: 250, unit: 'kg' },
+            { name: 'Leche de Cabra', quantity: 250, unit: 'kg' },
+            { name: 'Azúcar', quantity: 100, unit: 'kg' },
+            { name: 'Glucosa', quantity: 50, unit: 'kg' },
+            { name: 'Bicarbonato', quantity: 0.5, unit: 'kg' },
+            { name: 'Lecitina', quantity: 0.3, unit: 'kg' }
+          ];
+          
+          // Insertar ingredientes para esta receta
+          for (const ingrediente of ingredientes) {
+            await db.execute(sql`
+              INSERT INTO recipe_ingredients (recipe_id, material_name, quantity, unit)
+              VALUES (${recipeId}, ${ingrediente.name}, ${ingrediente.quantity}, ${ingrediente.unit})
+              ON CONFLICT DO NOTHING
+            `);
+          }
+        }
+      }
+      
+      res.json({
+        status: "success",
+        message: "Recetas básicas creadas exitosamente",
+        productosConRecetas: productos.rows.length
+      });
+    } catch (error) {
+      console.error("Error creando recetas:", error);
+      res.status(500).json({
+        status: "error",
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Ruta para obtener receta de un producto
+  app.get("/api/products/:productId/recipe", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const liters = parseFloat(req.query.liters as string) || 500; // Default 500 litros
+      
+      // Obtener la receta del producto
+      const recipeResult = await db.execute(sql`
+        SELECT pr.id, pr.name, pr.description
+        FROM product_recipes pr
+        WHERE pr.product_id = ${productId}
+        LIMIT 1
+      `);
+      
+      if (recipeResult.rows.length === 0) {
+        return res.status(404).json({ message: "Receta no encontrada para este producto" });
+      }
+      
+      const recipe = recipeResult.rows[0];
+      
+      // Obtener ingredientes de la receta
+      const ingredientsResult = await db.execute(sql`
+        SELECT material_name, quantity, unit
+        FROM recipe_ingredients
+        WHERE recipe_id = ${recipe.id}
+      `);
+      
+      // Calcular cantidades ajustadas por litros (base 500 litros)
+      const adjustedIngredients = ingredientsResult.rows.map(ingredient => ({
+        name: ingredient.material_name,
+        quantity: (ingredient.quantity * liters / 500).toFixed(2),
+        unit: ingredient.unit
+      }));
+      
+      res.json({
+        recipeId: recipe.id,
+        recipeName: recipe.name,
+        description: recipe.description,
+        baseLiters: 500,
+        targetLiters: liters,
+        ingredients: adjustedIngredients
+      });
+    } catch (error) {
+      console.error("Error obteniendo receta:", error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Ruta de diagnóstico para productos (temporal)
   app.get("/api/products-debug", async (req, res) => {
     try {
