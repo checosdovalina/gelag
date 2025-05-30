@@ -3,13 +3,13 @@ import type { Product } from "@shared/schema";
 
 // Hook para gestionar productos
 export function useProducts() {
-  // Obtener todos los productos - usando ruta temporal sin autenticación
+  // Obtener todos los productos
   const {
     data: products,
     isLoading,
     error,
   } = useQuery<Product[]>({
-    queryKey: ['/api/products-public'],
+    queryKey: ['/api/products'],
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
