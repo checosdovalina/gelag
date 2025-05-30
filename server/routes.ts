@@ -1335,56 +1335,165 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ruta para crear recetas de productos (temporal)
-  app.get("/api/create-recipes", async (req, res) => {
+  // Ruta para crear recetas reales de productos (temporal)
+  app.get("/api/create-real-recipes", async (req, res) => {
     try {
-      console.log("=== CREANDO RECETAS DE PRODUCTOS ===");
+      console.log("=== CREANDO RECETAS REALES DE PRODUCTOS ===");
       
-      // Primero obtener algunos productos de cajeta para crear sus recetas
-      const productos = await db.execute(sql`
-        SELECT id, name FROM products WHERE category = 'Tipo de Cajeta' LIMIT 5
-      `);
+      // Recetas reales basadas en 100 litros de producción
+      const recetasReales = {
+        "Cajeton Tradicional": [
+          { name: 'Leche de Cabra', quantity: 100, unit: 'kg' },
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 27, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Cajeton Espesa": [
+          { name: 'Leche de Cabra', quantity: 100, unit: 'kg' },
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 27, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Cajeton Esp Chepo": [
+          { name: 'Leche de Cabra', quantity: 100, unit: 'kg' },
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 27, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.18, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Cabri Tradicional": [
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 45, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Cabri Espesa": [
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 45, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Horneable": [
+          { name: 'Leche de Vaca', quantity: 100, unit: 'kg' },
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 3, unit: 'kg' },
+          { name: 'Malto', quantity: 2.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.10, unit: 'kg' },
+          { name: 'Lecitina', quantity: 0.060, unit: 'kg' },
+          { name: 'Carragenina', quantity: 0.060, unit: 'kg' },
+          { name: 'Grasa', quantity: 0.36, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Gloria untable 78° Brix": [
+          { name: 'Glucosa', quantity: 36, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' },
+          { name: 'Nuez', quantity: 16.10, unit: 'kg' }
+        ],
+        "Gloria untable 80° Brix": [
+          { name: 'Glucosa', quantity: 36, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' },
+          { name: 'Nuez', quantity: 23.76, unit: 'kg' }
+        ],
+        "Pasta Oblea Coro": [
+          { name: 'Glucosa', quantity: 36, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Pasta Oblea Cajeton": [
+          { name: 'Glucosa', quantity: 36, unit: 'kg' },
+          { name: 'Lecitina', quantity: 0.078, unit: 'kg' },
+          { name: 'Carragenina', quantity: 0.029, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Pasta DDL": [
+          { name: 'Leche de Vaca', quantity: 80, unit: 'kg' },
+          { name: 'Leche de Cabra', quantity: 20, unit: 'kg' },
+          { name: 'Azúcar', quantity: 29, unit: 'kg' },
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ],
+        "Conito": [
+          { name: 'Leche de Vaca', quantity: 50, unit: 'kg' },
+          { name: 'Leche de Cabra', quantity: 50, unit: 'kg' },
+          { name: 'Azúcar', quantity: 20, unit: 'kg' },
+          { name: 'Glucosa', quantity: 20, unit: 'kg' },
+          { name: 'Malto', quantity: 5.0, unit: 'kg' },
+          { name: 'Bicarbonato', quantity: 0.10, unit: 'kg' },
+          { name: 'Lecitina', quantity: 0.060, unit: 'kg' },
+          { name: 'Carragenina', quantity: 0.025, unit: 'kg' },
+          { name: 'Pasta', quantity: 132, unit: 'kg' }
+        ]
+      };
       
-      for (const producto of productos.rows) {
-        // Crear receta para cada producto
-        const recipeResult = await db.execute(sql`
-          INSERT INTO product_recipes (product_id, name, description, created_by)
-          VALUES (${producto.id}, ${`Receta ${producto.name}`}, ${`Receta estándar para ${producto.name}`}, 1)
-          ON CONFLICT DO NOTHING
-          RETURNING id
+      let recetasCreadas = 0;
+      
+      for (const [nombreProducto, ingredientes] of Object.entries(recetasReales)) {
+        // Buscar el producto por nombre (con coincidencia parcial)
+        const productResult = await db.execute(sql`
+          SELECT id, name FROM products 
+          WHERE UPPER(name) LIKE UPPER(${`%${nombreProducto}%`}) 
+          AND category = 'Tipo de Cajeta'
+          LIMIT 1
         `);
         
-        if (recipeResult.rows.length > 0) {
-          const recipeId = recipeResult.rows[0].id;
+        if (productResult.rows.length > 0) {
+          const producto = productResult.rows[0];
           
-          // Ingredientes básicos para cajeta (cantidades por 500 litros base)
-          const ingredientes = [
-            { name: 'Leche de Vaca', quantity: 250, unit: 'kg' },
-            { name: 'Leche de Cabra', quantity: 250, unit: 'kg' },
-            { name: 'Azúcar', quantity: 100, unit: 'kg' },
-            { name: 'Glucosa', quantity: 50, unit: 'kg' },
-            { name: 'Bicarbonato', quantity: 0.5, unit: 'kg' },
-            { name: 'Lecitina', quantity: 0.3, unit: 'kg' }
-          ];
+          // Eliminar receta existente si la hay
+          await db.execute(sql`
+            DELETE FROM recipe_ingredients 
+            WHERE recipe_id IN (
+              SELECT id FROM product_recipes WHERE product_id = ${producto.id}
+            )
+          `);
+          await db.execute(sql`
+            DELETE FROM product_recipes WHERE product_id = ${producto.id}
+          `);
           
-          // Insertar ingredientes para esta receta
-          for (const ingrediente of ingredientes) {
-            await db.execute(sql`
-              INSERT INTO recipe_ingredients (recipe_id, material_name, quantity, unit)
-              VALUES (${recipeId}, ${ingrediente.name}, ${ingrediente.quantity}, ${ingrediente.unit})
-              ON CONFLICT DO NOTHING
-            `);
+          // Crear nueva receta
+          const recipeResult = await db.execute(sql`
+            INSERT INTO product_recipes (product_id, name, description, created_by)
+            VALUES (${producto.id}, ${`Receta ${producto.name}`}, ${`Receta estándar para ${producto.name} - 100 litros base`}, 1)
+            RETURNING id
+          `);
+          
+          if (recipeResult.rows.length > 0) {
+            const recipeId = recipeResult.rows[0].id;
+            
+            // Insertar ingredientes reales
+            for (const ingrediente of ingredientes) {
+              await db.execute(sql`
+                INSERT INTO recipe_ingredients (recipe_id, material_name, quantity, unit)
+                VALUES (${recipeId}, ${ingrediente.name}, ${ingrediente.quantity}, ${ingrediente.unit})
+              `);
+            }
+            
+            recetasCreadas++;
+            console.log(`Receta creada para: ${producto.name} con ${ingredientes.length} ingredientes`);
           }
+        } else {
+          console.log(`Producto no encontrado: ${nombreProducto}`);
         }
       }
       
       res.json({
         status: "success",
-        message: "Recetas básicas creadas exitosamente",
-        productosConRecetas: productos.rows.length
+        message: "Recetas reales creadas exitosamente",
+        recetasCreadas,
+        totalRecetas: Object.keys(recetasReales).length
       });
     } catch (error) {
-      console.error("Error creando recetas:", error);
+      console.error("Error creando recetas reales:", error);
       res.status(500).json({
         status: "error",
         message: error instanceof Error ? error.message : String(error)
@@ -1396,7 +1505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:productId/recipe", async (req, res) => {
     try {
       const productId = parseInt(req.params.productId);
-      const liters = parseFloat(req.query.liters as string) || 500; // Default 500 litros
+      const liters = parseFloat(req.query.liters as string) || 100; // Default 100 litros
       
       // Obtener la receta del producto
       const recipeResult = await db.execute(sql`
@@ -1417,12 +1526,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         SELECT material_name, quantity, unit
         FROM recipe_ingredients
         WHERE recipe_id = ${recipe.id}
+        ORDER BY material_name
       `);
       
-      // Calcular cantidades ajustadas por litros (base 500 litros)
+      // Calcular cantidades ajustadas por litros (base 100 litros)
       const adjustedIngredients = ingredientsResult.rows.map(ingredient => ({
         name: ingredient.material_name,
-        quantity: (ingredient.quantity * liters / 500).toFixed(2),
+        quantity: (parseFloat(ingredient.quantity as string) * liters / 100).toFixed(3),
         unit: ingredient.unit
       }));
       
@@ -1430,7 +1540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recipeId: recipe.id,
         recipeName: recipe.name,
         description: recipe.description,
-        baseLiters: 500,
+        baseLiters: 100,
         targetLiters: liters,
         ingredients: adjustedIngredients
       });
