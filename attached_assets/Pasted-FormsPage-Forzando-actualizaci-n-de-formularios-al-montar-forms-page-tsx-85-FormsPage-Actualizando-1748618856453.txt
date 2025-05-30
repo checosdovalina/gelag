@@ -1,0 +1,36 @@
+FormsPage: Forzando actualización de formularios al montar
+forms-page.tsx:85 FormsPage: Actualizando formularios...
+forms-page.tsx:87 FormsPage: Formularios actualizados: (4) [{…}, {…}, {…}, {…}]
+form-viewer.tsx:378 Asignando folio con formato: CA-RE-15-01-F14
+form-capture.tsx:123 [FormCapture] Preparando formulario para envío: {5aec5807-35d8-4278-b144-6b9aee4f97f9: 'CA-RE-15-01-F14', d4217bb4-5f29-4000-ab22-b41c8b3c9e7c: '2025-05-30', 47969e2d-e10c-46a7-983a-8d1de900032b: 'option1', 055f82cc-468e-414e-9afd-d1e10f01fae1: 'No Aplica', 19ca3290-d531-4f7c-8552-2c22d1197abc: 'Produccion', …}
+form-capture.tsx:158 [FormCapture] Enviando formulario al servidor: {formTemplateId: 8, data: {…}, department: 'Calidad', id: 0, createdBy: 2, …}
+queryClient.ts:16 
+            
+            
+           POST https://formulario-control-checodovalina.replit.app/api/form-entries 500 (Internal Server Error)
+apiRequest @ queryClient.ts:16
+mutationFn @ form-capture.tsx:73
+fn @ @tanstack_react-query.js?v=2f74ef84:1189
+run @ @tanstack_react-query.js?v=2f74ef84:494
+start @ @tanstack_react-query.js?v=2f74ef84:536
+execute @ @tanstack_react-query.js?v=2f74ef84:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2f74ef84:2630
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:3295
+handleConfirmSubmit @ form-capture.tsx:164
+handleEvent @ chunk-K3KUYG4W.js?v=2f74ef84:11
+callCallback2 @ chunk-RPCDYKBN.js?v=2f74ef84:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=2f74ef84:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=2f74ef84:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=2f74ef84:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=2f74ef84:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=2f74ef84:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=2f74ef84:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=2f74ef84:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=2f74ef84:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=2f74ef84:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=2f74ef84:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=2f74ef84:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=2f74ef84:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5449Understand this error

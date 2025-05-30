@@ -71,6 +71,6 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`serving on port ${port} - Updated ${new Date().toISOString()}`);
   });
 })();
