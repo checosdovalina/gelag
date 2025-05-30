@@ -1521,9 +1521,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const recipe = recipeResult.rows[0];
       
-      // Obtener ingredientes de la receta
+      // Obtener ingredientes de la receta con normalización automática de unidades
       const ingredientsResult = await db.execute(sql`
-        SELECT material_name, quantity, unit
+        SELECT 
+          material_name, 
+          CASE 
+            WHEN unit = 'gramos' THEN CAST(quantity AS NUMERIC) / 1000
+            ELSE CAST(quantity AS NUMERIC)
+          END as normalized_quantity,
+          'kg' as normalized_unit
         FROM recipe_ingredients
         WHERE recipe_id = ${recipe.id}
         ORDER BY material_name
@@ -1532,8 +1538,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calcular cantidades ajustadas por litros (base 100 litros)
       const adjustedIngredients = ingredientsResult.rows.map(ingredient => ({
         name: ingredient.material_name,
-        quantity: (parseFloat(ingredient.quantity as string) * liters / 100).toFixed(3),
-        unit: ingredient.unit
+        quantity: (parseFloat(ingredient.normalized_quantity as string) * liters / 100).toFixed(3),
+        unit: ingredient.normalized_unit
       }));
       
       res.json({
@@ -1587,6 +1593,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined
       });
+    }
+  });
+
+  // Ruta de migración para corregir unidades inconsistentes
+  app.post("/api/migrate/fix-recipe-units", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      console.log("=== CORRIGIENDO UNIDADES DE RECETAS ===");
+      
+      // Corregir unidades del producto ID 1 - convertir gramos a kg
+      await db.execute(sql`
+        UPDATE recipe_ingredients 
+        SET 
+            quantity = CAST(quantity AS NUMERIC) / 1000,
+            unit = 'kg'
+        WHERE recipe_id = 1 AND unit = 'gramos'
+      `);
+
+      // Cambiar litros a kg para estandarizar
+      await db.execute(sql`
+        UPDATE recipe_ingredients 
+        SET unit = 'kg'
+        WHERE recipe_id = 1 AND unit = 'litros'
+      `);
+      
+      // Verificar el resultado
+      const result = await db.execute(sql`
+        SELECT material_name, quantity, unit
+        FROM recipe_ingredients
+        WHERE recipe_id = 1
+        ORDER BY material_name
+      `);
+      
+      console.log("Unidades corregidas:", result.rows);
+      
+      res.json({
+        message: "Unidades de recetas corregidas correctamente",
+        recipe_id: 1,
+        ingredients: result.rows
+      });
+      
+    } catch (error) {
+      console.error("Error corrigiendo unidades:", error);
+      next(error);
     }
   });
 
