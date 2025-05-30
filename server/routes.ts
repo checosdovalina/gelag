@@ -1294,48 +1294,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ruta para crear tabla products directamente (temporal)
-  app.get("/api/create-products-table", async (req, res) => {
+  // Ruta para agregar productos completos de cajeta (temporal)
+  app.get("/api/add-complete-products", async (req, res) => {
     try {
-      console.log("=== CREANDO TABLA PRODUCTS ===");
+      console.log("=== AGREGANDO PRODUCTOS COMPLETOS ===");
       
-      // Crear tabla products directamente con SQL
-      await db.execute(sql`
-        CREATE TABLE IF NOT EXISTS products (
-          id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          code TEXT UNIQUE,
-          description TEXT,
-          category TEXT,
-          unit TEXT DEFAULT 'kg',
-          is_active BOOLEAN DEFAULT true,
-          created_by INTEGER,
-          created_at TIMESTAMP DEFAULT NOW()
-        )
-      `);
-      
-      console.log("Tabla products creada exitosamente");
-      
-      // Insertar algunos productos básicos de cajeta
+      // Insertar todos los productos de cajeta que faltan
       await db.execute(sql`
         INSERT INTO products (name, code, category, description) VALUES
-        ('Conito', 'CNT001', 'Tipo de Cajeta', 'Cajeta tipo conito'),
-        ('Mielmex 65° Brix', 'MLX001', 'Tipo de Cajeta', 'Mielmex con 65 grados Brix'),
-        ('Cajeton Espesa', 'CJE001', 'Tipo de Cajeta', 'Cajeton de consistencia espesa'),
-        ('Cajeton Tradicional', 'CJT001', 'Tipo de Cajeta', 'Cajeton tradicional'),
-        ('Gloria untable 78° Brix', 'GLR001', 'Tipo de Cajeta', 'Gloria untable 78 grados'),
-        ('Horneable', 'HRN001', 'Tipo de Cajeta', 'Cajeta para hornear')
+        ('Cabri Espesa', 'TC-007', 'Tipo de Cajeta', 'Cajeta Cabri Espesa'),
+        ('Cabri Tradicional', 'TC-006', 'Tipo de Cajeta', 'Cajeta Cabri Tradicional'),
+        ('Cajeton Esp Chepo', 'TC-005', 'Tipo de Cajeta', 'Cajeton Espeso Chepo'),
+        ('Coro 68° Brix', 'TC-002', 'Tipo de Cajeta', 'Cajeta Coro con 68 grados Brix'),
+        ('Gloria untable 80° Brix', 'TC-010A', 'Tipo de Cajeta', 'Gloria untable 80 grados'),
+        ('Gloria untable 90° Brix', 'TC-010B', 'Tipo de Cajeta', 'Gloria untable 90 grados'),
+        ('Pasta DDL', 'TC-013', 'Tipo de Cajeta', 'Pasta DDL'),
+        ('Pasta Oblea Cajeton', 'TC-012', 'Tipo de Cajeta', 'Pasta para Oblea Cajeton'),
+        ('Pasta Oblea Coro', 'TC-011', 'Tipo de Cajeta', 'Pasta para Oblea Coro')
         ON CONFLICT (code) DO NOTHING
       `);
       
-      console.log("Productos básicos insertados");
+      console.log("Productos adicionales insertados");
+      
+      // Verificar cuántos productos hay ahora
+      const countResult = await db.execute(sql`
+        SELECT COUNT(*) as total FROM products WHERE category = 'Tipo de Cajeta'
+      `);
       
       res.json({
         status: "success",
-        message: "Tabla products creada y productos básicos insertados exitosamente"
+        message: "Productos adicionales de cajeta agregados exitosamente",
+        totalCajetaProducts: countResult.rows[0]
       });
     } catch (error) {
-      console.error("Error creando tabla:", error);
+      console.error("Error agregando productos:", error);
       res.status(500).json({
         status: "error",
         message: error instanceof Error ? error.message : String(error)
