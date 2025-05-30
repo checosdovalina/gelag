@@ -1294,6 +1294,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta para ejecutar migración de base de datos (temporal)
+  app.get("/api/migrate-db", async (req, res) => {
+    try {
+      console.log("=== EJECUTANDO MIGRACIÓN ===");
+      
+      // Ejecutar migración de la base de datos
+      const { execSync } = require('child_process');
+      const output = execSync('npm run db:push', { encoding: 'utf8' });
+      
+      console.log("Migración completada:", output);
+      
+      res.json({
+        status: "success",
+        message: "Migración ejecutada exitosamente",
+        output: output
+      });
+    } catch (error) {
+      console.error("Error en migración:", error);
+      res.status(500).json({
+        status: "error",
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Ruta de diagnóstico para productos (temporal)
   app.get("/api/products-debug", async (req, res) => {
     try {
