@@ -1706,6 +1706,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dashboard stats route
+  app.get("/api/dashboard/stats", async (req, res, next) => {
+    try {
+      const users = await storage.getAllUsers();
+      const templates = await storage.getAllFormTemplates();
+      
+      // Contar entradas de formularios reales
+      const entriesResult = await db.execute(sql`SELECT COUNT(*) as total FROM form_entries`);
+      const totalEntries = entriesResult.rows[0]?.total || 0;
+      
+      res.json({
+        users: users.length,
+        templates: templates.length,
+        entries: totalEntries,
+        exports: 0 // Para futuras implementaciones de exportaciones
+      });
+    } catch (error) {
+      console.error("Error obteniendo estadísticas del dashboard:", error);
+      next(error);
+    }
+  });
+
   // Ruta para obtener productos
   app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {
