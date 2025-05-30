@@ -1591,7 +1591,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Ruta de migración para sincronizar recetas con datos exactos
-  app.post("/api/migrate/sync-exact-recipes", requireAuth, async (req, res) => {
+  app.post("/api/migrate/sync-exact-recipes", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       console.log("=== SINCRONIZANDO RECETAS EXACTAS ===");
       
@@ -1702,9 +1702,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
     } catch (error) {
       console.error("Error en sincronización de recetas:", error);
-      res.status(500).json({
-        error: error instanceof Error ? error.message : String(error)
-      });
+      next(error);
     }
   });
 
