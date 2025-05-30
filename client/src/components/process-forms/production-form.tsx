@@ -204,9 +204,17 @@ export default function ProductionForm({
           materialsUpdate[`unit_${index}`] = ingredient.unit;
         });
         
+        // También actualizar la lista de ingredientes para la tabla de materias primas
+        const formattedIngredients = recipeData.ingredients?.map((ingredient: any) => ({
+          name: ingredient.name,
+          quantity: parseFloat(ingredient.quantity),
+          unit: ingredient.unit
+        })) || [];
+        
         setFormData((prev: any) => ({
           ...prev,
-          ...materialsUpdate
+          ...materialsUpdate,
+          ingredients: formattedIngredients
         }));
         
         toast({
