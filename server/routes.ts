@@ -1509,7 +1509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Obtener la receta del producto
       const recipeResult = await db.execute(sql`
-        SELECT pr.id, pr.name, pr.description
+        SELECT pr.id, pr.name
         FROM product_recipes pr
         WHERE pr.product_id = ${productId}
         LIMIT 1
@@ -1539,7 +1539,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         recipeId: recipe.id,
         recipeName: recipe.name,
-        description: recipe.description,
         baseLiters: 100,
         targetLiters: liters,
         ingredients: adjustedIngredients
