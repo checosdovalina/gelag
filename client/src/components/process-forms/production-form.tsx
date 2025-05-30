@@ -278,7 +278,10 @@ export default function ProductionForm({
     if (field === "productType" || field === "liters") {
       const updatedData = { ...formData, [field]: value };
       if (updatedData.productType && updatedData.liters && updatedData.liters > 0) {
-        loadProductRecipe(updatedData.productType, updatedData.liters);
+        // Usar setTimeout para asegurar que el estado se actualice antes de cargar la receta
+        setTimeout(() => {
+          loadProductRecipe(updatedData.productType, updatedData.liters);
+        }, 100);
       }
     }
   };
