@@ -477,13 +477,22 @@ export default function ProductionForm({
                             );
                           }
                           
-                          if (error || cajetaProducts.length === 0) {
-                            // Fallback a los productos por defecto si hay error o no hay productos de cajeta
-                            return PRODUCTS.map(product => (
-                              <SelectItem key={product.id} value={product.id}>
-                                {product.name}
-                              </SelectItem>
-                            ));
+                          if (error) {
+                            return (
+                              <div className="flex items-center justify-center p-4 text-red-500">
+                                <AlertTriangle className="h-4 w-4 mr-2" />
+                                <span>Error al cargar productos</span>
+                              </div>
+                            );
+                          }
+                          
+                          if (cajetaProducts.length === 0) {
+                            return (
+                              <div className="flex items-center justify-center p-4 text-gray-500">
+                                <Info className="h-4 w-4 mr-2" />
+                                <span>No hay productos de cajeta disponibles</span>
+                              </div>
+                            );
                           }
                           
                           // Mostrar productos de categoría "Tipo de Cajeta"
