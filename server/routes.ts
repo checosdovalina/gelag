@@ -1294,24 +1294,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ruta para ejecutar migración de base de datos (temporal)
-  app.get("/api/migrate-db", async (req, res) => {
+  // Ruta para crear tabla products directamente (temporal)
+  app.get("/api/create-products-table", async (req, res) => {
     try {
-      console.log("=== EJECUTANDO MIGRACIÓN ===");
+      console.log("=== CREANDO TABLA PRODUCTS ===");
       
-      // Ejecutar migración de la base de datos usando import dinámico
-      const { execSync } = await import('child_process');
-      const output = execSync('npm run db:push', { encoding: 'utf8' });
+      // Crear tabla products directamente con SQL
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS products (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          code TEXT UNIQUE,
+          description TEXT,
+          category TEXT,
+          unit TEXT DEFAULT 'kg',
+          is_active BOOLEAN DEFAULT true,
+          created_by INTEGER,
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `);
       
-      console.log("Migración completada:", output);
+      console.log("Tabla products creada exitosamente");
+      
+      // Insertar algunos productos básicos de cajeta
+      await db.execute(sql`
+        INSERT INTO products (name, code, category, description) VALUES
+        ('Conito', 'CNT001', 'Tipo de Cajeta', 'Cajeta tipo conito'),
+        ('Mielmex 65° Brix', 'MLX001', 'Tipo de Cajeta', 'Mielmex con 65 grados Brix'),
+        ('Cajeton Espesa', 'CJE001', 'Tipo de Cajeta', 'Cajeton de consistencia espesa'),
+        ('Cajeton Tradicional', 'CJT001', 'Tipo de Cajeta', 'Cajeton tradicional'),
+        ('Gloria untable 78° Brix', 'GLR001', 'Tipo de Cajeta', 'Gloria untable 78 grados'),
+        ('Horneable', 'HRN001', 'Tipo de Cajeta', 'Cajeta para hornear')
+        ON CONFLICT (code) DO NOTHING
+      `);
+      
+      console.log("Productos básicos insertados");
       
       res.json({
         status: "success",
-        message: "Migración ejecutada exitosamente",
-        output: output
+        message: "Tabla products creada y productos básicos insertados exitosamente"
       });
     } catch (error) {
-      console.error("Error en migración:", error);
+      console.error("Error creando tabla:", error);
       res.status(500).json({
         status: "error",
         message: error instanceof Error ? error.message : String(error)
