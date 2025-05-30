@@ -465,15 +465,8 @@ export default function ProductionForm({
                           const { products, isLoading, error } = useProducts();
                           
                           // Filtrar productos por categoría "Tipo de Cajeta"
-                          console.log("Productos recibidos:", products?.length);
-                          console.log("Primeros 3 productos:", products?.slice(0, 3));
-                          
-                          const cajetaProducts = products?.filter(product => {
-                            console.log(`Producto: ${product.name}, Categoría: "${product.category}"`);
-                            return product.category === "Tipo de Cajeta";
-                          }) || [];
-                          
-                          console.log("Productos de cajeta encontrados:", cajetaProducts.length);
+                          const cajetaProducts = products?.filter(product => 
+                            product.category === "Tipo de Cajeta") || [];
                           
                           if (isLoading) {
                             return (

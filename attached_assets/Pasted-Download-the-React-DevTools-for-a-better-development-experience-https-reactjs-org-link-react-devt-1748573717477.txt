@@ -1,0 +1,49 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+production-form.tsx:468 Productos recibidos: undefined
+production-form.tsx:469 Primeros 3 productos: undefined
+production-form.tsx:476 Productos de cajeta encontrados: 0
+production-form.tsx:468 Productos recibidos: undefined
+production-form.tsx:469 Primeros 3 productos: undefined
+production-form.tsx:476 Productos de cajeta encontrados: 0
+production-form.tsx:468 Productos recibidos: undefined
+production-form.tsx:469 Primeros 3 productos: undefined
+production-form.tsx:476 Productos de cajeta encontrados: 0
+production-form.tsx:468 Productos recibidos: 50
+production-form.tsx:469 Primeros 3 productos: (3) [{…}, {…}, {…}]
+production-form.tsx:472 Producto: CAJETON ESPESA, Categoría: "null"
+production-form.tsx:472 Producto: CAJETON ESPESA , Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: CAJETON TRADICIONAL, Categoría: "null"
+production-form.tsx:472 Producto: CAJETON TRADICIONAL , Categoría: "Producto Terminado"
+2production-form.tsx:472 Producto: CONO CHICO, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: CONO CHICO, Categoría: "null"
+production-form.tsx:472 Producto: CONO GRANDE, Categoría: "null"
+2production-form.tsx:472 Producto: Cabri Espesa, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Cabri Tradicional, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Cajeton Esp Chepo, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Cajeton Espesa, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Cajeton Tradicional, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Conito, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Coro 68° Brix, Categoría: "Tipo de Cajeta"
+production-form.tsx:472 Producto: GLORIA, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: GLORIA, Categoría: "null"
+2production-form.tsx:472 Producto: Gloria untable 78° Brix, Categoría: "Tipo de Cajeta"
+production-form.tsx:472 Producto: Gloria untable 80° Brix, Categoría: "Tipo de Cajeta"
+production-form.tsx:472 Producto: Gloria untable 90° Brix, Categoría: "Tipo de Cajeta"
+production-form.tsx:472 Producto: HORNEABLE, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: HORNEABLE, Categoría: "null"
+2production-form.tsx:472 Producto: Horneable, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Mielmex 65° Brix, Categoría: "Tipo de Cajeta"
+production-form.tsx:472 Producto: OBLEA CHICA, Categoría: "null"
+production-form.tsx:472 Producto: OBLEA CHICA , Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: OBLEA GRANDE, Categoría: "null"
+production-form.tsx:472 Producto: OBLEA GRANDE, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: PASTA CONITO, Categoría: "null"
+production-form.tsx:472 Producto: PASTA CONITO, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: PASTA DE OBLEA, Categoría: "Producto Terminado"
+production-form.tsx:472 Producto: PASTA DE OBLEA, Categoría: "null"
+production-form.tsx:472 Producto: PASTA MIELMEX, Categoría: "null"
+production-form.tsx:472 Producto: PASTA MIELMEX , Categoría: "Producto Terminado"
+2production-form.tsx:472 Producto: Pasta DDL, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Pasta Oblea Cajeton, Categoría: "Tipo de Cajeta"
+2production-form.tsx:472 Producto: Pasta Oblea Coro, Categoría: "Tipo de Cajeta"
+production-form.tsx:476 Productos de cajeta encontrados: 28
