@@ -1294,6 +1294,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta de diagnóstico para productos (temporal)
+  app.get("/api/products-debug", async (req, res) => {
+    try {
+      console.log("=== PRODUCTS DEBUG ===");
+      console.log("Database URL exists:", !!process.env.DATABASE_URL);
+      
+      // Verificar si la tabla products existe
+      const tableCheck = await db.execute(sql`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_name = 'products'
+        );
+      `);
+      console.log("Table products exists:", tableCheck.rows[0]);
+      
+      // Contar productos
+      const countResult = await db.execute(sql`SELECT COUNT(*) as total FROM products`);
+      console.log("Total products:", countResult.rows[0]);
+      
+      // Obtener algunos productos de muestra
+      const sampleResult = await db.execute(sql`SELECT * FROM products LIMIT 5`);
+      console.log("Sample products:", sampleResult.rows);
+      
+      res.json({
+        status: "success",
+        tableExists: tableCheck.rows[0],
+        totalProducts: countResult.rows[0],
+        sampleProducts: sampleResult.rows
+      });
+    } catch (error) {
+      console.error("Debug error:", error);
+      res.status(500).json({
+        status: "error",
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+    }
+  });
+
   // Ruta para obtener productos
   app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {
@@ -1316,7 +1355,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result.rows);
     } catch (error) {
       console.error("Error al obtener productos:", error);
-      next(error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
