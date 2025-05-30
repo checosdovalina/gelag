@@ -1299,8 +1299,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("=== EJECUTANDO MIGRACIÓN ===");
       
-      // Ejecutar migración de la base de datos
-      const { execSync } = require('child_process');
+      // Ejecutar migración de la base de datos usando import dinámico
+      const { execSync } = await import('child_process');
       const output = execSync('npm run db:push', { encoding: 'utf8' });
       
       console.log("Migración completada:", output);
