@@ -93,7 +93,7 @@ function Router() {
       <ProtectedRouteWithLayout 
         path="/products" 
         component={ProductsPage} 
-        allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN]} 
+        allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.PRODUCTION_MANAGER]} 
       />
       <ProtectedRouteWithLayout 
         path="/employees" 
