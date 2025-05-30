@@ -1590,6 +1590,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta de migración para sincronizar recetas con datos exactos
+  app.post("/api/migrate/sync-exact-recipes", requireAuth, async (req, res) => {
+    try {
+      console.log("=== SINCRONIZANDO RECETAS EXACTAS ===");
+      
+      // Datos exactos de las recetas basados en las capturas de pantalla
+      const exactRecipes = [
+        {
+          productName: "Coro 68° Brix",
+          ingredients: [
+            { name: "Leche de Vaca", quantity: 20, unit: "kg" },
+            { name: "Leche de Cabra", quantity: 80, unit: "kg" },
+            { name: "Azúcar", quantity: 18, unit: "kg" },
+            { name: "Bicarbonato", quantity: 0.16, unit: "kg" },
+            { name: "Pasta", quantity: 132, unit: "kg" }
+          ]
+        },
+        {
+          productName: "Mielmex 65° Brix",
+          ingredients: [
+            { name: "Leche de Cabra", quantity: 100, unit: "kg" },
+            { name: "Azúcar", quantity: 18, unit: "kg" },
+            { name: "Bicarbonato", quantity: 0.16, unit: "kg" },
+            { name: "Sorbato", quantity: 0.06, unit: "kg" },
+            { name: "Pasta", quantity: 132, unit: "kg" }
+          ]
+        },
+        {
+          productName: "Gloria untable 80° Brix",
+          ingredients: [
+            { name: "Glucosa", quantity: 36, unit: "kg" },
+            { name: "Pasta", quantity: 132, unit: "kg" },
+            { name: "Nuez", quantity: 23.76, unit: "kg" }
+          ]
+        },
+        {
+          productName: "Cajeton Esp Chepo",
+          ingredients: [
+            { name: "Leche de Cabra", quantity: 100, unit: "kg" },
+            { name: "Azúcar", quantity: 20, unit: "kg" },
+            { name: "Glucosa", quantity: 27, unit: "kg" },
+            { name: "Malto", quantity: 5.0, unit: "kg" },
+            { name: "Bicarbonato", quantity: 0.18, unit: "kg" },
+            { name: "Pasta", quantity: 132, unit: "kg" }
+          ]
+        }
+      ];
+
+      const results = [];
+      
+      for (const recipeData of exactRecipes) {
+        console.log(`Procesando receta para: ${recipeData.productName}`);
+        
+        // Buscar el producto
+        const productResult = await db.execute(sql`
+          SELECT id FROM products WHERE name = ${recipeData.productName}
+        `);
+        
+        if (productResult.rows.length === 0) {
+          console.log(`Producto no encontrado: ${recipeData.productName}`);
+          continue;
+        }
+        
+        const productId = productResult.rows[0].id;
+        
+        // Buscar o crear la receta
+        let recipeResult = await db.execute(sql`
+          SELECT id FROM product_recipes WHERE product_id = ${productId}
+        `);
+        
+        let recipeId;
+        if (recipeResult.rows.length === 0) {
+          // Crear nueva receta
+          const newRecipeResult = await db.execute(sql`
+            INSERT INTO product_recipes (product_id, name, base_quantity, created_by)
+            VALUES (${productId}, ${'Receta ' + recipeData.productName}, 100, 1)
+            RETURNING id
+          `);
+          recipeId = newRecipeResult.rows[0].id;
+        } else {
+          recipeId = recipeResult.rows[0].id;
+          
+          // Eliminar ingredientes existentes
+          await db.execute(sql`
+            DELETE FROM recipe_ingredients WHERE recipe_id = ${recipeId}
+          `);
+        }
+        
+        // Insertar ingredientes exactos
+        for (const ingredient of recipeData.ingredients) {
+          await db.execute(sql`
+            INSERT INTO recipe_ingredients (recipe_id, material_name, quantity, unit)
+            VALUES (${recipeId}, ${ingredient.name}, ${ingredient.quantity}, ${ingredient.unit})
+          `);
+        }
+        
+        results.push({
+          product: recipeData.productName,
+          recipeId,
+          ingredientsCount: recipeData.ingredients.length,
+          status: "synced"
+        });
+      }
+      
+      console.log("Sincronización completada:", results);
+      res.json({
+        message: "Recetas sincronizadas correctamente",
+        results
+      });
+      
+    } catch (error) {
+      console.error("Error en sincronización de recetas:", error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Ruta para obtener productos
   app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
     try {

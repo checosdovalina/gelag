@@ -1,0 +1,41 @@
+formulario-control-checodovalina.replit.app/:1 
+            
+            
+           Failed to load resource: the server responded with a status of 502 ()Understand this error
+stats:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 ()Understand this error
+production-form.tsx:194 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/products/13/recipe?liters=500 500 (Internal Server Error)
+loadProductRecipe @ production-form.tsx:194
+(anonymous) @ production-form.tsx:298
+setTimeout
+handleChange @ production-form.tsx:297
+onValueChange @ production-form.tsx:519
+(anonymous) @ chunk-K3KUYG4W.js?v=2f74ef84:27
+(anonymous) @ chunk-2UGGF4OY.js?v=2f74ef84:28
+handleSelect @ @radix-ui_react-select.js?v=2f74ef84:866
+(anonymous) @ @radix-ui_react-select.js?v=2f74ef84:912
+handleEvent @ chunk-K3KUYG4W.js?v=2f74ef84:13
+callCallback2 @ chunk-RPCDYKBN.js?v=2f74ef84:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=2f74ef84:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=2f74ef84:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=2f74ef84:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=2f74ef84:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=2f74ef84:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=2f74ef84:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=2f74ef84:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=2f74ef84:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=2f74ef84:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=2f74ef84:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=2f74ef84:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=2f74ef84:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5449Understand this error
+production-form.tsx:194 
+            
+            
+           GET https://formulario-control-checodovalina.replit.app/api/products/13/recipe?liters=50 500 (Internal Server Error)
