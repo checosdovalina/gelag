@@ -1248,33 +1248,3 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedReport);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Datos inválidos", details: error.errors });
-      }
-      next(error);
-    }
-  });
-
-  app.delete("/api/saved-reports/:id", async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ message: "No autenticado" });
-      }
-
-      const reportId = parseInt(req.params.id);
-      if (isNaN(reportId)) {
-        return res.status(400).json({ message: "ID de reporte inválido" });
-      }
-      
-      // Check if report exists
-      const existingReport = await storage.getSavedReport(reportId);
-      if (!existingReport) {
-        return res.status(404).json({ message: "Reporte no encontrado" });
-      }
-      
-      // Verify ownership or admin privileges
-      if (existingReport.createdBy !== req.user.id && req.user.role !== UserRole.SUPERADMIN && req.user.role !== UserRole.ADMIN) {
-        return res.status(403).json({ message: "No autorizado para eliminar este reporte" });
-      }
-      
-      // Delete report
-      await storage.deleteSavedReport(reportId);
