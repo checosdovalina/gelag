@@ -1278,3 +1278,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Delete report
       await storage.deleteSavedReport(reportId);
+      
+      // Log the deletion
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "deleted",
+        resourceType: "saved_report",
+        resourceId: reportId,
+        details: { name: existingReport.name }
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
