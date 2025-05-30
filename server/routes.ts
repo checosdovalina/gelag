@@ -1294,6 +1294,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ruta para obtener productos
+  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.GERENTE_PRODUCCION]), async (req, res, next) => {
+    try {
+      console.log("=== GET PRODUCTS ===");
+      console.log("Query params:", req.query);
+      
+      let result;
+      // Si se especifica active=true, solo devolver productos activos
+      if (req.query.active === 'true') {
+        result = await db.execute(sql`
+          SELECT * FROM products WHERE is_active = true ORDER BY name
+        `);
+      } else {
+        result = await db.execute(sql`
+          SELECT * FROM products ORDER BY name
+        `);
+      }
+      
+      console.log("Productos encontrados:", result.rows.length);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
