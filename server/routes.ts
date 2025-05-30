@@ -639,10 +639,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Form entry routes
   app.get("/api/form-entries", async (req, res, next) => {
     try {
+      console.log("=== GET FORM ENTRIES ===");
+      console.log("Usuario autenticado:", !!req.user);
+      
       // Check if user is authenticated
       if (!req.user) {
+        console.log("Usuario no autenticado");
         return res.status(401).json({ message: "No autenticado" });
       }
+      
+      console.log("Usuario:", req.user.username, "Rol:", req.user.role);
 
       // Filter entries based on query parameters
       let entries = [];
