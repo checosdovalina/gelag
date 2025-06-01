@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const health = {
         status: "ok",
         timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || "unknown",
+        environment: process.env.NODE_ENV || (process.env.REPL_OWNER ? "production" : "development"),
         version: "1.3.0",
         database: "unknown",
         schemas: "unknown",

@@ -59,7 +59,12 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    try {
+      serveStatic(app);
+    } catch (error) {
+      console.log("Static files not found, using Vite development mode");
+      await setupVite(app, server);
+    }
   }
 
   // ALWAYS serve the app on port 5000
