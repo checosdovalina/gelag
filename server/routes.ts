@@ -239,11 +239,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
+      console.log("[UserCreation] Datos recibidos:", JSON.stringify(req.body, null, 2));
+      
       const userData = insertUserSchema.parse(req.body);
+      console.log("[UserCreation] Datos después de validación:", JSON.stringify(userData, null, 2));
       
       // Check if username already exists
       const existingUser = await storage.getUserByUsername(userData.username);
       if (existingUser) {
+        console.log("[UserCreation] Usuario ya existe:", userData.username);
         return res.status(400).json({ message: "El nombre de usuario ya existe" });
       }
       
@@ -255,10 +259,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...userData,
         password: hashedPassword
       });
+      console.log("[UserCreation] Usuario creado exitosamente:", user.id);
       
       // Log activity
       await storage.createActivityLog({
-        userId: req.user.id,
+        userId: req.user!.id,
         action: "created",
         resourceType: "user",
         resourceId: user.id,
@@ -269,7 +274,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
     } catch (error) {
+      console.error("[UserCreation] Error:", error);
       if (error instanceof z.ZodError) {
+        console.error("[UserCreation] Errores de validación:", error.errors);
         return res.status(400).json({ message: "Datos inválidos", details: error.errors });
       }
       next(error);
