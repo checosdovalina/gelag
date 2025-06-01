@@ -199,6 +199,7 @@ export const fieldTypes = [
   "evaluationMatrix",
   "employee", // Campo para seleccionar un empleado
   "employeeByType", // Campo para seleccionar un empleado filtrado por tipo
+  "userByRole", // Campo para seleccionar un usuario filtrado por rol
   "product",   // Campo para seleccionar un producto
   "advancedTable" // Tabla avanzada con múltiples columnas y filas, diseño personalizable
 ] as const;

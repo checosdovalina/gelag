@@ -100,7 +100,20 @@ export default function FormViewer({
       }
       return response.json();
     },
-    enabled: formTemplate.fields.some(field => field.type === 'employee')
+    enabled: formTemplate.fields.some(field => field.type === 'employee' || field.type === 'employeeByType')
+  });
+
+  // Cargar lista de usuarios
+  const { data: users = [], isLoading: usersLoading } = useQuery<any[]>({
+    queryKey: ['/api/users'],
+    queryFn: async () => {
+      const response = await fetch('/api/users');
+      if (!response.ok) {
+        throw new Error('Error al cargar usuarios');
+      }
+      return response.json();
+    },
+    enabled: formTemplate.fields.some(field => field.type === 'userByRole')
   });
   
   // Función para actualizar el displayName de un campo y guardar los cambios
@@ -640,6 +653,77 @@ export default function FormViewer({
       />
     );
   };
+
+  // Renderizar campo de selección de usuario por rol
+  const renderUserByRoleField = (field: IFormField) => {
+    // Filtramos los usuarios por rol seleccionado en la configuración del campo
+    const filteredUsers = users.filter(
+      user => user.role === field.userRole
+    );
+    
+    console.log(`[UserByRole] Campo: ${field.label}`);
+    console.log(`[UserByRole] Rol esperado: ${field.userRole}`);
+    console.log(`[UserByRole] Total usuarios: ${users.length}`);
+    console.log(`[UserByRole] Usuarios filtrados: ${filteredUsers.length}`);
+    console.log(`[UserByRole] Usuarios disponibles:`, users.map(u => `${u.name} (${u.role})`));
+    
+    return (
+      <FormField
+        key={field.id}
+        control={form.control}
+        name={field.id}
+        render={({ field: formField }) => (
+          <FormItem>
+            <FormLabel>
+              {field.label} {field.required && <span className="text-red-500">*</span>}
+            </FormLabel>
+            <Select
+              value={formField.value ? formField.value.toString() : ""}
+              onValueChange={(value) => {
+                formField.onChange(Number(value));
+              }}
+              disabled={isReadOnly}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={`Seleccionar ${
+                    field.userRole === 'gerente_calidad' ? 'gerente de calidad' :
+                    field.userRole === 'gerente_produccion' ? 'gerente de producción' :
+                    field.userRole === 'admin' ? 'administrador' :
+                    'usuario'
+                  }`} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {usersLoading ? (
+                  <div className="flex items-center justify-center p-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No hay usuarios con este rol disponibles
+                  </div>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <SelectItem key={user.id} value={user.id.toString()}>
+                      <div className="flex items-center">
+                        <UserCircle className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {user.name} - {user.username}
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              {formField.value && users.find(u => u.id === Number(formField.value))?.role}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
   
   // Renderizar campo de selección de producto
   // Renderizar campo de tabla avanzada
@@ -905,6 +989,9 @@ export default function FormViewer({
         
       case "employeeByType":
         return renderEmployeeByTypeField(field);
+        
+      case "userByRole":
+        return renderUserByRoleField(field);
         
       case "product":
         return renderProductField(field);
