@@ -267,8 +267,8 @@ export default function CapturedFormsPage() {
 
   // Combinar formularios regulares y formularios de proceso
   const combinedForms = React.useMemo(() => {
-    const regularForms = entries || [];
-    const processForms = (productionForms || []).map(form => ({
+    const regularForms = Array.isArray(entries) ? entries : [];
+    const processForms = Array.isArray(productionForms) ? productionForms.map(form => ({
       id: form.id,
       formTemplateId: -1, // ID especial para formularios de proceso
       data: form,
@@ -281,7 +281,7 @@ export default function CapturedFormsPage() {
       workflowStatus: form.status,
       formType: "production", // Identificador especial
       formName: `Formulario de Producción - ${form.productId}` // Nombre personalizado
-    }));
+    })) : [];
     
     return [...regularForms, ...processForms];
   }, [entries, productionForms]);
