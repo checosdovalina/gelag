@@ -700,6 +700,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Employee routes
+  app.get("/api/employees", async (req, res, next) => {
+    try {
+      const employees = await storage.getAllEmployees();
+      console.log("[Employees API] Devolviendo empleados:", employees.length);
+      if (employees.length > 0) {
+        console.log("[Employees API] Estructura primer empleado:", Object.keys(employees[0]));
+        console.log("[Employees API] Primer empleado completo:", employees[0]);
+      }
+      res.json(employees);
+    } catch (error) {
+      console.error("[Employees API] Error:", error);
+      next(error);
+    }
+  });
+
+  app.post("/api/employees", async (req, res, next) => {
+    try {
+      console.log("[Employee Creation] Datos recibidos:", req.body);
+      const employee = await storage.createEmployee(req.body);
+      console.log("[Employee Creation] Empleado creado:", employee);
+      res.status(200).json(employee);
+    } catch (error) {
+      console.error("[Employee Creation] Error:", error);
+      res.status(500).json({ message: "Error al crear empleado", error: String(error) });
+    }
+  });
+
   // Form entry routes - versión simplificada para resolver errores 503
   app.get("/api/form-entries", async (req, res, next) => {
     try {
