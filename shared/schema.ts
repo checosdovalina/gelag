@@ -236,6 +236,16 @@ export const formFieldSchema = z.object({
     EmployeeType.PRODUCTION,
     EmployeeType.ADMINISTRATIVE
   ]).optional(),
+  // Campo para especificar el rol de usuario a mostrar (para campos tipo userByRole)
+  userRole: z.enum([
+    UserRole.SUPERADMIN,
+    UserRole.ADMIN,
+    UserRole.PRODUCTION,
+    UserRole.QUALITY,
+    UserRole.PRODUCTION_MANAGER,
+    UserRole.QUALITY_MANAGER,
+    UserRole.VIEWER
+  ]).optional(),
   columns: z.array(z.object({
     id: z.string(),
     header: z.string(),

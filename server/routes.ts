@@ -324,6 +324,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all users (for dropdowns and selections)
+  app.get("/api/users", async (req, res, next) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Return users without passwords for security
+      const usersWithoutPasswords = users.map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      res.json(usersWithoutPasswords);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Form template routes
   app.get("/api/form-templates", async (req, res, next) => {
     try {
