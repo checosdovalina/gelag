@@ -73,7 +73,7 @@ export default function FormViewer({
   const { toast } = useToast();
   
   // Cargar lista de productos
-  const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
+  const { data: allProducts = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ['/api/products'],
     queryFn: async () => {
       const response = await fetch('/api/products');
@@ -84,6 +84,11 @@ export default function FormViewer({
     },
     enabled: formTemplate.fields.some(field => field.type === 'product')
   });
+
+  // Filtrar productos para mostrar solo "Producto Terminado" en formularios de microbiología
+  const products = formTemplate?.title?.includes('MICROBIOLOGIA') 
+    ? allProducts.filter(product => product.category === 'Producto Terminado')
+    : allProducts;
   
   // Cargar lista de empleados
   const { data: employees = [], isLoading: employeesLoading } = useQuery<Employee[]>({

@@ -24,7 +24,7 @@ export default function ProductRecipeSelector({
   const { toast } = useToast();
   
   // Consultar productos
-  const { data: products = [], isLoading: productsLoading } = useQuery({
+  const { data: allProducts = [], isLoading: productsLoading } = useQuery({
     queryKey: ['/api/products'],
     queryFn: async () => {
       const response = await fetch('/api/products');
@@ -34,6 +34,11 @@ export default function ProductRecipeSelector({
       return response.json();
     }
   });
+
+  // Filtrar productos para mostrar solo "Producto Terminado" en formularios de microbiología
+  const products = field?.label?.includes('Producto') && window.location.pathname.includes('form-capture')
+    ? allProducts.filter(product => product.category === 'Producto Terminado')
+    : allProducts;
 
   // Estado para controlar si se ha aplicado una receta
   const [recipeApplied, setRecipeApplied] = useState(false);
