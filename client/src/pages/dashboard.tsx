@@ -56,9 +56,11 @@ export default function Dashboard() {
   const [recentForms, setRecentForms] = useState<FormItem[]>([]);
 
   // Fetch dashboard stats
-  const { data: statsData, isLoading: isLoadingStats } = useQuery({
+  const { data: statsData, isLoading: isLoadingStats, error: statsError } = useQuery({
     queryKey: ["/api/dashboard/stats"],
     enabled: !!user,
+    retry: 3,
+    retryDelay: 1000,
   });
 
   // Fetch activity logs
