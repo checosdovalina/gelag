@@ -167,6 +167,63 @@ async function canUserUpdateWorkflow(
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
+
+  // Endpoint de diagnóstico para identificar problemas en producción
+  app.get("/api/health", async (req, res) => {
+    try {
+      console.log("[HEALTH] === VERIFICACIÓN DEL SISTEMA ===");
+      
+      const health = {
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || "unknown",
+        version: "1.3.0",
+        database: "unknown",
+        schemas: "unknown",
+        auth: "unknown"
+      };
+      
+      // Verificar base de datos
+      try {
+        const users = await storage.getAllUsers();
+        health.database = `conectada (${users.length} usuarios)`;
+      } catch (dbError) {
+        console.error("[HEALTH] Error de base de datos:", dbError);
+        health.database = `error: ${dbError instanceof Error ? dbError.message : String(dbError)}`;
+        health.status = "degraded";
+      }
+      
+      // Verificar esquemas de validación
+      try {
+        const testEntry = {
+          formTemplateId: 1,
+          data: { test: "value" },
+          department: "test",
+          createdBy: 1,
+          status: "draft"
+        };
+        insertFormEntrySchema.parse(testEntry);
+        health.schemas = "válidos";
+      } catch (schemaError) {
+        console.error("[HEALTH] Error de esquemas:", schemaError);
+        health.schemas = `error: ${schemaError instanceof Error ? schemaError.message : String(schemaError)}`;
+        health.status = "degraded";
+      }
+      
+      // Verificar autenticación
+      health.auth = req.isAuthenticated ? (req.isAuthenticated() ? "autenticado" : "no_autenticado") : "middleware_faltante";
+      
+      console.log("[HEALTH] Estado del sistema:", health);
+      res.json(health);
+    } catch (error) {
+      console.error("[HEALTH] Error crítico:", error);
+      res.status(500).json({ 
+        status: "error", 
+        message: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
   
   // User routes
   app.get("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
