@@ -1,0 +1,38 @@
+
+api/dashboard/stats:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 ()Understand this error
+form-viewer.tsx:378 Asignando folio con formato: CA-RE-15-01-F26
+form-capture.tsx:123 [FormCapture] Preparando formulario para envío: Object
+form-capture.tsx:158 [FormCapture] Enviando formulario al servidor: {formTemplateId: 8, data: {…}, department: 'Calidad', id: 0, createdBy: 2, …}
+queryClient.ts:16 
+            
+            
+           POST https://formulario-control-checodovalina.replit.app/api/form-entries 500 (Internal Server Error)
+apiRequest @ queryClient.ts:16
+mutationFn @ form-capture.tsx:73
+fn @ @tanstack_react-query.js?v=2f74ef84:1189
+run @ @tanstack_react-query.js?v=2f74ef84:494
+start @ @tanstack_react-query.js?v=2f74ef84:536
+execute @ @tanstack_react-query.js?v=2f74ef84:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=2f74ef84:2630
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:3295
+handleConfirmSubmit @ form-capture.tsx:164
+handleEvent @ chunk-K3KUYG4W.js?v=2f74ef84:11
+callCallback2 @ chunk-RPCDYKBN.js?v=2f74ef84:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=2f74ef84:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=2f74ef84:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=2f74ef84:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=2f74ef84:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=2f74ef84:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=2f74ef84:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=2f74ef84:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=2f74ef84:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=2f74ef84:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=2f74ef84:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=2f74ef84:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=2f74ef84:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5449Understand this error
