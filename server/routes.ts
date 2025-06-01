@@ -743,7 +743,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Form entry routes - versión simplificada para resolver errores 503
+  // Form entry routes
   app.get("/api/form-entries", async (req, res, next) => {
     try {
       console.log("=== GET FORM ENTRIES ===");
@@ -757,18 +757,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Usuario:", req.user.username, "Rol:", req.user.role);
 
-      // Respuesta simplificada para evitar errores 503
-      console.log("Devolviendo respuesta simplificada");
-      return res.json({
-        entries: [],
-        productionForms: [],
-        totalEntries: 0,
-        totalProductionForms: 0
-      });
+      // Get regular form entries
+      let entries = [];
+      let productionForms = [];
       
-      /*
-      // Código original comentado temporalmente para resolver errores de compilación
-      */
+      try {
+        entries = await storage.getAllFormEntries();
+        console.log("Entradas de formularios obtenidas:", entries.length);
+      } catch (error) {
+        console.error("Error al obtener entradas de formularios:", error);
+        entries = [];
+      }
+
+      try {
+        productionForms = await storage.getAllProductionForms();
+        console.log("Formularios de producción obtenidos:", productionForms.length);
+      } catch (error) {
+        console.error("Error al obtener formularios de producción:", error);
+        productionForms = [];
+      }
+
+      res.json({
+        entries: entries,
+        productionForms: productionForms,
+        totalEntries: entries.length,
+        totalProductionForms: productionForms.length
+      });
     } catch (error) {
       console.error("Error getting form entries:", error);
       next(error);
