@@ -789,6 +789,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export form entry as PDF or Excel
+  app.get("/api/form-entries/:id/export", async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+      
+      // Validar formato de exportación
+      const format = req.query.format as string || "pdf";
+      if (format !== "pdf" && format !== "excel") {
+        return res.status(400).json({ message: "Formato de exportación inválido. Use 'pdf' o 'excel'" });
+      }
+      
+      // Obtener la entrada
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Obtener la plantilla asociada
+      const template = await storage.getFormTemplate(entry.formTemplateId);
+      if (!template) {
+        return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
+      }
+      
+      // Verificar permisos para ver esta entrada
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
+      if (
+        req.user?.role !== UserRole.SUPERADMIN &&
+        req.user?.role !== UserRole.ADMIN && 
+        entry.createdBy !== req.user?.id && 
+        entry.department !== req.user?.department
+      ) {
+        return res.status(403).json({ message: "No autorizado para exportar esta entrada" });
+      }
+      
+      // Registrar actividad
+      await storage.createActivityLog({
+        userId: req.user!.id,
+        action: "exported",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { format, formName: template.name }
+      });
+      
+      // Obtener usuario creador para mostrar en el PDF
+      const creator = await storage.getUser(entry.createdBy);
+      
+      // Generar el archivo según el formato solicitado
+      if (format === "pdf") {
+        try {
+          // Usar PDFKit como generador de PDF
+          const { generatePDFFallback } = await import('./pdf-generator-fallback');
+          
+          // Generar el PDF usando PDFKit
+          const pdfBuffer = await generatePDFFallback(entry, template, creator);
+          
+          // Configurar la respuesta y enviar el PDF
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="formulario_${template.name}_${entryId}.pdf"`);
+          res.send(pdfBuffer);
+        } catch (error) {
+          console.error("Error al generar PDF:", error);
+          return res.status(500).json({ 
+            message: "Error al generar el PDF. Por favor, inténtelo de nuevo más tarde.", 
+            error: error instanceof Error ? error.message : String(error) 
+          });
+        }
+      } else {
+        // Para Excel, devolver un mensaje simple por ahora
+        const excelMessage = "Funcionalidad de Excel en desarrollo";
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_${template.name}_${entryId}.txt"`);
+        res.send(excelMessage);
+      }
+    } catch (error) {
+      console.error("Error en exportación:", error);
+      next(error);
+    }
+  });
+
   app.get("/api/form-entries/:id", async (req, res, next) => {
     try {
       const entryId = parseInt(req.params.id);
