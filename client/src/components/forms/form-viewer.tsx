@@ -577,6 +577,12 @@ export default function FormViewer({
       employee => employee.employeeType === field.employeeType
     );
     
+    console.log(`[EmployeeByType] Campo: ${field.label}`);
+    console.log(`[EmployeeByType] Tipo esperado: ${field.employeeType}`);
+    console.log(`[EmployeeByType] Total empleados: ${employees.length}`);
+    console.log(`[EmployeeByType] Empleados filtrados: ${filteredEmployees.length}`);
+    console.log(`[EmployeeByType] Empleados disponibles:`, employees.map(e => `${e.name} (${e.employeeType})`));
+    
     return (
       <FormField
         key={field.id}
