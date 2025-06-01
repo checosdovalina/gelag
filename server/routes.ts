@@ -757,120 +757,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/form-entries", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
-    async (req, res, next) => {
-      try {
-        console.log("[API] === CREATING FORM ENTRY ===");
-        console.log("[API] Request body:", JSON.stringify(req.body, null, 2));
-        console.log("[API] User:", req.user?.id, req.user?.username);
-        
-        // Validación básica de entrada
-        if (!req.body) {
-          console.log("[API] Error: No request body");
-          return res.status(400).json({ message: "No se recibieron datos" });
-        }
-        
-        // Crear una copia limpia de los datos
-        let cleanData;
-        try {
-          cleanData = JSON.parse(JSON.stringify(req.body));
-        } catch (parseError) {
-          console.log("[API] Error parseando datos:", parseError);
-          return res.status(400).json({ message: "Datos mal formateados" });
-        }
-        
-        // Validación manual de campos requeridos antes de Zod
-        if (!cleanData.formTemplateId) {
-          console.log("[API] Error: formTemplateId faltante");
-          return res.status(400).json({ message: "formTemplateId es requerido" });
-        }
-        
-        if (!cleanData.data || typeof cleanData.data !== 'object') {
-          console.log("[API] Error: data faltante o inválido");
-          return res.status(400).json({ message: "data debe ser un objeto" });
-        }
-        
-        // Asignar valores por defecto antes de validación
-        cleanData.createdBy = req.user?.id || 1;
-        cleanData.status = cleanData.status || "draft";
-        cleanData.department = cleanData.department || "general";
-        
-        console.log("[API] Datos preparados para validación:", {
-          formTemplateId: cleanData.formTemplateId,
-          dataKeys: Object.keys(cleanData.data),
-          department: cleanData.department,
-          createdBy: cleanData.createdBy
-        });
-        
-        // Validar con Zod solo si es necesario
-        let entryData;
-        try {
-          entryData = insertFormEntrySchema.parse(cleanData);
-          console.log("[API] Validación Zod exitosa");
-        } catch (zodError) {
-          console.log("[API] Error de validación Zod:", zodError);
-          // En caso de error de Zod, usar los datos limpios directamente
-          entryData = cleanData;
-          console.log("[API] Usando datos sin validación Zod");
-        }
-        
-        // Verificar plantilla existe
-        let template;
-        try {
-          template = await storage.getFormTemplate(entryData.formTemplateId);
-          if (!template) {
-            console.log("[API] Error: Plantilla no encontrada, ID:", entryData.formTemplateId);
-            return res.status(404).json({ message: "Plantilla de formulario no encontrada" });
-          }
-          console.log("[API] Plantilla encontrada:", template.name);
-        } catch (templateError) {
-          console.log("[API] Error obteniendo plantilla:", templateError);
-          return res.status(500).json({ message: "Error al verificar plantilla" });
-        }
-        
-        // Crear entrada con manejo robusto de errores
-        let entry;
-        try {
-          console.log("[API] Intentando crear entrada...");
-          entry = await storage.createFormEntry(entryData);
-          console.log("[API] Entrada creada exitosamente, ID:", entry.id);
-        } catch (createError) {
-          console.log("[API] Error creando entrada:", createError);
-          return res.status(500).json({ 
-            message: "Error al crear entrada de formulario",
-            details: createError instanceof Error ? createError.message : String(createError)
-          });
-        }
-        
-        // Log activity (opcional, no crítico)
-        try {
-          await storage.createActivityLog({
-            userId: req.user?.id || 1,
-            action: "created",
-            resourceType: "form_entry",
-            resourceId: entry.id,
-            details: { 
-              formTemplateId: entry.formTemplateId,
-              formTemplateName: template.name
-            }
-          });
-        } catch (logError) {
-          console.log("[API] Warning: Error logging activity:", logError);
-          // No retornar error, el formulario se creó exitosamente
-        }
-        
-        console.log("[API] === FORM ENTRY CREATED SUCCESSFULLY ===");
-        res.status(201).json(entry);
-        
-      } catch (error) {
-        console.error("[API] Error crítico:", error);
-        res.status(500).json({ 
-          message: "Error interno del servidor",
-          details: error instanceof Error ? error.message : String(error)
-        });
+  // Endpoint simplificado para crear formularios
+  app.post("/api/form-entries", async (req, res) => {
+    try {
+      console.log("[FORM-CREATE] === INICIANDO CREACIÓN ===");
+      console.log("[FORM-CREATE] Datos recibidos:", req.body);
+      
+      // Verificar autenticación básica
+      if (!req.user) {
+        console.log("[FORM-CREATE] Usuario no autenticado");
+        return res.status(401).json({ message: "No autenticado" });
       }
+      
+      // Verificar permisos básicos
+      const allowedRoles = ["superadmin", "admin", "produccion", "calidad"];
+      if (!allowedRoles.includes(req.user.role)) {
+        console.log("[FORM-CREATE] Rol no autorizado:", req.user.role);
+        return res.status(403).json({ message: "No autorizado" });
+      }
+      
+      // Validación básica de datos
+      const { formTemplateId, data, department } = req.body;
+      
+      if (!formTemplateId || !data) {
+        console.log("[FORM-CREATE] Datos faltantes");
+        return res.status(400).json({ message: "formTemplateId y data son requeridos" });
+      }
+      
+      // Preparar datos para inserción
+      const entryData = {
+        formTemplateId: parseInt(formTemplateId),
+        data: typeof data === 'string' ? JSON.parse(data) : data,
+        createdBy: req.user.id,
+        department: department || "general",
+        status: "draft"
+      };
+      
+      console.log("[FORM-CREATE] Datos preparados:", entryData);
+      
+      // Verificar que la plantilla existe
+      const template = await storage.getFormTemplate(entryData.formTemplateId);
+      if (!template) {
+        console.log("[FORM-CREATE] Plantilla no encontrada");
+        return res.status(404).json({ message: "Plantilla no encontrada" });
+      }
+      
+      // Crear entrada directamente
+      const entry = await storage.createFormEntry(entryData);
+      console.log("[FORM-CREATE] Entrada creada exitosamente:", entry.id);
+      
+      // Log de actividad (opcional)
+      try {
+        await storage.createActivityLog({
+          userId: req.user.id,
+          action: "created",
+          resourceType: "form_entry",
+          resourceId: entry.id,
+          details: { formTemplateId: entry.formTemplateId }
+        });
+      } catch (logError) {
+        console.log("[FORM-CREATE] Warning: Error en log de actividad:", logError);
+      }
+      
+      res.status(201).json(entry);
+      
+    } catch (error) {
+      console.error("[FORM-CREATE] Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      res.status(500).json({ 
+        message: "Error al crear formulario",
+        details: errorMessage
+      });
     }
-  );
+  });
   
   // Eliminar entrada de formulario (sólo SuperAdmin)
   app.delete("/api/form-entries/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
@@ -2024,38 +1983,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard stats route
-  app.get("/api/dashboard/stats", async (req, res, next) => {
+  // Endpoint simplificado para estadísticas del dashboard
+  app.get("/api/dashboard/stats", async (req, res) => {
     try {
-      console.log("[API] === GETTING DASHBOARD STATS ===");
+      console.log("[DASHBOARD] === OBTENIENDO ESTADÍSTICAS ===");
       
-      const users = await storage.getAllUsers();
-      const templates = await storage.getAllFormTemplates();
-      
-      // Contar entradas de formularios usando storage
-      let totalEntries = 0;
-      try {
-        const entries = await storage.getAllFormEntries();
-        totalEntries = entries.length;
-      } catch (entriesError) {
-        console.log("[API] Warning: Error getting form entries count:", entriesError);
-        totalEntries = 0;
-      }
-      
-      const stats = {
-        users: users.length,
-        templates: templates.length,
-        entries: totalEntries,
-        exports: 0 // Para futuras implementaciones de exportaciones
+      // Obtener estadísticas básicas de forma segura
+      let stats = {
+        users: 0,
+        templates: 0,
+        entries: 0,
+        exports: 0
       };
       
-      console.log("[API] Dashboard stats:", stats);
+      // Contar usuarios
+      try {
+        const users = await storage.getAllUsers();
+        stats.users = users.length;
+        console.log("[DASHBOARD] Usuarios contados:", stats.users);
+      } catch (userError) {
+        console.log("[DASHBOARD] Error contando usuarios:", userError);
+      }
+      
+      // Contar plantillas
+      try {
+        const templates = await storage.getAllFormTemplates();
+        stats.templates = templates.length;
+        console.log("[DASHBOARD] Plantillas contadas:", stats.templates);
+      } catch (templateError) {
+        console.log("[DASHBOARD] Error contando plantillas:", templateError);
+      }
+      
+      // Contar entradas
+      try {
+        const entries = await storage.getAllFormEntries();
+        stats.entries = entries.length;
+        console.log("[DASHBOARD] Entradas contadas:", stats.entries);
+      } catch (entryError) {
+        console.log("[DASHBOARD] Error contando entradas:", entryError);
+      }
+      
+      console.log("[DASHBOARD] Estadísticas finales:", stats);
       res.json(stats);
+      
     } catch (error) {
-      console.error("[API] Error obteniendo estadísticas del dashboard:", error);
+      console.error("[DASHBOARD] Error crítico:", error);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
       res.status(500).json({ 
         message: "Error obteniendo estadísticas",
-        details: error instanceof Error ? error.message : String(error)
+        details: errorMessage
       });
     }
   });
