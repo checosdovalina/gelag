@@ -140,17 +140,19 @@ export default function CapturedFormsPage() {
   const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
   
-  // Fetch form entries
-  const { data: entries, isLoading: isLoadingEntries, refetch: refetchEntries } = useQuery<FormEntry[]>({
+  // Fetch form entries and production forms
+  const { data: formData, isLoading: isLoadingEntries, refetch: refetchEntries } = useQuery<{
+    entries: FormEntry[];
+    productionForms: any[];
+    totalEntries: number;
+    totalProductionForms: number;
+  }>({
     queryKey: ["/api/form-entries"],
     enabled: !!user,
   });
 
-  // Fetch production forms
-  const { data: productionForms } = useQuery<any[]>({
-    queryKey: ["/api/production-forms"],
-    enabled: !!user,
-  });
+  const entries = formData?.entries || [];
+  const productionForms = formData?.productionForms || [];
   
   // Fetch templates for filter and display
   const { data: templates } = useQuery<FormTemplate[]>({
