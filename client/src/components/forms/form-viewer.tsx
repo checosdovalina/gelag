@@ -1505,7 +1505,12 @@ export default function FormViewer({
           });
         } else {
           // Si no hay tablas avanzadas, proceder directamente
-          form.handleSubmit(onSubmit)(e);
+          console.log("[FormViewer] No hay tablas avanzadas, enviando formulario directamente...");
+          console.log("[FormViewer] Datos del formulario antes del envío:", form.getValues());
+          form.handleSubmit((data) => {
+            console.log("[FormViewer] handleSubmit ejecutado con datos:", data);
+            onSubmit(data);
+          })(e);
         }
       }}>
         <Card>

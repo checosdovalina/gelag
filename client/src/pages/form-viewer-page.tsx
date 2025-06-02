@@ -94,6 +94,11 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
   });
 
   const handleSubmit = async (data: any) => {
+    console.log('[DEBUG] FormViewerPage - handleSubmit iniciado');
+    console.log('[DEBUG] Datos del formulario:', data);
+    console.log('[DEBUG] Template ID:', templateId);
+    console.log('[DEBUG] Es nuevo:', isNew);
+    
     setIsSubmitting(true);
     try {
       await saveMutation.mutateAsync(data);
