@@ -1099,8 +1099,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Eliminar entrada de formulario (sólo SuperAdmin)
-  app.delete("/api/form-entries/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+  // Eliminar entrada de formulario (SuperAdmin, Admin, y Gerentes)
+  app.delete("/api/form-entries/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
