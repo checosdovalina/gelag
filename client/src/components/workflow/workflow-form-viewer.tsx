@@ -166,11 +166,22 @@ export default function WorkflowFormViewer({
         // Determinar a qué módulo pertenece el campo basado en workflowStage o backgroundColor
         let module = 'operation'; // por defecto
         
-        if (field.workflowStage === 'init' || field.backgroundColor === 'pink') {
+        if (field.workflowStage === 'init' || 
+            field.backgroundColor === 'pink' || 
+            field.backgroundColor === '#FF69B4' || 
+            field.backgroundColor === '#FFC0CB') {
           module = 'init';
-        } else if (field.workflowStage === 'quality' || field.backgroundColor === 'green') {
+        } else if (field.workflowStage === 'quality' || 
+                   field.backgroundColor === 'green' || 
+                   field.backgroundColor === '#00FF00' || 
+                   field.backgroundColor === '#90EE90') {
           module = 'quality';
-        } else if (field.workflowStage === 'operation' || field.backgroundColor === 'yellow') {
+        } else if (field.workflowStage === 'operation' || 
+                   field.backgroundColor === 'yellow' || 
+                   field.backgroundColor === '#FFFF00' || 
+                   field.backgroundColor === '#FFD700' ||
+                   field.backgroundColor === '#FFFF99' ||
+                   field.backgroundColor === '#FFA500') {
           module = 'operation';
         }
         
