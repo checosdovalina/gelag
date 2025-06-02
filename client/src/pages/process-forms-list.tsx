@@ -270,10 +270,12 @@ function DulcesFormsList() {
             Formulario especializado para el proceso de producción de dulces con secciones por roles.
           </CardDescription>
         </div>
-        <Button onClick={handleCreateDulces}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Formulario Dulces
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleCreateDulces}>
+            <Plus className="mr-2 h-4 w-4" />
+            Capturar Datos
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {dulcesEntries.length === 0 ? (
