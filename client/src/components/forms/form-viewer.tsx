@@ -1022,7 +1022,6 @@ export default function FormViewer({
               <FormItem>
                 <FormLabel>
                   {field.label} {field.required && <span className="text-red-500">*</span>}
-                  {showAutoAssignedText && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
                 </FormLabel>
                 <FormControl>
                   <Input
