@@ -8,8 +8,8 @@ import path from 'path';
 function generatePRPR02Content(doc: any, entry: FormEntry): void {
   const data = entry.data as any;
   
-  // Información General
-  doc.fontSize(14).font('Helvetica-Bold').fillColor('#E91E63')
+  // Información General - sin colores
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000')
     .text('INFORMACIÓN GENERAL', 50, doc.y, { 
       align: 'center',
       width: doc.page.width - 100
@@ -50,9 +50,9 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
   doc.y = currentY + 80;
   doc.moveDown(1);
   
-  // Tabla de Materia Prima
+  // Tabla de Materia Prima - sin colores
   if (data.mp_table && Array.isArray(data.mp_table)) {
-    doc.fontSize(12).font('Helvetica-Bold').fillColor('#FF9800')
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
       .text('MATERIA PRIMA', 50, doc.y, { 
         align: 'center',
         width: doc.page.width - 100
@@ -66,7 +66,7 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     const headers = ['MP', 'Kilos', 'Paq', 'Lote', 'Merma'];
     let currentX = 50;
     
-    doc.fontSize(9).font('Helvetica-Bold');
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
     headers.forEach((header, i) => {
       doc.rect(currentX, tableY, colWidths[i], 20).stroke();
       doc.text(header, currentX + 5, tableY + 5, { width: colWidths[i] - 10 });
@@ -78,7 +78,7 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
       const rowY = tableY + 20 + (rowIndex * 20);
       currentX = 50;
       
-      doc.font('Helvetica');
+      doc.font('Helvetica').fillColor('#000000');
       const values = [row.mp || '', row.kilos || '', row.paq || '', row.lote || '', row.merma || ''];
       
       values.forEach((value, i) => {
@@ -91,10 +91,59 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     doc.y = tableY + 20 + (8 * 20) + 10;
   }
   
-  // Agregar otras secciones si hay espacio
+  // Tablas adicionales si hay espacio
+  if (doc.y < 600) {
+    // Tabla de Muestreo
+    if (data.muestreo_table && Array.isArray(data.muestreo_table) && data.muestreo_table.length > 0) {
+      doc.moveDown(1);
+      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+        .text('MUESTREO', 50, doc.y, { 
+          align: 'center',
+          width: doc.page.width - 100
+        });
+      
+      doc.moveDown(0.5);
+      
+      // Encabezados de muestreo
+      const muestreoTableY = doc.y;
+      const muestreoColWidths = [80, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
+      const muestreoHeaders = ['Hora', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15', 'h16', 'h17'];
+      let muestreoX = 50;
+      
+      doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
+      muestreoHeaders.forEach((header, i) => {
+        doc.rect(muestreoX, muestreoTableY, muestreoColWidths[i], 15).stroke();
+        doc.text(header, muestreoX + 2, muestreoTableY + 3, { width: muestreoColWidths[i] - 4 });
+        muestreoX += muestreoColWidths[i];
+      });
+      
+      // Datos de muestreo (máximo 3 filas)
+      data.muestreo_table.slice(0, 3).forEach((row: any, rowIndex: number) => {
+        const muestreoRowY = muestreoTableY + 15 + (rowIndex * 15);
+        muestreoX = 50;
+        
+        doc.font('Helvetica').fontSize(8).fillColor('#000000');
+        const muestreoValues = [
+          row.hora || '',
+          row.h8 || '', row.h9 || '', row.h10 || '', row.h11 || '', row.h12 || '',
+          row.h13 || '', row.h14 || '', row.h15 || '', row.h16 || '', row.h17 || ''
+        ];
+        
+        muestreoValues.forEach((value, i) => {
+          doc.rect(muestreoX, muestreoRowY, muestreoColWidths[i], 15).stroke();
+          doc.text(value, muestreoX + 2, muestreoRowY + 3, { width: muestreoColWidths[i] - 4 });
+          muestreoX += muestreoColWidths[i];
+        });
+      });
+      
+      doc.y = muestreoTableY + 15 + (Math.min(data.muestreo_table.length, 3) * 15) + 10;
+    }
+  }
+  
+  // Folio de Liberación y Total Producto Terminado
   if (data.folio_liberacion || data.total_prod_terminado) {
     doc.moveDown(1);
-    doc.fontSize(10).font('Helvetica-Bold');
+    doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000');
     
     if (data.folio_liberacion) {
       doc.text('Folio de Liberación:', leftCol, doc.y);
