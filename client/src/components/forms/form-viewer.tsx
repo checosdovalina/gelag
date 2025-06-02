@@ -874,72 +874,6 @@ export default function FormViewer({
     );
   };
   
-  const renderPresentacionField = (field: IFormField) => {
-    // Consultar presentaciones
-    const { data: presentaciones = [], isLoading: presentacionesLoading } = useQuery({
-      queryKey: ['/api/presentaciones'],
-      queryFn: async () => {
-        const response = await fetch('/api/presentaciones');
-        if (!response.ok) {
-          throw new Error('No se pudo cargar la lista de presentaciones');
-        }
-        return response.json();
-      }
-    });
-
-    return (
-      <FormField
-        key={field.id}
-        control={form.control}
-        name={field.id}
-        render={({ field: formField }) => (
-          <FormItem>
-            <FormLabel>
-              {field.label} {field.required && <span className="text-red-500">*</span>}
-            </FormLabel>
-            <Select
-              value={formField.value ? formField.value.toString() : ""}
-              onValueChange={(value) => {
-                formField.onChange(value);
-              }}
-              disabled={isReadOnly}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar presentación" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {presentacionesLoading ? (
-                  <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                ) : presentaciones.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    No hay presentaciones disponibles
-                  </div>
-                ) : (
-                  presentaciones.map((presentacion: any) => (
-                    <SelectItem key={presentacion.id} value={presentacion.nombre}>
-                      <div className="flex items-center">
-                        <Package className="h-4 w-4 mr-2 text-muted-foreground" />
-                        {presentacion.nombre}
-                      </div>
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            <FormDescription>
-              {formField.value && `Presentación seleccionada: ${formField.value}`}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    );
-  };
-
   const renderProductField = (field: IFormField) => {
     // Verificar si este campo tiene la característica "autocompletable" para recetas
     const hasRecipeAutocomplete = field.features?.includes('recipeAutocomplete');
@@ -1061,9 +995,6 @@ export default function FormViewer({
         
       case "product":
         return renderProductField(field);
-        
-      case "presentacionSelect":
-        return renderPresentacionField(field);
         
       case "advancedTable":
         return renderAdvancedTableField(field);

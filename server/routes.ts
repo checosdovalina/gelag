@@ -2213,21 +2213,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Presentaciones endpoint
-  app.get("/api/presentaciones", async (req, res) => {
-    try {
-      const result = await db.execute(sql`
-        SELECT id, nombre, peso FROM presentaciones ORDER BY nombre
-      `);
-      res.json(result.rows);
-    } catch (error) {
-      console.error("Error al obtener presentaciones:", error);
-      res.status(500).json({
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  });
-
   // Production Forms endpoints
   app.get("/api/production-forms", getProductionForms);
   app.get("/api/production-forms/:id", getProductionFormById);
