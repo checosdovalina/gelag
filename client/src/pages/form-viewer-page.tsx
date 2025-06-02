@@ -110,6 +110,8 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
     console.log('[DEBUG] Datos del formulario:', data);
     console.log('[DEBUG] Template ID:', templateId);
     console.log('[DEBUG] Es nuevo:', isNew);
+    console.log('[DEBUG] existingEntry cargada:', existingEntry);
+    console.log('[DEBUG] formTemplate cargado:', formTemplate);
     
     setIsSubmitting(true);
     try {
