@@ -1078,26 +1078,19 @@ export default function FormViewer({
                       placeholder={field.placeholder || ""}
                       {...formField}
                       value={formField.value || ""}
-                      disabled={isReadOnly || isNumericFolio}
-                      className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
+                      disabled={isReadOnly}
                     />
                   ) : (
                     <Input
-                      type="number"
-                      placeholder={field.placeholder || ""}
+                      type="text"
+                      placeholder={field.placeholder || "Ingresa el folio manualmente"}
                       {...formField}
-                      value={formField.value === undefined ? "" : formField.value}
-                      onChange={e => formField.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                      disabled={isReadOnly || isNumericFolio}
-                      className={isNumericFolio ? "bg-blue-50 font-medium" : ""}
+                      value={formField.value || ""}
+                      disabled={isReadOnly}
                     />
                   )}
                 </FormControl>
-                {isNumericFolio && !isReadOnly && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    El número de folio se asigna automáticamente y es único para este tipo de formulario.
-                  </p>
-                )}
+
                 <FormMessage />
               </FormItem>
             )}
