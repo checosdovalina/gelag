@@ -26,11 +26,32 @@ interface WorkflowFormViewerProps {
   isLoading?: boolean;
 }
 
-const workflowStages = {
-  init: { label: "Iniciación", color: "bg-pink-100 text-pink-800", description: "Gerente de Producción inicia el formulario" },
-  operation: { label: "Operación", color: "bg-yellow-100 text-yellow-800", description: "Operadores completan durante turnos" },
-  quality: { label: "Calidad", color: "bg-green-100 text-green-800", description: "Gerente de Calidad finaliza proceso" },
-  completed: { label: "Completado", color: "bg-blue-100 text-blue-800", description: "Proceso terminado" }
+// Definición de módulos/pestañas por color y rol
+const workflowModules = {
+  init: { 
+    label: "Iniciación", 
+    color: "bg-pink-100 text-pink-800 border-pink-200", 
+    description: "Gerente de Producción inicia el formulario",
+    icon: Settings,
+    allowedRoles: ["superadmin", "gerente_produccion"],
+    tabColor: "data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700"
+  },
+  operation: { 
+    label: "Operación", 
+    color: "bg-yellow-100 text-yellow-800 border-yellow-200", 
+    description: "Operadores completan durante turnos",
+    icon: Wrench,
+    allowedRoles: ["superadmin", "produccion", "gerente_produccion"],
+    tabColor: "data-[state=active]:bg-yellow-50 data-[state=active]:text-yellow-700"
+  },
+  quality: { 
+    label: "Calidad", 
+    color: "bg-green-100 text-green-800 border-green-200", 
+    description: "Gerente de Calidad finaliza proceso",
+    icon: CheckSquare,
+    allowedRoles: ["superadmin", "gerente_calidad", "calidad"],
+    tabColor: "data-[state=active]:bg-green-50 data-[state=active]:text-green-700"
+  }
 };
 
 // Permisos por rol para cada etapa del flujo
@@ -101,7 +122,7 @@ export default function WorkflowFormViewer({
     onSuccess: (data) => {
       toast({
         title: "Etapa actualizada",
-        description: `El formulario ha avanzado a la etapa: ${workflowStages[data.workflowStage as keyof typeof workflowStages]?.label}`
+        description: `El formulario ha avanzado a la etapa: ${workflowModules[data.workflowStage as keyof typeof workflowModules]?.label}`
       });
       setCurrentStage(data.workflowStage);
     },
@@ -130,27 +151,46 @@ export default function WorkflowFormViewer({
     }
   };
 
-  // Filtrar campos según el rol y la etapa actual
-  const getFieldsForCurrentUser = () => {
-    if (!formTemplate.sections) return [];
+  // Organizar campos por módulo/pestaña
+  const getFieldsByModule = () => {
+    if (!formTemplate.sections) return {};
     
-    return formTemplate.sections.map((section: any) => ({
-      ...section,
-      fields: section.fields.filter((field: any) => {
-        // Lógica de filtrado según el workflow stage y rol del usuario
-        if (currentStage === 'init') {
-          // En etapa de iniciación, solo campos rosa para gerentes de producción
-          return field.workflowStage === 'init' || !field.workflowStage;
-        } else if (currentStage === 'operation') {
-          // En etapa de operación, campos amarillos para operadores
-          return field.workflowStage === 'operation' || field.workflowStage === 'init';
-        } else if (currentStage === 'quality') {
-          // En etapa de calidad, todos los campos para revisión
-          return true;
+    const moduleFields: { [key: string]: any[] } = {
+      init: [],
+      operation: [],
+      quality: []
+    };
+    
+    formTemplate.sections.forEach((section: any) => {
+      section.fields?.forEach((field: any) => {
+        // Determinar a qué módulo pertenece el campo basado en workflowStage o backgroundColor
+        let module = 'operation'; // por defecto
+        
+        if (field.workflowStage === 'init' || field.backgroundColor === 'pink') {
+          module = 'init';
+        } else if (field.workflowStage === 'quality' || field.backgroundColor === 'green') {
+          module = 'quality';
+        } else if (field.workflowStage === 'operation' || field.backgroundColor === 'yellow') {
+          module = 'operation';
         }
-        return true;
-      })
-    }));
+        
+        moduleFields[module].push({
+          ...field,
+          sectionTitle: section.title || 'Sin título'
+        });
+      });
+    });
+    
+    return moduleFields;
+  };
+
+  // Obtener pestañas disponibles para el usuario actual
+  const getAvailableTabs = () => {
+    if (!user) return [];
+    
+    return Object.entries(workflowModules).filter(([moduleKey, moduleConfig]) => {
+      return moduleConfig.allowedRoles.includes(user.role);
+    });
   };
 
   // Obtener campos de folio para gestión
@@ -220,7 +260,7 @@ export default function WorkflowFormViewer({
             <AlertDescription>
               <div className="space-y-2">
                 <p>No tienes permisos para acceder a la etapa actual del flujo de trabajo.</p>
-                <p><strong>Etapa actual:</strong> {workflowStages[currentStage as keyof typeof workflowStages]?.label}</p>
+                <p><strong>Etapa actual:</strong> {workflowModules[currentStage as keyof typeof workflowModules]?.label}</p>
                 <p><strong>Tu rol:</strong> <Badge variant="outline">{user?.role}</Badge></p>
                 <p><strong>Roles permitidos:</strong> {stagePermissions[currentStage as keyof typeof stagePermissions]?.join(', ')}</p>
               </div>
@@ -231,12 +271,15 @@ export default function WorkflowFormViewer({
     );
   }
 
-  const filteredTemplate = {
-    ...formTemplate,
-    sections: getFieldsForCurrentUser()
-  };
-
+  const moduleFields = getFieldsByModule();
+  const availableTabs = getAvailableTabs();
   const folioFields = getFolioFields();
+
+  // Estado para la pestaña activa
+  const [activeTab, setActiveTab] = useState(() => {
+    // Seleccionar la primera pestaña disponible para el usuario
+    return availableTabs.length > 0 ? availableTabs[0][0] : 'init';
+  });
 
   return (
     <div className="space-y-6">
@@ -245,15 +288,15 @@ export default function WorkflowFormViewer({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Estado del Flujo de Trabajo</span>
-            <Badge className={workflowStages[currentStage as keyof typeof workflowStages]?.color}>
-              {workflowStages[currentStage as keyof typeof workflowStages]?.label}
+            <Badge className={workflowModules[currentStage as keyof typeof workflowModules]?.color}>
+              {workflowModules[currentStage as keyof typeof workflowModules]?.label}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {workflowStages[currentStage as keyof typeof workflowStages]?.description}
+              {workflowModules[currentStage as keyof typeof workflowModules]?.description}
             </p>
             
             {currentStage !== 'completed' && canAccessCurrentStage() && (
@@ -279,16 +322,83 @@ export default function WorkflowFormViewer({
         />
       )}
 
-      {/* Formulario con campos filtrados */}
-      <FormViewer
-        formTemplate={filteredTemplate}
-        formTitle={formTitle}
-        formDescription={formDescription}
-        initialData={initialData}
-        onSubmit={onSubmit}
-        isLoading={isLoading}
-        isReadOnly={false}
-      />
+      {/* Formulario organizado en pestañas por módulos */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{formTitle}</CardTitle>
+          {formDescription && (
+            <p className="text-sm text-muted-foreground">{formDescription}</p>
+          )}
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              {availableTabs.map(([moduleKey, moduleConfig]) => {
+                const Icon = moduleConfig.icon;
+                const fieldCount = moduleFields[moduleKey]?.length || 0;
+                
+                return (
+                  <TabsTrigger
+                    key={moduleKey}
+                    value={moduleKey}
+                    className={`flex items-center space-x-2 ${moduleConfig.tabColor}`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{moduleConfig.label}</span>
+                    <Badge variant="secondary" className="ml-2">
+                      {fieldCount}
+                    </Badge>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            {availableTabs.map(([moduleKey, moduleConfig]) => {
+              const fieldsForModule = moduleFields[moduleKey] || [];
+              
+              if (fieldsForModule.length === 0) {
+                return (
+                  <TabsContent key={moduleKey} value={moduleKey} className="mt-6">
+                    <div className="text-center py-8 text-muted-foreground">
+                      <moduleConfig.icon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No hay campos disponibles en este módulo</p>
+                    </div>
+                  </TabsContent>
+                );
+              }
+
+              // Crear un template temporal solo con los campos del módulo actual
+              const moduleTemplate = {
+                ...formTemplate,
+                sections: [{
+                  title: `Campos del Módulo ${moduleConfig.label}`,
+                  fields: fieldsForModule
+                }]
+              };
+
+              return (
+                <TabsContent key={moduleKey} value={moduleKey} className="mt-6">
+                  <div className={`p-4 rounded-lg border-2 ${moduleConfig.color.replace('text-', 'border-').replace('-800', '-200')}`}>
+                    <div className="flex items-center space-x-2 mb-4">
+                      <moduleConfig.icon className="h-5 w-5" />
+                      <h3 className="font-medium">{moduleConfig.description}</h3>
+                    </div>
+                    
+                    <FormViewer
+                      formTemplate={moduleTemplate}
+                      formTitle=""
+                      initialData={initialData}
+                      onSubmit={onSubmit}
+                      isLoading={isLoading}
+                      isReadOnly={false}
+                    />
+                  </div>
+                </TabsContent>
+              );
+            })}
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
