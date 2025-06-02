@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useProductionForms } from "@/hooks/use-production-form";
+import { useQuery } from "@tanstack/react-query";
 import SidebarLayout from "@/components/layout/sidebar-layout";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -104,22 +106,29 @@ export default function ProcessFormsList() {
   
   return (
     <SidebarLayout title="Formularios de Proceso">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Formularios de Producción</CardTitle>
-            <CardDescription>
-              Gestione formularios de producción con diferentes secciones para cada rol de usuario.
-            </CardDescription>
-          </div>
-          {canCreateForms && (
-            <Button onClick={handleCreate}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo Formulario
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
+      <Tabs defaultValue="production" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="production">Formularios de Producción</TabsTrigger>
+          <TabsTrigger value="dulces">Ficha Técnica Dulces</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="production">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Formularios de Producción</CardTitle>
+                <CardDescription>
+                  Gestione formularios de producción con diferentes secciones para cada rol de usuario.
+                </CardDescription>
+              </div>
+              {canCreateForms && (
+                <Button onClick={handleCreate}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nuevo Formulario
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -192,8 +201,134 @@ export default function ProcessFormsList() {
               </Table>
             </div>
           )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="dulces">
+          <DulcesFormsList />
+        </TabsContent>
+      </Tabs>
+    </SidebarLayout>
+  );
+}
+
+// Componente para la pestaña de Ficha Técnica Dulces
+function DulcesFormsList() {
+  const [_, navigate] = useLocation();
+  const { user } = useAuth();
+
+  // Cargar el template de dulces
+  const { data: dulcesTemplate, isLoading } = useQuery({
+    queryKey: ['/api/form-templates/19'], // ID del formulario PR-PR-02
+    queryFn: async () => {
+      const response = await fetch('/api/form-templates/19');
+      if (!response.ok) {
+        throw new Error('Error al cargar template');
+      }
+      return response.json();
+    }
+  });
+
+  // Cargar entradas del formulario de dulces
+  const { data: dulcesEntries = [], isLoading: entriesLoading } = useQuery({
+    queryKey: ['/api/form-entries', 'dulces'],
+    queryFn: async () => {
+      const response = await fetch('/api/form-entries?templateId=19');
+      if (!response.ok) {
+        throw new Error('Error al cargar entradas');
+      }
+      const data = await response.json();
+      return data.entries || [];
+    }
+  });
+
+  const handleCreateDulces = () => {
+    navigate('/form-viewer/new/19');
+  };
+
+  const handleEditDulces = (entryId: number) => {
+    navigate(`/form-viewer/${entryId}`);
+  };
+
+  if (isLoading || entriesLoading) {
+    return (
+      <Card>
+        <CardContent className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </CardContent>
       </Card>
-    </SidebarLayout>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>PR-PR-02 Ficha técnica producción de dulces</CardTitle>
+          <CardDescription>
+            Formulario especializado para el proceso de producción de dulces con secciones por roles.
+          </CardDescription>
+        </div>
+        <Button onClick={handleCreateDulces}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nuevo Formulario Dulces
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {dulcesEntries.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <p className="mb-4 text-muted-foreground">
+              No hay formularios de dulces disponibles.
+            </p>
+            <Button variant="outline" onClick={handleCreateDulces}>
+              <Plus className="mr-2 h-4 w-4" />
+              Crear primer formulario
+            </Button>
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Folio</TableHead>
+                  <TableHead>Proceso</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Responsable</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {dulcesEntries.map((entry: any) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="font-medium">
+                      {entry.data?.folio || `PR-02-${String(entry.id).padStart(3, '0')}`}
+                    </TableCell>
+                    <TableCell>{entry.data?.proceso || 'Dulces'}</TableCell>
+                    <TableCell>{entry.data?.fecha || new Date(entry.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{entry.data?.responsable || entry.createdBy}</TableCell>
+                    <TableCell>
+                      <Badge variant={entry.workflowStatus === 'COMPLETED' ? 'default' : 'secondary'}>
+                        {entry.workflowStatus || 'DRAFT'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleEditDulces(entry.id)}
+                      >
+                        <FileEdit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
