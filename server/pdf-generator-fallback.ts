@@ -91,53 +91,133 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     doc.y = tableY + 20 + (8 * 20) + 10;
   }
   
-  // Tablas adicionales si hay espacio
-  if (doc.y < 600) {
-    // Tabla de Muestreo
-    if (data.muestreo_table && Array.isArray(data.muestreo_table) && data.muestreo_table.length > 0) {
-      doc.moveDown(1);
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
-        .text('MUESTREO', 50, doc.y, { 
-          align: 'center',
-          width: doc.page.width - 100
-        });
+  // Tabla de Muestreo
+  if (data.muestreo_table && Array.isArray(data.muestreo_table) && data.muestreo_table.length > 0) {
+    doc.moveDown(1);
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+      .text('MUESTREO', 50, doc.y, { 
+        align: 'center',
+        width: doc.page.width - 100
+      });
+    
+    doc.moveDown(0.5);
+    
+    // Encabezados de muestreo
+    const muestreoTableY = doc.y;
+    const muestreoColWidths = [80, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
+    const muestreoHeaders = ['Hora', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15', 'h16', 'h17'];
+    let muestreoX = 50;
+    
+    doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
+    muestreoHeaders.forEach((header, i) => {
+      doc.rect(muestreoX, muestreoTableY, muestreoColWidths[i], 15).stroke();
+      doc.text(header, muestreoX + 2, muestreoTableY + 3, { width: muestreoColWidths[i] - 4 });
+      muestreoX += muestreoColWidths[i];
+    });
+    
+    // Datos de muestreo (máximo 3 filas)
+    data.muestreo_table.slice(0, 3).forEach((row: any, rowIndex: number) => {
+      const muestreoRowY = muestreoTableY + 15 + (rowIndex * 15);
+      muestreoX = 50;
       
-      doc.moveDown(0.5);
+      doc.font('Helvetica').fontSize(8).fillColor('#000000');
+      const muestreoValues = [
+        row.hora || '',
+        row.h8 || '', row.h9 || '', row.h10 || '', row.h11 || '', row.h12 || '',
+        row.h13 || '', row.h14 || '', row.h15 || '', row.h16 || '', row.h17 || ''
+      ];
       
-      // Encabezados de muestreo
-      const muestreoTableY = doc.y;
-      const muestreoColWidths = [80, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
-      const muestreoHeaders = ['Hora', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15', 'h16', 'h17'];
-      let muestreoX = 50;
-      
-      doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
-      muestreoHeaders.forEach((header, i) => {
-        doc.rect(muestreoX, muestreoTableY, muestreoColWidths[i], 15).stroke();
-        doc.text(header, muestreoX + 2, muestreoTableY + 3, { width: muestreoColWidths[i] - 4 });
+      muestreoValues.forEach((value, i) => {
+        doc.rect(muestreoX, muestreoRowY, muestreoColWidths[i], 15).stroke();
+        doc.text(value, muestreoX + 2, muestreoRowY + 3, { width: muestreoColWidths[i] - 4 });
         muestreoX += muestreoColWidths[i];
       });
-      
-      // Datos de muestreo (máximo 3 filas)
-      data.muestreo_table.slice(0, 3).forEach((row: any, rowIndex: number) => {
-        const muestreoRowY = muestreoTableY + 15 + (rowIndex * 15);
-        muestreoX = 50;
-        
-        doc.font('Helvetica').fontSize(8).fillColor('#000000');
-        const muestreoValues = [
-          row.hora || '',
-          row.h8 || '', row.h9 || '', row.h10 || '', row.h11 || '', row.h12 || '',
-          row.h13 || '', row.h14 || '', row.h15 || '', row.h16 || '', row.h17 || ''
-        ];
-        
-        muestreoValues.forEach((value, i) => {
-          doc.rect(muestreoX, muestreoRowY, muestreoColWidths[i], 15).stroke();
-          doc.text(value, muestreoX + 2, muestreoRowY + 3, { width: muestreoColWidths[i] - 4 });
-          muestreoX += muestreoColWidths[i];
-        });
+    });
+    
+    doc.y = muestreoTableY + 15 + (Math.min(data.muestreo_table.length, 3) * 15) + 10;
+  }
+  
+  // Tabla de Revisión
+  if (data.revision_table && Array.isArray(data.revision_table) && data.revision_table.length > 0) {
+    doc.moveDown(1);
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+      .text('REVISIÓN', 50, doc.y, { 
+        align: 'center',
+        width: doc.page.width - 100
       });
+    
+    doc.moveDown(0.5);
+    
+    // Encabezados de revisión
+    const revisionTableY = doc.y;
+    const revisionColWidths = [80, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
+    const revisionHeaders = ['Hora', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15', 'h16', 'h17'];
+    let revisionX = 50;
+    
+    doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
+    revisionHeaders.forEach((header, i) => {
+      doc.rect(revisionX, revisionTableY, revisionColWidths[i], 15).stroke();
+      doc.text(header, revisionX + 2, revisionTableY + 3, { width: revisionColWidths[i] - 4 });
+      revisionX += revisionColWidths[i];
+    });
+    
+    // Datos de revisión (máximo 6 filas)
+    data.revision_table.slice(0, 6).forEach((row: any, rowIndex: number) => {
+      const revisionRowY = revisionTableY + 15 + (rowIndex * 15);
+      revisionX = 50;
       
-      doc.y = muestreoTableY + 15 + (Math.min(data.muestreo_table.length, 3) * 15) + 10;
-    }
+      doc.font('Helvetica').fontSize(8).fillColor('#000000');
+      const revisionValues = [
+        row.hora || '',
+        row.h8 || '', row.h9 || '', row.h10 || '', row.h11 || '', row.h12 || '',
+        row.h13 || '', row.h14 || '', row.h15 || '', row.h16 || '', row.h17 || ''
+      ];
+      
+      revisionValues.forEach((value, i) => {
+        doc.rect(revisionX, revisionRowY, revisionColWidths[i], 15).stroke();
+        doc.text(value, revisionX + 2, revisionRowY + 3, { width: revisionColWidths[i] - 4 });
+        revisionX += revisionColWidths[i];
+      });
+    });
+    
+    doc.y = revisionTableY + 15 + (Math.min(data.revision_table.length, 6) * 15) + 10;
+  }
+  
+  // Material de Empaque
+  if (data.empaque_table && Array.isArray(data.empaque_table) && data.empaque_table.length > 0) {
+    doc.moveDown(1);
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+      .text('MATERIAL DE EMPAQUE', 50, doc.y, { 
+        align: 'center',
+        width: doc.page.width - 100
+      });
+    
+    doc.moveDown(0.5);
+    
+    // Tabla simple para material de empaque
+    const empaqueTableY = doc.y;
+    const empaqueColWidths = [150, 150, 150];
+    const empaqueHeaders = ['Material', 'Cantidad', 'Observaciones'];
+    let empaqueX = 50;
+    
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
+    empaqueHeaders.forEach((header, i) => {
+      doc.rect(empaqueX, empaqueTableY, empaqueColWidths[i], 20).stroke();
+      doc.text(header, empaqueX + 5, empaqueTableY + 5, { width: empaqueColWidths[i] - 10 });
+      empaqueX += empaqueColWidths[i];
+    });
+    
+    doc.y = empaqueTableY + 20 + 10;
+  }
+  
+  // Observaciones
+  if (data.observaciones) {
+    doc.moveDown(1);
+    doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000');
+    doc.text('Observaciones:', leftCol, doc.y);
+    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(9);
+    doc.text(data.observaciones, leftCol, doc.y, { width: doc.page.width - 100 });
   }
   
   // Folio de Liberación y Total Producto Terminado
