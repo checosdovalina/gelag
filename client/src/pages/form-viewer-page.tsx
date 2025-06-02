@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import SidebarLayout from "@/components/layout/sidebar-layout";
 import FormViewer from "@/components/forms/form-viewer";
+import WorkflowFormViewer from "@/components/workflow/workflow-form-viewer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, ArrowLeft } from "lucide-react";
@@ -192,16 +193,33 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
           </div>
         </div>
 
-        <FormViewer
-          formTemplate={formTemplate.structure}
-          formTitle={formTemplate.name}
-          formDescription={formTemplate.description}
-          initialData={existingEntry?.data || {}}
-          onSubmit={handleSubmit}
-          onExport={!isNew ? handleExport : undefined}
-          isLoading={isSubmitting || saveMutation.isPending}
-          isReadOnly={false}
-        />
+        {/* Usar WorkflowFormViewer para formularios con flujo de trabajo habilitado */}
+        {formTemplate.structure.workflowEnabled ? (
+          <WorkflowFormViewer
+            formTemplate={formTemplate.structure}
+            formTitle={formTemplate.name}
+            formDescription={formTemplate.description}
+            initialData={{
+              ...existingEntry?.data || {},
+              workflowStage: existingEntry?.workflowStage || 'init',
+              stageCompletedAt: existingEntry?.stageCompletedAt || {}
+            }}
+            entryId={!isNew ? parseInt(entryId!) : undefined}
+            onSubmit={handleSubmit}
+            isLoading={isSubmitting || saveMutation.isPending}
+          />
+        ) : (
+          <FormViewer
+            formTemplate={formTemplate.structure}
+            formTitle={formTemplate.name}
+            formDescription={formTemplate.description}
+            initialData={existingEntry?.data || {}}
+            onSubmit={handleSubmit}
+            onExport={!isNew ? handleExport : undefined}
+            isLoading={isSubmitting || saveMutation.isPending}
+            isReadOnly={false}
+          />
+        )}
       </div>
     </SidebarLayout>
   );

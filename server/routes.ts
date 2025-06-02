@@ -39,6 +39,87 @@ interface PermissionCheckResult {
   reason?: string;
 }
 
+interface TimeAccessResult {
+  allowed: boolean;
+  reason?: string;
+  allowedHours?: string;
+}
+
+/**
+ * Verifica si un rol puede acceder al sistema según la hora actual
+ * @param userRole Rol del usuario
+ * @returns Resultado con permiso y detalles de horarios
+ */
+function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentDay = now.getDay(); // 0 = domingo, 1 = lunes, etc.
+  
+  // Horarios de trabajo por rol
+  const roleSchedules = {
+    [UserRole.SUPERADMIN]: {
+      allowed: true, // Acceso 24/7
+      description: "Acceso completo"
+    },
+    [UserRole.PRODUCTION_MANAGER]: {
+      hours: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], // 6:00 AM - 6:00 PM
+      workDays: [1, 2, 3, 4, 5, 6], // Lunes a sábado
+      description: "Lunes a sábado de 6:00 AM a 6:00 PM"
+    },
+    [UserRole.PRODUCTION]: {
+      hours: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], // 6:00 AM - 10:00 PM
+      workDays: [1, 2, 3, 4, 5, 6], // Lunes a sábado
+      description: "Lunes a sábado de 6:00 AM a 10:00 PM"
+    },
+    [UserRole.QUALITY_MANAGER]: {
+      hours: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], // 7:00 AM - 6:00 PM
+      workDays: [1, 2, 3, 4, 5, 6], // Lunes a sábado
+      description: "Lunes a sábado de 7:00 AM a 6:00 PM"
+    },
+    [UserRole.QUALITY]: {
+      hours: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], // 7:00 AM - 6:00 PM
+      workDays: [1, 2, 3, 4, 5, 6], // Lunes a sábado
+      description: "Lunes a sábado de 7:00 AM a 6:00 PM"
+    },
+    [UserRole.ADMIN]: {
+      allowed: true, // Acceso completo para administradores
+      description: "Acceso completo"
+    },
+    [UserRole.VIEWER]: {
+      hours: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17], // 8:00 AM - 5:00 PM
+      workDays: [1, 2, 3, 4, 5], // Lunes a viernes
+      description: "Lunes a viernes de 8:00 AM a 5:00 PM"
+    }
+  };
+
+  const schedule = roleSchedules[userRole];
+  
+  // Roles con acceso completo
+  if (schedule.allowed) {
+    return { allowed: true };
+  }
+
+  // Verificar día de la semana
+  if (schedule.workDays && !schedule.workDays.includes(currentDay)) {
+    return {
+      allowed: false,
+      reason: `Acceso restringido: fuera de días laborales`,
+      allowedHours: schedule.description
+    };
+  }
+
+  // Verificar hora del día
+  if (schedule.hours && !schedule.hours.includes(currentHour)) {
+    return {
+      allowed: false,
+      reason: `Acceso restringido: fuera del horario laboral (hora actual: ${currentHour}:00)`,
+      allowedHours: schedule.description
+    };
+  }
+
+  return { allowed: true };
+}
+
 /**
  * Verifica si un usuario puede actualizar un formulario según su estado en el flujo de trabajo
  * @param user Usuario que intenta realizar la actualización
@@ -1009,6 +1090,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Entrada de formulario eliminada correctamente" });
     } catch (error) {
       console.error("Error al eliminar entrada de formulario:", error);
+      next(error);
+    }
+  });
+
+  // Workflow stage transition route
+  app.patch("/api/form-entries/:id/workflow-stage", authorize(), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+
+      const { stage, completedAt } = req.body;
+      
+      // Verificar que la entrada existe
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada no encontrada" });
+      }
+
+      // Verificar permisos de acceso por horario y rol
+      const accessCheck = checkRoleTimeAccess(req.user.role);
+      if (!accessCheck.allowed) {
+        return res.status(403).json({ 
+          message: "Acceso restringido por horario",
+          details: accessCheck.reason,
+          allowedHours: accessCheck.allowedHours
+        });
+      }
+
+      // Actualizar la etapa del flujo de trabajo
+      const stageCompletedAt = entry.stageCompletedAt || {};
+      stageCompletedAt[stage] = completedAt;
+
+      const updatedEntry = await storage.updateFormEntry(entryId, {
+        workflowStage: stage,
+        stageCompletedAt,
+        lastUpdatedBy: req.user.id
+      });
+
+      res.json(updatedEntry);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Folio management routes
+  app.patch("/api/form-entries/:id/folio", authorize([UserRole.SUPERADMIN, UserRole.QUALITY_MANAGER, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      const { fieldId, folioValue } = req.body;
+
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada no encontrada" });
+      }
+
+      // Actualizar el campo de folio específico
+      const updatedData = { ...entry.data };
+      updatedData[fieldId] = folioValue;
+
+      const updatedEntry = await storage.updateFormEntry(entryId, {
+        data: updatedData,
+        lastUpdatedBy: req.user.id
+      });
+
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "folio_updated",
+        resourceType: "form_entry", 
+        resourceId: entryId,
+        details: { fieldId, oldValue: entry.data[fieldId], newValue: folioValue }
+      });
+
+      res.json(updatedEntry);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete("/api/form-entries/:id/folio/:fieldId", authorize([UserRole.SUPERADMIN, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      const { fieldId } = req.params;
+
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+
+      const entry = await storage.getFormEntry(entryId);
+      if (!entry) {
+        return res.status(404).json({ message: "Entrada no encontrada" });
+      }
+
+      // Eliminar el campo de folio
+      const updatedData = { ...entry.data };
+      const oldValue = updatedData[fieldId];
+      delete updatedData[fieldId];
+
+      const updatedEntry = await storage.updateFormEntry(entryId, {
+        data: updatedData,
+        lastUpdatedBy: req.user.id
+      });
+
+      // Log activity
+      await storage.createActivityLog({
+        userId: req.user.id,
+        action: "folio_deleted",
+        resourceType: "form_entry",
+        resourceId: entryId,
+        details: { fieldId, deletedValue: oldValue }
+      });
+
+      res.json(updatedEntry);
+    } catch (error) {
       next(error);
     }
   });
