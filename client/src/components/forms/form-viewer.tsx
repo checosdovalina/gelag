@@ -1472,10 +1472,17 @@ export default function FormViewer({
           // Si no hay tablas avanzadas, proceder directamente
           console.log("[FormViewer] No hay tablas avanzadas, enviando formulario directamente...");
           console.log("[FormViewer] Datos del formulario antes del envío:", form.getValues());
-          form.handleSubmit((data) => {
-            console.log("[FormViewer] handleSubmit ejecutado con datos:", data);
-            onSubmit(data);
-          })(e);
+          
+          // Obtener los datos del formulario
+          const formData = form.getValues();
+          console.log("[FormViewer] Llamando onSubmit directamente con datos:", formData);
+          
+          // Llamar onSubmit directamente
+          try {
+            onSubmit(formData);
+          } catch (error) {
+            console.error("[FormViewer] Error al ejecutar onSubmit:", error);
+          }
         }
       }}>
         <Card>
