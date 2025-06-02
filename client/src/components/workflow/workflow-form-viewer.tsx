@@ -275,11 +275,14 @@ export default function WorkflowFormViewer({
   const availableTabs = getAvailableTabs();
   const folioFields = getFolioFields();
 
+  // Debug logs
+  console.log('[DEBUG] WorkflowFormViewer - moduleFields:', moduleFields);
+  console.log('[DEBUG] WorkflowFormViewer - availableTabs:', availableTabs);
+  console.log('[DEBUG] WorkflowFormViewer - user role:', user?.role);
+  console.log('[DEBUG] WorkflowFormViewer - formTemplate sections:', formTemplate?.sections);
+
   // Estado para la pestaña activa
-  const [activeTab, setActiveTab] = useState(() => {
-    // Seleccionar la primera pestaña disponible para el usuario
-    return availableTabs.length > 0 ? availableTabs[0][0] : 'init';
-  });
+  const [activeTab, setActiveTab] = useState('init');
 
   return (
     <div className="space-y-6">
