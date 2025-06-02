@@ -58,6 +58,8 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
         data: formData,
         createdBy: user?.username || 'unknown'
       };
+      
+      console.log('[DULCES-FORM] Enviando datos al servidor:', payload);
 
       const url = isNew ? '/api/form-entries' : `/api/form-entries/${entryId}`;
       const method = isNew ? 'POST' : 'PUT';
