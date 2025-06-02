@@ -2221,6 +2221,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/production-forms/:id/status", updateProductionFormStatus);
   app.delete("/api/production-forms/:id", deleteProductionForm);
 
+  // Export production form as PDF
+  app.get("/api/production-forms/:id/export", async (req, res, next) => {
+    try {
+      const formId = parseInt(req.params.id);
+      if (isNaN(formId)) {
+        return res.status(400).json({ message: "ID de formulario inválido" });
+      }
+
+      // Verificar autenticación
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
+      // Obtener el formulario de producción
+      const [form] = await db.select().from(productionForms).where(eq(productionForms.id, formId));
+      
+      if (!form) {
+        return res.status(404).json({ message: "Formulario de producción no encontrado" });
+      }
+
+      // Obtener información del usuario creador
+      const creator = await storage.getUser(form.createdBy);
+
+      // Generar PDF del formulario de producción
+      try {
+        const { generateProductionFormPDF } = await import('./pdf-generator-production');
+        
+        const pdfBuffer = await generateProductionFormPDF(form, creator);
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="formulario_produccion_${form.folio}.pdf"`);
+        res.send(pdfBuffer);
+      } catch (error) {
+        console.error("Error al generar PDF de producción:", error);
+        return res.status(500).json({ 
+          message: "Error al generar el PDF del formulario de producción", 
+          error: error instanceof Error ? error.message : String(error) 
+        });
+      }
+    } catch (error) {
+      console.error("Error en exportación de formulario de producción:", error);
+      next(error);
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
