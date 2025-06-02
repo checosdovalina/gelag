@@ -193,15 +193,8 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
           </div>
         </div>
 
-        {/* Debug information */}
-        <div style={{ background: '#f0f0f0', padding: '10px', marginBottom: '10px', fontSize: '12px' }}>
-          <p><strong>Debug Info:</strong></p>
-          <p>workflowEnabled: {String(formTemplate.structure.workflowEnabled)}</p>
-          <p>Using: {formTemplate.structure.workflowEnabled ? 'WorkflowFormViewer' : 'FormViewer'}</p>
-        </div>
-
-        {/* Usar WorkflowFormViewer para formularios con flujo de trabajo habilitado */}
-        {formTemplate.structure.workflowEnabled ? (
+        {/* Usar WorkflowFormViewer para el formulario PR-PR-02 (id 19) */}
+        {templateId === '19' ? (
           <WorkflowFormViewer
             formTemplate={formTemplate.structure}
             formTitle={formTemplate.name}
