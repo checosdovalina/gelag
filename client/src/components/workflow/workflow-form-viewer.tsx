@@ -81,6 +81,10 @@ export default function WorkflowFormViewer({
   const [currentStage, setCurrentStage] = useState(initialData.workflowStage || 'init');
   const [timeAccessStatus, setTimeAccessStatus] = useState<any>(null);
 
+  console.log('[DEBUG] WorkflowFormViewer - Renderizando componente');
+  console.log('[DEBUG] WorkflowFormViewer - user:', user);
+  console.log('[DEBUG] WorkflowFormViewer - formTemplate:', formTemplate);
+
   // Verificar acceso por horario
   const { data: accessCheck } = useQuery({
     queryKey: ['/api/user/time-access'],
