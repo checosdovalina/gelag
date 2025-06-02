@@ -35,8 +35,8 @@ export default function ProductRecipeSelector({
     }
   });
 
-  // Filtrar productos para mostrar solo "Producto Terminado" en formularios de microbiología
-  const products = field?.label?.includes('Producto') && window.location.pathname.includes('form-capture')
+  // Filtrar productos para mostrar solo "Producto Terminado" cuando el campo es de selección de productos
+  const products = field?.label?.includes('PRODUCTO') || field?.label?.includes('Producto')
     ? allProducts.filter(product => product.category === 'Producto Terminado')
     : allProducts;
 
