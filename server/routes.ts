@@ -124,25 +124,30 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
  * Genera folios automáticamente para campos especificados
  * @param formData Datos del formulario
  * @param templateStructure Estructura del template
+ * @param templateId ID del template para generar folios únicos
  * @returns Datos actualizados con folios generados
  */
-async function generateAutoFolios(formData: any, templateStructure: any): Promise<any> {
+async function generateAutoFolios(formData: any, templateStructure: any, templateId: number): Promise<any> {
   const updatedData = { ...formData };
+  
+  console.log(`[FOLIO-GEN] Iniciando generación de folios para template ${templateId}`);
   
   // Buscar campos que requieren folios automáticos
   for (const section of templateStructure.sections || []) {
     for (const field of section.fields || []) {
       if (field.autoGenerateFolio && field.folioPrefix && !updatedData[field.id]) {
         try {
-          // Generar el siguiente número de folio
-          const nextFolio = await storage.getNextFolioNumber(field.folioPrefix);
+          console.log(`[FOLIO-GEN] Generando folio para campo ${field.id} con prefijo ${field.folioPrefix}`);
+          
+          // Generar el siguiente número de folio usando el templateId
+          const nextFolio = await storage.getNextFolioNumber(templateId);
           const folioValue = `${field.folioPrefix}-${nextFolio.toString().padStart(4, '0')}`;
           
           updatedData[field.id] = folioValue;
           
-          console.log(`Folio auto-generado: ${field.id} = ${folioValue}`);
+          console.log(`[FOLIO-GEN] Folio auto-generado: ${field.id} = ${folioValue}`);
         } catch (error) {
-          console.error(`Error generando folio para ${field.id}:`, error);
+          console.error(`[FOLIO-GEN] Error generando folio para ${field.id}:`, error);
           // Continuar sin generar folio si hay error
         }
       }
@@ -1056,7 +1061,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generar folios automáticamente si es necesario
       const processedData = await generateAutoFolios(
         typeof data === 'string' ? JSON.parse(data) : data, 
-        template.structure
+        template.structure,
+        parseInt(formTemplateId)
       );
 
       // Preparar datos para inserción
