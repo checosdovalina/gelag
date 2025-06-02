@@ -202,6 +202,14 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
               {"hora": "°T", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""},
               {"hora": "Muestreo", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""},
               {"hora": "Merma", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""}
+            ],
+            revision_table: [
+              {"aspecto": "Empaque", "cumple": "", "observaciones": ""},
+              {"aspecto": "Etiquetado", "cumple": "", "observaciones": ""},
+              {"aspecto": "Sellado", "cumple": "", "observaciones": ""},
+              {"aspecto": "Sin chorrear", "cumple": "", "observaciones": ""},
+              {"aspecto": "Loteado", "cumple": "", "observaciones": ""},
+              {"aspecto": "Peso promedio 9 a 11 g", "cumple": "", "observaciones": ""}
             ]
           }}
           onSubmit={handleSubmit}
