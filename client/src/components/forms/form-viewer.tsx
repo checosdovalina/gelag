@@ -1509,9 +1509,34 @@ export default function FormViewer({
             )}
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {formTemplate.fields.map((field) => renderField(field))}
-            </div>
+            {/* Renderizar formularios con secciones */}
+            {formTemplate.sections ? (
+              <div className="space-y-6">
+                {formTemplate.sections.map((section, sectionIndex) => (
+                  <div key={sectionIndex} className="space-y-4">
+                    {section.title && (
+                      <h3 
+                        className="text-lg font-semibold p-3 rounded text-white"
+                        style={{ backgroundColor: section.backgroundColor || '#6B7280' }}
+                      >
+                        {section.title}
+                      </h3>
+                    )}
+                    <div 
+                      className="p-4 rounded border"
+                      style={{ backgroundColor: section.backgroundColor ? `${section.backgroundColor}20` : 'transparent' }}
+                    >
+                      {section.fields && section.fields.map((field) => renderField(field))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Renderizar formularios tradicionales */
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {formTemplate.fields?.map((field) => renderField(field))}
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex justify-between">
             {!isReadOnly ? (
