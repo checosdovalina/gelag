@@ -1007,11 +1007,11 @@ export default function FormViewer({
                                        field.id === 'folio_baja_mp' || 
                                        field.id === 'folio_baja_empaque';
         
-        // Determinar si mostrar auto-asignado (solo para folio principal, no para los específicos)
-        const showAutoAssignedText = isFolio && !isReadOnly && !isEditableFolioFieldText;
+        // Permitir entrada manual para todos los campos folio
+        const showAutoAssignedText = false;
         
-        // Determinar si deshabilitar el campo (solo folio principal, no los específicos)
-        const shouldDisable = isReadOnly || (isFolio && !isEditableFolioFieldText);
+        // Solo deshabilitar si está en modo de solo lectura
+        const shouldDisable = isReadOnly;
         
         return (
           <FormField
@@ -1025,11 +1025,10 @@ export default function FormViewer({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={field.placeholder || ""}
+                    placeholder={field.placeholder || (isFolio ? "Ingresa el folio manualmente" : "")}
                     {...formField}
                     value={formField.value || ""}
                     disabled={shouldDisable}
-                    className={isFolio && !isEditableFolioFieldText ? "bg-blue-50 font-medium" : ""}
                   />
                 </FormControl>
                 {showAutoAssignedText && (
