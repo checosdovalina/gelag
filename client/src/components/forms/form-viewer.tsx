@@ -1489,7 +1489,9 @@ export default function FormViewer({
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4 max-h-[70vh] overflow-auto">
-                    {formTemplate.fields.map((field) => (
+                    {(formTemplate.fields || 
+                      (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : [])
+                    ).map((field) => (
                       <div key={field.id} className="grid gap-2">
                         <h3 className="font-medium text-sm text-slate-700">{field.label}</h3>
                         <FieldDisplayNameEditor
