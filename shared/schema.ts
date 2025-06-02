@@ -93,6 +93,14 @@ export enum ProductionFormStatus {
   COMPLETED = "completed"       // Proceso completado
 }
 
+// Form workflow stages for role-based access
+export enum FormWorkflowStage {
+  INIT = "init",                // Gerente de producción - campos rosa
+  OPERATION = "operation",      // Operadores - campos amarillos
+  QUALITY = "quality",          // Gerente de calidad - finalización
+  COMPLETED = "completed"       // Proceso completado
+}
+
 // Form data schema (completed forms)
 export const formEntries = pgTable("form_entries", {
   id: serial("id").primaryKey(),
@@ -104,9 +112,11 @@ export const formEntries = pgTable("form_entries", {
   department: text("department"),
   status: text("status").default("draft"), // "draft", "signed", "approved", "rejected"
   workflowStatus: text("workflow_status").$type<FormWorkflowStatus>().default(FormWorkflowStatus.INITIATED), // Estado en el flujo de trabajo
+  workflowStage: text("workflow_stage").$type<FormWorkflowStage>().default(FormWorkflowStage.INIT), // Etapa del flujo por roles
   lastUpdatedBy: integer("last_updated_by"), // Usuario que realizó la última actualización
   lotNumber: text("lot_number"), // Número de lote para referenciar relacionados
   roleSpecificData: jsonb("role_specific_data"), // Datos específicos por rol para formularios secuenciales
+  stageCompletedAt: jsonb("stage_completed_at"), // Timestamps de cuando se completó cada etapa
   signature: text("signature"), // Base64 encoded signature image
   signedBy: integer("signed_by"), // User ID who signed the form
   signedAt: timestamp("signed_at"), // When the form was signed
