@@ -1294,7 +1294,7 @@ export default function FormViewer({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => {
-              const tableData = formField.value || [{}];
+              const tableData = formField.value || field.rows || [{}];
               
               const addRow = () => {
                 const newData = [...tableData, {}];
@@ -1315,7 +1315,7 @@ export default function FormViewer({
                       <TableHeader>
                         <TableRow>
                           {field.columns?.map((column) => (
-                            <TableHead key={column.id}>{column.header}</TableHead>
+                            <TableHead key={column.id}>{column.header || column.label}</TableHead>
                           ))}
                           {!isReadOnly && <TableHead className="w-[80px]">Acciones</TableHead>}
                         </TableRow>
