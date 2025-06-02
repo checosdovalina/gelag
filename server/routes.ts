@@ -95,12 +95,12 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
   const schedule = roleSchedules[userRole];
   
   // Roles con acceso completo
-  if (schedule.allowed) {
+  if ('allowed' in schedule && schedule.allowed) {
     return { allowed: true };
   }
 
   // Verificar día de la semana
-  if (schedule.workDays && !schedule.workDays.includes(currentDay)) {
+  if ('workDays' in schedule && schedule.workDays && !schedule.workDays.includes(currentDay)) {
     return {
       allowed: false,
       reason: `Acceso restringido: fuera de días laborales`,
@@ -109,7 +109,7 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
   }
 
   // Verificar hora del día
-  if (schedule.hours && !schedule.hours.includes(currentHour)) {
+  if ('hours' in schedule && schedule.hours && !schedule.hours.includes(currentHour)) {
     return {
       allowed: false,
       reason: `Acceso restringido: fuera del horario laboral (hora actual: ${currentHour}:00)`,
@@ -118,6 +118,38 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
   }
 
   return { allowed: true };
+}
+
+/**
+ * Genera folios automáticamente para campos especificados
+ * @param formData Datos del formulario
+ * @param templateStructure Estructura del template
+ * @returns Datos actualizados con folios generados
+ */
+async function generateAutoFolios(formData: any, templateStructure: any): Promise<any> {
+  const updatedData = { ...formData };
+  
+  // Buscar campos que requieren folios automáticos
+  for (const section of templateStructure.sections || []) {
+    for (const field of section.fields || []) {
+      if (field.autoGenerateFolio && field.folioPrefix && !updatedData[field.id]) {
+        try {
+          // Generar el siguiente número de folio
+          const nextFolio = await storage.getNextFolioNumber(field.folioPrefix);
+          const folioValue = `${field.folioPrefix}-${nextFolio.toString().padStart(4, '0')}`;
+          
+          updatedData[field.id] = folioValue;
+          
+          console.log(`Folio auto-generado: ${field.id} = ${folioValue}`);
+        } catch (error) {
+          console.error(`Error generando folio para ${field.id}:`, error);
+          // Continuar sin generar folio si hay error
+        }
+      }
+    }
+  }
+  
+  return updatedData;
 }
 
 /**
@@ -1014,23 +1046,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "formTemplateId y data son requeridos" });
       }
       
+      // Verificar que la plantilla existe
+      const template = await storage.getFormTemplate(parseInt(formTemplateId));
+      if (!template) {
+        console.log("[FORM-CREATE] Plantilla no encontrada");
+        return res.status(404).json({ message: "Plantilla no encontrada" });
+      }
+
+      // Generar folios automáticamente si es necesario
+      const processedData = await generateAutoFolios(
+        typeof data === 'string' ? JSON.parse(data) : data, 
+        template.structure
+      );
+
       // Preparar datos para inserción
       const entryData = {
         formTemplateId: parseInt(formTemplateId),
-        data: typeof data === 'string' ? JSON.parse(data) : data,
+        data: processedData,
         createdBy: req.user.id,
         department: department || "general",
         status: "draft"
       };
       
-      console.log("[FORM-CREATE] Datos preparados:", entryData);
-      
-      // Verificar que la plantilla existe
-      const template = await storage.getFormTemplate(entryData.formTemplateId);
-      if (!template) {
-        console.log("[FORM-CREATE] Plantilla no encontrada");
-        return res.status(404).json({ message: "Plantilla no encontrada" });
-      }
+      console.log("[FORM-CREATE] Datos preparados con folios auto-generados:", entryData);
       
       // Crear entrada directamente
       const entry = await storage.createFormEntry(entryData);
@@ -1111,7 +1149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verificar permisos de acceso por horario y rol
-      const accessCheck = checkRoleTimeAccess(req.user.role);
+      const accessCheck = checkRoleTimeAccess(req.user!.role);
       if (!accessCheck.allowed) {
         return res.status(403).json({ 
           message: "Acceso restringido por horario",
