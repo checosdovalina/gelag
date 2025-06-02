@@ -1447,6 +1447,53 @@ export default function CapturedFormsPage() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Production form details dialog */}
+        {selectedProductionForm && (
+          <Dialog open={productionDetailsOpen} onOpenChange={setProductionDetailsOpen}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Formulario de Producción - {selectedProductionForm.folio}</DialogTitle>
+                <DialogDescription>
+                  Creado por {getUserName(selectedProductionForm.createdBy)} el {
+                    format(new Date(selectedProductionForm.createdAt), "dd/MM/yyyy HH:mm", { locale: es })
+                  }
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4">
+                <ProductionFormViewer 
+                  formData={selectedProductionForm}
+                  creator={users?.find(u => u.id === selectedProductionForm.createdBy)}
+                />
+              </div>
+              
+              <DialogFooter>
+                <div className="flex flex-col sm:flex-row sm:justify-between w-full gap-2">
+                  <Button variant="outline" onClick={() => setProductionDetailsOpen(false)}>
+                    Cerrar
+                  </Button>
+                  
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        const productionEntry = {
+                          id: selectedProductionForm.id,
+                          formType: "production"
+                        } as any;
+                        handleExportForm(productionEntry, "pdf");
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Descargar PDF
+                    </Button>
+                  </div>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </MainLayout>
   );
