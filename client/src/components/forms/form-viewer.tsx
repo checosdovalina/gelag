@@ -1135,7 +1135,13 @@ export default function FormViewer({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
+              <FormItem 
+                style={{ 
+                  backgroundColor: field.backgroundColor ? `${field.backgroundColor}40` : 'transparent',
+                  padding: field.backgroundColor ? '12px' : '0',
+                  borderRadius: field.backgroundColor ? '6px' : '0'
+                }}
+              >
                 <FormLabel>{field.label} {field.required && <span className="text-red-500">*</span>}</FormLabel>
                 <FormControl>
                   <Input
@@ -1158,7 +1164,13 @@ export default function FormViewer({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
+              <FormItem
+                style={{ 
+                  backgroundColor: field.backgroundColor ? `${field.backgroundColor}40` : 'transparent',
+                  padding: field.backgroundColor ? '12px' : '0',
+                  borderRadius: field.backgroundColor ? '6px' : '0'
+                }}
+              >
                 <FormLabel>{field.label} {field.required && <span className="text-red-500">*</span>}</FormLabel>
                 <Select
                   onValueChange={formField.onChange}
