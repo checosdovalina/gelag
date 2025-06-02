@@ -40,16 +40,16 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 // Versión modificada del ProtectedRoute que incluye el layout
 function ProtectedRouteWithLayout(props: {
   path: string;
-  component: () => React.JSX.Element;
+  component: (params?: any) => React.JSX.Element;
   allowedRoles?: UserRole[];
 }) {
   return (
     <ProtectedRoute
       path={props.path}
       allowedRoles={props.allowedRoles}
-      component={() => (
+      component={(params?: any) => (
         <ProtectedLayout>
-          <props.component />
+          <props.component {...params} />
         </ProtectedLayout>
       )}
     />
