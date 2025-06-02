@@ -921,11 +921,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "No autenticado" });
       }
       
+      // Verificar permisos - permitir acceso a usuarios de producción para formularios de producción
+      const isProductionForm = template?.name?.includes('PR-PR-02') || template?.name?.includes('dulces');
+      
       if (
         req.user?.role !== UserRole.SUPERADMIN &&
         req.user?.role !== UserRole.ADMIN && 
         entry.createdBy !== req.user?.id && 
-        entry.department !== req.user?.department
+        entry.department !== req.user?.department &&
+        !(isProductionForm && (req.user?.role === UserRole.PRODUCTION || req.user?.role === UserRole.PRODUCTION_MANAGER))
       ) {
         return res.status(403).json({ message: "No autorizado para exportar esta entrada" });
       }
@@ -992,11 +996,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "No autenticado" });
       }
       
+      // Verificar permisos - permitir acceso a usuarios de producción para formularios de producción
+      const template = await storage.getFormTemplate(entry.formTemplateId);
+      const isProductionForm = template?.name?.includes('PR-PR-02') || template?.name?.includes('dulces');
+      
       if (
         req.user?.role !== UserRole.SUPERADMIN &&
         req.user?.role !== UserRole.ADMIN && 
         entry.createdBy !== req.user?.id && 
-        entry.department !== req.user?.department
+        entry.department !== req.user?.department &&
+        !(isProductionForm && (req.user?.role === UserRole.PRODUCTION || req.user?.role === UserRole.PRODUCTION_MANAGER))
       ) {
         return res.status(403).json({ message: "No autorizado para ver esta entrada" });
       }

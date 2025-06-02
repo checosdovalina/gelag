@@ -1,0 +1,27 @@
+dulces-form-page.tsx:105 Error al guardar: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+handleSubmit @ dulces-form-page.tsx:105
+await in handleSubmit
+onSubmit @ form-viewer.tsx:1482
+callCallback2 @ chunk-RPCDYKBN.js?v=2f74ef84:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=2f74ef84:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=2f74ef84:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=2f74ef84:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=2f74ef84:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=2f74ef84:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=2f74ef84:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=2f74ef84:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=2f74ef84:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=2f74ef84:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=2f74ef84:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=2f74ef84:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=2f74ef84:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=2f74ef84:5449Understand this error
+dulces-form-page.tsx:28 [DULCES-FORM] entryId: 10
+dulces-form-page.tsx:29 [DULCES-FORM] isNew: false
+dulces-form-page.tsx:60 [DULCES-FORM] existingEntry después de la query: {id: 10, formTemplateId: 19, data: {…}, createdBy: 6, createdAt: '2025-06-02T07:26:42.475Z', …}
+dulces-form-page.tsx:61 [DULCES-FORM] existingEntry?.data: {lote: '34r34', fecha: '2025-06-02', folio: '4323', linea: '234', proceso: 'oblea_grande', …}
+dulces-form-page.tsx:28 [DULCES-FORM] entryId: 10
+dulces-form-page.tsx:29 [DULCES-FORM] isNew: false
+dulces-form-page.tsx:60 [DULCES-FORM] existingEntry después de la query: {id: 10, formTemplateId: 19, data: {…}, createdBy: 6, createdAt: '2025-06-02T07:26:42.475Z', …}
+dulces-form-page.tsx:61 [DULCES-FORM] existingEntry?.data: {lote: '34r34', fecha: '2025-06-02', folio: '4323', linea: '234', proceso: 'oblea_grande', …}

@@ -1,0 +1,53 @@
+dulces-form-page.tsx:49 
+            
+            
+           GET https://39fabaeb-9e1b-46b7-b7f1-98b5fa7adb02-00-225n4wnlrrvi6.worf.replit.dev/api/form-entries/10 403 (Forbidden)
+queryFn @ dulces-form-page.tsx:49
+fetchFn @ @tanstack_react-query.js?v=2f74ef84:840
+run @ @tanstack_react-query.js?v=2f74ef84:494
+start @ @tanstack_react-query.js?v=2f74ef84:536
+fetch @ @tanstack_react-query.js?v=2f74ef84:926
+executeFetch_fn @ @tanstack_react-query.js?v=2f74ef84:2211
+fetch @ @tanstack_react-query.js?v=2f74ef84:2011
+refetch @ @tanstack_react-query.js?v=2f74ef84:2001
+onFocus @ @tanstack_react-query.js?v=2f74ef84:749
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:1112
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:1111
+batch @ @tanstack_react-query.js?v=2f74ef84:583
+onFocus @ @tanstack_react-query.js?v=2f74ef84:1110
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:1601
+await in (anonymous)
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:313
+onFocus @ @tanstack_react-query.js?v=2f74ef84:312
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:299
+listener @ @tanstack_react-query.js?v=2f74ef84:270Understand this error
+queryClient.ts:33 
+            
+            
+           GET https://39fabaeb-9e1b-46b7-b7f1-98b5fa7adb02-00-225n4wnlrrvi6.worf.replit.dev/api/users 403 (Forbidden)
+(anonymous) @ queryClient.ts:33
+fetchFn @ @tanstack_react-query.js?v=2f74ef84:840
+run @ @tanstack_react-query.js?v=2f74ef84:494
+start @ @tanstack_react-query.js?v=2f74ef84:536
+fetch @ @tanstack_react-query.js?v=2f74ef84:926
+executeFetch_fn @ @tanstack_react-query.js?v=2f74ef84:2211
+onSubscribe @ @tanstack_react-query.js?v=2f74ef84:1898
+subscribe @ @tanstack_react-query.js?v=2f74ef84:24
+(anonymous) @ @tanstack_react-query.js?v=2f74ef84:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=2f74ef84:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=2f74ef84:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=2f74ef84:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=2f74ef84:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=2f74ef84:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=2f74ef84:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=2f74ef84:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=2f74ef84:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=2f74ef84:19416
+commitRoot @ chunk-RPCDYKBN.js?v=2f74ef84:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=2f74ef84:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=2f74ef84:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=2f74ef84:18627Understand this error
+queryClient.ts:16 
+            
+            
+           GET https://39fabaeb-9e1b-46b7-b7f1-98b5fa7adb02-00-225n4wnlrrvi6.worf.replit.dev/api/form-entries/10/export?format=pdf&t=1748850345286 403 (Forbidden)
