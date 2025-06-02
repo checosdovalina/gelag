@@ -2213,6 +2213,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Production Forms endpoints
+  app.get("/api/production-forms", getProductionForms);
+  app.get("/api/production-forms/:id", getProductionFormById);
+  app.post("/api/production-forms", createProductionForm);
+  app.put("/api/production-forms/:id", updateProductionForm);
+  app.patch("/api/production-forms/:id/status", updateProductionFormStatus);
+  app.delete("/api/production-forms/:id", deleteProductionForm);
+
   const httpServer = createServer(app);
   return httpServer;
 }
