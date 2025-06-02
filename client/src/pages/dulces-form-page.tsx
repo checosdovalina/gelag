@@ -24,6 +24,9 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
 
   const entryId = params?.entryId;
   const isNew = !entryId || entryId === 'new';
+  
+  console.log('[DULCES-FORM] entryId:', entryId);
+  console.log('[DULCES-FORM] isNew:', isNew);
 
   // Cargar el template del formulario de dulces (ID 19)
   const { data: formTemplate, isLoading: templateLoading } = useQuery({
@@ -42,14 +45,20 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
     queryKey: ['/api/form-entries', entryId],
     queryFn: async () => {
       if (isNew) return null;
+      console.log('[DULCES-FORM] Cargando datos para entryId:', entryId);
       const response = await fetch(`/api/form-entries/${entryId}`);
       if (!response.ok) {
         throw new Error('Error al cargar los datos del formulario');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('[DULCES-FORM] Datos cargados del servidor:', data);
+      return data;
     },
     enabled: !isNew
   });
+
+  console.log('[DULCES-FORM] existingEntry después de la query:', existingEntry);
+  console.log('[DULCES-FORM] existingEntry?.data:', existingEntry?.data);
 
   const saveMutation = useMutation({
     mutationFn: async (formData: any) => {
