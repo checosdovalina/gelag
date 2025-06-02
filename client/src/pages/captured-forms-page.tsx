@@ -35,6 +35,7 @@ import {
   Settings
 } from "lucide-react";
 import WorkflowStatusUpdater from "@/components/workflow/workflow-status-updater";
+import { ProductionFormViewer } from "@/components/forms/production-form-viewer";
 import {
   Dialog,
   DialogContent,
@@ -354,13 +355,17 @@ export default function CapturedFormsPage() {
       })
     : [];
   
+  // State for production form viewing
+  const [selectedProductionForm, setSelectedProductionForm] = useState<any>(null);
+  const [productionDetailsOpen, setProductionDetailsOpen] = useState(false);
+
   // View form details
   const handleViewForm = (entry: FormEntry) => {
     // Check if it's a production form
-    if ((entry as any).type === "production") {
-      // For production forms, redirect to the production form page
-      const productionId = (entry.id as string).replace("prod_", "");
-      window.open(`/production-forms/${productionId}`, '_blank');
+    if ((entry as any).formType === "production") {
+      // For production forms, show in modal with production form viewer
+      setSelectedProductionForm(entry.data);
+      setProductionDetailsOpen(true);
     } else {
       // For regular forms, find the template and show in modal
       const template = templates?.find(t => t.id === entry.formTemplateId);
