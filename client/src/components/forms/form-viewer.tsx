@@ -393,36 +393,30 @@ export default function FormViewer({
     });
   }, [formTemplate, form]);
   
-  // Cargar el próximo número de folio cuando el formulario se abre (solo si no es modo lectura)
+  // Inicializar campos con folios automáticos para formularios nuevos
   useEffect(() => {
-    const fetchNextFolioNumber = async () => {
-      // Verificar si es un formulario nuevo (sin initialData significativo o folio vacío)
-      const isNewForm = !initialData || Object.keys(initialData).length === 0 || !initialData.folio;
+    const initializeAutoFolios = () => {
+      // Verificar si es un formulario nuevo (sin initialData significativo)
+      const isNewForm = !initialData || Object.keys(initialData).length === 0;
       
-      if (formId && !isReadOnly && isNewForm) {
-        try {
-          const response = await fetch(`/api/form-templates/${formId}/next-folio`);
-          if (response.ok) {
-            const data = await response.json();
-            setNextFolioNumber(data.nextFolio);
-            
-            // Automáticamente establecer el valor en cualquier campo identificado como "folio"
-            const folioField = isFolioField();
-            
-            if (folioField) {
-              // Usar el formato personalizado si está disponible
-              const folioValue = data.formattedFolio || data.nextFolio.toString();
-              form.setValue(folioField.id, folioValue);
-            }
+      if (!isReadOnly && isNewForm) {
+        // Buscar campos con autoGenerateFolio en todas las secciones
+        const allFields = formTemplate.fields || 
+          (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : []);
+        
+        allFields.forEach(field => {
+          if (field.autoGenerateFolio && field.folioPrefix) {
+            // Mostrar mensaje informativo al usuario
+            const placeholderValue = `${field.folioPrefix}-#### (Auto-asignado)`;
+            form.setValue(field.id, placeholderValue);
+            console.log(`[FOLIO-INIT] Campo ${field.id} configurado para generación automática con prefijo ${field.folioPrefix}`);
           }
-        } catch (error) {
-          console.error("Error al obtener el próximo número de folio:", error);
-        }
+        });
       }
     };
     
-    fetchNextFolioNumber();
-  }, [formId, isReadOnly, initialData, form]);
+    initializeAutoFolios();
+  }, [formTemplate, isReadOnly, initialData, form]);
   
   // Función para identificar si un campo es de tipo folio
   const isFolioField = () => {
