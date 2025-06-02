@@ -84,6 +84,8 @@ export default function WorkflowFormViewer({
   console.log('[DEBUG] WorkflowFormViewer - Renderizando componente');
   console.log('[DEBUG] WorkflowFormViewer - user:', user);
   console.log('[DEBUG] WorkflowFormViewer - formTemplate:', formTemplate);
+  console.log('[DEBUG] WorkflowFormViewer - initialData recibidos:', initialData);
+  console.log('[DEBUG] WorkflowFormViewer - entryId:', entryId);
 
   // Verificar acceso por horario
   const { data: accessCheck } = useQuery({
