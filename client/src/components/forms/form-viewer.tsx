@@ -247,7 +247,10 @@ export default function FormViewer({
   useEffect(() => {
     const schemaMap: Record<string, z.ZodTypeAny> = {};
     
-    formTemplate.fields.forEach((field) => {
+    const allFields = formTemplate.fields || 
+      (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : []);
+    
+    allFields.forEach((field) => {
       let fieldSchema: z.ZodTypeAny;
       
       switch (field.type) {
@@ -342,7 +345,10 @@ export default function FormViewer({
   
   // Handle table fields initialization
   useEffect(() => {
-    formTemplate.fields.forEach((field) => {
+    const allFields = formTemplate.fields || 
+      (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : []);
+    
+    allFields.forEach((field) => {
       if (field.type === "table" && !form.getValues()[field.id]) {
         form.setValue(field.id, [{}]);
       }
