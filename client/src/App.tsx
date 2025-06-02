@@ -26,6 +26,7 @@ import EmployeesPage from "@/pages/employees-page-new";
 import ProductionFormPage from "@/pages/production-form-page";
 import ProcessFormsList from "@/pages/process-forms-list";
 import DulcesFormPage from "@/pages/dulces-form-page";
+import FormViewerPage from "@/pages/form-viewer-page";
 
 // Componente wrapper para rutas protegidas
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -119,8 +120,12 @@ function Router() {
         component={() => <DulcesFormPage />} 
       />
       <ProtectedRouteWithLayout 
+        path="/form-viewer/new/:templateId" 
+        component={(props: any) => <FormViewerPage params={props.params} />} 
+      />
+      <ProtectedRouteWithLayout 
         path="/form-viewer/:entryId" 
-        component={({ params }: any) => <DulcesFormPage params={params} />} 
+        component={(props: any) => <DulcesFormPage params={props.params} />} 
       />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
