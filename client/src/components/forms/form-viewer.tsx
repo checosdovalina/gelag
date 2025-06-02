@@ -1135,6 +1135,7 @@ export default function FormViewer({
                     {...formField}
                     value={formField.value || ""}
                     disabled={isReadOnly}
+                    onKeyDown={handleEnterKeyNavigation}
                   />
                 </FormControl>
                 <FormMessage />
