@@ -1072,7 +1072,6 @@ export default function FormViewer({
               <FormItem>
                 <FormLabel>
                   {field.label} {field.required && <span className="text-red-500">*</span>}
-                  {showAutoAssigned && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
                 </FormLabel>
                 <FormControl>
                   {isFormattedFolio ? (
