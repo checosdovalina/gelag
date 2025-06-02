@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useProductionForms } from "@/hooks/use-production-form";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import SidebarLayout from "@/components/layout/sidebar-layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,9 +53,9 @@ export default function ProcessFormsList() {
   const userRole = user?.role.toLowerCase();
 
   // Incluimos los gerentes en las reglas de permisos
-  const canCreateForms = user && ["superadmin", "admin", "produccion", "gerente_produccion"].includes(userRole);
-  const canEditForms = user && ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"].includes(userRole);
-  const canDeleteForms = user && ["superadmin"].includes(userRole);
+  const canCreateForms = user && userRole && ["superadmin", "admin", "produccion", "gerente_produccion"].includes(userRole);
+  const canEditForms = user && userRole && ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"].includes(userRole);
+  const canDeleteForms = user && userRole && ["superadmin", "admin", "gerente_produccion"].includes(userRole);
   
   const handleCreate = () => {
     navigate("/production-form");
@@ -217,6 +218,11 @@ export default function ProcessFormsList() {
 function DulcesFormsList() {
   const [_, navigate] = useLocation();
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Permisos
+  const userRole = user?.role.toLowerCase();
+  const canDeleteEntries = user && userRole && ["superadmin", "admin", "gerente_produccion"].includes(userRole);
 
   // Cargar el template de dulces
   const { data: dulcesTemplate, isLoading } = useQuery({
@@ -231,7 +237,7 @@ function DulcesFormsList() {
   });
 
   // Cargar entradas del formulario de dulces
-  const { data: dulcesEntries = [], isLoading: entriesLoading } = useQuery({
+  const { data: dulcesEntries = [], isLoading: entriesLoading, refetch } = useQuery({
     queryKey: ['/api/form-entries', 'dulces'],
     queryFn: async () => {
       const response = await fetch('/api/form-entries?templateId=19');
@@ -249,6 +255,33 @@ function DulcesFormsList() {
 
   const handleEditDulces = (entryId: number) => {
     navigate(`/form-viewer/${entryId}`);
+  };
+
+  const handleDeleteEntry = async (entryId: number) => {
+    if (window.confirm("¿Está seguro de que desea eliminar este formulario?")) {
+      try {
+        const response = await fetch(`/api/form-entries/${entryId}`, {
+          method: 'DELETE',
+        });
+        
+        if (!response.ok) {
+          throw new Error('Error al eliminar formulario');
+        }
+        
+        toast({
+          title: "Formulario eliminado",
+          description: "El formulario ha sido eliminado correctamente.",
+        });
+        
+        refetch();
+      } catch (error) {
+        toast({
+          title: "Error al eliminar formulario",
+          description: error instanceof Error ? error.message : "Error desconocido",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   if (isLoading || entriesLoading) {
@@ -316,13 +349,29 @@ function DulcesFormsList() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleEditDulces(entry.id)}
-                      >
-                        <FileEdit className="h-4 w-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Acciones</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEditDulces(entry.id)}>
+                            <FileEdit className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                          {canDeleteEntries && (
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteEntry(entry.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
