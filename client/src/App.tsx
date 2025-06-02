@@ -75,7 +75,7 @@ function Router() {
       <ProtectedRouteWithLayout 
         path="/form-capture" 
         component={FormCapture} 
-        allowedRoles={[UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY, UserRole.SUPERADMIN]} 
+        allowedRoles={[UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY, UserRole.SUPERADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]} 
       />
       <ProtectedRouteWithLayout 
         path="/form-import" 

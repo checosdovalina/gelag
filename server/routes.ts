@@ -1031,8 +1031,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "No autenticado" });
       }
       
-      // Verificar permisos básicos
-      const allowedRoles = ["superadmin", "admin", "produccion", "calidad"];
+      // Verificar permisos básicos - incluir gerentes
+      const allowedRoles = ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"];
       if (!allowedRoles.includes(req.user.role)) {
         console.log("[FORM-CREATE] Rol no autorizado:", req.user.role);
         return res.status(403).json({ message: "No autorizado" });
@@ -1408,7 +1408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // File upload routes
-  app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY]), 
+  app.post("/api/upload", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.QUALITY, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), 
     upload.single('file'), async (req, res, next) => {
       try {
         // Check if file exists
