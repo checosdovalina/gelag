@@ -197,6 +197,11 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
               {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
               {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
               {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""}
+            ],
+            muestreo_table: [
+              {"hora": "°T", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""},
+              {"hora": "Muestreo", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""},
+              {"hora": "Merma", "h8": "", "h9": "", "h10": "", "h11": "", "h12": "", "h13": "", "h14": "", "h15": "", "h16": "", "h17": ""}
             ]
           }}
           onSubmit={handleSubmit}
