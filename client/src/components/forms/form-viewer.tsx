@@ -119,7 +119,10 @@ export default function FormViewer({
       }
       return response.json();
     },
-    enabled: formTemplate.fields.some(field => field.type === 'userByRole')
+    enabled: formTemplate.fields ? formTemplate.fields.some(field => field.type === 'userByRole') : 
+             formTemplate.sections ? formTemplate.sections.some(section => 
+               section.fields && section.fields.some(field => field.type === 'userByRole')
+             ) : false
   });
   
   // Función para actualizar el displayName de un campo y guardar los cambios
