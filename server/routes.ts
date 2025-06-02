@@ -130,29 +130,12 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
 async function generateAutoFolios(formData: any, templateStructure: any, templateId: number): Promise<any> {
   const updatedData = { ...formData };
   
-  console.log(`[FOLIO-GEN] Iniciando generación de folios para template ${templateId}`);
+  console.log(`[FOLIO-GEN] Verificando folios para template ${templateId}`);
+  console.log(`[FOLIO-GEN] Datos recibidos:`, formData);
   
-  // Buscar campos que requieren folios automáticos
-  for (const section of templateStructure.sections || []) {
-    for (const field of section.fields || []) {
-      if (field.autoGenerateFolio && field.folioPrefix && !updatedData[field.id]) {
-        try {
-          console.log(`[FOLIO-GEN] Generando folio para campo ${field.id} con prefijo ${field.folioPrefix}`);
-          
-          // Generar el siguiente número de folio usando el templateId
-          const nextFolio = await storage.getNextFolioNumber(templateId);
-          const folioValue = `${field.folioPrefix}-${nextFolio.toString().padStart(4, '0')}`;
-          
-          updatedData[field.id] = folioValue;
-          
-          console.log(`[FOLIO-GEN] Folio auto-generado: ${field.id} = ${folioValue}`);
-        } catch (error) {
-          console.error(`[FOLIO-GEN] Error generando folio para ${field.id}:`, error);
-          // Continuar sin generar folio si hay error
-        }
-      }
-    }
-  }
+  // No generar folios automáticamente - permitir entrada manual
+  // Los usuarios deben proporcionar sus propios folios
+  console.log(`[FOLIO-GEN] Folio manual requerido - no se generará automáticamente`);
   
   return updatedData;
 }

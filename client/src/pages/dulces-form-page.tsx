@@ -53,18 +53,9 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
 
   const saveMutation = useMutation({
     mutationFn: async (formData: any) => {
-      // Limpiar placeholders de folios automáticos antes de enviar
-      const cleanedData = { ...formData };
-      Object.keys(cleanedData).forEach(key => {
-        if (typeof cleanedData[key] === 'string' && cleanedData[key].includes('(Auto-asignado)')) {
-          // Eliminar el valor del placeholder para que el servidor genere el folio real
-          delete cleanedData[key];
-        }
-      });
-
       const payload = {
         formTemplateId: 19,
-        data: cleanedData,
+        data: formData,
         createdBy: user?.username || 'unknown'
       };
 

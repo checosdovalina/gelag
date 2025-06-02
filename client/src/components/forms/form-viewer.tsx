@@ -393,29 +393,10 @@ export default function FormViewer({
     });
   }, [formTemplate, form]);
   
-  // Inicializar campos con folios automáticos para formularios nuevos
+  // No inicializar folios automáticamente - permitir entrada manual
   useEffect(() => {
-    const initializeAutoFolios = () => {
-      // Verificar si es un formulario nuevo (sin initialData significativo)
-      const isNewForm = !initialData || Object.keys(initialData).length === 0;
-      
-      if (!isReadOnly && isNewForm) {
-        // Buscar campos con autoGenerateFolio en todas las secciones
-        const allFields = formTemplate.fields || 
-          (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : []);
-        
-        allFields.forEach(field => {
-          if (field.autoGenerateFolio && field.folioPrefix) {
-            // Mostrar mensaje informativo al usuario
-            const placeholderValue = `${field.folioPrefix}-#### (Auto-asignado)`;
-            form.setValue(field.id, placeholderValue);
-            console.log(`[FOLIO-INIT] Campo ${field.id} configurado para generación automática con prefijo ${field.folioPrefix}`);
-          }
-        });
-      }
-    };
-    
-    initializeAutoFolios();
+    // Los folios se introducirán manualmente por el usuario
+    console.log('[FOLIO] Campos de folio disponibles para entrada manual');
   }, [formTemplate, isReadOnly, initialData, form]);
   
   // Función para identificar si un campo es de tipo folio
@@ -1079,8 +1060,8 @@ export default function FormViewer({
         const isFormattedFolio = isNumericFolio && formField.value && typeof formField.value === 'string' 
                                && formField.value.includes('-F');
         
-        // Determinar si mostrar auto-asignado (solo para folio principal, no para los específicos)
-        const showAutoAssigned = isNumericFolio && !isReadOnly && !isEditableFolioField;
+        // Ya no mostrar auto-asignado - permitir entrada manual
+        const showAutoAssigned = false;
         
         return (
           <FormField
