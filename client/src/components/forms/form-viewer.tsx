@@ -82,7 +82,10 @@ export default function FormViewer({
       }
       return response.json();
     },
-    enabled: formTemplate.fields.some(field => field.type === 'product')
+    enabled: formTemplate.fields ? formTemplate.fields.some(field => field.type === 'product' || field.type === 'productSelect') : 
+             formTemplate.sections ? formTemplate.sections.some(section => 
+               section.fields && section.fields.some(field => field.type === 'product' || field.type === 'productSelect')
+             ) : false
   });
 
   // Filtrar productos para mostrar solo "Producto Terminado" en formularios de microbiología
