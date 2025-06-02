@@ -1,0 +1,171 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+form-viewer.tsx:402 === DEBUG FOLIO ===
+form-viewer.tsx:403 formId: undefined
+form-viewer.tsx:404 isReadOnly: false
+form-viewer.tsx:405 isNewForm: true
+form-viewer.tsx:406 initialData: {mp_table: Array(8), muestreo_table: Array(3), revision_table: Array(6)}
+form-viewer.tsx:437 No se solicitará folio - condiciones no cumplidas
+forms-page.tsx:78 FormsPage: Forzando actualización de formularios al montar
+forms-page.tsx:85 FormsPage: Actualizando formularios...
+forms-page.tsx:87 FormsPage: Formularios actualizados: (5) [{…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 0
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 0
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: []
+form-viewer.tsx:402 === DEBUG FOLIO ===
+form-viewer.tsx:403 formId: 21
+form-viewer.tsx:404 isReadOnly: false
+form-viewer.tsx:405 isNewForm: true
+form-viewer.tsx:406 initialData: undefined
+form-viewer.tsx:410 Solicitando próximo folio para formulario: 21
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 0
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 0
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: []
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:414 Respuesta del servidor: {nextFolio: 5, formattedFolio: 'CA-RE-01-01-F5'}
+form-viewer.tsx:419 Campo de folio encontrado: {id: 'folio', type: 'text', label: 'FOLIO', required: true}
+form-viewer.tsx:424 Asignando folio automático: CA-RE-01-01-F5 al campo: folio
+form-viewer.tsx:426 Valor asignado en el formulario
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-capture.tsx:123 [FormCapture] Preparando formulario para envío: {folio: 'CA-RE-01-01-F5', archivo: '2', version: '23', fecha_emision: '2025-06-01', departamento_emisor: 'calidad', …}
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:402 === DEBUG FOLIO ===
+form-viewer.tsx:403 formId: 21
+form-viewer.tsx:404 isReadOnly: true
+form-viewer.tsx:405 isNewForm: false
+form-viewer.tsx:406 initialData: {folio: 'CA-RE-01-01-F5', archivo: '2', version: '23', fecha_emision: '2025-06-01', departamento_emisor: 'calidad', …}
+form-viewer.tsx:437 No se solicitará folio - condiciones no cumplidas
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+form-capture.tsx:158 [FormCapture] Enviando formulario al servidor: {formTemplateId: 21, data: {…}, department: 'Calidad', id: 0, createdBy: 1, …}
+form-viewer.tsx:632 [EmployeeByType] Campo: NOMBRE DE PERSONAL
+form-viewer.tsx:633 [EmployeeByType] Tipo esperado: operativo
+form-viewer.tsx:634 [EmployeeByType] Total empleados: 3
+form-viewer.tsx:635 [EmployeeByType] Empleados filtrados: 2
+form-viewer.tsx:636 [EmployeeByType] Empleados disponibles: (3) ['ANGEL LANDEROS  (operativo)', 'EDUARDO MONTEZ  (operativo)', 'Marcela  Tovar (calidad)']
+forms-page.tsx:78 FormsPage: Forzando actualización de formularios al montar
+forms-page.tsx:85 FormsPage: Actualizando formularios...
+forms-page.tsx:87 FormsPage: Formularios actualizados: (5) [{…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:402 === DEBUG FOLIO ===
+form-viewer.tsx:403 formId: 19
+form-viewer.tsx:404 isReadOnly: false
+form-viewer.tsx:405 isNewForm: true
+form-viewer.tsx:406 initialData: undefined
+form-viewer.tsx:410 Solicitando próximo folio para formulario: 19
+form-viewer.tsx:414 Respuesta del servidor: {nextFolio: 3, formattedFolio: '3'}
+form-viewer.tsx:419 Campo de folio encontrado: {id: 'folio', type: 'text', label: 'Folio', required: true, roleAccess: Array(2), …}
+form-viewer.tsx:424 Asignando folio automático: 3 al campo: folio
+form-viewer.tsx:426 Valor asignado en el formulario

@@ -399,42 +399,25 @@ export default function FormViewer({
       // Verificar si es un formulario nuevo (sin initialData significativo o folio vacío)
       const isNewForm = !initialData || Object.keys(initialData).length === 0 || !initialData.folio;
       
-      console.log("=== DEBUG FOLIO ===");
-      console.log("formId:", formId);
-      console.log("isReadOnly:", isReadOnly);
-      console.log("isNewForm:", isNewForm);
-      console.log("initialData:", initialData);
-      
       if (formId && !isReadOnly && isNewForm) {
         try {
-          console.log("Solicitando próximo folio para formulario:", formId);
           const response = await fetch(`/api/form-templates/${formId}/next-folio`);
           if (response.ok) {
             const data = await response.json();
-            console.log("Respuesta del servidor:", data);
             setNextFolioNumber(data.nextFolio);
             
             // Automáticamente establecer el valor en cualquier campo identificado como "folio"
             const folioField = isFolioField();
-            console.log("Campo de folio encontrado:", folioField);
             
             if (folioField) {
               // Usar el formato personalizado si está disponible
               const folioValue = data.formattedFolio || data.nextFolio.toString();
-              console.log("Asignando folio automático:", folioValue, "al campo:", folioField.id);
               form.setValue(folioField.id, folioValue);
-              console.log("Valor asignado en el formulario");
-            } else {
-              console.log("No se encontró campo de folio en el formulario");
             }
-          } else {
-            console.error("Error en respuesta del servidor:", response.status, response.statusText);
           }
         } catch (error) {
           console.error("Error al obtener el próximo número de folio:", error);
         }
-      } else {
-        console.log("No se solicitará folio - condiciones no cumplidas");
       }
     };
     
