@@ -396,7 +396,10 @@ export default function FormViewer({
   // Cargar el próximo número de folio cuando el formulario se abre (solo si no es modo lectura)
   useEffect(() => {
     const fetchNextFolioNumber = async () => {
-      if (formId && !isReadOnly && !initialData) {
+      // Verificar si es un formulario nuevo (sin initialData significativo o folio vacío)
+      const isNewForm = !initialData || Object.keys(initialData).length === 0 || !initialData.folio;
+      
+      if (formId && !isReadOnly && isNewForm) {
         try {
           const response = await fetch(`/api/form-templates/${formId}/next-folio`);
           if (response.ok) {
@@ -408,7 +411,7 @@ export default function FormViewer({
             if (folioField) {
               // Usar el formato personalizado si está disponible
               const folioValue = data.formattedFolio || data.nextFolio.toString();
-              console.log("Asignando folio con formato:", folioValue);
+              console.log("Asignando folio automático:", folioValue);
               form.setValue(folioField.id, folioValue);
             }
           }
