@@ -72,6 +72,29 @@ export default function FormViewer({
   const { user } = useAuth();
   const { toast } = useToast();
   
+  // Función para navegar al siguiente campo con Enter
+  const handleEnterKeyNavigation = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      
+      // Encontrar todos los elementos focusables en el formulario
+      const formElement = event.currentTarget.closest('form');
+      if (!formElement) return;
+      
+      const focusableElements = formElement.querySelectorAll(
+        'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+      );
+      
+      const currentElement = event.target as HTMLElement;
+      const currentIndex = Array.from(focusableElements).indexOf(currentElement);
+      
+      if (currentIndex >= 0 && currentIndex < focusableElements.length - 1) {
+        const nextElement = focusableElements[currentIndex + 1] as HTMLElement;
+        nextElement.focus();
+      }
+    }
+  };
+  
   // Cargar lista de productos
   const { data: allProducts = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ['/api/products'],
@@ -1027,6 +1050,7 @@ export default function FormViewer({
                     {...formField}
                     value={formField.value || ""}
                     disabled={shouldDisable}
+                    onKeyDown={handleEnterKeyNavigation}
                   />
                 </FormControl>
                 {showAutoAssignedText && (
@@ -1076,6 +1100,7 @@ export default function FormViewer({
                       {...formField}
                       value={formField.value || ""}
                       disabled={isReadOnly}
+                      onKeyDown={handleEnterKeyNavigation}
                     />
                   ) : (
                     <Input
@@ -1084,6 +1109,7 @@ export default function FormViewer({
                       {...formField}
                       value={formField.value || ""}
                       disabled={isReadOnly}
+                      onKeyDown={handleEnterKeyNavigation}
                     />
                   )}
                 </FormControl>
