@@ -210,7 +210,7 @@ function generatePDFContent(
   // Información principal: columnas para folio, fecha, creado por, etc. (más compacto)
   const infoY = lineY + 10;
        
-  doc.moveDown(1.5);
+  doc.moveDown(0.3);
   
   // Organización de la información como en la imagen de referencia
   const currentY = doc.y; // Guardamos la posición actual
@@ -262,8 +262,8 @@ function generatePDFContent(
   // Restaurar color por defecto
   doc.fillColor('#000000');
   
-  // Avanzar para el contenido principal
-  doc.moveDown(3);
+  // Avanzar para el contenido principal (más compacto)
+  doc.moveDown(1);
   
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
@@ -565,9 +565,9 @@ function generatePDFContent(
       }
       
       // Avanzar a la siguiente sección
-      doc.y = Math.max(doc.y, currentY) + 10;
+      doc.y = Math.max(doc.y, currentY) + 5;
       
-      doc.moveDown(1.5);
+      doc.moveDown(0.3);
     });
     
     // Procesar las tablas avanzadas después de todas las secciones
@@ -576,8 +576,8 @@ function generatePDFContent(
       if (doc.y > doc.page.height - 200) {
         doc.addPage();
       } else {
-        // Si hay espacio suficiente, solo agregamos un espacio adicional
-        doc.moveDown(2);
+        // Si hay espacio suficiente, solo agregamos un espacio mínimo
+        doc.moveDown(0.5);
       }
       
       // Usamos una lógica simplificada para determinar si es microbiología
@@ -773,8 +773,8 @@ function generatePDFContent(
               doc.undash();
               doc.lineWidth(1);
               
-              // Espacio extra entre filas
-              doc.moveDown(1.5);
+              // Espacio mínimo entre filas
+              doc.moveDown(0.3);
             }
           });
         }
@@ -785,7 +785,7 @@ function generatePDFContent(
           if (doc.y > doc.page.height - 200) {
             doc.addPage();
           } else {
-            doc.moveDown(2);
+            doc.moveDown(0.5);
           }
         }
       });
