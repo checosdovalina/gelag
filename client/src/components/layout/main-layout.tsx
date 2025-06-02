@@ -96,6 +96,19 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                 </Button>
               )}
 
+              {canAccessProcessForms && (
+                <Button
+                  variant={isActive("/form-viewer/new/19") ? "default" : "ghost"}
+                  size="sm"
+                  asChild
+                >
+                  <Link href="/form-viewer/new/19">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Ficha Técnica Dulces
+                  </Link>
+                </Button>
+              )}
+
               {canAccessEmployees && (
                 <Button
                   variant={isActive("/employees") ? "default" : "ghost"}
