@@ -4,6 +4,111 @@ import { User } from '@shared/schema';
 import fs from 'fs';
 import path from 'path';
 
+// Función para generar contenido específico del formulario PR-PR-02
+function generatePRPR02Content(doc: any, entry: FormEntry): void {
+  const data = entry.data as any;
+  
+  // Información General
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#E91E63')
+    .text('INFORMACIÓN GENERAL', 50, doc.y, { 
+      align: 'center',
+      width: doc.page.width - 100
+    });
+  
+  doc.moveDown(0.5);
+  
+  // Campos básicos en dos columnas
+  const leftCol = 50;
+  const rightCol = doc.page.width / 2;
+  const currentY = doc.y;
+  
+  doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000');
+  
+  // Columna izquierda
+  doc.text('Proceso:', leftCol, currentY);
+  doc.font('Helvetica').text(data.proceso || 'N/A', leftCol + 50, currentY);
+  
+  doc.font('Helvetica-Bold').text('Línea:', leftCol, currentY + 20);
+  doc.font('Helvetica').text(data.linea || 'N/A', leftCol + 50, currentY + 20);
+  
+  doc.font('Helvetica-Bold').text('Fecha:', leftCol, currentY + 40);
+  doc.font('Helvetica').text(data.fecha || 'N/A', leftCol + 50, currentY + 40);
+  
+  // Columna derecha
+  doc.font('Helvetica-Bold').text('Folio:', rightCol, currentY);
+  doc.font('Helvetica').text(data.folio || 'N/A', rightCol + 50, currentY);
+  
+  doc.font('Helvetica-Bold').text('Lote:', rightCol, currentY + 20);
+  doc.font('Helvetica').text(data.lote || 'N/A', rightCol + 50, currentY + 20);
+  
+  doc.font('Helvetica-Bold').text('Caducidad:', rightCol, currentY + 40);
+  doc.font('Helvetica').text(data.caducidad || 'N/A', rightCol + 50, currentY + 40);
+  
+  doc.font('Helvetica-Bold').text('Responsable:', rightCol, currentY + 60);
+  doc.font('Helvetica').text(data.responsable || 'N/A', rightCol + 50, currentY + 60);
+  
+  doc.y = currentY + 80;
+  doc.moveDown(1);
+  
+  // Tabla de Materia Prima
+  if (data.mp_table && Array.isArray(data.mp_table)) {
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#FF9800')
+      .text('MATERIA PRIMA', 50, doc.y, { 
+        align: 'center',
+        width: doc.page.width - 100
+      });
+    
+    doc.moveDown(0.5);
+    
+    // Encabezados de tabla
+    const tableY = doc.y;
+    const colWidths = [120, 80, 80, 80, 80];
+    const headers = ['MP', 'Kilos', 'Paq', 'Lote', 'Merma'];
+    let currentX = 50;
+    
+    doc.fontSize(9).font('Helvetica-Bold');
+    headers.forEach((header, i) => {
+      doc.rect(currentX, tableY, colWidths[i], 20).stroke();
+      doc.text(header, currentX + 5, tableY + 5, { width: colWidths[i] - 10 });
+      currentX += colWidths[i];
+    });
+    
+    // Filas de datos
+    data.mp_table.slice(0, 8).forEach((row: any, rowIndex: number) => {
+      const rowY = tableY + 20 + (rowIndex * 20);
+      currentX = 50;
+      
+      doc.font('Helvetica');
+      const values = [row.mp || '', row.kilos || '', row.paq || '', row.lote || '', row.merma || ''];
+      
+      values.forEach((value, i) => {
+        doc.rect(currentX, rowY, colWidths[i], 20).stroke();
+        doc.text(value, currentX + 5, rowY + 5, { width: colWidths[i] - 10 });
+        currentX += colWidths[i];
+      });
+    });
+    
+    doc.y = tableY + 20 + (8 * 20) + 10;
+  }
+  
+  // Agregar otras secciones si hay espacio
+  if (data.folio_liberacion || data.total_prod_terminado) {
+    doc.moveDown(1);
+    doc.fontSize(10).font('Helvetica-Bold');
+    
+    if (data.folio_liberacion) {
+      doc.text('Folio de Liberación:', leftCol, doc.y);
+      doc.font('Helvetica').text(data.folio_liberacion, leftCol + 100, doc.y);
+      doc.moveDown(0.3);
+    }
+    
+    if (data.total_prod_terminado) {
+      doc.font('Helvetica-Bold').text('Total Producto Terminado:', leftCol, doc.y);
+      doc.font('Helvetica').text(data.total_prod_terminado, leftCol + 130, doc.y);
+    }
+  }
+}
+
 // Función para generar un PDF utilizando PDFKit como fallback cuando Puppeteer no funciona
 export async function generatePDFFallback(
   entry: FormEntry, 
@@ -1013,11 +1118,16 @@ function generatePDFContent(
       }
     }
   } else {
-    // Si no tiene estructura definida, mostrar los datos crudos
-    doc.fontSize(12).font('Helvetica-Bold').text('Datos del formulario');
-    doc.moveDown(0.5);
-    doc.fontSize(10).font('Helvetica').text(JSON.stringify(entry.data, null, 2));
-    doc.moveDown(1);
+    // Si no tiene estructura definida, generar formato específico para PR-PR-02
+    if (template.name.includes('PR-PR-02') || template.name.includes('dulces')) {
+      generatePRPR02Content(doc, entry);
+    } else {
+      // Para otros formularios sin estructura, mostrar los datos crudos
+      doc.fontSize(12).font('Helvetica-Bold').text('Datos del formulario');
+      doc.moveDown(0.5);
+      doc.fontSize(10).font('Helvetica').text(JSON.stringify(entry.data, null, 2));
+      doc.moveDown(1);
+    }
   }
   
   // Sección de firmas (con diseño mejorado para incluir dos firmas)
