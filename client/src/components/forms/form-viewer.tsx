@@ -103,7 +103,10 @@ export default function FormViewer({
       }
       return response.json();
     },
-    enabled: formTemplate.fields.some(field => field.type === 'employee' || field.type === 'employeeByType')
+    enabled: formTemplate.fields ? formTemplate.fields.some(field => field.type === 'employee' || field.type === 'employeeByType') : 
+             formTemplate.sections ? formTemplate.sections.some(section => 
+               section.fields && section.fields.some(field => field.type === 'employee' || field.type === 'employeeByType')
+             ) : false
   });
 
   // Cargar lista de usuarios
