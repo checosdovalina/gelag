@@ -187,7 +187,18 @@ export default function DulcesFormPage({ params }: DulcesFormPageProps) {
           formTemplate={formTemplate.structure}
           formTitle={formTemplate.name}
           formDescription={formTemplate.description}
-          initialData={existingEntry?.data || {}}
+          initialData={existingEntry?.data || {
+            mp_table: [
+              {"mp": "Cajeta", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""},
+              {"mp": "", "kilos": "", "paq": "", "lote": "", "merma": ""}
+            ]
+          }}
           onSubmit={handleSubmit}
           onExport={!isNew ? handleExport : undefined}
           isLoading={isSubmitting || saveMutation.isPending}
