@@ -1626,14 +1626,12 @@ function isFormWithWideTable(formName: string): boolean {
     'microbiología',
     'análisis microbiológico',
     'analisis microbiologico',
-    'ficha técnica',
     'laboratorio'
   ];
   
   // Códigos de formulario específicos que siempre deben ser horizontales
   const horizontalFormCodes = [
-    'ca-re-15-01',  // Microbiología
-    'pr-pr-01-04'   // Ficha técnica
+    'ca-re-15-01'   // Microbiología
   ];
   
   // Detección por códigos específicos
