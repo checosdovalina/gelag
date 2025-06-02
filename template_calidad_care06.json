@@ -1,0 +1,232 @@
+{
+  "name": "CARE-06 Control de Calidad",
+  "department": "Control de Calidad",
+  "structure": {
+    "sections": [
+      {
+        "id": "header_info",
+        "title": "Información del Producto",
+        "type": "form_section",
+        "layout": "grid",
+        "columns": 2,
+        "fields": [
+          {
+            "id": "nombre_producto",
+            "label": "NOMBRE DEL PRODUCTO:",
+            "type": "text",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "fecha_elaboracion",
+            "label": "FECHA DE ELABORACIÓN:",
+            "type": "date",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "caducidad",
+            "label": "CADUCIDAD:",
+            "type": "date",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "fecha_inspeccion",
+            "label": "FECHA DE INSPECCIÓN:",
+            "type": "date",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "lote_1",
+            "label": "LOTE(1):",
+            "type": "text",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "no_piezas",
+            "label": "NO. DE PIEZAS:",
+            "type": "number",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "lote_2",
+            "label": "LOTE (2):",
+            "type": "text",
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "no_paquetes",
+            "label": "NO. DE PAQUETES:",
+            "type": "number",
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "presentacion",
+            "label": "PRESENTACIÓN:",
+            "type": "text",
+            "required": true,
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "no_cajas",
+            "label": "NO. DE CAJAS:",
+            "type": "number",
+            "gridColumn": "span 1"
+          }
+        ]
+      },
+      {
+        "id": "parametros_section",
+        "title": "PARÁMETROS",
+        "type": "table_section",
+        "tables": [
+          {
+            "id": "parametros_fisicoquimicos",
+            "title": "FISICOQUÍMICOS",
+            "type": "parameters_table",
+            "layout": "side_by_side",
+            "leftTable": {
+              "title": "FISICOQUÍMICOS",
+              "columns": [
+                { "id": "parametro", "label": "PARÁMETRO", "type": "text", "readonly": true },
+                { "id": "cumple", "label": "CUMPLE", "type": "checkbox" },
+                { "id": "no_cumple", "label": "NO CUMPLE", "type": "checkbox" }
+              ],
+              "rows": [
+                { "parametro": "GRADOS BRIX" },
+                { "parametro": "TEXTURA" },
+                { "parametro": "CONSISTENCIA" },
+                { "parametro": "SIN MATERIA EXTRAÑA" },
+                { "parametro": "COLOR" },
+                { "parametro": "OLOR" },
+                { "parametro": "PESO" },
+                { "parametro": "SABOR" },
+                { "parametro": "TEMPERATURA (CONOS)" }
+              ]
+            },
+            "rightTable": {
+              "title": "MICROBIOLÓGICOS",
+              "columns": [
+                { "id": "parametro", "label": "PARÁMETRO", "type": "text", "readonly": true },
+                { "id": "cumple", "label": "CUMPLE", "type": "checkbox" },
+                { "id": "no_cumple", "label": "NO CUMPLE", "type": "checkbox" }
+              ],
+              "rows": [
+                { "parametro": "MICROBIOLÓGICOS" },
+                { "parametro": "MESÓFILOS AERÓBICOS" },
+                { "parametro": "COLIFORMES FECALES" },
+                { "parametro": "COLIFORMES TOTALES" },
+                { "parametro": "SALMONELLA SPP." },
+                { "parametro": "STAPHYLOCOCCUS A." },
+                { "parametro": "HONGOS" },
+                { "parametro": "LEVADURAS" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "folios_reportes",
+        "title": "Folios de Reportes",
+        "type": "form_section",
+        "layout": "grid",
+        "columns": 1,
+        "fields": [
+          {
+            "id": "folio_reporte_1",
+            "label": "FOLIO(S) DE REPORTES DE PRODUCCIÓN #1:",
+            "type": "text",
+            "gridColumn": "span 1"
+          },
+          {
+            "id": "folio_reporte_2",
+            "label": "FOLIO(S) DE REPORTES DE PRODUCCIÓN #2:",
+            "type": "text",
+            "gridColumn": "span 1"
+          }
+        ]
+      },
+      {
+        "id": "observaciones_section",
+        "title": "OBSERVACIONES",
+        "type": "form_section",
+        "fields": [
+          {
+            "id": "observaciones",
+            "label": "OBSERVACIONES",
+            "type": "textarea",
+            "rows": 8,
+            "placeholder": "Escriba aquí las observaciones..."
+          }
+        ]
+      },
+      {
+        "id": "firmas_section",
+        "title": "Firmas de Autorización",
+        "type": "signature_section",
+        "layout": "three_columns",
+        "signatures": [
+          {
+            "id": "firma_almacen",
+            "label": "ALMACÉN",
+            "required": true,
+            "department": "Almacén"
+          },
+          {
+            "id": "firma_produccion",
+            "label": "PRODUCCIÓN",
+            "required": true,
+            "department": "Producción"
+          },
+          {
+            "id": "firma_calidad",
+            "label": "CALIDAD",
+            "required": true,
+            "department": "Control de Calidad"
+          }
+        ]
+      }
+    ],
+    "header": {
+      "title": "CONTROL DE CALIDAD",
+      "code": "CARE-06",
+      "version": "01-2022",
+      "fields": [
+        {
+          "id": "folio",
+          "label": "FOLIO:",
+          "type": "text",
+          "position": "top_right"
+        },
+        {
+          "id": "fecha_emision",
+          "label": "Fecha de emisión: Enero 2022",
+          "type": "static_text",
+          "position": "header_left"
+        },
+        {
+          "id": "remplaza",
+          "label": "Remplaza: No aplica",
+          "type": "static_text",
+          "position": "header_right"
+        },
+        {
+          "id": "departamento_emisor",
+          "label": "Departamento emisor: Control de Calidad",
+          "type": "static_text",
+          "position": "header_left"
+        },
+        {
+          "id": "tipo_documento",
+          "label": "Tipo de Documento: Registro",
+          "type": "static_text",
+          "position": "header_right"
+        }
+      ]
+    }
+  }
+}

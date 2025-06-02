@@ -83,7 +83,7 @@ export default function MobileNav({ className }: MobileNavProps) {
       title: "Reportes",
       href: "/reports",
       icon: <BarChart3 className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || isViewer,
+      show: isSuperAdmin || isViewer,
     },
     {
       title: "Configuración",

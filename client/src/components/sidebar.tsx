@@ -95,7 +95,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Reportes",
       href: "/reports",
       icon: <BarChart3 className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || user.role === UserRole.VIEWER,
+      show: isSuperAdmin || user.role === UserRole.VIEWER,
     },
     {
       title: "Productos",
