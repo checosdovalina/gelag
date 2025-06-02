@@ -88,10 +88,8 @@ export default function FormViewer({
              ) : false
   });
 
-  // Filtrar productos para mostrar solo "Producto Terminado" en formularios de microbiología
-  const products = formTemplate?.title?.includes('MICROBIOLOGIA') 
-    ? allProducts.filter(product => product.category === 'Producto Terminado')
-    : allProducts;
+  // Filtrar productos para mostrar solo "Producto Terminado" en campos de selección de productos
+  const products = allProducts.filter(product => product.category === 'Producto Terminado');
   
   // Cargar lista de empleados
   const { data: employees = [], isLoading: employeesLoading } = useQuery<Employee[]>({
