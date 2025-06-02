@@ -380,7 +380,7 @@ export default function ReportsPage() {
 
   // Procesar entradas con información de plantilla y usuario
   useEffect(() => {
-    if (entriesData && templates && users) {
+    if (entriesData && templates && users && Array.isArray(entriesData)) {
       const processed = entriesData.map(entry => {
         const template = templates.find(t => t.id === entry.formTemplateId);
         const user = users.find(u => u.id === entry.createdBy);
