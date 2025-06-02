@@ -1027,6 +1027,17 @@ export default function FormViewer({
                         field.label.toLowerCase() === "folio" ||
                         field.label.toLowerCase().includes("folio");
         
+        // Verificar si es uno de los campos específicos que deben ser editables
+        const isEditableFolioFieldText = field.id === 'folio_liberacion' || 
+                                       field.id === 'folio_baja_mp' || 
+                                       field.id === 'folio_baja_empaque';
+        
+        // Determinar si mostrar auto-asignado (solo para folio principal, no para los específicos)
+        const showAutoAssignedText = isFolio && !isReadOnly && !isEditableFolioFieldText;
+        
+        // Determinar si deshabilitar el campo (solo folio principal, no los específicos)
+        const shouldDisable = isReadOnly || (isFolio && !isEditableFolioFieldText);
+        
         return (
           <FormField
             key={field.id}
@@ -1036,18 +1047,18 @@ export default function FormViewer({
               <FormItem>
                 <FormLabel>
                   {field.label} {field.required && <span className="text-red-500">*</span>}
-                  {isFolio && !isReadOnly && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
+                  {showAutoAssignedText && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder={field.placeholder || ""}
                     {...formField}
                     value={formField.value || ""}
-                    disabled={isReadOnly || isFolio}
-                    className={isFolio ? "bg-blue-50 font-medium" : ""}
+                    disabled={shouldDisable}
+                    className={isFolio && !isEditableFolioFieldText ? "bg-blue-50 font-medium" : ""}
                   />
                 </FormControl>
-                {isFolio && !isReadOnly && (
+                {showAutoAssignedText && (
                   <p className="text-sm text-muted-foreground mt-1">
                     El número de folio se asigna automáticamente y es único para este tipo de formulario.
                   </p>
@@ -1064,10 +1075,18 @@ export default function FormViewer({
                                field.label.toLowerCase() === "folio" ||
                                field.label.toLowerCase().includes("folio");
         
+        // Verificar si es uno de los campos específicos que deben ser editables
+        const isEditableFolioField = field.id === 'folio_liberacion' || 
+                                   field.id === 'folio_baja_mp' || 
+                                   field.id === 'folio_baja_empaque';
+        
         // Para campos de folio con formato personalizado (como CA-RE-01-01-F1), usamos un input de texto
         // aunque el campo sea de tipo numérico
         const isFormattedFolio = isNumericFolio && formField.value && typeof formField.value === 'string' 
                                && formField.value.includes('-F');
+        
+        // Determinar si mostrar auto-asignado (solo para folio principal, no para los específicos)
+        const showAutoAssigned = isNumericFolio && !isReadOnly && !isEditableFolioField;
         
         return (
           <FormField
@@ -1078,7 +1097,7 @@ export default function FormViewer({
               <FormItem>
                 <FormLabel>
                   {field.label} {field.required && <span className="text-red-500">*</span>}
-                  {isNumericFolio && !isReadOnly && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
+                  {showAutoAssigned && <span className="ml-2 text-sm text-blue-500 font-normal">(Auto-asignado)</span>}
                 </FormLabel>
                 <FormControl>
                   {isFormattedFolio ? (
