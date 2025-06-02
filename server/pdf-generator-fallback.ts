@@ -43,9 +43,9 @@ export async function generatePDFFallback(
       
       console.log("¿Usando orientación horizontal?", needsLandscape);
 
-      // Crear un nuevo documento PDF con orientación apropiada
+      // Crear un nuevo documento PDF con orientación apropiada y márgenes más compactos
       const doc = new PDFDocument({
-        margins: { top: 50, bottom: 50, left: 50, right: 50 },
+        margins: { top: 30, bottom: 30, left: 40, right: 40 },
         size: 'A4',
         layout: needsLandscape ? 'landscape' : 'portrait'
       });
@@ -72,10 +72,10 @@ export async function generatePDFFallback(
         const logoPath = path.resolve('./public/assets/gelag-logo.png');
         if (fs.existsSync(logoPath)) {
           doc.image(logoPath, {
-            fit: [80, 40], // Reducido el tamaño del logo
+            fit: [60, 30], // Logo más pequeño
             align: 'center'
           });
-          doc.moveDown(0.5); // Menos espacio vertical
+          doc.moveDown(0.2); // Mínimo espacio vertical
         }
       } catch (logoError) {
         console.error('Error al añadir logo:', logoError);
@@ -134,8 +134,8 @@ function generatePDFContent(
     formTitle = formTitle.replace(" TERMINADO", "");
   }
   
-  // Establecer posición Y inicial para el título
-  const titleY = 35;
+  // Establecer posición Y inicial para el título (más compacto)
+  const titleY = 20;
   
   // Dibujar título completo (incluido PRODUCTO TERMINADO)
   doc.text(formTitle, 50, titleY, { 
@@ -171,9 +171,9 @@ function generatePDFContent(
     statusText = "TERMINADO";
   }
   
-  // El título ya ha sido dibujado, ahora añadimos un espacio vertical mayor
+  // El título ya ha sido dibujado, ahora añadimos un espacio vertical compacto
   // independientemente de si hay estado o no
-  const directionY = titleY + 40; // Posición de la dirección con una línea más de separación
+  const directionY = titleY + 25; // Posición de la dirección más compacta
   
   // Insertar la dirección de la empresa con margen superior
   doc.fontSize(10).font('Helvetica').fillColor('#000000')
@@ -185,11 +185,11 @@ function generatePDFContent(
   
   // Si hay estado para mostrar, añadirlo DEBAJO de la dirección
   if (showStatus) {
-    // Posición del estado 2 espacios más abajo
-    const statusY = directionY + 45; // Mayor separación después de la dirección
+    // Posición del estado más compacta
+    const statusY = directionY + 20; // Menor separación después de la dirección
     
     // Dibujar estado con su color correspondiente
-    doc.fontSize(14).font('Helvetica-Bold').fillColor(headerStatusColor);
+    doc.fontSize(12).font('Helvetica-Bold').fillColor(headerStatusColor);
     doc.text(statusText, 50, statusY, { 
       align: 'center',
       width: pageWidth - 100
@@ -199,16 +199,16 @@ function generatePDFContent(
     doc.fillColor('#000000');
   }
   
-  // Espacio después del título y dirección (ajustado según el formato)
-  let lineY = 100;
+  // Espacio después del título y dirección más compacto
+  let lineY = showStatus ? 70 : 60;
   
   // Si es un formulario firmado o aprobado, ajustar el espacio por el título con estado
   if (entry.status === 'signed' || entry.status === 'approved') {
-    lineY = 120; // Más espacio para acomodar el estado adicional
+    lineY = 80; // Espacio más compacto para el estado adicional
   }
   
-  // Información principal: columnas para folio, fecha, creado por, etc.
-  const infoY = lineY + 20;
+  // Información principal: columnas para folio, fecha, creado por, etc. (más compacto)
+  const infoY = lineY + 10;
        
   doc.moveDown(1.5);
   
