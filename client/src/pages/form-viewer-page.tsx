@@ -32,7 +32,18 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
   const { data: formTemplate, isLoading: templateLoading } = useQuery({
     queryKey: [`/api/form-templates/${templateId || entryId}`],
     queryFn: async () => {
-      const response = await fetch(`/api/form-templates/${templateId || entryId}`);
+      let url = `/api/form-templates/${templateId}`;
+      
+      // Si estamos editando un formulario existente, primero obtenemos la entrada para obtener el templateId
+      if (!isNew && entryId) {
+        const entryResponse = await fetch(`/api/form-entries/${entryId}`);
+        if (entryResponse.ok) {
+          const entry = await entryResponse.json();
+          url = `/api/form-templates/${entry.formTemplateId}`;
+        }
+      }
+      
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error al cargar template');
       }
@@ -194,7 +205,7 @@ export default function FormViewerPage({ params }: FormViewerPageProps) {
         </div>
 
         {/* Usar WorkflowFormViewer para el formulario PR-PR-02 (id 19) */}
-        {templateId === '19' ? (
+        {(templateId === '19' || formTemplate?.id === 19) ? (
           <WorkflowFormViewer
             formTemplate={formTemplate.structure}
             formTitle={formTemplate.name}
