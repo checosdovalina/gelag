@@ -2423,7 +2423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Ruta para obtener productos
-  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER]), async (req, res, next) => {
+  app.get("/api/products", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       console.log("=== GET PRODUCTS ===");
       console.log("Query params:", req.query);
