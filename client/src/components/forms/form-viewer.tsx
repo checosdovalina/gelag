@@ -840,6 +840,15 @@ export default function FormViewer({
           const handleTableChange = (newData: Record<string, any>[]) => {
             console.log(`[renderAdvancedTableField] Actualizando tabla ${field.id} con datos:`, newData);
             
+            // Verificar si es una tabla de horarios de operación (deshabilitar auto-guardado)
+            const isScheduleTable = field.id === 'muestreo_table' || field.id === 'revision_table';
+            
+            if (isScheduleTable) {
+              console.log(`[renderAdvancedTableField] Tabla de horarios ${field.id} - solo actualización local, sin auto-guardado`);
+              // Solo actualizar el valor local sin activar auto-guardado
+              return;
+            }
+            
             // Crear copia profunda para evitar problemas de referencia
             const dataCopy = JSON.parse(JSON.stringify(newData));
             
