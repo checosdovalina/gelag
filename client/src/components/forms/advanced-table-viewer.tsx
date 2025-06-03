@@ -920,6 +920,40 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
                         className="h-8 w-full"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Encontrar la tabla más cercana
+                            const tableElement = e.currentTarget.closest('table');
+                            if (!tableElement) return;
+                            
+                            // Encontrar todos los inputs dentro de la tabla
+                            const tableInputs = tableElement.querySelectorAll(
+                              'input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+                            );
+                            
+                            const currentElement = e.target as HTMLElement;
+                            const currentIndex = Array.from(tableInputs).indexOf(currentElement);
+                            
+                            if (currentIndex >= 0 && currentIndex < tableInputs.length - 1) {
+                              const nextElement = tableInputs[currentIndex + 1] as HTMLElement;
+                              nextElement.focus();
+                            } else if (currentIndex === tableInputs.length - 1) {
+                              // Si estamos en el último campo, ir al primer campo de la siguiente fila
+                              const currentRow = currentElement.closest('tr');
+                              const nextRow = currentRow?.nextElementSibling as HTMLTableRowElement;
+                              
+                              if (nextRow) {
+                                const nextRowFirstInput = nextRow.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled])') as HTMLElement;
+                                if (nextRowFirstInput) {
+                                  nextRowFirstInput.focus();
+                                }
+                              }
+                            }
+                          }
+                        }}
                       />
                     )}
                     {column.type === 'number' && (
@@ -931,6 +965,40 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         className="h-8 w-full"
                         min={column.validation?.min}
                         max={column.validation?.max}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Encontrar la tabla más cercana
+                            const tableElement = e.currentTarget.closest('table');
+                            if (!tableElement) return;
+                            
+                            // Encontrar todos los inputs dentro de la tabla
+                            const tableInputs = tableElement.querySelectorAll(
+                              'input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+                            );
+                            
+                            const currentElement = e.target as HTMLElement;
+                            const currentIndex = Array.from(tableInputs).indexOf(currentElement);
+                            
+                            if (currentIndex >= 0 && currentIndex < tableInputs.length - 1) {
+                              const nextElement = tableInputs[currentIndex + 1] as HTMLElement;
+                              nextElement.focus();
+                            } else if (currentIndex === tableInputs.length - 1) {
+                              // Si estamos en el último campo, ir al primer campo de la siguiente fila
+                              const currentRow = currentElement.closest('tr');
+                              const nextRow = currentRow?.nextElementSibling as HTMLTableRowElement;
+                              
+                              if (nextRow) {
+                                const nextRowFirstInput = nextRow.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled])') as HTMLElement;
+                                if (nextRowFirstInput) {
+                                  nextRowFirstInput.focus();
+                                }
+                              }
+                            }
+                          }
+                        }}
                       />
                     )}
                     {column.type === 'select' && (

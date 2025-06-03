@@ -94,6 +94,42 @@ export default function FormViewer({
       }
     }
   };
+
+  // Función especializada para navegación en tablas sin auto-guardado
+  const handleTableEnterNavigation = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Encontrar la tabla más cercana
+      const tableElement = event.currentTarget.closest('table');
+      if (!tableElement) return;
+      
+      // Encontrar todos los inputs dentro de la tabla
+      const tableInputs = tableElement.querySelectorAll(
+        'input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+      );
+      
+      const currentElement = event.target as HTMLElement;
+      const currentIndex = Array.from(tableInputs).indexOf(currentElement);
+      
+      if (currentIndex >= 0 && currentIndex < tableInputs.length - 1) {
+        const nextElement = tableInputs[currentIndex + 1] as HTMLElement;
+        nextElement.focus();
+      } else if (currentIndex === tableInputs.length - 1) {
+        // Si estamos en el último campo, ir al primer campo de la siguiente fila o crear nueva fila
+        const currentRow = currentElement.closest('tr');
+        const nextRow = currentRow?.nextElementSibling as HTMLTableRowElement;
+        
+        if (nextRow) {
+          const nextRowFirstInput = nextRow.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled])') as HTMLElement;
+          if (nextRowFirstInput) {
+            nextRowFirstInput.focus();
+          }
+        }
+      }
+    }
+  };
   
   // Cargar lista de productos
   const { data: allProducts = [], isLoading: productsLoading } = useQuery<Product[]>({
