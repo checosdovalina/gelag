@@ -103,6 +103,10 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Identificar si es una tabla de horarios (sin auto-guardado)
+  const fieldId = (field as any).id;
+  const isScheduleTable = fieldId === 'muestreo_table' || fieldId === 'revision_table';
+  
   // Función para notificaciones de actualización de tabla
   const notifyTableUpdate = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success') => {
     toast({
@@ -341,6 +345,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const updateCell = (rowIndex: number, columnId: string, value: any) => {
     try {
       console.log("[updateCell] 🔄 Actualizando celda en fila", rowIndex, "columna", columnId, "valor:", value, "tipo:", typeof value);
+      
+      // Si es una tabla de horarios, solo actualizar localmente sin propagación
+      if (isScheduleTable) {
+        console.log("[updateCell] ⏰ Tabla de horarios - solo actualización local");
+        updateCellLocally(rowIndex, columnId, value);
+        return;
+      }
       
       setIsSaving(true);
       
