@@ -3,6 +3,10 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
+    // Si el texto parece ser HTML, extraer mensaje más legible
+    if (text.includes('<!DOCTYPE') || text.includes('<html>')) {
+      throw new Error(`Error del servidor (${res.status}): Respuesta HTML recibida - posible error de ruta`);
+    }
     throw new Error(`${res.status}: ${text}`);
   }
 }

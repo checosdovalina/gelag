@@ -1096,6 +1096,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // Actualizar entrada de formulario existente
+  app.put("/api/form-entries/:id", async (req, res) => {
+    try {
+      console.log("[FORM-UPDATE] === INICIANDO ACTUALIZACIÓN ===");
+      const entryId = parseInt(req.params.id);
+      
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "ID de entrada inválido" });
+      }
+      
+      console.log("[FORM-UPDATE] ID:", entryId);
+      console.log("[FORM-UPDATE] Datos recibidos:", req.body);
+      
+      // Verificar autenticación
+      if (!req.user) {
+        console.log("[FORM-UPDATE] Usuario no autenticado");
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
+      // Verificar permisos básicos
+      const allowedRoles = ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"];
+      if (!allowedRoles.includes(req.user.role)) {
+        console.log("[FORM-UPDATE] Rol no autorizado:", req.user.role);
+        return res.status(403).json({ message: "No autorizado" });
+      }
+      
+      // Verificar que la entrada existe
+      const existingEntry = await storage.getFormEntry(entryId);
+      if (!existingEntry) {
+        console.log("[FORM-UPDATE] Entrada no encontrada");
+        return res.status(404).json({ message: "Entrada de formulario no encontrada" });
+      }
+      
+      // Validación de datos
+      const { data } = req.body;
+      if (!data) {
+        console.log("[FORM-UPDATE] Datos faltantes");
+        return res.status(400).json({ message: "data es requerido" });
+      }
+      
+      // Actualizar entrada
+      const updatedEntry = await storage.updateFormEntry(entryId, {
+        data: data,
+        lastUpdatedBy: req.user.id
+      });
+      
+      console.log("[FORM-UPDATE] Entrada actualizada exitosamente");
+      
+      // Log activity
+      try {
+        await storage.createActivityLog({
+          userId: req.user.id,
+          action: "updated",
+          resourceType: "form_entry",
+          resourceId: entryId,
+          details: { formTemplateId: existingEntry.formTemplateId }
+        });
+      } catch (logError) {
+        console.log("[FORM-UPDATE] Warning: Error en log de actividad:", logError);
+      }
+      
+      res.json(updatedEntry);
+      
+    } catch (error) {
+      console.error("[FORM-UPDATE] Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      res.status(500).json({ 
+        message: "Error al actualizar formulario",
+        details: errorMessage
+      });
+    }
+  });
   
   // Eliminar entrada de formulario (SuperAdmin, Admin, y Gerentes)
   app.delete("/api/form-entries/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
