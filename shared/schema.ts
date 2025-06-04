@@ -412,6 +412,8 @@ export const productionForms = pgTable("production_forms", {
   liters: integer("liters").notNull(), // Litros a producción
   date: text("date").notNull(), // Fecha de producción
   responsible: text("responsible").notNull(), // Responsable
+  caducidad: text("caducidad"), // Fecha de caducidad
+  marmita: text("marmita"), // Número de marmita
   folio: text("folio").notNull(), // Número de folio
   status: text("status").$type<ProductionFormStatus>().notNull().default(ProductionFormStatus.DRAFT),
   lotNumber: text("lot_number"), // Número de lote

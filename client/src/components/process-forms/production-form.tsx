@@ -604,6 +604,28 @@ export default function ProductionForm({
                       disabled={!canEditSection("general-info") || readOnly}
                     />
                   </div>
+                  
+                  <div>
+                    <Label htmlFor="caducidad">Fecha de caducidad</Label>
+                    <Input
+                      id="caducidad"
+                      type="date"
+                      value={formData.caducidad || ""}
+                      onChange={(e) => handleChange("caducidad", e.target.value)}
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="marmita">Marmita</Label>
+                    <Input
+                      id="marmita"
+                      value={formData.marmita || ""}
+                      onChange={(e) => handleChange("marmita", e.target.value)}
+                      placeholder="Número de marmita"
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
