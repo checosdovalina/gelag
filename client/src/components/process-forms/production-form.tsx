@@ -271,7 +271,7 @@ export default function ProductionForm({
           unit: ingredient.unit
         }));
         
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
           ...prev,
           ingredients: updatedIngredients
         }));
@@ -281,7 +281,7 @@ export default function ProductionForm({
   
   // Manejar cambios en los campos
   const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       [field]: value
     }));

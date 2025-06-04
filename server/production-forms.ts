@@ -127,6 +127,8 @@ export async function createProductionForm(req: Request, res: Response) {
       status: validatedData.status || ProductionFormStatus.DRAFT,
       // Incluir otros campos opcionales si existen
       ...(validatedData.lotNumber && { lotNumber: validatedData.lotNumber }),
+      ...(validatedData.caducidad && { caducidad: validatedData.caducidad }),
+      ...(validatedData.marmita && { marmita: validatedData.marmita }),
       ...(validatedData.ingredients && { ingredients: validatedData.ingredients }),
       ...(validatedData.ingredientTimes && { ingredientTimes: validatedData.ingredientTimes })
     };
@@ -136,10 +138,11 @@ export async function createProductionForm(req: Request, res: Response) {
     // Insertar el nuevo formulario usando SQL directo
     const result = await db.execute(sql`
       INSERT INTO production_forms (
-        product_id, liters, date, responsible, folio, created_by, status, lot_number, ingredients, ingredient_times, created_at, updated_at
+        product_id, liters, date, responsible, caducidad, marmita, folio, created_by, status, lot_number, ingredients, ingredient_times, created_at, updated_at
       ) VALUES (
         ${insertData.productId}, ${insertData.liters}, ${insertData.date}, 
-        ${insertData.responsible}, ${insertData.folio}, ${insertData.createdBy}, 
+        ${insertData.responsible}, ${insertData.caducidad || null}, ${insertData.marmita || null}, 
+        ${insertData.folio}, ${insertData.createdBy}, 
         ${insertData.status}, ${insertData.lotNumber || null}, 
         ${insertData.ingredients ? JSON.stringify(insertData.ingredients) : null}, 
         ${insertData.ingredientTimes ? JSON.stringify(insertData.ingredientTimes) : null},
@@ -194,6 +197,8 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.liters !== undefined) updateFields.liters = req.body.liters;
     if (req.body.date !== undefined) updateFields.date = req.body.date;
     if (req.body.responsible !== undefined) updateFields.responsible = req.body.responsible;
+    if (req.body.caducidad !== undefined) updateFields.caducidad = req.body.caducidad;
+    if (req.body.marmita !== undefined) updateFields.marmita = req.body.marmita;
     if (req.body.lotNumber !== undefined) updateFields.lotNumber = req.body.lotNumber;
     if (req.body.status !== undefined) updateFields.status = req.body.status;
     
