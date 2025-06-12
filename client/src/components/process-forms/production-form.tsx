@@ -153,6 +153,12 @@ const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
     editable: true
   },
   {
+    id: "final-strainer",
+    title: "Colador Final",
+    allowedRoles: ["quality_manager"],
+    editable: true
+  },
+  {
     id: "liberation-data",
     title: "Datos de Liberación",
     allowedRoles: ["quality_manager"],
@@ -485,7 +491,7 @@ export default function ProductionForm({
       
       {/* Navegación por pestañas para las secciones */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="grid grid-cols-6">
+        <TabsList className="grid grid-cols-7">
           {PRODUCTION_FORM_SECTIONS.map(section => (
             <TabsTrigger 
               key={section.id} 
@@ -1151,18 +1157,7 @@ export default function ProductionForm({
                 </table>
               </div>
               
-              <div className="mt-6 grid grid-cols-2 gap-6">
-                <div>
-                  <Label>Total Kilos</Label>
-                  <Input
-                    type="number"
-                    value={formData.totalKilos || ""}
-                    onChange={(e) => handleChange("totalKilos", e.target.value)}
-                    disabled={!canEditSection("product-destination") || readOnly}
-                    className="mt-2"
-                  />
-                </div>
-                
+              <div className="mt-6">
                 <div>
                   <Label>Folio de liberación</Label>
                   <Input
@@ -1172,6 +1167,109 @@ export default function ProductionForm({
                     disabled={!canEditSection("product-destination") || readOnly}
                     className="mt-2"
                   />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Sección de Colador Final */}
+        <TabsContent value="final-strainer">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex justify-between">
+                <span>Colador Final</span>
+                {!canEditSection("final-strainer") && (
+                  <Badge variant="outline">Solo Lectura</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Campo Total Kilos */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="totalKilos" className="text-base font-medium">Total Kilos</Label>
+                    <Input
+                      id="totalKilos"
+                      type="number"
+                      value={formData.totalKilos || ""}
+                      onChange={(e) => handleChange("totalKilos", e.target.value)}
+                      disabled={!canEditSection("final-strainer") || readOnly}
+                      className="mt-2"
+                      placeholder="Ingrese el total de kilos"
+                    />
+                  </div>
+                </div>
+                
+                <Separator className="my-6" />
+                
+                {/* Tabla de Estado del Colador */}
+                <div>
+                  <Label className="text-base font-medium mb-4 block">Estado del Colador</Label>
+                  <div className="border rounded-md overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-muted">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
+                          <th className="px-4 py-3 text-center font-medium text-muted-foreground">Bueno</th>
+                          <th className="px-4 py-3 text-center font-medium text-muted-foreground">Malo</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-t">
+                          <td className="px-4 py-3 font-medium">Estado de inicio</td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="radio"
+                              name="startState"
+                              value="good"
+                              checked={formData.startState === "good"}
+                              onChange={() => handleChange("startState", "good")}
+                              disabled={!canEditSection("final-strainer") || readOnly}
+                              className="h-4 w-4"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="radio"
+                              name="startState"
+                              value="bad"
+                              checked={formData.startState === "bad"}
+                              onChange={() => handleChange("startState", "bad")}
+                              disabled={!canEditSection("final-strainer") || readOnly}
+                              className="h-4 w-4"
+                            />
+                          </td>
+                        </tr>
+                        <tr className="border-t">
+                          <td className="px-4 py-3 font-medium">Estado al final</td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="radio"
+                              name="endState"
+                              value="good"
+                              checked={formData.endState === "good"}
+                              onChange={() => handleChange("endState", "good")}
+                              disabled={!canEditSection("final-strainer") || readOnly}
+                              className="h-4 w-4"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="radio"
+                              name="endState"
+                              value="bad"
+                              checked={formData.endState === "bad"}
+                              onChange={() => handleChange("endState", "bad")}
+                              disabled={!canEditSection("final-strainer") || readOnly}
+                              className="h-4 w-4"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -1244,78 +1342,13 @@ export default function ProductionForm({
                   </CardContent>
                 </Card>
                 
-                <Card className="col-span-2">
+                <Card>
                   <CardHeader className="py-3">
-                    <CardTitle className="text-base">Colador</CardTitle>
+                    <CardTitle className="text-base">Firma Responsable</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="border rounded-md overflow-hidden">
-                      <table className="w-full">
-                        <thead className="bg-muted">
-                          <tr>
-                            <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
-                            <th className="px-4 py-3 text-center font-medium text-muted-foreground">Bueno</th>
-                            <th className="px-4 py-3 text-center font-medium text-muted-foreground">Malo</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-t">
-                            <td className="px-4 py-3">Estado de inicio</td>
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="radio"
-                                name="startState"
-                                value="good"
-                                checked={formData.startState === "good"}
-                                onChange={() => handleChange("startState", "good")}
-                                disabled={!canEditSection("liberation-data") || readOnly}
-                                className="h-4 w-4"
-                              />
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="radio"
-                                name="startState"
-                                value="bad"
-                                checked={formData.startState === "bad"}
-                                onChange={() => handleChange("startState", "bad")}
-                                disabled={!canEditSection("liberation-data") || readOnly}
-                                className="h-4 w-4"
-                              />
-                            </td>
-                          </tr>
-                          <tr className="border-t">
-                            <td className="px-4 py-3">Estado al final</td>
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="radio"
-                                name="endState"
-                                value="good"
-                                checked={formData.endState === "good"}
-                                onChange={() => handleChange("endState", "good")}
-                                disabled={!canEditSection("liberation-data") || readOnly}
-                                className="h-4 w-4"
-                              />
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="radio"
-                                name="endState"
-                                value="bad"
-                                checked={formData.endState === "bad"}
-                                onChange={() => handleChange("endState", "bad")}
-                                disabled={!canEditSection("liberation-data") || readOnly}
-                                className="h-4 w-4"
-                              />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    <div className="mt-6 flex justify-end">
+                    <div className="flex justify-center">
                       <div className="w-64">
-                        <Label>Firma Responsable</Label>
                         <div className="border rounded-md mt-2 h-20 flex items-center justify-center">
                           {formData.signatureUrl ? (
                             <img 
