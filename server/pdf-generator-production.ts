@@ -15,11 +15,11 @@ export async function generateProductionFormPDF(
       // Crear un buffer para almacenar el PDF
       const chunks: Buffer[] = [];
       
-      // Crear un nuevo documento PDF
+      // Crear un nuevo documento PDF en formato horizontal
       const doc = new PDFDocument({
         margins: { top: 30, bottom: 30, left: 40, right: 40 },
         size: 'A4',
-        layout: 'portrait'
+        layout: 'landscape'
       });
       
       // Capturar datos del documento
@@ -93,9 +93,10 @@ function generateProductionPDFContent(
   // Información principal del formulario
   const currentY = doc.y;
   
-  // Columna izquierda
+  // Columnas optimizadas para formato horizontal
   const leftColumn = 50;
-  const rightColumn = pageWidth / 2 + 20;
+  const centerColumn = pageWidth / 3 + 20;
+  const rightColumn = (pageWidth * 2) / 3 + 20;
   
   doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000');
   
@@ -157,15 +158,16 @@ function generateProductionPDFContent(
     doc.font('Helvetica-Bold').fontSize(12).text('CONTROL DE PROCESO:', 50, doc.y);
     doc.moveDown(0.5);
     
-    // Tabla de control de proceso
+    // Tabla de control de proceso optimizada para horizontal
     const tableY = doc.y;
     doc.fontSize(10).font('Helvetica-Bold');
     doc.text('Hora', 50, tableY);
-    doc.text('Temperatura', 120, tableY);
-    doc.text('Presión', 200, tableY);
+    doc.text('Temperatura (°C)', 150, tableY);
+    doc.text('Presión (PSI)', 280, tableY);
+    doc.text('Seguimiento', 410, tableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(350, tableY + 15).stroke();
+    doc.moveTo(50, tableY + 15).lineTo(600, tableY + 15).stroke();
     
     let currentRowY = tableY + 25;
     doc.font('Helvetica').fontSize(9);
@@ -183,8 +185,9 @@ function generateProductionPDFContent(
       
       if (hour || temp || pressure) {
         doc.text(hour, 50, currentRowY);
-        doc.text(temp, 120, currentRowY);
-        doc.text(pressure, 200, currentRowY);
+        doc.text(temp, 150, currentRowY);
+        doc.text(pressure, 280, currentRowY);
+        doc.text('Activo', 410, currentRowY);
         currentRowY += 15;
       }
     }
@@ -200,17 +203,17 @@ function generateProductionPDFContent(
     const tableY = doc.y;
     doc.fontSize(10).font('Helvetica-Bold');
     doc.text('Hora', 50, tableY);
-    doc.text('Brix', 120, tableY);
-    doc.text('Temp', 170, tableY);
-    doc.text('Textura', 220, tableY);
-    doc.text('Color', 280, tableY);
-    doc.text('Viscosidad', 330, tableY);
-    doc.text('Olor', 400, tableY);
-    doc.text('Sabor', 450, tableY);
-    doc.text('Estado', 500, tableY);
+    doc.text('Brix', 110, tableY);
+    doc.text('Temp', 160, tableY);
+    doc.text('Textura', 210, tableY);
+    doc.text('Color', 270, tableY);
+    doc.text('Viscosidad', 320, tableY);
+    doc.text('Olor', 390, tableY);
+    doc.text('Sabor', 440, tableY);
+    doc.text('Estado', 490, tableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(550, tableY + 15).stroke();
+    doc.moveTo(50, tableY + 15).lineTo(750, tableY + 15).stroke();
     
     let currentRowY = tableY + 25;
     doc.font('Helvetica').fontSize(8);
@@ -240,14 +243,14 @@ function generateProductionPDFContent(
       
       if (time || brix || temp || texture || color || viscosity || smell || taste || status) {
         doc.text(time, 50, currentRowY);
-        doc.text(brix, 120, currentRowY);
-        doc.text(temp, 170, currentRowY);
-        doc.text(texture, 220, currentRowY);
-        doc.text(color, 280, currentRowY);
-        doc.text(viscosity, 330, currentRowY);
-        doc.text(smell, 400, currentRowY);
-        doc.text(taste, 450, currentRowY);
-        doc.text(status, 500, currentRowY);
+        doc.text(brix, 110, currentRowY);
+        doc.text(temp, 160, currentRowY);
+        doc.text(texture, 210, currentRowY);
+        doc.text(color, 270, currentRowY);
+        doc.text(viscosity, 320, currentRowY);
+        doc.text(smell, 390, currentRowY);
+        doc.text(taste, 440, currentRowY);
+        doc.text(status, 490, currentRowY);
         currentRowY += 15;
       }
     }
