@@ -1879,24 +1879,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { name: 'Glucosa', quantity: 27, unit: 'kg' },
           { name: 'Malto', quantity: 5.0, unit: 'kg' },
           { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
-          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' }
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' }
         ],
         "Cajeton Esp Chepo": [
           { name: 'Leche de Cabra', quantity: 100, unit: 'kg' },
           { name: 'Azúcar', quantity: 20, unit: 'kg' },
           { name: 'Glucosa', quantity: 27, unit: 'kg' },
           { name: 'Malto', quantity: 5.0, unit: 'kg' },
-          { name: 'Bicarbonato', quantity: 0.18, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' }
+          { name: 'Bicarbonato', quantity: 0.18, unit: 'kg' }
         ],
         "Cabri Tradicional": [
           { name: 'Azúcar', quantity: 20, unit: 'kg' },
           { name: 'Glucosa', quantity: 45, unit: 'kg' },
           { name: 'Malto', quantity: 5.0, unit: 'kg' },
           { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
-          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' }
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' }
         ],
         "Cabri Espesa": [
           { name: 'Azúcar', quantity: 20, unit: 'kg' },
@@ -2110,8 +2107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               { name: "Leche de Vaca", baseQuantity: 20, unit: "kg" },
               { name: "Leche de Cabra", baseQuantity: 80, unit: "kg" },
               { name: "Azúcar", baseQuantity: 18, unit: "kg" },
-              { name: "Bicarbonato", baseQuantity: 0.16, unit: "kg" },
-              { name: "Pasta", baseQuantity: 132, unit: "kg" }
+              { name: "Bicarbonato", baseQuantity: 0.16, unit: "kg" }
             ]
           },
           12: { // Mielmex 65° Brix
@@ -2119,8 +2115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               { name: "Leche de Cabra", baseQuantity: 100, unit: "kg" },
               { name: "Azúcar", baseQuantity: 18, unit: "kg" },
               { name: "Bicarbonato", baseQuantity: 0.16, unit: "kg" },
-              { name: "Sorbato", baseQuantity: 0.06, unit: "kg" },
-              { name: "Pasta", baseQuantity: 132, unit: "kg" }
+              { name: "Sorbato", baseQuantity: 0.06, unit: "kg" }
             ]
           },
           16: { // Cajeton Esp Chepo
@@ -2129,14 +2124,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               { name: "Azúcar", baseQuantity: 20, unit: "kg" },
               { name: "Glucosa", baseQuantity: 27, unit: "kg" },
               { name: "Malto", baseQuantity: 5.0, unit: "kg" },
-              { name: "Bicarbonato", baseQuantity: 0.18, unit: "kg" },
-              { name: "Pasta", baseQuantity: 132, unit: "kg" }
+              { name: "Bicarbonato", baseQuantity: 0.18, unit: "kg" }
             ]
           },
           47: { // Gloria untable 80° Brix
             ingredients: [
               { name: "Glucosa", baseQuantity: 36, unit: "kg" },
-              { name: "Pasta", baseQuantity: 132, unit: "kg" },
               { name: "Nuez", baseQuantity: 23.76, unit: "kg" }
             ]
           }
