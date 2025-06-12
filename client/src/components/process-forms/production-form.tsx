@@ -155,7 +155,7 @@ const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
   {
     id: "final-strainer",
     title: "Colador Final",
-    allowedRoles: ["quality_manager"],
+    allowedRoles: ["production_manager", "quality_manager"],
     editable: true
   },
   {
@@ -1156,19 +1156,6 @@ export default function ProductionForm({
                   </tbody>
                 </table>
               </div>
-              
-              <div className="mt-6">
-                <div>
-                  <Label>Folio de liberación</Label>
-                  <Input
-                    type="text"
-                    value={formData.liberationFolio || ""}
-                    onChange={(e) => handleChange("liberationFolio", e.target.value)}
-                    disabled={!canEditSection("product-destination") || readOnly}
-                    className="mt-2"
-                  />
-                </div>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -1306,38 +1293,52 @@ export default function ProductionForm({
                     <CardTitle className="text-base">Datos de liberación</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-4">
                       <div>
-                        <Label>cP</Label>
+                        <Label>Folio de liberación</Label>
                         <Input
                           type="text"
-                          value={formData.cP || ""}
-                          onChange={(e) => handleChange("cP", e.target.value)}
+                          value={formData.liberationFolio || ""}
+                          onChange={(e) => handleChange("liberationFolio", e.target.value)}
                           disabled={!canEditSection("liberation-data") || readOnly}
                           className="mt-2"
+                          placeholder="Ingrese el folio de liberación"
                         />
                       </div>
                       
-                      <div>
-                        <Label>Cm en consistómetro</Label>
-                        <Input
-                          type="text"
-                          value={formData.cmConsistometer || ""}
-                          onChange={(e) => handleChange("cmConsistometer", e.target.value)}
-                          disabled={!canEditSection("liberation-data") || readOnly}
-                          className="mt-2"
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label>Grados Brix</Label>
-                        <Input
-                          type="text"
-                          value={formData.finalBrix || ""}
-                          onChange={(e) => handleChange("finalBrix", e.target.value)}
-                          disabled={!canEditSection("liberation-data") || readOnly}
-                          className="mt-2"
-                        />
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label>cP</Label>
+                          <Input
+                            type="text"
+                            value={formData.cP || ""}
+                            onChange={(e) => handleChange("cP", e.target.value)}
+                            disabled={!canEditSection("liberation-data") || readOnly}
+                            className="mt-2"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label>Cm en consistómetro</Label>
+                          <Input
+                            type="text"
+                            value={formData.cmConsistometer || ""}
+                            onChange={(e) => handleChange("cmConsistometer", e.target.value)}
+                            disabled={!canEditSection("liberation-data") || readOnly}
+                            className="mt-2"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label>Grados Brix</Label>
+                          <Input
+                            type="text"
+                            value={formData.finalBrix || ""}
+                            onChange={(e) => handleChange("finalBrix", e.target.value)}
+                            disabled={!canEditSection("liberation-data") || readOnly}
+                            className="mt-2"
+                          />
+                        </div>
                       </div>
                     </div>
                   </CardContent>
