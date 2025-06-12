@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { Info, AlertTriangle, Clock, Edit2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -1048,6 +1049,21 @@ export default function ProductionForm({
                   </table>
                 </div>
               </ScrollArea>
+              
+              <Separator className="my-6" />
+              
+              {/* Sección de Notas */}
+              <div className="space-y-4">
+                <Label htmlFor="qualityNotes" className="text-base font-medium">Notas de Verificación de Calidad</Label>
+                <Textarea
+                  id="qualityNotes"
+                  value={formData.qualityNotes || ""}
+                  onChange={(e) => handleChange("qualityNotes", e.target.value)}
+                  placeholder="Ingrese observaciones, comentarios o notas adicionales sobre la verificación de calidad..."
+                  disabled={!canEditSection("quality-verification") || readOnly}
+                  className="min-h-[100px] resize-y"
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

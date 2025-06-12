@@ -438,6 +438,7 @@ export const productionForms = pgTable("production_forms", {
   taste: json("taste"), // Sabor
   foreignMaterial: json("foreign_material"), // Material Extraño
   statusCheck: json("status_check"), // Status
+  qualityNotes: text("quality_notes"), // Notas de verificación de calidad
   
   // Sección de destino de producto
   destinationType: json("destination_type"), // Tipo de Cajeta

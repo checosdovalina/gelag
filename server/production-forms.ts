@@ -223,6 +223,7 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.smell !== undefined) updateFields.smell = req.body.smell;
     if (req.body.taste !== undefined) updateFields.taste = req.body.taste;
     if (req.body.statusCheck !== undefined) updateFields.statusCheck = req.body.statusCheck;
+    if (req.body.qualityNotes !== undefined) updateFields.qualityNotes = req.body.qualityNotes;
     
     // Campos de destino
     if (req.body.destinationType !== undefined) updateFields.destinationType = req.body.destinationType;
