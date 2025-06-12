@@ -1,8 +1,7 @@
 import PDFDocument from 'pdfkit';
-import { ProductionForm } from '@shared/schema';
-import { User } from '@shared/schema';
-import fs from 'fs';
-import path from 'path';
+import { ProductionForm, User } from '@shared/schema';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Función para generar un PDF de formulario de producción
 export async function generateProductionFormPDF(
