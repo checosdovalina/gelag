@@ -1186,7 +1186,7 @@ export default function ProductionForm({
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {/* Campo Total Kilos */}
+                {/* Campos Total Kilos y Rendimiento */}
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="totalKilos" className="text-base font-medium">Total Kilos</Label>
@@ -1198,6 +1198,18 @@ export default function ProductionForm({
                       disabled={!canEditSection("final-strainer") || readOnly}
                       className="mt-2"
                       placeholder="Ingrese el total de kilos"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="yield" className="text-base font-medium">Rendimiento</Label>
+                    <Input
+                      id="yield"
+                      type="text"
+                      value={formData.yield || ""}
+                      onChange={(e) => handleChange("yield", e.target.value)}
+                      disabled={!canEditSection("final-strainer") || readOnly}
+                      className="mt-2"
+                      placeholder="Ingrese el rendimiento"
                     />
                   </div>
                 </div>
@@ -1327,17 +1339,6 @@ export default function ProductionForm({
                           className="mt-2"
                         />
                       </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <Label>Rendimiento</Label>
-                      <Input
-                        type="text"
-                        value={formData.yield || ""}
-                        onChange={(e) => handleChange("yield", e.target.value)}
-                        disabled={!canEditSection("liberation-data") || readOnly}
-                        className="mt-2"
-                      />
                     </div>
                   </CardContent>
                 </Card>
