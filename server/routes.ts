@@ -1900,8 +1900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { name: 'Glucosa', quantity: 45, unit: 'kg' },
           { name: 'Malto', quantity: 5.0, unit: 'kg' },
           { name: 'Bicarbonato', quantity: 0.16, unit: 'kg' },
-          { name: 'Sorbato', quantity: 0.10, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' }
+          { name: 'Sorbato', quantity: 0.10, unit: 'kg' }
         ],
         "Horneable": [
           { name: 'Leche de Vaca', quantity: 100, unit: 'kg' },
@@ -1911,17 +1910,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { name: 'Bicarbonato', quantity: 0.10, unit: 'kg' },
           { name: 'Lecitina', quantity: 0.060, unit: 'kg' },
           { name: 'Carragenina', quantity: 0.060, unit: 'kg' },
-          { name: 'Grasa', quantity: 0.36, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' }
+          { name: 'Grasa', quantity: 0.36, unit: 'kg' }
         ],
         "Gloria untable 78° Brix": [
           { name: 'Glucosa', quantity: 36, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' },
           { name: 'Nuez', quantity: 16.10, unit: 'kg' }
         ],
         "Gloria untable 80° Brix": [
           { name: 'Glucosa', quantity: 36, unit: 'kg' },
-          { name: 'Pasta', quantity: 132, unit: 'kg' },
           { name: 'Nuez', quantity: 23.76, unit: 'kg' }
         ],
         "Pasta Oblea Coro": [

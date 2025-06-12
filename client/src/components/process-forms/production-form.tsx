@@ -641,8 +641,9 @@ export default function ProductionForm({
                     <Input
                       id="folio"
                       value={formData.folio || ""}
-                      placeholder="Folio automático"
-                      disabled={true}
+                      onChange={(e) => handleChange("folio", e.target.value)}
+                      placeholder="Ingrese el folio"
+                      disabled={!canEditSection("general-info") || readOnly}
                       className="font-semibold"
                     />
                   </div>
