@@ -348,55 +348,150 @@ function generateProductionPDFContent(
   
   // Ingredientes (si existen)
   if (form.ingredients && Array.isArray(form.ingredients) && form.ingredients.length > 0) {
-    doc.font('Helvetica-Bold').fontSize(12).text('INGREDIENTES:', 50, doc.y);
+    doc.font('Helvetica-Bold').fontSize(12).text('MATERIAS PRIMAS:', 50, doc.y);
     doc.moveDown(0.5);
     
-    // Encabezados de tabla
-    const tableY = doc.y;
+    const ingredientsTableY = doc.y;
     doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Nombre', 50, tableY);
-    doc.text('Cantidad', 200, tableY);
-    doc.text('Unidad', 300, tableY);
+    doc.text('Materia Prima', 50, ingredientsTableY);
+    doc.text('Cantidad (kg)', 200, ingredientsTableY);
+    doc.text('Hora', 300, ingredientsTableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(pageWidth - 50, tableY + 15).stroke();
+    doc.moveTo(50, ingredientsTableY + 15).lineTo(400, ingredientsTableY + 15).stroke();
     
-    let currentRowY = tableY + 25;
+    let currentIngredientY = ingredientsTableY + 25;
     doc.font('Helvetica').fontSize(9);
     
-    form.ingredients.forEach((ingredient: any) => {
-      doc.text(ingredient.name || 'N/A', 50, currentRowY);
-      doc.text(ingredient.quantity || 'N/A', 200, currentRowY);
-      doc.text(ingredient.unit || 'N/A', 300, currentRowY);
-      currentRowY += 15;
+    form.ingredients.forEach((ingredient: any, index: number) => {
+      const time = processData.ingredientTimes?.[index] || '';
+      doc.text(ingredient.name || '', 50, currentIngredientY);
+      doc.text(ingredient.quantity?.toString() || '', 200, currentIngredientY);
+      doc.text(time, 300, currentIngredientY);
+      currentIngredientY += 15;
     });
     
-    doc.y = currentRowY + 20;
+    doc.y = currentIngredientY + 20;
   }
   
-  // Tiempos de ingredientes (si existen)
-  if (form.ingredientTimes && Array.isArray(form.ingredientTimes) && form.ingredientTimes.length > 0) {
-    doc.font('Helvetica-Bold').fontSize(12).text('TIEMPOS DE INGREDIENTES:', 50, doc.y);
+  // Información de tiempos de proceso
+  if (processData.startTime || processData.endTime) {
+    doc.font('Helvetica-Bold').fontSize(12).text('TIEMPOS DE PROCESO:', 50, doc.y);
     doc.moveDown(0.5);
     
-    const tableY = doc.y;
+    const timeY = doc.y;
     doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Ingrediente', 50, tableY);
-    doc.text('Tiempo', 200, tableY);
     
-    // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(pageWidth - 50, tableY + 15).stroke();
+    if (processData.startTime) {
+      doc.text('Hora Inicio:', 50, timeY);
+      doc.font('Helvetica').text(processData.startTime, 120, timeY);
+    }
     
-    let currentRowY = tableY + 25;
-    doc.font('Helvetica').fontSize(9);
+    if (processData.endTime) {
+      doc.font('Helvetica-Bold').text('Hora Término:', 250, timeY);
+      doc.font('Helvetica').text(processData.endTime, 330, timeY);
+    }
     
-    form.ingredientTimes.forEach((timeEntry: any) => {
-      doc.text(timeEntry.ingredient || 'N/A', 50, currentRowY);
-      doc.text(timeEntry.time || 'N/A', 200, currentRowY);
-      currentRowY += 15;
-    });
+    doc.y = timeY + 30;
+  }
+  
+  // Datos de liberación
+  if (processData.liberationFolio || processData.cP || processData.cmConsistometer || processData.finalBrix) {
+    doc.font('Helvetica-Bold').fontSize(12).text('DATOS DE LIBERACIÓN:', 50, doc.y);
+    doc.moveDown(0.5);
     
-    doc.y = currentRowY + 20;
+    const liberationY = doc.y;
+    doc.fontSize(10).font('Helvetica-Bold');
+    
+    if (processData.liberationFolio) {
+      doc.text('Folio de Liberación:', 50, liberationY);
+      doc.font('Helvetica').text(processData.liberationFolio, 150, liberationY);
+    }
+    
+    if (processData.cP) {
+      doc.font('Helvetica-Bold').text('cP:', 300, liberationY);
+      doc.font('Helvetica').text(processData.cP, 330, liberationY);
+    }
+    
+    const liberation2Y = liberationY + 20;
+    
+    if (processData.cmConsistometer) {
+      doc.font('Helvetica-Bold').text('Cm Consistómetro:', 50, liberation2Y);
+      doc.font('Helvetica').text(processData.cmConsistometer, 150, liberation2Y);
+    }
+    
+    if (processData.finalBrix) {
+      doc.font('Helvetica-Bold').text('Grados Brix:', 300, liberation2Y);
+      doc.font('Helvetica').text(processData.finalBrix, 380, liberation2Y);
+    }
+    
+    doc.y = liberation2Y + 30;
+  }
+  
+  // Datos del Colador Final
+  if (processData.totalKilos || processData.yield || processData.startState || processData.endState) {
+    doc.font('Helvetica-Bold').fontSize(12).text('COLADOR FINAL:', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    const coladorY = doc.y;
+    doc.fontSize(10).font('Helvetica-Bold');
+    
+    if (processData.totalKilos) {
+      doc.text('Total Kilos:', 50, coladorY);
+      doc.font('Helvetica').text(processData.totalKilos, 120, coladorY);
+    }
+    
+    if (processData.yield) {
+      doc.font('Helvetica-Bold').text('Rendimiento:', 250, coladorY);
+      doc.font('Helvetica').text(processData.yield, 330, coladorY);
+    }
+    
+    const colador2Y = coladorY + 20;
+    
+    if (processData.startState || processData.endState) {
+      doc.font('Helvetica-Bold').text('Estado del Colador:', 50, colador2Y);
+      const stateText = `Inicio: ${processData.startState || 'N/A'} | Final: ${processData.endState || 'N/A'}`;
+      doc.font('Helvetica').text(stateText, 150, colador2Y);
+    }
+    
+    doc.y = colador2Y + 30;
+  }
+  
+  // Notas de calidad
+  if (processData.qualityNotes) {
+    doc.font('Helvetica-Bold').fontSize(12).text('NOTAS DE VERIFICACIÓN DE CALIDAD:', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    doc.fontSize(10).font('Helvetica');
+    const notesText = processData.qualityNotes.length > 300 ? 
+      processData.qualityNotes.substring(0, 300) + '...' : 
+      processData.qualityNotes;
+    doc.text(notesText, 50, doc.y, { width: pageWidth - 100, align: 'left' });
+    doc.moveDown(1);
+  }
+  
+  // Información adicional del formulario
+  if (processData.caducidad || processData.marmita) {
+    doc.font('Helvetica-Bold').fontSize(12).text('INFORMACIÓN ADICIONAL:', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    const additionalY = doc.y;
+    doc.fontSize(10).font('Helvetica-Bold');
+    
+    if (processData.caducidad) {
+      doc.text('Fecha de Caducidad:', 50, additionalY);
+      doc.font('Helvetica').text(
+        new Date(processData.caducidad).toLocaleDateString('es-MX'), 
+        160, additionalY
+      );
+    }
+    
+    if (processData.marmita) {
+      doc.font('Helvetica-Bold').text('Marmita:', 300, additionalY);
+      doc.font('Helvetica').text(processData.marmita, 350, additionalY);
+    }
+    
+    doc.y = additionalY + 30;
   }
   
   // Información de creación al final
