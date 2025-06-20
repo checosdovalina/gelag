@@ -98,7 +98,7 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
       </Card>
 
       {/* Control de Proceso */}
-      {(formData.temperature || formData.pressure || formData.hourTracking) && (
+      {(formData.temperature || formData.pressure) && (
         <Card>
           <CardHeader>
             <CardTitle>Control de Proceso</CardTitle>
@@ -108,20 +108,19 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
               <table className="w-full border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-gray-300 px-4 py-2 text-left">Hora</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Tiempo</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Temperatura</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Presión</th>
                   </tr>
                 </thead>
                 <tbody>
                   {Array.from({ length: Math.max(
-                    formData.hourTracking?.length || 0,
                     formData.temperature?.length || 0,
                     formData.pressure?.length || 0
                   )}).map((_, index) => (
                     <tr key={index}>
                       <td className="border border-gray-300 px-4 py-2">
-                        {formData.hourTracking?.[index] || '-'}
+                        {index < 6 ? `Hora ${index}` : 'Fin'}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {formData.temperature?.[index] || '-'}

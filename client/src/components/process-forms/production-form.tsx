@@ -756,7 +756,7 @@ export default function ProductionForm({
               
               <Separator className="my-6" />
               
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 {/* Tabla de Temperatura */}
                 <Card>
                   <CardHeader className="py-3">
@@ -828,41 +828,6 @@ export default function ProductionForm({
                                 placeholder="PSI"
                                 disabled={!canEditSection("process-tracking") || readOnly}
                                 className="h-8 text-right"
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </CardContent>
-                </Card>
-                
-                {/* Tabla de Hora */}
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-base">HORA</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <table className="w-full">
-                      <thead className="bg-muted">
-                        <tr>
-                          <th className="px-3 py-2 text-center text-xs font-medium">Hora</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Array.from({ length: 7 }).map((_, i) => (
-                          <tr key={i} className="border-t">
-                            <td className="px-3 py-2">
-                              <Input
-                                type="time"
-                                value={(formData.hourTracking && formData.hourTracking[i]) || ""}
-                                onChange={(e) => {
-                                  const hours = [...(formData.hourTracking || Array(7).fill(""))];
-                                  hours[i] = e.target.value;
-                                  handleChange("hourTracking", hours);
-                                }}
-                                disabled={!canEditSection("process-tracking") || readOnly}
-                                className="h-8 text-center"
                               />
                             </td>
                           </tr>

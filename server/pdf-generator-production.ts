@@ -154,40 +154,36 @@ function generateProductionPDFContent(
   const processData = form as any; // Cast para acceder a los campos adicionales
   
   // Sección de Control de Proceso
-  if (processData.temperature || processData.pressure || processData.hourTracking) {
+  if (processData.temperature || processData.pressure) {
     doc.font('Helvetica-Bold').fontSize(12).text('CONTROL DE PROCESO:', 50, doc.y);
     doc.moveDown(0.5);
     
     // Tabla de control de proceso optimizada para horizontal
     const tableY = doc.y;
     doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Hora', 50, tableY);
-    doc.text('Temperatura (°C)', 150, tableY);
-    doc.text('Presión (PSI)', 280, tableY);
-    doc.text('Seguimiento', 410, tableY);
+    doc.text('Tiempo', 50, tableY);
+    doc.text('Temperatura (°C)', 200, tableY);
+    doc.text('Presión (PSI)', 350, tableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(600, tableY + 15).stroke();
+    doc.moveTo(50, tableY + 15).lineTo(500, tableY + 15).stroke();
     
     let currentRowY = tableY + 25;
     doc.font('Helvetica').fontSize(9);
     
     const maxRows = Math.max(
-      processData.hourTracking?.length || 0,
       processData.temperature?.length || 0,
       processData.pressure?.length || 0
     );
     
     for (let i = 0; i < maxRows; i++) {
-      const hour = processData.hourTracking?.[i] || '';
       const temp = processData.temperature?.[i] || '';
       const pressure = processData.pressure?.[i] || '';
       
-      if (hour || temp || pressure) {
-        doc.text(hour, 50, currentRowY);
-        doc.text(temp, 150, currentRowY);
-        doc.text(pressure, 280, currentRowY);
-        doc.text('Activo', 410, currentRowY);
+      if (temp || pressure) {
+        doc.text(i < 6 ? `Hora ${i}` : 'Fin', 50, currentRowY);
+        doc.text(temp, 200, currentRowY);
+        doc.text(pressure, 350, currentRowY);
         currentRowY += 15;
       }
     }
