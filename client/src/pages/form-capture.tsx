@@ -101,7 +101,9 @@ export default function FormCapture() {
           template.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (departmentFilter && departmentFilter !== "all"
             ? template.department === departmentFilter
-            : true)
+            : true) &&
+          // Ocultar el formulario PR-PR-02 del módulo de captura de datos
+          template.name !== "PR-PR-02 Ficha técnica producción de dulces"
       )
     : [];
 
