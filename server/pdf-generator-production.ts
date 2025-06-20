@@ -15,11 +15,12 @@ export async function generateProductionFormPDF(
       // Crear un buffer para almacenar el PDF
       const chunks: Buffer[] = [];
       
-      // Crear un nuevo documento PDF en formato horizontal
+      // Crear un nuevo documento PDF en formato horizontal optimizado
       const doc = new PDFDocument({
-        margins: { top: 30, bottom: 30, left: 40, right: 40 },
+        margins: { top: 20, bottom: 20, left: 30, right: 30 },
         size: 'A4',
-        layout: 'landscape'
+        layout: 'landscape',
+        compress: true
       });
       
       // Capturar datos del documento
@@ -74,18 +75,18 @@ function generateProductionPDFContent(
   const pageWidth = doc.page.width;
   
   // Título del documento
-  doc.fillColor('#000000').fontSize(14).font('Helvetica-Bold');
-  doc.text('FORMULARIO DE PRODUCCIÓN', 50, 20, { 
+  doc.fillColor('#000000').fontSize(12).font('Helvetica-Bold');
+  doc.text('FORMULARIO DE PRODUCCIÓN', 30, 15, { 
     align: 'center',
-    width: pageWidth - 100
+    width: pageWidth - 60
   });
   
   // Dirección de la empresa
-  doc.fontSize(10).font('Helvetica').fillColor('#000000')
+  doc.fontSize(8).font('Helvetica').fillColor('#000000')
     .text('GELAG S.A DE C.V. BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 
-      50, 45, {
+      30, 35, {
         align: 'center',
-        width: pageWidth - 100
+        width: pageWidth - 60
       });
   
   doc.moveDown(0.3);
@@ -155,21 +156,21 @@ function generateProductionPDFContent(
   
   // Sección de Control de Proceso
   if (processData.temperature || processData.pressure) {
-    doc.font('Helvetica-Bold').fontSize(12).text('CONTROL DE PROCESO:', 50, doc.y);
-    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').fontSize(10).text('CONTROL DE PROCESO:', 30, doc.y);
+    doc.moveDown(0.3);
     
     // Tabla de control de proceso optimizada para horizontal
     const tableY = doc.y;
-    doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Tiempo', 50, tableY);
-    doc.text('Temperatura (°C)', 200, tableY);
-    doc.text('Presión (PSI)', 350, tableY);
+    doc.fontSize(8).font('Helvetica-Bold');
+    doc.text('Tiempo', 30, tableY);
+    doc.text('Temperatura (°C)', 150, tableY);
+    doc.text('Presión (PSI)', 270, tableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(500, tableY + 15).stroke();
+    doc.moveTo(30, tableY + 12).lineTo(400, tableY + 12).stroke();
     
-    let currentRowY = tableY + 25;
-    doc.font('Helvetica').fontSize(9);
+    let currentRowY = tableY + 18;
+    doc.font('Helvetica').fontSize(7);
     
     const maxRows = Math.max(
       processData.temperature?.length || 0,
@@ -181,10 +182,10 @@ function generateProductionPDFContent(
       const pressure = processData.pressure?.[i] || '';
       
       if (temp || pressure) {
-        doc.text(i < 6 ? `Hora ${i}` : 'Fin', 50, currentRowY);
-        doc.text(temp, 200, currentRowY);
-        doc.text(pressure, 350, currentRowY);
-        currentRowY += 15;
+        doc.text(i < 6 ? `Hora ${i}` : 'Fin', 30, currentRowY);
+        doc.text(temp, 150, currentRowY);
+        doc.text(pressure, 270, currentRowY);
+        currentRowY += 12;
       }
     }
     
@@ -193,26 +194,26 @@ function generateProductionPDFContent(
   
   // Sección de Control de Calidad
   if (processData.qualityTimes || processData.brix || processData.qualityTemp) {
-    doc.font('Helvetica-Bold').fontSize(12).text('CONTROL DE CALIDAD:', 50, doc.y);
-    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').fontSize(10).text('CONTROL DE CALIDAD:', 30, doc.y);
+    doc.moveDown(0.3);
     
     const tableY = doc.y;
-    doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Hora', 50, tableY);
-    doc.text('Brix', 110, tableY);
-    doc.text('Temp', 160, tableY);
-    doc.text('Textura', 210, tableY);
-    doc.text('Color', 270, tableY);
-    doc.text('Viscosidad', 320, tableY);
-    doc.text('Olor', 390, tableY);
-    doc.text('Sabor', 440, tableY);
-    doc.text('Estado', 490, tableY);
+    doc.fontSize(7).font('Helvetica-Bold');
+    doc.text('Hora', 30, tableY);
+    doc.text('Brix', 80, tableY);
+    doc.text('Temp', 120, tableY);
+    doc.text('Textura', 160, tableY);
+    doc.text('Color', 210, tableY);
+    doc.text('Visc.', 250, tableY);
+    doc.text('Olor', 290, tableY);
+    doc.text('Sabor', 330, tableY);
+    doc.text('Estado', 370, tableY);
     
     // Línea separadora
-    doc.moveTo(50, tableY + 15).lineTo(750, tableY + 15).stroke();
+    doc.moveTo(30, tableY + 12).lineTo(420, tableY + 12).stroke();
     
-    let currentRowY = tableY + 25;
-    doc.font('Helvetica').fontSize(8);
+    let currentRowY = tableY + 18;
+    doc.font('Helvetica').fontSize(6);
     
     const maxQualityRows = Math.max(
       processData.qualityTimes?.length || 0,
@@ -238,16 +239,16 @@ function generateProductionPDFContent(
       const status = processData.statusCheck?.[i] || '';
       
       if (time || brix || temp || texture || color || viscosity || smell || taste || status) {
-        doc.text(time, 50, currentRowY);
-        doc.text(brix, 110, currentRowY);
-        doc.text(temp, 160, currentRowY);
-        doc.text(texture, 210, currentRowY);
-        doc.text(color, 270, currentRowY);
-        doc.text(viscosity, 320, currentRowY);
-        doc.text(smell, 390, currentRowY);
-        doc.text(taste, 440, currentRowY);
-        doc.text(status, 490, currentRowY);
-        currentRowY += 15;
+        doc.text(time, 30, currentRowY);
+        doc.text(brix, 80, currentRowY);
+        doc.text(temp, 120, currentRowY);
+        doc.text(texture, 160, currentRowY);
+        doc.text(color, 210, currentRowY);
+        doc.text(viscosity, 250, currentRowY);
+        doc.text(smell, 290, currentRowY);
+        doc.text(taste, 330, currentRowY);
+        doc.text(status, 370, currentRowY);
+        currentRowY += 12;
       }
     }
     
@@ -346,30 +347,30 @@ function generateProductionPDFContent(
   
   // Ingredientes (si existen)
   if (form.ingredients && Array.isArray(form.ingredients) && form.ingredients.length > 0) {
-    doc.font('Helvetica-Bold').fontSize(12).text('MATERIAS PRIMAS:', 50, doc.y);
-    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').fontSize(10).text('MATERIAS PRIMAS:', 30, doc.y);
+    doc.moveDown(0.3);
     
     const ingredientsTableY = doc.y;
-    doc.fontSize(10).font('Helvetica-Bold');
-    doc.text('Materia Prima', 50, ingredientsTableY);
-    doc.text('Cantidad (kg)', 200, ingredientsTableY);
-    doc.text('Hora', 300, ingredientsTableY);
+    doc.fontSize(8).font('Helvetica-Bold');
+    doc.text('Materia Prima', 30, ingredientsTableY);
+    doc.text('Cantidad (kg)', 150, ingredientsTableY);
+    doc.text('Hora', 220, ingredientsTableY);
     
     // Línea separadora
-    doc.moveTo(50, ingredientsTableY + 15).lineTo(400, ingredientsTableY + 15).stroke();
+    doc.moveTo(30, ingredientsTableY + 12).lineTo(280, ingredientsTableY + 12).stroke();
     
-    let currentIngredientY = ingredientsTableY + 25;
-    doc.font('Helvetica').fontSize(9);
+    let currentIngredientY = ingredientsTableY + 18;
+    doc.font('Helvetica').fontSize(7);
     
     form.ingredients.forEach((ingredient: any, index: number) => {
       const time = processData.ingredientTimes?.[index] || '';
-      doc.text(ingredient.name || '', 50, currentIngredientY);
-      doc.text(ingredient.quantity?.toString() || '', 200, currentIngredientY);
-      doc.text(time, 300, currentIngredientY);
-      currentIngredientY += 15;
+      doc.text(ingredient.name || '', 30, currentIngredientY);
+      doc.text(ingredient.quantity?.toString() || '', 150, currentIngredientY);
+      doc.text(time, 220, currentIngredientY);
+      currentIngredientY += 12;
     });
     
-    doc.y = currentIngredientY + 20;
+    doc.y = currentIngredientY + 15;
   }
   
   // Información de tiempos de proceso
