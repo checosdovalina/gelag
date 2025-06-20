@@ -207,8 +207,8 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.ingredientTimes !== undefined) updateFields.ingredientTimes = req.body.ingredientTimes;
     
     // Campos de seguimiento de proceso
-    if (req.body.startTime !== undefined) updateFields.startTime = req.body.startTime;
-    if (req.body.endTime !== undefined) updateFields.endTime = req.body.endTime;
+    if (req.body.startTime !== undefined) updateFields.start_time = req.body.startTime;
+    if (req.body.endTime !== undefined) updateFields.end_time = req.body.endTime;
     if (req.body.temperature !== undefined) updateFields.temperature = req.body.temperature;
     if (req.body.pressure !== undefined) updateFields.pressure = req.body.pressure;
     if (req.body.hourTracking !== undefined) updateFields.hourTracking = req.body.hourTracking;
@@ -250,31 +250,9 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
     
-    // Actualizar usando SQL directo para evitar problemas de tipos
-    const updateQuery = `
-      UPDATE production_forms 
-      SET 
-        ${Object.keys(updateFields).filter(key => 
-          !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(key)
-        ).map(key => `${key.replace(/([A-Z])/g, '_$1').toLowerCase()} = $${Object.keys(updateFields).indexOf(key) + 1}`).join(', ')}
-      WHERE id = $${Object.keys(updateFields).length + 1}
-      RETURNING *
-    `;
-    
-    const values = Object.values(updateFields).filter((_, index) => 
-      !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(Object.keys(updateFields)[index])
-    );
-    values.push(id);
-    
-    // Fallback: usar el método original pero solo con campos seguros
-    const safeFields = Object.fromEntries(
-      Object.entries(updateFields).filter(([key]) => 
-        !['updatedAt', 'lastUpdatedAt', 'createdAt'].includes(key)
-      )
-    );
-    
+    // Usar actualización directa con campos mapeados correctamente
     const [updatedForm] = await db.update(productionForms)
-      .set(safeFields)
+      .set(updateFields)
       .where(eq(productionForms.id, id))
       .returning();
     
