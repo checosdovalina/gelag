@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,7 @@ export default function FormViewer({
   const [selectedField, setSelectedField] = useState<IFormField | null>(null);
   const [updatedFormTemplate, setUpdatedFormTemplate] = useState<FormStructure>(formTemplate);
   const [nextFolioNumber, setNextFolioNumber] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState("section-0");
   const { user } = useAuth();
   const { toast } = useToast();
   
@@ -1602,26 +1604,43 @@ export default function FormViewer({
           <CardContent className="space-y-6">
             {/* Renderizar formularios con secciones */}
             {formTemplate.sections ? (
-              <div className="space-y-6">
-                {formTemplate.sections.map((section, sectionIndex) => (
-                  <div key={sectionIndex} className="space-y-4">
-                    {section.title && (
-                      <h3 
-                        className="text-lg font-semibold p-3 rounded text-white"
-                        style={{ backgroundColor: section.backgroundColor || '#6B7280' }}
-                      >
+              // Verificar si es el formulario PR-PR-02 para usar pestañas sin colores
+              formTitle?.includes("PR-PR-02") || formTitle?.includes("dulces") ? (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${formTemplate.sections.length}, minmax(0, 1fr))` }}>
+                    {formTemplate.sections.map((section, sectionIndex) => (
+                      <TabsTrigger key={sectionIndex} value={`section-${sectionIndex}`}>
                         {section.title}
-                      </h3>
-                    )}
-                    <div 
-                      className="p-4 rounded border"
-                      style={{ backgroundColor: section.backgroundColor ? `${section.backgroundColor}20` : 'transparent' }}
-                    >
-                      {section.fields && section.fields.map((field) => renderField(field))}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {formTemplate.sections.map((section, sectionIndex) => (
+                    <TabsContent key={sectionIndex} value={`section-${sectionIndex}`} className="mt-6">
+                      <div className="p-4 rounded border border-gray-200">
+                        <div className="space-y-4">
+                          {section.fields && section.fields.map((field) => renderField(field))}
+                        </div>
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              ) : (
+                // Formularios normales con secciones coloreadas
+                <div className="space-y-6">
+                  {formTemplate.sections.map((section, sectionIndex) => (
+                    <div key={sectionIndex} className="space-y-4">
+                      {section.title && (
+                        <h3 className="text-lg font-semibold p-3 rounded bg-gray-600 text-white">
+                          {section.title}
+                        </h3>
+                      )}
+                      <div className="p-4 rounded border bg-gray-50">
+                        {section.fields && section.fields.map((field) => renderField(field))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )
             ) : (
               /* Renderizar formularios tradicionales */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
