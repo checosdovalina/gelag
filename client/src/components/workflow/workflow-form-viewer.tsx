@@ -26,25 +26,31 @@ interface WorkflowFormViewerProps {
   isLoading?: boolean;
 }
 
-// Definición de módulos/pestañas sin colores
+// Definición de módulos/pestañas por color y rol
 const workflowModules = {
   init: { 
-    label: "Información General", 
+    label: "Iniciación", 
+    color: "bg-pink-100 text-pink-800 border-pink-200", 
     description: "Gerente de Producción inicia el formulario",
     icon: Settings,
-    allowedRoles: ["superadmin", "gerente_produccion"]
+    allowedRoles: ["superadmin", "gerente_produccion"],
+    tabColor: "data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700"
   },
   operation: { 
-    label: "Datos de Proceso", 
+    label: "Operación", 
+    color: "bg-yellow-100 text-yellow-800 border-yellow-200", 
     description: "Operadores completan durante turnos",
     icon: Wrench,
-    allowedRoles: ["superadmin", "produccion", "gerente_produccion"]
+    allowedRoles: ["superadmin", "produccion", "gerente_produccion"],
+    tabColor: "data-[state=active]:bg-yellow-50 data-[state=active]:text-yellow-700"
   },
   quality: { 
-    label: "Control de Calidad", 
+    label: "Calidad", 
+    color: "bg-green-100 text-green-800 border-green-200", 
     description: "Gerente de Calidad finaliza proceso",
     icon: CheckSquare,
-    allowedRoles: ["superadmin", "gerente_calidad", "calidad"]
+    allowedRoles: ["superadmin", "gerente_calidad", "calidad"],
+    tabColor: "data-[state=active]:bg-green-50 data-[state=active]:text-green-700"
   }
 };
 
@@ -302,7 +308,7 @@ export default function WorkflowFormViewer({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Estado del Flujo de Trabajo</span>
-            <Badge variant="outline">
+            <Badge className={workflowModules[currentStage as keyof typeof workflowModules]?.color}>
               {workflowModules[currentStage as keyof typeof workflowModules]?.label}
             </Badge>
           </CardTitle>
@@ -355,7 +361,7 @@ export default function WorkflowFormViewer({
                   <TabsTrigger
                     key={moduleKey}
                     value={moduleKey}
-                    className="flex items-center space-x-2"
+                    className={`flex items-center space-x-2 ${moduleConfig.tabColor}`}
                   >
                     <Icon className="h-4 w-4" />
                     <span>{moduleConfig.label}</span>
@@ -392,7 +398,7 @@ export default function WorkflowFormViewer({
 
               return (
                 <TabsContent key={moduleKey} value={moduleKey} className="mt-6">
-                  <div className="p-4 rounded-lg border">
+                  <div className={`p-4 rounded-lg border-2 ${moduleConfig.color.replace('text-', 'border-').replace('-800', '-200')}`}>
                     <div className="flex items-center space-x-2 mb-4">
                       <moduleConfig.icon className="h-5 w-5" />
                       <h3 className="font-medium">{moduleConfig.description}</h3>
