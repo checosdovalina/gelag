@@ -1137,9 +1137,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "data es requerido" });
       }
       
+      // Función para calcular porcentajes automáticamente para formularios de Liberación Preoperativa
+      const calculatePercentagesForLiberacion = (formData: any) => {
+        const updatedData = { ...formData };
+        
+        // Mapeo de secciones a campos de porcentaje
+        const sectionMapping: { [key: string]: string } = {
+          'seccion_marmitas_checklist': 'porcentaje_cumplimiento_marmitas',
+          'seccion_dulces_checklist': 'porcentaje_cumplimiento_dulces',
+          'seccion_area_produccion': 'porcentaje_cumplimiento_produccion',
+          'seccion_area_reposo': 'porcentaje_cumplimiento_reposo',
+          'estacion_limpieza': 'porcentaje_cumplimiento_limpieza'
+        };
+
+        // Calcular porcentaje para cada sección que tenga datos
+        Object.entries(sectionMapping).forEach(([sectionKey, percentageKey]) => {
+          if (updatedData[sectionKey] && Array.isArray(updatedData[sectionKey])) {
+            const checklistData = updatedData[sectionKey];
+            const totalItems = checklistData.length;
+            const siItems = checklistData.filter((row: any) => row.revision_visual_si === 'si').length;
+            const percentage = totalItems > 0 ? Math.round((siItems / totalItems) * 100) : 0;
+            
+            updatedData[percentageKey] = `${percentage}%`;
+            console.log(`[AUTO-PERCENTAGE] ${sectionKey}: ${siItems}/${totalItems} = ${percentage}%`);
+          }
+        });
+
+        return updatedData;
+      };
+
+      // Procesar datos y calcular porcentajes automáticamente si es necesario
+      let processedData = data;
+      
+      // Verificar si es un formulario de Liberación Preoperativa
+      const template = await storage.getFormTemplate(existingEntry.formTemplateId);
+      if (template?.name?.includes('LIBERACION PREOPERATIVA')) {
+        console.log("[AUTO-PERCENTAGE] Detectado formulario de Liberación Preoperativa - calculando porcentajes...");
+        processedData = calculatePercentagesForLiberacion(data);
+      }
+      
       // Actualizar entrada
       const updatedEntry = await storage.updateFormEntry(entryId, {
-        data: data,
+        data: processedData,
         lastUpdatedBy: req.user.id
       });
       

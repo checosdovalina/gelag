@@ -432,10 +432,16 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       const fieldId = (field as any).id;
       if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
         console.log(`[PERCENTAGE] Calculando porcentaje para ${fieldId}, columna: ${columnId}, valor: ${value}`);
-        // Usar setTimeout para asegurar que la actualización se procese después del estado
-        setTimeout(() => {
-          calculateCompliancePercentage(newData, fieldId);
-        }, 50);
+        
+        // Limpiar la selección opuesta cuando se selecciona una opción
+        if (columnId === 'revision_visual_si' && value === 'si') {
+          newData[rowIndex]['revision_visual_no'] = 'vacio';
+        } else if (columnId === 'revision_visual_no' && value === 'no') {
+          newData[rowIndex]['revision_visual_si'] = 'vacio';
+        }
+        
+        // Calcular porcentaje inmediatamente
+        calculateCompliancePercentage(newData, fieldId);
       }
       
       // Verificar si es un campo de proceso o litros para actualizar las materias primas
