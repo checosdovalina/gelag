@@ -409,8 +409,8 @@ export default function FormViewer({
   const getDynamicSections = () => {
     const baseSections = [...(formTemplate.sections || [])];
     
-    // Add Cono section if Conito is selected
-    if (watchedProceso === "conito") {
+    // Add Cono section if Conito or Cono Grande is selected
+    if (watchedProceso === "conito" || watchedProceso === "cono_grande") {
       const conoSection = {
         title: "Cono",
         fields: [
