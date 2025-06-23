@@ -402,6 +402,62 @@ export default function FormViewer({
     form.reset(initialData || {});
   }, [form, initialData, formTemplate.title]);
   
+  // Watch for proceso field changes to conditionally show Cono tab
+  const watchedProceso = form.watch("proceso");
+  
+  // Generate dynamic sections based on form values
+  const getDynamicSections = () => {
+    const baseSections = [...(formTemplate.sections || [])];
+    
+    // Add Cono section if Conito is selected
+    if (watchedProceso === "conito") {
+      const conoSection = {
+        title: "Cono",
+        fields: [
+          {
+            id: "cono_temperatura",
+            type: "number" as const,
+            label: "Temperatura del Cono (°C)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_tiempo_coccion",
+            type: "number" as const,
+            label: "Tiempo de Cocción (minutos)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_calidad",
+            type: "select" as const,
+            label: "Calidad del Cono",
+            options: [
+              { value: "excelente", label: "Excelente" },
+              { value: "buena", label: "Buena" },
+              { value: "regular", label: "Regular" },
+              { value: "deficiente", label: "Deficiente" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_observaciones",
+            type: "textarea" as const,
+            label: "Observaciones del Cono",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          }
+        ]
+      };
+      
+      // Insert the Cono section before the last section (Folio de Liberación)
+      baseSections.splice(-1, 0, conoSection);
+    }
+    
+    return baseSections;
+  };
+  
   // Handle table fields initialization
   useEffect(() => {
     const allFields = formTemplate.fields || 
@@ -1595,14 +1651,14 @@ export default function FormViewer({
               // Verificar si es el formulario PR-PR-02 para usar pestañas sin colores
               formTitle?.includes("PR-PR-02") || formTitle?.includes("dulces") ? (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${formTemplate.sections.length}, minmax(0, 1fr))` }}>
-                    {formTemplate.sections.map((section, sectionIndex) => (
+                  <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${getDynamicSections().length}, minmax(0, 1fr))` }}>
+                    {getDynamicSections().map((section, sectionIndex) => (
                       <TabsTrigger key={sectionIndex} value={`section-${sectionIndex}`}>
                         {section.title}
                       </TabsTrigger>
                     ))}
                   </TabsList>
-                  {formTemplate.sections.map((section, sectionIndex) => (
+                  {getDynamicSections().map((section, sectionIndex) => (
                     <TabsContent key={sectionIndex} value={`section-${sectionIndex}`} className="mt-6">
                       <div className="p-4 rounded border border-gray-200">
                         <div className="space-y-4">
