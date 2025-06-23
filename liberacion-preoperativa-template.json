@@ -1,0 +1,265 @@
+{
+  "name": "CA-RE-03-01 - LIBERACION PREOPERATIVA",
+  "description": "Formulario de Liberación Preoperativa - Control de Calidad",
+  "department": "Calidad",
+  "structure": {
+    "title": "LIBERACION PREOPERATIVA",
+    "subtitle": "GELAG S.A DE C.V",
+    "headerInfo": {
+      "address": "BLVD. SANTA RITA #842 PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.",
+      "emissionDate": "Enero 2022",
+      "code": "CA-RE-03-01",
+      "revision": "Revisión 01-2022",
+      "page": "Página 1 de 1",
+      "replacement": "Reemplaza: No Aplica",
+      "documentType": "Tipo de Documento: Registro"
+    },
+    "sections": [
+      {
+        "title": "Información General",
+        "fields": [
+          {
+            "id": "fecha",
+            "type": "date",
+            "label": "FECHA",
+            "required": true,
+            "displayName": "Fecha"
+          },
+          {
+            "id": "departamento_emisor",
+            "type": "text",
+            "label": "Departamento emisor",
+            "required": true,
+            "displayName": "Departamento emisor",
+            "defaultValue": "Control de Calidad"
+          }
+        ]
+      },
+      {
+        "title": "Sección de Marmitas",
+        "fields": [
+          {
+            "id": "seccion_marmitas",
+            "type": "advancedTable",
+            "label": "Sección de Marmitas",
+            "required": true,
+            "advancedTableConfig": {
+              "columns": [
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "40%" },
+                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "url", "type": "text", "header": "URL", "width": "15%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "10%" },
+                { "id": "revision_visual_2", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+              ],
+              "initialData": [
+                { "actividad": "Limpieza interior y exterior de marmita No 1", "porcentaje": "9%" },
+                { "actividad": "Tubo de salida producto terminado marmita No 1", "porcentaje": "9%" },
+                { "actividad": "Limpieza interior y exterior de marmita No 2", "porcentaje": "9%" },
+                { "actividad": "Tubo de salida producto terminado marmita No 2", "porcentaje": "9%" },
+                { "actividad": "Limpieza interior y exterior de marmita No 3", "porcentaje": "9%" },
+                { "actividad": "Tubo de salida producto terminado marmita No 3", "porcentaje": "9%" },
+                { "actividad": "Limpieza interior y exterior de marmita No 4", "porcentaje": "5%" },
+                { "actividad": "Limpieza interior y exterior de marmita No 5", "porcentaje": "8%" },
+                { "actividad": "Limpieza de plataforma", "porcentaje": "7%" },
+                { "actividad": "Limpieza de escalera", "porcentaje": "3%" },
+                { "actividad": "Limpieza de tubería", "porcentaje": "8%" },
+                { "actividad": "Limpieza de paredes", "porcentaje": "5%" },
+                { "actividad": "Extractores limpios", "porcentaje": "5%" },
+                { "actividad": "Ausencia de basura", "porcentaje": "5%" }
+              ]
+            }
+          },
+          {
+            "id": "porcentaje_cumplimiento_marmitas",
+            "type": "text",
+            "label": "PORCENTAJE DE CUMPLIMIENTO",
+            "required": false,
+            "displayName": "Porcentaje de Cumplimiento Marmitas"
+          }
+        ]
+      },
+      {
+        "title": "Sección elaboración de dulces",
+        "fields": [
+          {
+            "id": "seccion_dulces",
+            "type": "advancedTable",
+            "label": "Sección elaboración de dulces",
+            "required": true,
+            "advancedTableConfig": {
+              "columns": [
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "50%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
+                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "15%" }
+              ],
+              "initialData": [
+                { "actividad": "Limpieza de mesa de trabajo", "porcentaje": "30%" },
+                { "actividad": "Limpieza de básculas", "porcentaje": "15%" },
+                { "actividad": "Limpieza de charolas", "porcentaje": "15%" },
+                { "actividad": "Limpieza de conero", "porcentaje": "10%" },
+                { "actividad": "Codificadora en orden", "porcentaje": "2%" },
+                { "actividad": "Limpieza de báscula de piso", "porcentaje": "10%" },
+                { "actividad": "Tarja limpia y en orden", "porcentaje": "4%" },
+                { "actividad": "Pisos limpios", "porcentaje": "5%" },
+                { "actividad": "Paredes limpias", "porcentaje": "4%" },
+                { "actividad": "Ausencia de basura", "porcentaje": "5%" }
+              ]
+            }
+          },
+          {
+            "id": "porcentaje_cumplimiento_dulces",
+            "type": "text",
+            "label": "PORCENTAJE DE CUMPLIMIENTO",
+            "required": false,
+            "displayName": "Porcentaje de Cumplimiento Dulces"
+          }
+        ]
+      },
+      {
+        "title": "Sección de área de producción",
+        "fields": [
+          {
+            "id": "seccion_produccion",
+            "type": "advancedTable",
+            "label": "Sección de área de producción",
+            "required": true,
+            "advancedTableConfig": {
+              "columns": [
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "60%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
+                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+              ],
+              "initialData": [
+                { "actividad": "Mesas de trabajo limpias", "porcentaje": "15%" },
+                { "actividad": "Equipo dosificador de mangas limpio", "porcentaje": "20%" },
+                { "actividad": "Cubetas limpias y en orden", "porcentaje": "15%" },
+                { "actividad": "Limpieza de pisos", "porcentaje": "10%" },
+                { "actividad": "Limpieza de paredes", "porcentaje": "5%" },
+                { "actividad": "Tanques limpios", "porcentaje": "5%" },
+                { "actividad": "Codificadora en orden", "porcentaje": "5%" },
+                { "actividad": "Rejillas limpias", "porcentaje": "5%" },
+                { "actividad": "Ausencia de basura", "porcentaje": "20%" }
+              ]
+            }
+          },
+          {
+            "id": "porcentaje_cumplimiento_produccion",
+            "type": "text",
+            "label": "PORCENTAJE DE CUMPLIMIENTO",
+            "required": false,
+            "displayName": "Porcentaje de Cumplimiento Producción"
+          }
+        ]
+      },
+      {
+        "title": "Sección de área de reposo",
+        "fields": [
+          {
+            "id": "seccion_reposo",
+            "type": "advancedTable",
+            "label": "Sección de área de reposo",
+            "required": true,
+            "advancedTableConfig": {
+              "columns": [
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "60%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
+                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+              ],
+              "initialData": [
+                { "actividad": "Tarimas respetando limitaciones", "porcentaje": "10%" },
+                { "actividad": "Tarimas en orden", "porcentaje": "10%" },
+                { "actividad": "Báscula en piso limpia", "porcentaje": "30%" },
+                { "actividad": "Materia prima en orden", "porcentaje": "10%" },
+                { "actividad": "Piso limpio", "porcentaje": "20%" },
+                { "actividad": "Ausencia de basura", "porcentaje": "20%" }
+              ]
+            }
+          },
+          {
+            "id": "porcentaje_cumplimiento_reposo",
+            "type": "text",
+            "label": "PORCENTAJE DE CUMPLIMIENTO",
+            "required": false,
+            "displayName": "Porcentaje de Cumplimiento Reposo"
+          }
+        ]
+      },
+      {
+        "title": "Estación de Limpieza",
+        "fields": [
+          {
+            "id": "estacion_limpieza",
+            "type": "advancedTable",
+            "label": "Estación de Limpieza",
+            "required": true,
+            "advancedTableConfig": {
+              "columns": [
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "60%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
+                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+              ],
+              "initialData": [
+                { "actividad": "Tarjas limpias", "porcentaje": "25%" },
+                { "actividad": "Cepillero limpio y en orden", "porcentaje": "35%" },
+                { "actividad": "Moldes limpios y en orden", "porcentaje": "40%" }
+              ]
+            }
+          },
+          {
+            "id": "porcentaje_cumplimiento_limpieza",
+            "type": "text",
+            "label": "PORCENTAJE DE CUMPLIMIENTO",
+            "required": false,
+            "displayName": "Porcentaje de Cumplimiento Limpieza"
+          },
+          {
+            "id": "porcentaje_cumplimiento_total",
+            "type": "text",
+            "label": "PORCENTAJE CUMPLIMIENTO TOTAL",
+            "required": false,
+            "displayName": "Porcentaje Cumplimiento Total"
+          }
+        ]
+      },
+      {
+        "title": "Observaciones y Control",
+        "fields": [
+          {
+            "id": "observaciones",
+            "type": "textarea",
+            "label": "Observaciones",
+            "required": false,
+            "displayName": "Observaciones",
+            "rows": 5
+          },
+          {
+            "id": "control_calidad",
+            "type": "text",
+            "label": "Control de calidad",
+            "required": false,
+            "displayName": "Control de calidad"
+          }
+        ]
+      },
+      {
+        "title": "Información de Importancia",
+        "fields": [
+          {
+            "id": "info_importancia",
+            "type": "textarea",
+            "label": "SECCION DE MARMITAS PORCENTAJE DE IMPORTANCIA 50%. SECCION AREA DE DULCES PORCENTAJE DE IMPORTANCIA 20%. SECCION DE AREA DE PRODUCCION PORCENTAJE DE IMPORTANCIA 15%. SECCION DE REPOSO PORCENTAJE DE IMPORTANCIA 10%. SECCION ESTACION DE LIMPIEZA PORCENTAJE DE IMPORTANCIA 5%.",
+            "required": false,
+            "displayName": "Información de Importancia",
+            "readOnly": true,
+            "rows": 3
+          }
+        ]
+      }
+    ]
+  }
+}
