@@ -326,6 +326,34 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   // Detectar si hay alguna columna con dependencias
   const hasDependentColumns = allColumns.some(col => col.dependency);
   
+  // Función para calcular porcentaje de cumplimiento
+  const calculateCompliancePercentage = (tableData: Record<string, any>[], fieldId: string) => {
+    try {
+      // Contar total de elementos y elementos marcados como "SI"
+      const totalItems = tableData.length;
+      const siItems = tableData.filter(row => row.revision_visual_si === 'si').length;
+      
+      // Calcular porcentaje
+      const percentage = totalItems > 0 ? Math.round((siItems / totalItems) * 100) : 0;
+      
+      console.log(`[Percentage] ${fieldId}: ${siItems}/${totalItems} = ${percentage}%`);
+      
+      // Notificar al componente padre sobre el cambio de porcentaje
+      const percentageFieldId = fieldId.replace('_checklist', '').replace('seccion_', 'porcentaje_cumplimiento_');
+      
+      // Crear evento personalizado para actualizar el campo de porcentaje
+      setTimeout(() => {
+        const event = new CustomEvent('updatePercentage', {
+          detail: { fieldId: percentageFieldId, value: `${percentage}%` }
+        });
+        window.dispatchEvent(event);
+      }, 100);
+      
+    } catch (error) {
+      console.error("Error calculando porcentaje:", error);
+    }
+  };
+
   // Identificar columnas importantes para el cálculo
   const productColumn = allColumns.find(col => col.type === 'product');
   const litersColumn = allColumns.find(col => 
@@ -381,6 +409,12 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       }
       
       console.log("[updateCell] ⚠️ FORZANDO actualización de datos de tabla");
+      
+      // Calcular porcentaje de cumplimiento automáticamente para formularios de Liberación Preoperativa
+      const fieldId = (field as any).id;
+      if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
+        calculateCompliancePercentage(newData, fieldId);
+      }
       
       // Verificar si es un campo de proceso o litros para actualizar las materias primas
       const column = allColumns.find(col => col.id === columnId);
@@ -783,7 +817,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
 
   return (
     <div className="border rounded-md w-full">
-      {(hasDependentColumns || (productColumn && litersColumn)) && (
+      {hasDependentColumns && (
         <div className="p-2 bg-blue-50 border-b text-sm text-blue-700 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
