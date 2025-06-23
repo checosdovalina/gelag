@@ -415,36 +415,130 @@ export default function FormViewer({
         title: "Cono",
         fields: [
           {
-            id: "cono_temperatura",
-            type: "number" as const,
-            label: "Temperatura del Cono (°C)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "cono_tiempo_coccion",
-            type: "number" as const,
-            label: "Tiempo de Cocción (minutos)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "cono_calidad",
-            type: "select" as const,
-            label: "Calidad del Cono",
-            options: [
-              { value: "excelente", label: "Excelente" },
-              { value: "buena", label: "Buena" },
-              { value: "regular", label: "Regular" },
-              { value: "deficiente", label: "Deficiente" }
+            id: "cono_peso_lote_table",
+            type: "table" as const,
+            label: "Peso y Lote",
+            columns: [
+              { id: "peso", type: "text", label: "Peso" },
+              { id: "lote", type: "text", label: "Lote" }
+            ],
+            rows: [
+              { peso: "", lote: "" },
+              { peso: "", lote: "" },
+              { peso: "", lote: "" },
+              { peso: "", lote: "" },
+              { peso: "", lote: "" },
+              { peso: "", lote: "" },
+              { peso: "", lote: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "cono_observaciones",
-            type: "textarea" as const,
-            label: "Observaciones del Cono",
+            id: "cono_conos_table",
+            type: "table" as const,
+            label: "Conos",
+            columns: [
+              { id: "paquetes", type: "number", label: "# Paquetes" },
+              { id: "peso_kg", type: "number", label: "peso kg o g" }
+            ],
+            rows: [
+              { paquetes: "", peso_kg: "" },
+              { paquetes: "", peso_kg: "" },
+              { paquetes: "", peso_kg: "" },
+              { paquetes: "", peso_kg: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_celofan_table",
+            type: "table" as const,
+            label: "Celofán",
+            columns: [
+              { id: "cantidad", type: "text", label: "Cantidad" }
+            ],
+            rows: [
+              { cantidad: "" },
+              { cantidad: "" },
+              { cantidad: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_grande_cajeton_table",
+            type: "table" as const,
+            label: "Cono Gde Cajetón",
+            columns: [
+              { id: "mp", type: "text", label: "MP" },
+              { id: "estimado", type: "number", label: "Estimado" },
+              { id: "entregado", type: "number", label: "Entregado" },
+              { id: "regresaron", type: "number", label: "Regresaron" },
+              { id: "total", type: "number", label: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Cono #35", estimado: "", entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "cono_grande_empaque_table",
+            type: "table" as const,
+            label: "Empaque Cono Grande",
+            columns: [
+              { id: "empaque", type: "text", label: "Empaque" },
+              { id: "estimado", type: "number", label: "Estimado" },
+              { id: "entregado", type: "number", label: "Entregado" },
+              { id: "regresaron", type: "number", label: "Regresaron" },
+              { id: "total", type: "number", label: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán 8*8", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsas 10*20", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja s/rotulo", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "mini_cono_relleno_table",
+            type: "table" as const,
+            label: "Mini Cono Relleno",
+            columns: [
+              { id: "mp", type: "text", label: "MP" },
+              { id: "estimado", type: "number", label: "Estimado" },
+              { id: "entregado", type: "number", label: "Entregado" },
+              { id: "regresaron", type: "number", label: "Regresaron" },
+              { id: "total", type: "number", label: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Cono #6", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "mini_cono_empaque_table",
+            type: "table" as const,
+            label: "Empaque Mini Cono",
+            columns: [
+              { id: "empaque", type: "text", label: "Empaque" },
+              { id: "estimado", type: "number", label: "Estimado" },
+              { id: "entregado", type: "number", label: "Entregado" },
+              { id: "regresaron", type: "number", label: "Regresaron" },
+              { id: "total", type: "number", label: "Total" }
+            ],
+            rows: [
+              { empaque: "Bolsas", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Cajita/almas", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja s/rotulo", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           }
