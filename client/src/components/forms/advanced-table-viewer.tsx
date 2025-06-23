@@ -657,18 +657,47 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           // Uso del sistema de notificaciones de shadcn
           notifyTableUpdate("Celda actualizada", "success");
           
-          // Para formularios de Liberación Preoperativa, recargar formulario completo para mostrar porcentajes
+          // Para formularios de Liberación Preoperativa, actualizar porcentajes inmediatamente
           const fieldId = (field as any).id;
           if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
-            console.log("[PERCENTAGE-RELOAD] Recargando formulario para mostrar porcentajes actualizados...");
+            console.log("[PERCENTAGE-UPDATE] Actualizando porcentaje inmediatamente...");
             
-            // Recargar el formulario completo para sincronizar con datos del servidor
+            // Calcular porcentaje basado en los nuevos datos
+            const totalItems = finalData.length;
+            const siItems = finalData.filter((row: any) => row.revision_visual_si === 'si').length;
+            const percentage = totalItems > 0 ? Math.round((siItems / totalItems) * 100) : 0;
+            
+            console.log(`[PERCENTAGE] ${fieldId}: ${siItems}/${totalItems} = ${percentage}%`);
+            
+            // Actualizar directamente el campo de porcentaje en el DOM
             setTimeout(() => {
-              const event = new CustomEvent('reloadFormData', {
-                detail: { reason: 'percentage_update', fieldId }
-              });
-              window.dispatchEvent(event);
-            }, 500);
+              let percentageFieldName = '';
+              if (fieldId.includes('marmitas')) {
+                percentageFieldName = 'porcentaje_cumplimiento_marmitas';
+              } else if (fieldId.includes('dulces')) {
+                percentageFieldName = 'porcentaje_cumplimiento_dulces';
+              } else if (fieldId.includes('produccion')) {
+                percentageFieldName = 'porcentaje_cumplimiento_produccion';
+              } else if (fieldId.includes('reposo')) {
+                percentageFieldName = 'porcentaje_cumplimiento_reposo';
+              } else if (fieldId.includes('limpieza')) {
+                percentageFieldName = 'porcentaje_cumplimiento_limpieza';
+              }
+              
+              if (percentageFieldName) {
+                const percentageField = document.querySelector(`input[name="${percentageFieldName}"]`) as HTMLInputElement;
+                if (percentageField) {
+                  percentageField.value = `${percentage}%`;
+                  console.log(`[DOM-UPDATE] Campo ${percentageFieldName} actualizado a ${percentage}%`);
+                  
+                  // Disparar eventos para que React detecte el cambio
+                  const inputEvent = new Event('input', { bubbles: true });
+                  const changeEvent = new Event('change', { bubbles: true });
+                  percentageField.dispatchEvent(inputEvent);
+                  percentageField.dispatchEvent(changeEvent);
+                }
+              }
+            }, 100);
           }
           
           setIsSaving(false);
