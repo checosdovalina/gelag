@@ -405,6 +405,74 @@ export default function FormViewer({
   useEffect(() => {
     form.reset(initialData || {});
   }, [form, initialData, formTemplate.title]);
+
+  // Listener para eventos de actualización de porcentaje
+  useEffect(() => {
+    const handlePercentageUpdate = (event: CustomEvent) => {
+      const { fieldId, value } = event.detail;
+      console.log(`[Percentage Update] Updating ${fieldId} to ${value}`);
+      
+      // Actualizar el valor del campo de porcentaje en el formulario
+      form.setValue(fieldId, value);
+      
+      // Trigger percentage total update for Liberación Preoperativa forms
+      if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+        setTimeout(() => updateTotalPercentage(), 100);
+      }
+    };
+
+    window.addEventListener('updatePercentage', handlePercentageUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('updatePercentage', handlePercentageUpdate as EventListener);
+    };
+  }, [form]);
+  
+  // Función para calcular porcentaje total de Liberación Preoperativa
+  const updateTotalPercentage = () => {
+    const formValues = form.getValues();
+    
+    // Verificar si es un formulario de Liberación Preoperativa
+    if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+      const sectionPercentages = [
+        { field: 'porcentaje_cumplimiento_marmitas', weight: 50 },
+        { field: 'porcentaje_cumplimiento_dulces', weight: 20 },
+        { field: 'porcentaje_cumplimiento_produccion', weight: 15 },
+        { field: 'porcentaje_cumplimiento_reposo', weight: 10 },
+        { field: 'porcentaje_cumplimiento_limpieza', weight: 5 }
+      ];
+      
+      let totalWeightedPercentage = 0;
+      let completedSections = 0;
+      
+      sectionPercentages.forEach(({ field, weight }) => {
+        const percentageValue = formValues[field];
+        if (percentageValue && percentageValue !== '0%') {
+          const numericValue = parseFloat(percentageValue.replace('%', ''));
+          if (!isNaN(numericValue)) {
+            totalWeightedPercentage += (numericValue * weight) / 100;
+            completedSections++;
+          }
+        }
+      });
+      
+      // Solo calcular total si hay al menos una sección completada
+      if (completedSections > 0) {
+        const totalPercentage = Math.round(totalWeightedPercentage);
+        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`);
+      }
+    }
+  };
+
+  // Escuchar cambios en los campos de porcentaje para actualizar el total
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name && name.startsWith('porcentaje_cumplimiento_') && !name.includes('total')) {
+        updateTotalPercentage();
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
   
   // Watch for proceso field changes to conditionally show Cono tab
   const watchedProceso = form.watch("proceso");
