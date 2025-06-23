@@ -75,6 +75,8 @@ export default function FormViewer({
   const [activeTab, setActiveTab] = useState("section-0");
   const { user } = useAuth();
   const { toast } = useToast();
+
+
   
   // Función para navegar al siguiente campo con Enter
   const handleEnterKeyNavigation = (event: React.KeyboardEvent) => {

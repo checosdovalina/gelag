@@ -460,7 +460,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     
                     if (mpColumn && kilosColumn) {
                       // Recorrer las filas y actualizar cantidades
-                      newData.forEach((row, idx) => {
+                      newData.forEach((row: any, idx: number) => {
                         if (idx === 0) return; // Saltamos la primera fila (proceso)
                         
                         const ingredientName = row[mpColumn.id];
@@ -828,7 +828,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       )}
       
       {/* Botón para calcular automáticamente las cantidades según fórmula */}
-      {!readOnly && productColumn && litersColumn && (
+      {!readOnly && hasDependentColumns && (
         <div className="px-2 py-2 border-b">
           <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md border">
             <div className="text-sm">
@@ -842,8 +842,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
               onClick={() => {
                 // Obtener la primera fila (encabezado)
                 const firstRow = tableData[0] || {};
-                const productName = firstRow[productColumn.id];
-                const litersValue = parseFloat(firstRow[litersColumn.id] || '0');
+                const productName = firstRow[productColumn?.id || ''];
+                const litersValue = parseFloat(firstRow[litersColumn?.id || ''] || '0');
                 
                 if (!productName || isNaN(litersValue) || litersValue <= 0) {
                   notifyTableUpdate("Por favor seleccione un producto y especifique los litros", "error");
