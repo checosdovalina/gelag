@@ -329,25 +329,43 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   // Función para calcular porcentaje de cumplimiento
   const calculateCompliancePercentage = (tableData: Record<string, any>[], fieldId: string) => {
     try {
+      console.log(`[PERCENTAGE] Calculando para fieldId: ${fieldId}, datos:`, tableData);
+      
       // Contar total de elementos y elementos marcados como "SI"
       const totalItems = tableData.length;
-      const siItems = tableData.filter(row => row.revision_visual_si === 'si').length;
+      const siItems = tableData.filter(row => {
+        const hasSi = row.revision_visual_si === 'si';
+        console.log(`[PERCENTAGE] Fila: ${row.actividad}, SI: ${row.revision_visual_si}, cuenta: ${hasSi}`);
+        return hasSi;
+      }).length;
       
       // Calcular porcentaje
       const percentage = totalItems > 0 ? Math.round((siItems / totalItems) * 100) : 0;
       
-      console.log(`[Percentage] ${fieldId}: ${siItems}/${totalItems} = ${percentage}%`);
+      console.log(`[PERCENTAGE] ${fieldId}: ${siItems}/${totalItems} = ${percentage}%`);
       
-      // Notificar al componente padre sobre el cambio de porcentaje
-      const percentageFieldId = fieldId.replace('_checklist', '').replace('seccion_', 'porcentaje_cumplimiento_');
+      // Mapear field IDs a los campos de porcentaje correspondientes
+      let percentageFieldId = '';
+      if (fieldId.includes('marmitas')) {
+        percentageFieldId = 'porcentaje_cumplimiento_marmitas';
+      } else if (fieldId.includes('dulces')) {
+        percentageFieldId = 'porcentaje_cumplimiento_dulces';
+      } else if (fieldId.includes('produccion')) {
+        percentageFieldId = 'porcentaje_cumplimiento_produccion';
+      } else if (fieldId.includes('reposo')) {
+        percentageFieldId = 'porcentaje_cumplimiento_reposo';
+      } else if (fieldId.includes('limpieza')) {
+        percentageFieldId = 'porcentaje_cumplimiento_limpieza';
+      }
       
-      // Crear evento personalizado para actualizar el campo de porcentaje
-      setTimeout(() => {
+      if (percentageFieldId) {
+        console.log(`[PERCENTAGE] Enviando evento para actualizar ${percentageFieldId} a ${percentage}%`);
+        // Crear evento personalizado para actualizar el campo de porcentaje
         const event = new CustomEvent('updatePercentage', {
           detail: { fieldId: percentageFieldId, value: `${percentage}%` }
         });
         window.dispatchEvent(event);
-      }, 100);
+      }
       
     } catch (error) {
       console.error("Error calculando porcentaje:", error);
@@ -413,7 +431,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // Calcular porcentaje de cumplimiento automáticamente para formularios de Liberación Preoperativa
       const fieldId = (field as any).id;
       if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
-        calculateCompliancePercentage(newData, fieldId);
+        console.log(`[PERCENTAGE] Calculando porcentaje para ${fieldId}, columna: ${columnId}, valor: ${value}`);
+        // Usar setTimeout para asegurar que la actualización se procese después del estado
+        setTimeout(() => {
+          calculateCompliancePercentage(newData, fieldId);
+        }, 50);
       }
       
       // Verificar si es un campo de proceso o litros para actualizar las materias primas

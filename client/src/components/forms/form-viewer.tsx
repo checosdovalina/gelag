@@ -410,14 +410,19 @@ export default function FormViewer({
   useEffect(() => {
     const handlePercentageUpdate = (event: CustomEvent) => {
       const { fieldId, value } = event.detail;
-      console.log(`[Percentage Update] Updating ${fieldId} to ${value}`);
+      console.log(`[FORM-VIEWER] Recibido evento de porcentaje: ${fieldId} = ${value}`);
       
-      // Actualizar el valor del campo de porcentaje en el formulario
-      form.setValue(fieldId, value);
-      
-      // Trigger percentage total update for Liberación Preoperativa forms
-      if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
-        setTimeout(() => updateTotalPercentage(), 100);
+      try {
+        // Actualizar el valor del campo de porcentaje en el formulario
+        form.setValue(fieldId, value);
+        console.log(`[FORM-VIEWER] Campo ${fieldId} actualizado a ${value}`);
+        
+        // Trigger percentage total update for Liberación Preoperativa forms
+        if (formTemplate.title?.includes('LIBERACION PREOPERATIVA')) {
+          setTimeout(() => updateTotalPercentage(), 200);
+        }
+      } catch (error) {
+        console.error(`[FORM-VIEWER] Error actualizando campo ${fieldId}:`, error);
       }
     };
 
