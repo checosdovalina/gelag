@@ -417,6 +417,11 @@ export default function FormViewer({
         form.setValue(fieldId, value);
         console.log(`[FORM-VIEWER] Campo ${fieldId} actualizado a ${value}`);
         
+        // Forzar re-render del formulario
+        const currentValues = form.getValues();
+        currentValues[fieldId] = value;
+        form.reset(currentValues);
+        
         // Trigger percentage total update for Liberación Preoperativa forms
         if (formTemplate.title?.includes('LIBERACION PREOPERATIVA')) {
           setTimeout(() => updateTotalPercentage(), 200);
@@ -426,12 +431,44 @@ export default function FormViewer({
       }
     };
 
+    console.log("[FORM-VIEWER] Registrando listeners...");
     window.addEventListener('updatePercentage', handlePercentageUpdate as EventListener);
     
-    return () => {
-      window.removeEventListener('updatePercentage', handlePercentageUpdate as EventListener);
+    // Listener para recargar datos del formulario
+    const handleFormReload = async (event: CustomEvent) => {
+      const { reason, fieldId } = event.detail;
+      console.log(`[FORM-RELOAD] Recargando formulario - Razón: ${reason}, Campo: ${fieldId}`);
+      
+      if (formId && reason === 'percentage_update') {
+        try {
+          // Recargar datos del servidor
+          const response = await fetch(`/api/form-entries/${formId}`);
+          if (response.ok) {
+            const formData = await response.json();
+            console.log("[FORM-RELOAD] Datos recargados del servidor:", formData.data);
+            
+            // Resetear el formulario con los nuevos datos
+            form.reset(formData.data);
+            
+            // Actualizar porcentaje total si es necesario
+            if (formTemplate.title?.includes('LIBERACION PREOPERATIVA')) {
+              setTimeout(() => updateTotalPercentage(), 300);
+            }
+          }
+        } catch (error) {
+          console.error("[FORM-RELOAD] Error recargando datos:", error);
+        }
+      }
     };
-  }, [form]);
+    
+    window.addEventListener('reloadFormData', handleFormReload as EventListener);
+    
+    return () => {
+      console.log("[FORM-VIEWER] Removiendo listeners...");
+      window.removeEventListener('updatePercentage', handlePercentageUpdate as EventListener);
+      window.removeEventListener('reloadFormData', handleFormReload as EventListener);
+    };
+  }, [form, formTemplate.title]);
   
   // Función para calcular porcentaje total de Liberación Preoperativa
   const updateTotalPercentage = () => {

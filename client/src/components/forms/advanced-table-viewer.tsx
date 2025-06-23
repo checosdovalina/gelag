@@ -657,13 +657,18 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           // Uso del sistema de notificaciones de shadcn
           notifyTableUpdate("Celda actualizada", "success");
           
-          // Para formularios de Liberación Preoperativa, recargar datos para mostrar porcentajes actualizados
+          // Para formularios de Liberación Preoperativa, recargar formulario completo para mostrar porcentajes
           const fieldId = (field as any).id;
           if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
-            console.log("[RELOAD] Recargando datos para actualizar porcentajes...");
+            console.log("[PERCENTAGE-RELOAD] Recargando formulario para mostrar porcentajes actualizados...");
+            
+            // Recargar el formulario completo para sincronizar con datos del servidor
             setTimeout(() => {
-              window.location.reload();
-            }, 1000);
+              const event = new CustomEvent('reloadFormData', {
+                detail: { reason: 'percentage_update', fieldId }
+              });
+              window.dispatchEvent(event);
+            }, 500);
           }
           
           setIsSaving(false);
