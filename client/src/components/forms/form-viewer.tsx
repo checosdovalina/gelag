@@ -51,6 +51,7 @@ interface FormViewerProps {
   isLoading?: boolean;
   allowEditDisplayNames?: boolean;
   formId?: number;
+  onStatusChange?: (status: string) => void;
 }
 
 export default function FormViewer({
@@ -1623,6 +1624,24 @@ export default function FormViewer({
     );
   };
 
+  // Check if user has access to modify liberation data
+  const canModifyLiberationData = user?.role === "gerente_calidad" || user?.role === "superadmin";
+  
+  // Check if field is liberation data
+  const isLiberationField = (fieldId: string) => {
+    return fieldId === 'folio_liberacion' || 
+           fieldId === 'fecha_liberacion' || 
+           fieldId === 'liberado_por' ||
+           fieldId.includes('liberacion');
+  };
+  
+  // Check if field should be disabled based on role and type
+  const isFieldDisabled = (field: IFormField) => {
+    if (isReadOnly) return true;
+    if (isLiberationField(field.id) && !canModifyLiberationData) return true;
+    return false;
+  };
+
   // Render field based on its type
   const renderField = (field: IFormField) => {
     switch (field.type) {
@@ -1658,8 +1677,8 @@ export default function FormViewer({
         // Permitir entrada manual para todos los campos folio
         const showAutoAssignedText = false;
         
-        // Solo deshabilitar si está en modo de solo lectura
-        const shouldDisable = isReadOnly;
+        // Usar la función de verificación de deshabilitado
+        const shouldDisable = isFieldDisabled(field);
         
         return (
           <FormField
@@ -1678,6 +1697,14 @@ export default function FormViewer({
                     value={formField.value || ""}
                     disabled={shouldDisable}
                     onKeyDown={handleEnterKeyNavigation}
+                    onChange={(e) => {
+                      formField.onChange(e);
+                      // If liberation field is modified by quality manager, mark form as ready for completion
+                      if (isLiberationField(field.id) && canModifyLiberationData && e.target.value) {
+                        // This could trigger form completion logic
+                        console.log("Liberation data modified by quality manager");
+                      }
+                    }}
                   />
                 </FormControl>
                 {showAutoAssignedText && (
