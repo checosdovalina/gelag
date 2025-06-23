@@ -894,22 +894,24 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       </div>
       <div className="w-full overflow-x-auto overflow-y-auto max-h-[600px] relative border border-border rounded-md" style={{ minWidth: "100%" }}>
         <Table className="border-collapse relative" style={{ minWidth: "1200px", width: "100%" }}>
-          {/* Encabezados de sección */}
+          {/* Encabezados de sección - solo si hay secciones */}
           <TableHeader>
-            <TableRow>
-              {config.sections?.map((section, idx) => (
-                <TableHead
-                  key={idx}
-                  colSpan={section.colspan || section.columns.length}
-                  className="text-center bg-primary text-primary-foreground font-bold py-2 border border-border"
-                >
-                  <div className="py-2">{section.title}</div>
-                </TableHead>
-              ))}
-              {config.dynamicRows && !readOnly && (
-                <TableHead className="w-10 bg-primary border border-border"></TableHead>
-              )}
-            </TableRow>
+            {config.sections && (
+              <TableRow>
+                {config.sections.map((section, idx) => (
+                  <TableHead
+                    key={idx}
+                    colSpan={section.colspan || section.columns.length}
+                    className="text-center bg-primary text-primary-foreground font-bold py-2 border border-border"
+                  >
+                    <div className="py-2">{section.title}</div>
+                  </TableHead>
+                ))}
+                {config.dynamicRows && !readOnly && (
+                  <TableHead className="w-10 bg-primary border border-border"></TableHead>
+                )}
+              </TableRow>
+            )}
 
             {/* Encabezados de columna */}
             <TableRow>
