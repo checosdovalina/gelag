@@ -549,8 +549,8 @@ export default function FormViewer({
       baseSections.splice(-1, 0, conoSection);
     }
     
-    // Add Gloria section if Gloria Coro is selected
-    if (watchedProceso === "gloria_coro") {
+    // Add Gloria section if Gloria Coro or Gloriosa is selected
+    if (watchedProceso === "gloria_coro" || watchedProceso === "gloriosa") {
       const gloriaSection = {
         title: "Gloria",
         fields: [
