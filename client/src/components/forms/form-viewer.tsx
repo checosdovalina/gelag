@@ -555,36 +555,61 @@ export default function FormViewer({
         title: "Gloria",
         fields: [
           {
-            id: "gloria_temperatura",
-            type: "number" as const,
-            label: "Temperatura (°C)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "gloria_tiempo_proceso",
-            type: "number" as const,
-            label: "Tiempo de Proceso (minutos)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "gloria_calidad",
-            type: "select" as const,
-            label: "Calidad del Producto",
-            options: [
-              { value: "excelente", label: "Excelente" },
-              { value: "buena", label: "Buena" },
-              { value: "regular", label: "Regular" },
-              { value: "deficiente", label: "Deficiente" }
+            id: "gloria_kg_cajeta_table",
+            type: "table" as const,
+            label: "Kg de cajeta",
+            columns: [
+              { id: "kg_cajeta", type: "text", header: "Kg de cajeta" },
+              { id: "lote", type: "text", header: "Lote" }
+            ],
+            rows: [
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "gloria_materia_prima_table",
+            id: "gloria_nuez_granillo_table",
             type: "table" as const,
-            label: "Materia Prima Gloria",
+            label: "Nuez Granillo",
+            columns: [
+              { id: "nuez_granillo", type: "text", header: "Nuez Granillo" },
+              { id: "lote", type: "text", header: "Lote" }
+            ],
+            rows: [
+              { nuez_granillo: "", lote: "" },
+              { nuez_granillo: "", lote: "" },
+              { nuez_granillo: "", lote: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_nuez_polvo_table",
+            type: "table" as const,
+            label: "Nuez Polvo",
+            columns: [
+              { id: "nuez_polvo", type: "text", header: "Nuez Polvo" },
+              { id: "lote", type: "text", header: "Lote" }
+            ],
+            rows: [
+              { nuez_polvo: "", lote: "" },
+              { nuez_polvo: "", lote: "" },
+              { nuez_polvo: "", lote: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_cajeton_table",
+            type: "table" as const,
+            label: "Gloria Cajetón",
             columns: [
               { id: "mp", type: "text", header: "MP" },
               { id: "estimado", type: "number", header: "Estimado" },
@@ -594,35 +619,142 @@ export default function FormViewer({
             ],
             rows: [
               { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { mp: "Oblea", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { mp: "Azúcar", estimado: 0, entregado: "", regresaron: "", total: "" }
+              { mp: "Nuez granillo", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez polvi", estimado: 0, entregado: "", regresaron: "", total: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "gloria_empaque_table",
+            id: "gloria_cajeton_empaque_table",
             type: "table" as const,
-            label: "Empaque Gloria",
+            label: "Empaques Gloria Cajetón",
             columns: [
-              { id: "empaque", type: "text", header: "Empaque" },
+              { id: "empaque", type: "text", header: "Empaques" },
               { id: "estimado", type: "number", header: "Estimado" },
               { id: "entregado", type: "number", header: "Entregado" },
               { id: "regresaron", type: "number", header: "Regresaron" },
               { id: "total", type: "number", header: "Total" }
             ],
             rows: [
-              { empaque: "Celofán", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { empaque: "Caja", estimado: 0, entregado: "", regresaron: "", total: "" }
+              { empaque: "Celofán rojo imp", estimado: 0.0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsas 14*20", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Pestañita gloria", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Cajas s/rótulo", estimado: 0, entregado: "", regresaron: "", total: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "gloria_observaciones",
-            type: "textarea" as const,
-            label: "Observaciones Gloria",
+            id: "gloria_coro_bolsa_table",
+            type: "table" as const,
+            label: "Gloria Coro Bolsa",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 66.24, entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez granillo", estimado: 3.6, entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez polvo", estimado: 2.16, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_coro_bolsa_empaque_table",
+            type: "table" as const,
+            label: "Empaques Gloria Coro Bolsa",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán coro", estimado: 2.4, entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsa coro", estimado: 240, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja blanca", estimado: 12, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_coro_vitro_table",
+            type: "table" as const,
+            label: "Gloria CORO VITRO",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 282.24, entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez granillo", estimado: 1.512, entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez polvi", estimado: 1.512, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_coro_vitro_empaque_table",
+            type: "table" as const,
+            label: "Empaques Gloria CORO VITRO",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán", estimado: 1, entregado: "", regresaron: "", total: "" },
+              { empaque: "Vitros", estimado: 252, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 252, entregado: "", regresaron: "", total: "" },
+              { empaque: "Sello garantía", estimado: 252, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja blanca", estimado: 28, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloriosa_table",
+            type: "table" as const,
+            label: "Gloriosa",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: "", entregado: "", regresaron: "", total: "" },
+              { mp: "Nuez granillo", estimado: "", entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloriosa_empaque_table",
+            type: "table" as const,
+            label: "Empaques Gloriosa",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Frasco", estimado: "", entregado: "", regresaron: "", total: "" }
+            ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           }
