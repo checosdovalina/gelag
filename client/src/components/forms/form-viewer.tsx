@@ -771,23 +771,61 @@ export default function FormViewer({
         title: "Oblea",
         fields: [
           {
-            id: "oblea_temperatura",
-            type: "number" as const,
-            label: "Temperatura (°C)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "oblea_tiempo_coccion",
-            type: "number" as const,
-            label: "Tiempo de Cocción (minutos)",
-            required: false,
-            roleAccess: ["operator", "superadmin"]
-          },
-          {
-            id: "oblea_materia_prima_table",
+            id: "oblea_kg_cajeta_table",
             type: "table" as const,
-            label: "Materia Prima Oblea",
+            label: "Kg de cajeta",
+            columns: [
+              { id: "kg_cajeta", type: "text", header: "Kg de cajeta" },
+              { id: "lote", type: "text", header: "Lote" }
+            ],
+            rows: [
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" },
+              { kg_cajeta: "", lote: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_hostias_table",
+            type: "table" as const,
+            label: "Hostias",
+            columns: [
+              { id: "paquetes", type: "text", header: "# Paquetes" },
+              { id: "peso", type: "text", header: "(peso kg o g)" }
+            ],
+            rows: [
+              { paquetes: "", peso: "" },
+              { paquetes: "", peso: "" },
+              { paquetes: "", peso: "" },
+              { paquetes: "", peso: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_celofan_table",
+            type: "table" as const,
+            label: "CELOFAN",
+            columns: [
+              { id: "celofan", type: "text", header: "CELOFAN" }
+            ],
+            rows: [
+              { celofan: "" },
+              { celofan: "" },
+              { celofan: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_cajeton_table",
+            type: "table" as const,
+            label: "Oblea Cajetón",
             columns: [
               { id: "mp", type: "text", header: "MP" },
               { id: "estimado", type: "number", header: "Estimado" },
@@ -796,50 +834,141 @@ export default function FormViewer({
               { id: "total", type: "number", header: "Total" }
             ],
             rows: [
-              { mp: "Harina", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { mp: "Azúcar", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { mp: "Huevo", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { mp: "Mantequilla", estimado: 0, entregado: "", regresaron: "", total: "" }
+              { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Hostia med", estimado: 0, entregado: "", regresaron: "", total: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "oblea_empaque_table",
+            id: "oblea_cajeton_empaque_table",
             type: "table" as const,
-            label: "Empaque Oblea",
+            label: "Empaques Oblea Cajetón",
             columns: [
-              { id: "empaque", type: "text", header: "Empaque" },
+              { id: "empaque", type: "text", header: "Empaques" },
               { id: "estimado", type: "number", header: "Estimado" },
               { id: "entregado", type: "number", header: "Entregado" },
               { id: "regresaron", type: "number", header: "Regresaron" },
               { id: "total", type: "number", header: "Total" }
             ],
             rows: [
-              { empaque: "Bolsas", estimado: 0, entregado: "", regresaron: "", total: "" },
-              { empaque: "Etiquetas", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Celofán", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Pestaña", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsa", estimado: 0, entregado: "", regresaron: "", total: "" },
               { empaque: "Cajas", estimado: 0, entregado: "", regresaron: "", total: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "oblea_calidad",
-            type: "select" as const,
-            label: "Control de Calidad",
-            options: [
-              { value: "excelente", label: "Excelente" },
-              { value: "buena", label: "Buena" },
-              { value: "regular", label: "Regular" },
-              { value: "deficiente", label: "Deficiente" }
+            id: "oblea_grande_cajeton_table",
+            type: "table" as const,
+            label: "Oblea GrandeCajeton",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Hostia 10 cm", estimado: 0, entregado: "", regresaron: "", total: "" }
             ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           },
           {
-            id: "oblea_observaciones",
-            type: "textarea" as const,
-            label: "Observaciones Oblea",
+            id: "oblea_grande_cajeton_empaque_table",
+            type: "table" as const,
+            label: "Empaques Oblea GrandeCajeton",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán 20*20", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja sin rotulo", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "mini_oblea_coro_table",
+            type: "table" as const,
+            label: "Mini oblea Coro",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 38.4, entregado: "", regresaron: "", total: "" },
+              { mp: "Hostia 5.5cm", estimado: 103, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "mini_oblea_coro_empaque_table",
+            type: "table" as const,
+            label: "Empaques Mini oblea Coro",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán mini", estimado: 1.28, entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsa mini", estimado: 60, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja blanca", estimado: 2.5, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_gde_coro_table",
+            type: "table" as const,
+            label: "Oblea Gde Coro",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 48, entregado: "", regresaron: "", total: "" },
+              { mp: "Hostia 10cm", estimado: 3.55, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_gde_coro_empaque_table",
+            type: "table" as const,
+            label: "Empaques Oblea Gde Coro",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaques" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán", estimado: "", entregado: "", regresaron: "", total: "" },
+              { empaque: "Bolsa oblea G", estimado: "", entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja blanca", estimado: "", entregado: "", regresaron: "", total: "" }
+            ],
             required: false,
             roleAccess: ["operator", "superadmin"]
           }
