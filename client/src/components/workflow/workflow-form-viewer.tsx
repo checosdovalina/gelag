@@ -75,6 +75,34 @@ export default function WorkflowFormViewer({
   const [currentStage, setCurrentStage] = useState(initialData.workflowStage || 'init');
   const [timeAccessStatus, setTimeAccessStatus] = useState<any>(null);
 
+  // Status update mutation for when liberation data is modified
+  const statusUpdateMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const response = await apiRequest('PATCH', `/api/production-forms/${id}/status`, { status });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Estado actualizado",
+        description: "El formulario ha sido marcado como completado por gerencia de calidad.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error al actualizar estado",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Handle status changes when liberation data is modified
+  const handleStatusChange = (newStatus: string) => {
+    if (entryId && newStatus === "completado") {
+      statusUpdateMutation.mutate({ id: entryId, status: newStatus });
+    }
+  };
+
   console.log('[DEBUG] WorkflowFormViewer - Renderizando componente');
   console.log('[DEBUG] WorkflowFormViewer - user:', user);
   console.log('[DEBUG] WorkflowFormViewer - formTemplate:', formTemplate);
@@ -405,6 +433,8 @@ export default function WorkflowFormViewer({
                       onSubmit={onSubmit}
                       isLoading={isLoading}
                       isReadOnly={false}
+                      formId={entryId}
+                      onStatusChange={handleStatusChange}
                     />
                   </div>
                 </TabsContent>

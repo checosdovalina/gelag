@@ -64,7 +64,8 @@ export default function FormViewer({
   isReadOnly = false,
   isLoading = false,
   allowEditDisplayNames = false,
-  formId
+  formId,
+  onStatusChange
 }: FormViewerProps) {
   // Para edición de nombres de campos
   const [isFieldNameEditorOpen, setIsFieldNameEditorOpen] = useState(false);
@@ -1701,8 +1702,11 @@ export default function FormViewer({
                       formField.onChange(e);
                       // If liberation field is modified by quality manager, mark form as ready for completion
                       if (isLiberationField(field.id) && canModifyLiberationData && e.target.value) {
-                        // This could trigger form completion logic
                         console.log("Liberation data modified by quality manager");
+                        // Trigger form completion status change
+                        if (onStatusChange) {
+                          onStatusChange("completado");
+                        }
                       }
                     }}
                   />
