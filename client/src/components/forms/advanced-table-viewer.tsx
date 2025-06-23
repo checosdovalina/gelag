@@ -657,6 +657,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           // Uso del sistema de notificaciones de shadcn
           notifyTableUpdate("Celda actualizada", "success");
           
+          // Para formularios de Liberación Preoperativa, recargar datos para mostrar porcentajes actualizados
+          const fieldId = (field as any).id;
+          if (fieldId && fieldId.includes('checklist') && (columnId === 'revision_visual_si' || columnId === 'revision_visual_no')) {
+            console.log("[RELOAD] Recargando datos para actualizar porcentajes...");
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+          
           setIsSaving(false);
         } catch (error) {
           console.error("[updateCell] ❌ Error al propagar cambios:", error);
