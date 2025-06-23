@@ -549,6 +549,90 @@ export default function FormViewer({
       baseSections.splice(-1, 0, conoSection);
     }
     
+    // Add Gloria section if Gloria Coro is selected
+    if (watchedProceso === "gloria_coro") {
+      const gloriaSection = {
+        title: "Gloria",
+        fields: [
+          {
+            id: "gloria_temperatura",
+            type: "number" as const,
+            label: "Temperatura (°C)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_tiempo_proceso",
+            type: "number" as const,
+            label: "Tiempo de Proceso (minutos)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_calidad",
+            type: "select" as const,
+            label: "Calidad del Producto",
+            options: [
+              { value: "excelente", label: "Excelente" },
+              { value: "buena", label: "Buena" },
+              { value: "regular", label: "Regular" },
+              { value: "deficiente", label: "Deficiente" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_materia_prima_table",
+            type: "table" as const,
+            label: "Materia Prima Gloria",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Cajeta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Oblea", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Azúcar", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_empaque_table",
+            type: "table" as const,
+            label: "Empaque Gloria",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaque" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Celofán", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiqueta", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Caja", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "gloria_observaciones",
+            type: "textarea" as const,
+            label: "Observaciones Gloria",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          }
+        ]
+      };
+      
+      // Insert the Gloria section before the last section (Folio de Liberación)
+      baseSections.splice(-1, 0, gloriaSection);
+    }
+    
     return baseSections;
   };
   
