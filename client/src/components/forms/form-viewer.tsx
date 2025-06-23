@@ -765,6 +765,91 @@ export default function FormViewer({
       baseSections.splice(-1, 0, gloriaSection);
     }
     
+    // Add Oblea section if Oblea Chica is selected
+    if (watchedProceso === "oblea_chica") {
+      const obleaSection = {
+        title: "Oblea",
+        fields: [
+          {
+            id: "oblea_temperatura",
+            type: "number" as const,
+            label: "Temperatura (°C)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_tiempo_coccion",
+            type: "number" as const,
+            label: "Tiempo de Cocción (minutos)",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_materia_prima_table",
+            type: "table" as const,
+            label: "Materia Prima Oblea",
+            columns: [
+              { id: "mp", type: "text", header: "MP" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { mp: "Harina", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Azúcar", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Huevo", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { mp: "Mantequilla", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_empaque_table",
+            type: "table" as const,
+            label: "Empaque Oblea",
+            columns: [
+              { id: "empaque", type: "text", header: "Empaque" },
+              { id: "estimado", type: "number", header: "Estimado" },
+              { id: "entregado", type: "number", header: "Entregado" },
+              { id: "regresaron", type: "number", header: "Regresaron" },
+              { id: "total", type: "number", header: "Total" }
+            ],
+            rows: [
+              { empaque: "Bolsas", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Etiquetas", estimado: 0, entregado: "", regresaron: "", total: "" },
+              { empaque: "Cajas", estimado: 0, entregado: "", regresaron: "", total: "" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_calidad",
+            type: "select" as const,
+            label: "Control de Calidad",
+            options: [
+              { value: "excelente", label: "Excelente" },
+              { value: "buena", label: "Buena" },
+              { value: "regular", label: "Regular" },
+              { value: "deficiente", label: "Deficiente" }
+            ],
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          },
+          {
+            id: "oblea_observaciones",
+            type: "textarea" as const,
+            label: "Observaciones Oblea",
+            required: false,
+            roleAccess: ["operator", "superadmin"]
+          }
+        ]
+      };
+      
+      // Insert the Oblea section before the last section (Folio de Liberación)
+      baseSections.splice(-1, 0, obleaSection);
+    }
+    
     return baseSections;
   };
   
