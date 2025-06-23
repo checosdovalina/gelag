@@ -765,8 +765,8 @@ export default function FormViewer({
       baseSections.splice(-1, 0, gloriaSection);
     }
     
-    // Add Oblea section if Oblea Chica is selected
-    if (watchedProceso === "oblea_chica") {
+    // Add Oblea section if Oblea Chica or Oblea Grande is selected
+    if (watchedProceso === "oblea_chica" || watchedProceso === "oblea_grande") {
       const obleaSection = {
         title: "Oblea",
         fields: [
