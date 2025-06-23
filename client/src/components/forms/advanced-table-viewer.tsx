@@ -657,71 +657,69 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           // Uso del sistema de notificaciones de shadcn
           notifyTableUpdate("Celda actualizada", "success");
           
-          // Para formularios de Liberación Preoperativa, actualizar porcentajes cuando se hace cualquier selección
+          // Para formularios de Liberación Preoperativa, actualizar porcentajes cuando se guarda cualquier tabla de checklist
           const fieldId = (field as any).id;
-          if (fieldId && fieldId.includes('checklist')) {
-            console.log("[PERCENTAGE-CHECK] Verificando si necesita actualizar porcentaje...");
-            console.log(`[PERCENTAGE-CHECK] Campo: ${fieldId}, Columna: ${columnId}, Valor: ${value}`);
+          console.log("[PERCENTAGE-DEBUG] Campo actualizado:", fieldId);
+          
+          if (fieldId && (fieldId.includes('checklist') || fieldId.includes('_checklist'))) {
+            console.log("[PERCENTAGE-CHECK] ✅ Detectado campo de checklist, calculando porcentaje...");
+            console.log(`[PERCENTAGE-CHECK] Campo: ${fieldId}, Datos:`, finalData);
             
-            // Verificar si es una columna de revisión visual (SI/NO)
-            const isRevisionColumn = columnId.includes('revision') || 
-                                   (column.type === 'select' && column.options?.some(opt => 
-                                     opt.value === 'SI' || opt.value === 'NO'
-                                   ));
+            // Contar selecciones SI en todas las columnas relevantes
+            let siCount = 0;
+            let totalValidSelections = 0;
             
-            if (isRevisionColumn) {
-              console.log("[PERCENTAGE-UPDATE] Actualizando porcentaje inmediatamente...");
-              
-              // Buscar todas las columnas que contienen selecciones SI/NO
-              let siCount = 0;
-              let totalCount = 0;
-              
-              finalData.forEach((row: any) => {
-                // Contar todas las columnas que tienen 'revision' en el nombre o son select con opciones SI/NO
-                Object.keys(row).forEach(key => {
-                  if (key.includes('revision') && (row[key] === 'SI' || row[key] === 'NO')) {
-                    totalCount++;
-                    if (row[key] === 'SI') {
-                      siCount++;
-                    }
+            finalData.forEach((row: any, index: number) => {
+              // Buscar columnas que contengan selecciones SI/NO
+              Object.keys(row).forEach(key => {
+                if (key.includes('revision') && (row[key] === 'SI' || row[key] === 'NO')) {
+                  totalValidSelections++;
+                  if (row[key] === 'SI') {
+                    siCount++;
                   }
-                });
+                  console.log(`[PERCENTAGE-COUNT] Fila ${index}, Campo ${key}: ${row[key]}`);
+                }
               });
-              
-              const percentage = totalCount > 0 ? Math.round((siCount / totalCount) * 100) : 0;
-              console.log(`[PERCENTAGE] ${fieldId}: ${siCount}/${totalCount} = ${percentage}%`);
-              
-              // Actualizar directamente el campo de porcentaje en el DOM
+            });
+            
+            const percentage = totalValidSelections > 0 ? Math.round((siCount / totalValidSelections) * 100) : 0;
+            console.log(`[PERCENTAGE-RESULT] ${fieldId}: ${siCount}/${totalValidSelections} = ${percentage}%`);
+            
+            // Mapear al campo de porcentaje correspondiente
+            let percentageFieldName = '';
+            if (fieldId.includes('marmitas')) {
+              percentageFieldName = 'porcentaje_cumplimiento_marmitas';
+            } else if (fieldId.includes('dulces')) {
+              percentageFieldName = 'porcentaje_cumplimiento_dulces';
+            } else if (fieldId.includes('produccion') || fieldId.includes('area_produccion')) {
+              percentageFieldName = 'porcentaje_cumplimiento_produccion';
+            } else if (fieldId.includes('reposo') || fieldId.includes('area_reposo')) {
+              percentageFieldName = 'porcentaje_cumplimiento_reposo';
+            } else if (fieldId.includes('limpieza') || fieldId.includes('estacion_limpieza')) {
+              percentageFieldName = 'porcentaje_cumplimiento_limpieza';
+            }
+            
+            console.log(`[PERCENTAGE-FIELD] Campo objetivo: ${percentageFieldName}`);
+            
+            if (percentageFieldName && percentage >= 0) {
+              // Actualizar directamente el campo de porcentaje
               setTimeout(() => {
-                let percentageFieldName = '';
-                if (fieldId.includes('marmitas')) {
-                  percentageFieldName = 'porcentaje_cumplimiento_marmitas';
-                } else if (fieldId.includes('dulces')) {
-                  percentageFieldName = 'porcentaje_cumplimiento_dulces';
-                } else if (fieldId.includes('produccion')) {
-                  percentageFieldName = 'porcentaje_cumplimiento_produccion';
-                } else if (fieldId.includes('reposo')) {
-                  percentageFieldName = 'porcentaje_cumplimiento_reposo';
-                } else if (fieldId.includes('limpieza')) {
-                  percentageFieldName = 'porcentaje_cumplimiento_limpieza';
+                const percentageField = document.querySelector(`input[name="${percentageFieldName}"]`) as HTMLInputElement;
+                if (percentageField) {
+                  percentageField.value = `${percentage}%`;
+                  console.log(`[DOM-SUCCESS] ✅ Campo ${percentageFieldName} actualizado a ${percentage}%`);
+                  
+                  // Disparar eventos para React
+                  percentageField.dispatchEvent(new Event('input', { bubbles: true }));
+                  percentageField.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                  console.log(`[DOM-ERROR] ❌ No se encontró ${percentageFieldName}`);
+                  
+                  // Debug: mostrar todos los campos disponibles
+                  const allInputs = document.querySelectorAll('input');
+                  console.log('[DEBUG] Todos los campos disponibles:', Array.from(allInputs).map(i => i.name).filter(n => n));
                 }
-                
-                if (percentageFieldName) {
-                  const percentageField = document.querySelector(`input[name="${percentageFieldName}"]`) as HTMLInputElement;
-                  if (percentageField) {
-                    percentageField.value = `${percentage}%`;
-                    console.log(`[DOM-UPDATE] Campo ${percentageFieldName} actualizado a ${percentage}%`);
-                    
-                    // Disparar eventos para que React detecte el cambio
-                    const inputEvent = new Event('input', { bubbles: true });
-                    const changeEvent = new Event('change', { bubbles: true });
-                    percentageField.dispatchEvent(inputEvent);
-                    percentageField.dispatchEvent(changeEvent);
-                  } else {
-                    console.log(`[DOM-ERROR] No se encontró el campo ${percentageFieldName}`);
-                  }
-                }
-              }, 100);
+              }, 300);
             }
           }
           
