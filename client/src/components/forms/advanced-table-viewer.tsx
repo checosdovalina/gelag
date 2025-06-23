@@ -80,6 +80,7 @@ interface AdvancedTableConfig {
   rows?: number;
   dynamicRows?: boolean;
   sections?: TableSection[];
+  columns?: ColumnDefinition[];
   initialData?: Record<string, any>[];
 }
 
@@ -127,8 +128,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     enabled: true,
   });
   
-  // Si no hay configuración o no hay secciones, mostrar mensaje simplificado
-  if (!config || !config.sections || config.sections.length === 0) {
+  // Si no hay configuración, mostrar mensaje simplificado
+  if (!config || (!config.sections && !config.columns) || (config.sections && config.sections.length === 0) || (config.columns && config.columns.length === 0)) {
     console.warn("Error en configuración de tabla avanzada:", field);
     return (
       <div className="text-red-500 p-4 border border-red-200 rounded bg-red-50">
@@ -152,35 +153,42 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       const defaultRowTemplate: Record<string, any> = {};
       
       // Para mayor robustez, pre-inicializamos todas las columnas con valores vacíos apropiados
-      if (config.sections) {
-        config.sections.forEach(section => {
-          if (section.columns) {
-            section.columns.forEach(column => {
-              // Asignamos valores por defecto según el tipo
-              switch(column.type) {
-                case "number":
-                  defaultRowTemplate[column.id] = null;
-                  break;
-                case "checkbox":
-                  defaultRowTemplate[column.id] = false;
-                  break;
-                case "select":
-                  defaultRowTemplate[column.id] = "";
-                  break;
-                default:
-                  defaultRowTemplate[column.id] = "";
-              }
-            });
-          }
-        });
-      }
+      const columnsToProcess = config.sections ? 
+        config.sections.flatMap(section => section.columns || []) :
+        config.columns || [];
       
-      if ((!value || !Array.isArray(value) || value.length === 0) && config.rows && config.rows > 0) {
-        // Crear filas iniciales vacías con todas las columnas pre-inicializadas
-        const initialData = Array(config.rows).fill(0).map(() => ({...defaultRowTemplate}));
-        console.log("Inicializando tabla con filas pre-inicializadas:", initialData);
-        setTableData(initialData);
-        onChange(JSON.parse(JSON.stringify(initialData)));
+      columnsToProcess.forEach(column => {
+        // Asignamos valores por defecto según el tipo
+        switch(column.type) {
+          case "number":
+            defaultRowTemplate[column.id] = null;
+            break;
+          case "checkbox":
+            defaultRowTemplate[column.id] = false;
+            break;
+          case "select":
+            defaultRowTemplate[column.id] = "";
+            break;
+          default:
+            defaultRowTemplate[column.id] = "";
+        }
+      });
+      
+      // Use initialData if available and no value is provided
+      if ((!value || !Array.isArray(value) || value.length === 0)) {
+        if (config.initialData && config.initialData.length > 0) {
+          // Use initialData from configuration
+          const initialData = config.initialData.map(row => ({...defaultRowTemplate, ...row}));
+          console.log("Inicializando tabla con initialData:", initialData);
+          setTableData(initialData);
+          onChange(JSON.parse(JSON.stringify(initialData)));
+        } else if (config.rows && config.rows > 0) {
+          // Crear filas iniciales vacías con todas las columnas pre-inicializadas
+          const initialData = Array(config.rows).fill(0).map(() => ({...defaultRowTemplate}));
+          console.log("Inicializando tabla con filas pre-inicializadas:", initialData);
+          setTableData(initialData);
+          onChange(JSON.parse(JSON.stringify(initialData)));
+        }
       } else if (value && Array.isArray(value) && value.length > 0) {
         // Actualizar si el valor externo cambia pero asegurando que cada fila tenga todas las propiedades
         console.log("Actualizando tableData con valor externo:", value);
@@ -192,7 +200,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // En caso de error, inicializamos con datos vacíos
       setTableData([{}]);
     }
-  }, [config.rows, config.sections, value]);
+  }, [config.rows, config.sections, config.columns, config.initialData, value]);
   
   // Obtener el valor de referencia de otra columna para cálculos automáticos
   const getSourceValue = (rowIndex: number, sourceColumnId: string) => {
@@ -310,8 +318,10 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     }
   }, [tableData, products]);
 
-  // Obtener todas las columnas de todas las secciones
-  const allColumns = config.sections?.flatMap(section => section.columns) || [];
+  // Obtener todas las columnas de todas las secciones o directamente de columns
+  const allColumns = config.sections ? 
+    config.sections.flatMap(section => section.columns) : 
+    config.columns || [];
 
   // Detectar si hay alguna columna con dependencias
   const hasDependentColumns = allColumns.some(col => col.dependency);
