@@ -125,9 +125,24 @@ GELAG is a comprehensive form management system designed for quality control and
 - **Connection Pooling**: Neon serverless driver with WebSocket support
 - **Backup Strategy**: Cloud-managed backups through Neon platform
 
+## Recent Changes
+
+### June 23, 2025 - Automatic Percentage Calculation System
+- **Implemented automatic percentage calculation** for Liberación Preoperativa forms
+- **Server-side calculation**: Percentages update automatically when checklist data is saved
+- **Multi-section support**: Calculates compliance percentages for all 5 sections (Marmitas, Dulces, Producción, Reposo, Limpieza)
+- **Real-time updates**: Percentages recalculate instantly when users make SI/NO selections
+- **Smart logic**: Only counts "SI" selections, ignores "NO" and empty values
+- **Example**: 3 out of 4 items marked "SI" = 75% compliance automatically calculated
+
+### System Architecture Updates
+- **Enhanced form processing**: Added percentage calculation middleware in server routes
+- **Improved data flow**: Automatic calculation happens during form save operations
+- **Template detection**: System automatically identifies Liberación Preoperativa forms for percentage processing
+
 ## Changelog
 
-- June 23, 2025. Initial setup
+- June 23, 2025. Initial setup and automatic percentage calculation implementation
 
 ## User Preferences
 
