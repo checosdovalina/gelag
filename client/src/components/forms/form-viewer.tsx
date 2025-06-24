@@ -1585,6 +1585,61 @@ export default function FormViewer({
                         // Hacer una copia profunda para asegurar que se rompen todas las referencias
                         const dataCopy = JSON.parse(JSON.stringify(currentData));
                         
+                        // Calcular porcentajes automáticamente para tablas de checklist de Liberación Preoperativa
+                        if (field.id && (field.id.includes('checklist') || field.id.includes('_checklist'))) {
+                          console.log("[PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...");
+                          console.log(`[PERCENTAGE-AUTO] Campo: ${field.id}, Datos:`, dataCopy);
+                          
+                          // Contar selecciones SI en todas las columnas relevantes
+                          let siCount = 0;
+                          let totalValidSelections = 0;
+                          
+                          if (Array.isArray(dataCopy)) {
+                            dataCopy.forEach((row: any, index: number) => {
+                              // Buscar columnas que contengan selecciones SI/NO
+                              Object.keys(row).forEach(key => {
+                                if (key.includes('revision') && (row[key] === 'SI' || row[key] === 'NO')) {
+                                  totalValidSelections++;
+                                  if (row[key] === 'SI') {
+                                    siCount++;
+                                  }
+                                  console.log(`[PERCENTAGE-AUTO] Fila ${index}, Campo ${key}: ${row[key]}`);
+                                }
+                              });
+                            });
+                          }
+                          
+                          const percentage = totalValidSelections > 0 ? Math.round((siCount / totalValidSelections) * 100) : 0;
+                          console.log(`[PERCENTAGE-AUTO] ${field.id}: ${siCount}/${totalValidSelections} = ${percentage}%`);
+                          
+                          // Mapear al campo de porcentaje correspondiente
+                          let percentageFieldName = '';
+                          if (field.id.includes('marmitas')) {
+                            percentageFieldName = 'porcentaje_cumplimiento_marmitas';
+                          } else if (field.id.includes('dulces')) {
+                            percentageFieldName = 'porcentaje_cumplimiento_dulces';
+                          } else if (field.id.includes('produccion') || field.id.includes('area_produccion')) {
+                            percentageFieldName = 'porcentaje_cumplimiento_produccion';
+                          } else if (field.id.includes('reposo') || field.id.includes('area_reposo')) {
+                            percentageFieldName = 'porcentaje_cumplimiento_reposo';
+                          } else if (field.id.includes('limpieza') || field.id.includes('estacion_limpieza')) {
+                            percentageFieldName = 'porcentaje_cumplimiento_limpieza';
+                          }
+                          
+                          console.log(`[PERCENTAGE-AUTO] Campo objetivo: ${percentageFieldName}`);
+                          
+                          if (percentageFieldName && percentage >= 0) {
+                            // Actualizar el campo de porcentaje en el formulario
+                            const percentageValue = `${percentage}%`;
+                            form.setValue(percentageFieldName, percentageValue, {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true
+                            });
+                            console.log(`[PERCENTAGE-AUTO] ✅ Campo ${percentageFieldName} actualizado a ${percentageValue}`);
+                          }
+                        }
+                        
                         // Actualizar el valor en el formulario
                         form.setValue(field.id, dataCopy, {
                           shouldDirty: true,
