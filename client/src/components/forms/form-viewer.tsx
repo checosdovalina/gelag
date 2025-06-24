@@ -1609,14 +1609,20 @@ export default function FormViewer({
                           
                           if (Array.isArray(dataCopy)) {
                             dataCopy.forEach((row: any, index: number) => {
+                              console.log(`[PERCENTAGE-AUTO] Fila ${index} completa:`, row);
                               // Buscar columnas que contengan selecciones SI/NO
                               Object.keys(row).forEach(key => {
-                                if (key.includes('revision') && (row[key] === 'SI' || row[key] === 'NO')) {
-                                  totalValidSelections++;
-                                  if (row[key] === 'SI') {
-                                    siCount++;
+                                console.log(`[PERCENTAGE-AUTO] Revisando campo ${key}: ${row[key]}`);
+                                if (key.includes('revision')) {
+                                  // Aceptar múltiples formatos: SI, NO, true, false, checkmarks
+                                  const value = row[key];
+                                  if (value === 'SI' || value === 'NO' || value === true || value === false || value === '✓' || value === 'si' || value === 'no') {
+                                    totalValidSelections++;
+                                    if (value === 'SI' || value === true || value === '✓' || value === 'si') {
+                                      siCount++;
+                                    }
+                                    console.log(`[PERCENTAGE-AUTO] Fila ${index}, Campo ${key}: ${value} (cuenta como ${value === 'SI' || value === true || value === '✓' || value === 'si' ? 'SI' : 'NO'})`);
                                   }
-                                  console.log(`[PERCENTAGE-AUTO] Fila ${index}, Campo ${key}: ${row[key]}`);
                                 }
                               });
                             });
