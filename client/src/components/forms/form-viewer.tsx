@@ -1585,8 +1585,21 @@ export default function FormViewer({
                         // Hacer una copia profunda para asegurar que se rompen todas las referencias
                         const dataCopy = JSON.parse(JSON.stringify(currentData));
                         
-                        // Calcular porcentajes automáticamente para tablas de checklist de Liberación Preoperativa
-                        if (field.id && (field.id.includes('checklist') || field.id.includes('_checklist'))) {
+                        // Calcular porcentajes automáticamente para tablas de Liberación Preoperativa
+                        const isLiberacionTable = field.id && (
+                          field.id.includes('checklist') || 
+                          field.id.includes('_checklist') ||
+                          field.id.includes('marmitas') ||
+                          field.id.includes('dulces') ||
+                          field.id.includes('produccion') ||
+                          field.id.includes('area_produccion') ||
+                          field.id.includes('reposo') ||
+                          field.id.includes('area_reposo') ||
+                          field.id.includes('limpieza') ||
+                          field.id.includes('estacion_limpieza')
+                        );
+                        
+                        if (isLiberacionTable) {
                           console.log("[PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...");
                           console.log(`[PERCENTAGE-AUTO] Campo: ${field.id}, Datos:`, dataCopy);
                           
