@@ -1219,28 +1219,35 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
+                            console.log(`[CHECKBOX-CLICK] Clic en ${column.id} fila ${rowIndex}, valor actual: ${rowData[column.id]}`);
+                            
                             if (readOnly || column.readOnly) {
+                              console.log(`[CHECKBOX-CLICK] Campo bloqueado`);
                               return;
                             }
                             
                             const currentValue = rowData[column.id];
                             const newValue = currentValue === 'SI' ? 'vacio' : 'SI';
+                            console.log(`[CHECKBOX-CLICK] Cambiando de '${currentValue}' a '${newValue}'`);
                             
                             // Para checkboxes SI/NO mutuamente excluyentes
                             if (column.id.includes('revision_visual')) {
                               if (newValue === 'SI') {
-                                updateCell(rowIndex, column.id, 'SI');
+                                console.log(`[CHECKBOX-CLICK] Marcando ${column.id} como SI`);
+                                updateCellLocally(rowIndex, column.id, 'SI');
                                 
                                 // Limpiar la opción opuesta
                                 const oppositeId = column.id.includes('_si') ? 
                                   column.id.replace('_si', '_no') : 
                                   column.id.replace('_no', '_si');
-                                updateCell(rowIndex, oppositeId, 'vacio');
+                                console.log(`[CHECKBOX-CLICK] Limpiando ${oppositeId}`);
+                                updateCellLocally(rowIndex, oppositeId, 'vacio');
                               } else {
-                                updateCell(rowIndex, column.id, 'vacio');
+                                console.log(`[CHECKBOX-CLICK] Desmarcando ${column.id}`);
+                                updateCellLocally(rowIndex, column.id, 'vacio');
                               }
                             } else {
-                              updateCell(rowIndex, column.id, newValue);
+                              updateCellLocally(rowIndex, column.id, newValue);
                             }
                           }}
                           disabled={readOnly || column.readOnly}
