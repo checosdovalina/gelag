@@ -419,8 +419,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
         newData[rowIndex] = {};
       }
       
-      // Actualizar el valor en la celda (convertir a número si es posible)
-      if (typeof value === "string" && !isNaN(Number(value))) {
+      // Actualizar el valor en la celda 
+      // No convertir a número si es un valor de checkbox o campo específico
+      if (columnId.includes('revision_visual') || value === 'si' || value === 'no' || value === 'vacio') {
+        // Mantener valores de checkbox como strings
+        newData[rowIndex][columnId] = value;
+        console.log(`[updateCell] Checkbox value preserved: ${columnId} = ${value}`);
+      } else if (typeof value === "string" && !isNaN(Number(value)) && value !== '') {
+        // Solo convertir a número si no es un valor de checkbox y es un número válido
         newData[rowIndex][columnId] = Number(value);
       } else {
         newData[rowIndex][columnId] = value;
