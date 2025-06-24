@@ -1209,23 +1209,31 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       </Select>
                     )}
                     {column.type === 'checkbox' && (
-                      <div className="flex items-center justify-center p-2" style={{ pointerEvents: 'auto' }}>
-                        <Checkbox
-                          checked={rowData[column.id] === 'si'}
-                          onCheckedChange={(checked) => {
-                            console.log(`[CHECKBOX] 🎯 CLIC DETECTADO! ${column.id} fila ${rowIndex} cambiado a:`, checked);
+                      <div className="flex items-center justify-center p-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`[CHECKBOX] 🎯 CLIC DETECTADO! ${column.id} fila ${rowIndex}`);
                             console.log(`[CHECKBOX] Valor actual en datos:`, rowData[column.id]);
                             console.log(`[CHECKBOX] Datos completos de la fila:`, rowData);
                             
+                            if (readOnly || column.readOnly) {
+                              console.log(`[CHECKBOX] ⛔ Campo bloqueado - readOnly:${readOnly} column.readOnly:${column.readOnly}`);
+                              return;
+                            }
+                            
+                            const currentValue = rowData[column.id];
+                            const newValue = currentValue === 'si' ? 'vacio' : 'si';
+                            
+                            console.log(`[CHECKBOX] Cambiando de '${currentValue}' a '${newValue}'`);
+                            
                             // Para checkboxes SI/NO mutuamente excluyentes
                             if (column.id.includes('revision_visual')) {
-                              if (checked) {
+                              if (newValue === 'si') {
                                 console.log(`[CHECKBOX] ✅ Marcando ${column.id} como 'si'`);
-                                
-                                // Hacer la actualización inmediatamente con debugging
-                                const newValue = 'si';
-                                console.log(`[CHECKBOX] Llamando updateCell(${rowIndex}, "${column.id}", "${newValue}")`);
-                                updateCell(rowIndex, column.id, newValue);
+                                updateCell(rowIndex, column.id, 'si');
                                 
                                 // Limpiar la opción opuesta
                                 const oppositeId = column.id.includes('_si') ? 
@@ -1238,7 +1246,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                                 updateCell(rowIndex, column.id, 'vacio');
                               }
                             } else {
-                              updateCell(rowIndex, column.id, checked ? 'si' : 'vacio');
+                              updateCell(rowIndex, column.id, newValue);
                             }
                             
                             // Verificar que se aplicó el cambio
@@ -1246,14 +1254,19 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                               console.log(`[CHECKBOX-VERIFY] Valor después de updateCell:`, tableData[rowIndex]?.[column.id]);
                             }, 100);
                           }}
-                          onClick={(e) => {
-                            console.log(`[CHECKBOX] 👆 onClick detectado para ${column.id}`);
-                            e.stopPropagation();
-                          }}
                           disabled={readOnly || column.readOnly}
-                          className="h-5 w-5 border-2 cursor-pointer"
-                          style={{ pointerEvents: 'auto', zIndex: 10 }}
-                        />
+                          className={`h-5 w-5 border-2 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
+                            rowData[column.id] === 'si' 
+                              ? 'bg-primary border-primary text-white' 
+                              : 'border-gray-300 hover:border-gray-400'
+                          } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
+                        >
+                          {rowData[column.id] === 'si' && (
+                            <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
                       </div>
                     )}
                     {column.type === 'date' && (
