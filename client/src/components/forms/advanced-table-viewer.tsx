@@ -1209,11 +1209,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       </Select>
                     )}
                     {column.type === 'checkbox' && (
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center p-2" style={{ pointerEvents: 'auto' }}>
                         <Checkbox
                           checked={rowData[column.id] === 'si'}
                           onCheckedChange={(checked) => {
-                            console.log(`[CHECKBOX] ${column.id} fila ${rowIndex} cambiado a:`, checked);
+                            console.log(`[CHECKBOX] 🎯 CLIC DETECTADO! ${column.id} fila ${rowIndex} cambiado a:`, checked);
                             console.log(`[CHECKBOX] Valor actual en datos:`, rowData[column.id]);
                             console.log(`[CHECKBOX] Datos completos de la fila:`, rowData);
                             
@@ -1246,8 +1246,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                               console.log(`[CHECKBOX-VERIFY] Valor después de updateCell:`, tableData[rowIndex]?.[column.id]);
                             }, 100);
                           }}
+                          onClick={(e) => {
+                            console.log(`[CHECKBOX] 👆 onClick detectado para ${column.id}`);
+                            e.stopPropagation();
+                          }}
                           disabled={readOnly || column.readOnly}
-                          className="h-5 w-5 border-2"
+                          className="h-5 w-5 border-2 cursor-pointer"
+                          style={{ pointerEvents: 'auto', zIndex: 10 }}
                         />
                       </div>
                     )}
