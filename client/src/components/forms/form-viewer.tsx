@@ -1612,29 +1612,27 @@ export default function FormViewer({
                               console.log(`[PERCENTAGE-AUTO] Fila ${index} completa:`, row);
                               // Buscar columnas que contengan selecciones SI/NO
                               Object.keys(row).forEach(key => {
-                                console.log(`[PERCENTAGE-AUTO] Revisando campo ${key}: ${row[key]}`);
+                                console.log(`[PERCENTAGE-AUTO] Revisando campo ${key}: ${row[key]} (tipo: ${typeof row[key]})`);
                                 
                                 // Buscar campos de revisión específicos
                                 if (key.includes('revision_visual')) {
                                   const value = row[key];
-                                  console.log(`[PERCENTAGE-AUTO] Campo de revisión encontrado: ${key} = ${value}`);
+                                  console.log(`[PERCENTAGE-AUTO] Campo de revisión encontrado: ${key} = "${value}" (tipo: ${typeof value})`);
                                   
-                                  // Solo contar si no es "vacio" o undefined
+                                  // Contar CUALQUIER selección que no sea "vacio", vacío, null o undefined
                                   if (value && value !== 'vacio' && value !== '' && value !== null && value !== undefined) {
                                     totalValidSelections++;
+                                    console.log(`[PERCENTAGE-AUTO] 📊 CONTANDO selección válida en ${key}: "${value}"`);
                                     
-                                    // Contar como "SI" si:
-                                    // - Es revision_visual_si con cualquier valor que no sea "vacio"
-                                    // - Es revision_visual con valor "SI", true, o "✓"
-                                    if ((key === 'revision_visual_si' && value !== 'vacio') || 
-                                        (value === 'SI' || value === true || value === '✓' || value === 'si')) {
+                                    // Contar como "SI" si es en la columna SI
+                                    if (key === 'revision_visual_si' || key === 'revision_visual') {
                                       siCount++;
-                                      console.log(`[PERCENTAGE-AUTO] ✅ Fila ${index}, Campo ${key}: ${value} (cuenta como SI)`);
-                                    } else {
-                                      console.log(`[PERCENTAGE-AUTO] ❌ Fila ${index}, Campo ${key}: ${value} (cuenta como NO)`);
+                                      console.log(`[PERCENTAGE-AUTO] ✅ Fila ${index}, Campo ${key}: "${value}" (cuenta como SI)`);
+                                    } else if (key === 'revision_visual_no') {
+                                      console.log(`[PERCENTAGE-AUTO] ❌ Fila ${index}, Campo ${key}: "${value}" (cuenta como NO)`);
                                     }
                                   } else {
-                                    console.log(`[PERCENTAGE-AUTO] ⚪ Fila ${index}, Campo ${key}: ${value} (vacío, no cuenta)`);
+                                    console.log(`[PERCENTAGE-AUTO] ⚪ Fila ${index}, Campo ${key}: "${value}" (vacío, no cuenta)`);
                                   }
                                 }
                               });
