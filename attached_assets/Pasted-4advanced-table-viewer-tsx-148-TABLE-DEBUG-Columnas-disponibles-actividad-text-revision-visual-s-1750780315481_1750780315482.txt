@@ -1,0 +1,45 @@
+4advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:160 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:205 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:160 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:205 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:160 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:205 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:160 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:205 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, url:text
+4advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, url:text
+4advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+3advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla estacion_limpieza: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: estacion_limpieza, Datos: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Tarjas limpias', porcentaje: '25%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarjas limpias (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tarjas limpias
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 25% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Cepillero limpio y en orden', porcentaje: '35%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Cepillero limpio y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Cepillero limpio y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 35% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Moldes limpios y en orden', porcentaje: '40%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Moldes limpios y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Moldes limpios y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 40% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] estacion_limpieza: Total sumado = 0%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_limpieza
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_limpieza actualizado a 0%
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, url:text
+4advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:160 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:205 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, url:text
+4advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text

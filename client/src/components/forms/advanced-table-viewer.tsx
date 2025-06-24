@@ -150,8 +150,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     if (col.type === 'checkbox') {
       console.log(`[CHECKBOX-COLUMN] ✅ Encontrada columna checkbox: ${col.id}`);
     }
-    if (col.type === 'select' && col.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) {
-      console.log(`[CHECKBOX-SELECT-COLUMN] ✅ Encontrada columna select SI/NO (será checkbox): ${col.id}`);
+    if (col.type === 'select') {
+      console.log(`[SELECT-COLUMN-DEBUG] Columna select: ${col.id}, opciones:`, col.options);
+      if (col.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) {
+        console.log(`[CHECKBOX-SELECT-COLUMN] ✅ Encontrada columna select SI/NO (será checkbox): ${col.id}`);
+      }
+    }
+    // También verificar si es columna revision_visual que debería ser checkbox
+    if (col.id.includes('revision_visual')) {
+      console.log(`[REVISION-VISUAL-DEBUG] Columna revision_visual: ${col.id}, tipo: ${col.type}, debería ser checkbox`);
     }
   });
 
@@ -1201,7 +1208,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         }}
                       />
                     )}
-                    {column.type === 'select' && !(column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && (
+                    {column.type === 'select' && !(column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && !column.id.includes('revision_visual') && (
                       <Select
                         defaultValue={rowData[column.id] || ''}
                         onValueChange={(val) => updateCellLocally(rowIndex, column.id, val)}
@@ -1219,7 +1226,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         </SelectContent>
                       </Select>
                     )}
-                    {(column.type === 'select' && column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && (() => {
+                    {((column.type === 'select' && column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) || 
+                      (column.type === 'select' && column.id.includes('revision_visual'))) && (() => {
                       console.log(`[CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}`);
                       return (
                         <div className="flex items-center justify-center p-2" style={{border: '2px solid red'}}>
