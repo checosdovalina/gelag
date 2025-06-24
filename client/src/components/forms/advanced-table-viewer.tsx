@@ -1208,9 +1208,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         </SelectContent>
                       </Select>
                     )}
-                    {column.type === 'checkbox' && (
-                      <div className="flex items-center justify-center p-2">
-                        <button
+                    {column.type === 'checkbox' && (() => {
+                      console.log(`[CHECKBOX-RENDER] 🔧 Renderizando checkbox ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}, readOnly: ${readOnly}, column.readOnly: ${column.readOnly}`);
+                      return (
+                        <div className="flex items-center justify-center p-2" style={{border: '2px solid red'}}>
+                          <button
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
@@ -1267,8 +1269,9 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                             </svg>
                           )}
                         </button>
-                      </div>
-                    )}
+                        </div>
+                      );
+                    })()}
                     {column.type === 'date' && (
                       <Input
                         type="date"
