@@ -389,7 +389,11 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       newData[rowIndex] = {};
     }
     
-    if (typeof value === "string" && !isNaN(Number(value))) {
+    // Para checkboxes mantener siempre como string
+    if (columnId.includes('revision_visual')) {
+      newData[rowIndex][columnId] = value;
+      console.log(`[updateCellLocally] Checkbox update: ${columnId} = ${value} en fila ${rowIndex}`);
+    } else if (typeof value === "string" && !isNaN(Number(value))) {
       newData[rowIndex][columnId] = Number(value);
     } else {
       newData[rowIndex][columnId] = value;
@@ -397,6 +401,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     
     // Solo actualizar estado local, NO propagar cambios
     setTableData(newData);
+    console.log(`[updateCellLocally] Estado actualizado, nuevo valor en fila ${rowIndex}: ${newData[rowIndex][columnId]}`);
   };
 
   // Actualizar una celda
@@ -1257,11 +1262,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                               : 'border-gray-300 hover:border-gray-400'
                           } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
                         >
-                          {rowData[column.id] === 'SI' && (
-                            <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
+                          {(() => {
+                            const isChecked = rowData[column.id] === 'SI';
+                            console.log(`[CHECKBOX-RENDER] ${column.id} fila ${rowIndex}: valor='${rowData[column.id]}', isChecked=${isChecked}`);
+                            return isChecked && (
+                              <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            );
+                          })()}
                         </button>
                         </div>
                       );

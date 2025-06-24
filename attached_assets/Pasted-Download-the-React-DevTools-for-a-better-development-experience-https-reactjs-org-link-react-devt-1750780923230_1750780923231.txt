@@ -1,0 +1,73 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+form-viewer.tsx:434 [FORM-VIEWER] Registrando listeners...
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1152 [FOLIO] Campos de folio disponibles para entrada manual
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:151 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:196 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:1222 [CHECKBOX-CLICK] Clic en revision_visual_si fila 0, valor actual: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-CLICK] Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:1236 [CHECKBOX-CLICK] Marcando revision_visual_si como SI
+advanced-table-viewer.tsx:1243 [CHECKBOX-CLICK] Limpiando revision_visual_no
+advanced-table-viewer.tsx:1222 [CHECKBOX-CLICK] Clic en revision_visual_si fila 1, valor actual: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-CLICK] Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:1236 [CHECKBOX-CLICK] Marcando revision_visual_si como SI
+advanced-table-viewer.tsx:1243 [CHECKBOX-CLICK] Limpiando revision_visual_no
+advanced-table-viewer.tsx:1222 [CHECKBOX-CLICK] Clic en revision_visual_no fila 2, valor actual: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-CLICK] Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:1236 [CHECKBOX-CLICK] Marcando revision_visual_no como SI
+advanced-table-viewer.tsx:1243 [CHECKBOX-CLICK] Limpiando revision_visual_si
