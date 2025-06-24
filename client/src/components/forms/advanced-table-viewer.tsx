@@ -672,12 +672,24 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             finalData.forEach((row: any, index: number) => {
               // Buscar columnas que contengan selecciones SI/NO
               Object.keys(row).forEach(key => {
-                if (key.includes('revision') && (row[key] === 'SI' || row[key] === 'NO')) {
-                  totalValidSelections++;
-                  if (row[key] === 'SI') {
-                    siCount++;
+                if (key.includes('revision_visual')) {
+                  const value = row[key];
+                  console.log(`[PERCENTAGE-COUNT] Fila ${index}, Campo ${key}: ${value}`);
+                  
+                  // Contar selecciones válidas (no "vacio")
+                  if (value && value !== 'vacio' && value !== '' && value !== null && value !== undefined) {
+                    totalValidSelections++;
+                    
+                    // Contar como SI si es revision_visual_si o si el valor es "si"
+                    if (key.includes('_si') || value === 'si') {
+                      siCount++;
+                      console.log(`[PERCENTAGE-COUNT] ✅ ${key}: ${value} cuenta como SI`);
+                    } else {
+                      console.log(`[PERCENTAGE-COUNT] ❌ ${key}: ${value} cuenta como NO`);
+                    }
+                  } else {
+                    console.log(`[PERCENTAGE-COUNT] ⚪ ${key}: ${value} (vacío, no cuenta)`);
                   }
-                  console.log(`[PERCENTAGE-COUNT] Fila ${index}, Campo ${key}: ${row[key]}`);
                 }
               });
             });
@@ -1191,10 +1203,25 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     {column.type === 'checkbox' && (
                       <div className="flex items-center justify-center">
                         <Checkbox
-                          checked={rowData[column.id] || false}
-                          onCheckedChange={(checked) => 
-                            updateCellLocally(rowIndex, column.id, checked)
-                          }
+                          checked={rowData[column.id] && rowData[column.id] !== 'vacio'}
+                          onCheckedChange={(checked) => {
+                            console.log(`[CHECKBOX] ${column.id} cambiado a:`, checked);
+                            // Para checkboxes SI/NO mutuamente excluyentes
+                            if (column.id.includes('revision_visual')) {
+                              if (checked) {
+                                updateCell(rowIndex, column.id, 'si');
+                                // Limpiar la opción opuesta
+                                const oppositeId = column.id.includes('_si') ? 
+                                  column.id.replace('_si', '_no') : 
+                                  column.id.replace('_no', '_si');
+                                updateCell(rowIndex, oppositeId, 'vacio');
+                              } else {
+                                updateCell(rowIndex, column.id, 'vacio');
+                              }
+                            } else {
+                              updateCell(rowIndex, column.id, checked ? 'si' : 'vacio');
+                            }
+                          }}
                           disabled={readOnly || column.readOnly}
                           className="h-5 w-5 border-2"
                         />

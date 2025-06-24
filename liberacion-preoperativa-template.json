@@ -198,15 +198,16 @@
             "required": true,
             "advancedTableConfig": {
               "columns": [
-                { "id": "actividad", "type": "text", "header": "Actividad", "width": "60%" },
-                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
-                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
-                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "40%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "10%" },
+                { "id": "revision_visual_si", "type": "checkbox", "header": "SI", "width": "15%" },
+                { "id": "revision_visual_no", "type": "checkbox", "header": "NO", "width": "15%" },
+                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "20%" }
               ],
               "initialData": [
-                { "actividad": "Tarjas limpias", "porcentaje": "25%" },
-                { "actividad": "Cepillero limpio y en orden", "porcentaje": "35%" },
-                { "actividad": "Moldes limpios y en orden", "porcentaje": "40%" }
+                { "actividad": "Tarjas limpias", "porcentaje": "25%", "revision_visual_si": "vacio", "revision_visual_no": "vacio" },
+                { "actividad": "Cepillero limpio y en orden", "porcentaje": "35%", "revision_visual_si": "vacio", "revision_visual_no": "vacio" },
+                { "actividad": "Moldes limpios y en orden", "porcentaje": "40%", "revision_visual_si": "vacio", "revision_visual_no": "vacio" }
               ]
             }
           },

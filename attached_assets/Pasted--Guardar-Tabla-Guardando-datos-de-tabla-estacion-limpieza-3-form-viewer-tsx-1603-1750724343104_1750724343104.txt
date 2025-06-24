@@ -1,0 +1,35 @@
+[Guardar Tabla] Guardando datos de tabla estacion_limpieza: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: estacion_limpieza, Datos: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Tarjas limpias', porcentaje: '25%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarjas limpias (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 25% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_no = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 0, Campo revision_visual_no: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_si = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 0, Campo revision_visual_si: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Cepillero limpio y en orden', porcentaje: '35%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Cepillero limpio y en orden (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 35% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_no = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 1, Campo revision_visual_no: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_si = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 1, Campo revision_visual_si: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Moldes limpios y en orden', porcentaje: '40%', revision_visual_no: 'vacio', revision_visual_si: 'vacio'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Moldes limpios y en orden (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 40% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_no = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 2, Campo revision_visual_no: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1620 [PERCENTAGE-AUTO] Campo de revisión encontrado: revision_visual_si = "vacio" (tipo: string)
+form-viewer.tsx:1635 [PERCENTAGE-AUTO] ⚪ Fila 2, Campo revision_visual_si: "vacio" (vacío, no cuenta)
+form-viewer.tsx:1643 [PERCENTAGE-AUTO] estacion_limpieza: 0/0 = 0%
+form-viewer.tsx:1659 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_limpieza
+form-viewer.tsx:1669 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_limpieza actualizado a 0%
+advanced-table-viewer.tsx:149 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:194 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
