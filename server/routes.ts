@@ -1154,12 +1154,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Object.entries(sectionMapping).forEach(([sectionKey, percentageKey]) => {
           if (updatedData[sectionKey] && Array.isArray(updatedData[sectionKey])) {
             const checklistData = updatedData[sectionKey];
-            const totalItems = checklistData.length;
-            const siItems = checklistData.filter((row: any) => row.revision_visual_si === 'si').length;
-            const percentage = totalItems > 0 ? Math.round((siItems / totalItems) * 100) : 0;
             
+            // Nueva lógica: sumar los porcentajes individuales de las actividades marcadas con SI
+            let totalPercentage = 0;
+            let completedActivities = 0;
+            
+            checklistData.forEach((row: any) => {
+              // Verificar si hay una selección SI marcada en esta fila
+              const hasSiSelected = row.revision_visual_si === 'si';
+              
+              if (hasSiSelected) {
+                // Obtener el porcentaje de esta actividad
+                const percentageText = row.porcentaje || '';
+                const percentageValue = parseFloat(percentageText.replace('%', ''));
+                
+                if (!isNaN(percentageValue)) {
+                  totalPercentage += percentageValue;
+                  completedActivities++;
+                  console.log(`[AUTO-PERCENTAGE] ${sectionKey} - Actividad "${row.actividad}": ${percentageValue}% sumado`);
+                } else {
+                  console.log(`[AUTO-PERCENTAGE] ${sectionKey} - Actividad "${row.actividad}": porcentaje inválido "${percentageText}"`);
+                }
+              } else {
+                console.log(`[AUTO-PERCENTAGE] ${sectionKey} - Actividad "${row.actividad}": no completada (SI no marcado)`);
+              }
+            });
+            
+            const percentage = Math.round(totalPercentage);
             updatedData[percentageKey] = `${percentage}%`;
-            console.log(`[AUTO-PERCENTAGE] ${sectionKey}: ${siItems}/${totalItems} = ${percentage}%`);
+            console.log(`[AUTO-PERCENTAGE] ${sectionKey}: Total sumado = ${percentage}% de ${completedActivities} actividades completadas`);
           }
         });
 
