@@ -1614,52 +1614,31 @@ export default function FormViewer({
                               Object.keys(row).forEach(key => {
                                 console.log(`[PERCENTAGE-AUTO] Revisando campo ${key}: ${row[key]} (tipo: ${typeof row[key]})`);
                                 
-                                // Buscar campos de revisión específicos
-                                if (key.includes('revision_visual')) {
-                                  const value = row[key];
-                                  console.log(`[PERCENTAGE-AUTO] Campo de revisión encontrado: ${key} = "${value}" (tipo: ${typeof value})`);
+                                // Para la nueva lógica: verificar si hay una selección SI marcada en esta fila
+                                if (key === 'revision_visual_si' && row[key] && row[key] !== 'vacio') {
+                                  console.log(`[PERCENTAGE-AUTO] ✅ Actividad "${row.actividad}" marcada como SI`);
                                   
-                                  // Contar CUALQUIER selección que no sea "vacio", vacío, null o undefined
-                                  if (value && value !== 'vacio' && value !== '' && value !== null && value !== undefined) {
-                                    console.log(`[PERCENTAGE-AUTO] 📊 CONTANDO selección válida en ${key}: "${value}"`);
-                                    
-                                    // Si es el campo principal revision_visual, contar directamente
-                                    if (key === 'revision_visual') {
-                                      totalValidSelections++;
-                                      if (value === 'SI' || value === 'si') {
-                                        siCount++;
-                                        console.log(`[PERCENTAGE-AUTO] ✅ Fila ${index}, Campo ${key}: "${value}" (cuenta como SI)`);
-                                      } else {
-                                        console.log(`[PERCENTAGE-AUTO] ❌ Fila ${index}, Campo ${key}: "${value}" (cuenta como NO)`);
-                                      }
-                                    }
-                                    // Si son campos separados _si/_no, contar solo una vez por fila
-                                    else if (key === 'revision_visual_si') {
-                                      // Solo contar si no hay otro campo de revisión ya contado en esta fila
-                                      if (!row.revision_visual || row.revision_visual === 'vacio') {
-                                        totalValidSelections++;
-                                        siCount++;
-                                        console.log(`[PERCENTAGE-AUTO] ✅ Fila ${index}, Campo ${key}: "${value}" (cuenta como SI)`);
-                                      }
-                                    } else if (key === 'revision_visual_no') {
-                                      // Solo contar si no hay otro campo de revisión ya contado en esta fila
-                                      if (!row.revision_visual || row.revision_visual === 'vacio') {
-                                        if (!row.revision_visual_si || row.revision_visual_si === 'vacio') {
-                                          totalValidSelections++;
-                                          console.log(`[PERCENTAGE-AUTO] ❌ Fila ${index}, Campo ${key}: "${value}" (cuenta como NO)`);
-                                        }
-                                      }
-                                    }
+                                  // Obtener el porcentaje de esta actividad
+                                  const percentageText = row.porcentaje || '';
+                                  const percentageValue = parseFloat(percentageText.replace('%', ''));
+                                  
+                                  if (!isNaN(percentageValue)) {
+                                    siCount += percentageValue; // Usar siCount para acumular el porcentaje total
+                                    totalValidSelections = 1; // Solo para indicar que hay actividades
+                                    console.log(`[PERCENTAGE-AUTO] ✅ Sumando ${percentageValue}% de "${row.actividad}"`);
                                   } else {
-                                    console.log(`[PERCENTAGE-AUTO] ⚪ Fila ${index}, Campo ${key}: "${value}" (vacío, no cuenta)`);
+                                    console.log(`[PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "${row.actividad}": "${percentageText}"`);
                                   }
+                                } else if (key === 'actividad') {
+                                  console.log(`[PERCENTAGE-AUTO] Procesando actividad: ${row[key]}`);
                                 }
                               });
                             });
                           }
                           
-                          const percentage = totalValidSelections > 0 ? Math.round((siCount / totalValidSelections) * 100) : 0;
-                          console.log(`[PERCENTAGE-AUTO] ${field.id}: ${siCount}/${totalValidSelections} = ${percentage}%`);
+                          // El porcentaje final es la suma directa de los porcentajes de las actividades completadas
+                          const percentage = Math.round(siCount);
+                          console.log(`[PERCENTAGE-AUTO] ${field.id}: Total sumado = ${percentage}%`);
                           
                           // Mapear al campo de porcentaje correspondiente
                           let percentageFieldName = '';

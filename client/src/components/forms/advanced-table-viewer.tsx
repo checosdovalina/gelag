@@ -669,33 +669,35 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             let siCount = 0;
             let totalValidSelections = 0;
             
+            let totalPercentage = 0;
+            let completedActivities = 0;
+            
             finalData.forEach((row: any, index: number) => {
-              // Buscar columnas que contengan selecciones SI/NO
-              Object.keys(row).forEach(key => {
-                if (key.includes('revision_visual')) {
-                  const value = row[key];
-                  console.log(`[PERCENTAGE-COUNT] Fila ${index}, Campo ${key}: ${value}`);
-                  
-                  // Contar selecciones válidas (no "vacio")
-                  if (value && value !== 'vacio' && value !== '' && value !== null && value !== undefined) {
-                    totalValidSelections++;
-                    
-                    // Contar como SI si es revision_visual_si o si el valor es "si"
-                    if (key.includes('_si') || value === 'si') {
-                      siCount++;
-                      console.log(`[PERCENTAGE-COUNT] ✅ ${key}: ${value} cuenta como SI`);
-                    } else {
-                      console.log(`[PERCENTAGE-COUNT] ❌ ${key}: ${value} cuenta como NO`);
-                    }
-                  } else {
-                    console.log(`[PERCENTAGE-COUNT] ⚪ ${key}: ${value} (vacío, no cuenta)`);
-                  }
+              console.log(`[PERCENTAGE-COUNT] Fila ${index}:`, row);
+              
+              // Verificar si hay una selección SI marcada en esta fila
+              const hasSiSelected = row.revision_visual_si && row.revision_visual_si !== 'vacio';
+              
+              if (hasSiSelected) {
+                // Obtener el porcentaje de esta actividad
+                const percentageText = row.porcentaje || '';
+                const percentageValue = parseFloat(percentageText.replace('%', ''));
+                
+                if (!isNaN(percentageValue)) {
+                  totalPercentage += percentageValue;
+                  completedActivities++;
+                  console.log(`[PERCENTAGE-COUNT] ✅ Actividad "${row.actividad}": ${percentageValue}% sumado`);
+                } else {
+                  console.log(`[PERCENTAGE-COUNT] ⚠️ Actividad "${row.actividad}": porcentaje inválido "${percentageText}"`);
                 }
-              });
+              } else {
+                console.log(`[PERCENTAGE-COUNT] ⚪ Actividad "${row.actividad}": no completada (SI no marcado)`);
+              }
             });
             
-            const percentage = totalValidSelections > 0 ? Math.round((siCount / totalValidSelections) * 100) : 0;
-            console.log(`[PERCENTAGE-RESULT] ${fieldId}: ${siCount}/${totalValidSelections} = ${percentage}%`);
+            // El porcentaje final es la suma de los porcentajes de las actividades completadas
+            const percentage = Math.round(totalPercentage);
+            console.log(`[PERCENTAGE-RESULT] Total: ${totalPercentage}% de ${completedActivities} actividades completadas = ${percentage}%`);
             
             // Mapear al campo de porcentaje correspondiente
             let percentageFieldName = '';
