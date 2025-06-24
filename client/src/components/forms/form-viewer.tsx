@@ -1615,7 +1615,7 @@ export default function FormViewer({
                                 console.log(`[PERCENTAGE-AUTO] Revisando campo ${key}: ${row[key]} (tipo: ${typeof row[key]})`);
                                 
                                 // Para la nueva lógica: verificar si hay una selección SI marcada en esta fila
-                                if (key === 'revision_visual_si' && row[key] && row[key] !== 'vacio') {
+                                if (key === 'revision_visual_si' && row[key] && row[key] !== 'vacio' && (row[key] === 'SI' || row[key] === 'si')) {
                                   console.log(`[PERCENTAGE-AUTO] ✅ Actividad "${row.actividad}" marcada como SI`);
                                   
                                   // Obtener el porcentaje de esta actividad
