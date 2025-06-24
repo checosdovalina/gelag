@@ -144,23 +144,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     );
   }
 
-  // Debug logging para identificar tipos de columnas
-  console.log('[TABLE-DEBUG] Columnas disponibles:', config.columns?.map(c => `${c.id}:${c.type}`).join(', ') || 'No hay columnas');
-  config.columns?.forEach(col => {
-    if (col.type === 'checkbox') {
-      console.log(`[CHECKBOX-COLUMN] ✅ Encontrada columna checkbox: ${col.id}`);
-    }
-    if (col.type === 'select') {
-      console.log(`[SELECT-COLUMN-DEBUG] Columna select: ${col.id}, opciones:`, col.options);
-      if (col.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) {
-        console.log(`[CHECKBOX-SELECT-COLUMN] ✅ Encontrada columna select SI/NO (será checkbox): ${col.id}`);
-      }
-    }
-    // También verificar si es columna revision_visual que debería ser checkbox
-    if (col.id.includes('revision_visual')) {
-      console.log(`[REVISION-VISUAL-DEBUG] Columna revision_visual: ${col.id}, tipo: ${col.type}, debería ser checkbox`);
-    }
-  });
+  // Detectar y renderizar checkboxes para columnas revision_visual
 
   // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
   useEffect(() => {
@@ -1228,41 +1212,31 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     )}
                     {((column.type === 'select' && column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) || 
                       (column.type === 'select' && column.id.includes('revision_visual'))) && (() => {
-                      console.log(`[CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}`);
                       return (
-                        <div className="flex items-center justify-center p-2" style={{border: '2px solid red'}}>
+                        <div className="flex items-center justify-center p-2">
                           <button
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            console.log(`[CHECKBOX-SELECT] 🎯 CLIC DETECTADO! ${column.id} fila ${rowIndex}`);
-                            console.log(`[CHECKBOX-SELECT] Valor actual en datos:`, rowData[column.id]);
-                            
                             if (readOnly || column.readOnly) {
-                              console.log(`[CHECKBOX-SELECT] ⛔ Campo bloqueado`);
                               return;
                             }
                             
                             const currentValue = rowData[column.id];
                             const newValue = currentValue === 'SI' ? 'vacio' : 'SI';
                             
-                            console.log(`[CHECKBOX-SELECT] Cambiando de '${currentValue}' a '${newValue}'`);
-                            
                             // Para checkboxes SI/NO mutuamente excluyentes
                             if (column.id.includes('revision_visual')) {
                               if (newValue === 'SI') {
-                                console.log(`[CHECKBOX-SELECT] ✅ Marcando ${column.id} como 'SI'`);
                                 updateCell(rowIndex, column.id, 'SI');
                                 
                                 // Limpiar la opción opuesta
                                 const oppositeId = column.id.includes('_si') ? 
                                   column.id.replace('_si', '_no') : 
                                   column.id.replace('_no', '_si');
-                                console.log(`[CHECKBOX-SELECT] Limpiando campo opuesto: ${oppositeId}`);
                                 updateCell(rowIndex, oppositeId, 'vacio');
                               } else {
-                                console.log(`[CHECKBOX-SELECT] ❌ Desmarcando ${column.id} como 'vacio'`);
                                 updateCell(rowIndex, column.id, 'vacio');
                               }
                             } else {

@@ -1,0 +1,87 @@
+[REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_si, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_no, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_no, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 5, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 5, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 6, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 6, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 7, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 7, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 8, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 8, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 9, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 9, valor: vacio
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_si, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_si, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_no, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_no, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 5, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 5, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 6, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 6, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 7, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 7, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 8, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 8, valor: vacio
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_si, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_si, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_no, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_no, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 3, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 4, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 5, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 5, valor: vacio
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_si, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_si, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_no, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_no, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 2, valor: vacio
+advanced-table-viewer.tsx:167 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:212 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:148 [TABLE-DEBUG] Columnas disponibles: actividad:text, revision_visual_si:select, revision_visual_no:select, porcentaje:text
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_si, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_si, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:154 [SELECT-COLUMN-DEBUG] Columna select: revision_visual_no, opciones: (2) [{…}, {…}]
+advanced-table-viewer.tsx:161 [REVISION-VISUAL-DEBUG] Columna revision_visual: revision_visual_no, tipo: select, debería ser checkbox
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 0, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 1, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_si fila 2, valor: vacio
+advanced-table-viewer.tsx:1231 [CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO revision_visual_no fila 2, valor: vacio

@@ -127,6 +127,13 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### June 24, 2025 - Checkbox System Resolution and Enhancement
+- **Fixed checkbox rendering issue**: Resolved template/code mismatch where columns were defined as "select" type but needed checkbox behavior
+- **Enhanced column detection**: Added smart detection for revision_visual columns to render as checkboxes regardless of type definition
+- **Improved user interface**: Checkboxes now display correctly in all Liberación Preoperativa tables
+- **Percentage calculation fix**: Updated calculation logic to handle both uppercase "SI" and lowercase "si" values
+- **Template compatibility**: System now handles mixed column type definitions gracefully
+
 ### June 23, 2025 - Automatic Percentage Calculation System
 - **Implemented automatic percentage calculation** for Liberación Preoperativa forms
 - **Server-side calculation**: Percentages update automatically when checklist data is saved
@@ -139,6 +146,7 @@ GELAG is a comprehensive form management system designed for quality control and
 - **Enhanced form processing**: Added percentage calculation middleware in server routes
 - **Improved data flow**: Automatic calculation happens during form save operations
 - **Template detection**: System automatically identifies Liberación Preoperativa forms for percentage processing
+- **Checkbox rendering system**: Advanced table viewer now supports multiple column type interpretations for optimal user experience
 
 ## Changelog
 
