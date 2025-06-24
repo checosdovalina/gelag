@@ -1215,12 +1215,18 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                           onCheckedChange={(checked) => {
                             console.log(`[CHECKBOX] ${column.id} fila ${rowIndex} cambiado a:`, checked);
                             console.log(`[CHECKBOX] Valor actual en datos:`, rowData[column.id]);
+                            console.log(`[CHECKBOX] Datos completos de la fila:`, rowData);
                             
                             // Para checkboxes SI/NO mutuamente excluyentes
                             if (column.id.includes('revision_visual')) {
                               if (checked) {
-                                console.log(`[CHECKBOX] Marcando ${column.id} como 'si'`);
-                                updateCell(rowIndex, column.id, 'si');
+                                console.log(`[CHECKBOX] ✅ Marcando ${column.id} como 'si'`);
+                                
+                                // Hacer la actualización inmediatamente con debugging
+                                const newValue = 'si';
+                                console.log(`[CHECKBOX] Llamando updateCell(${rowIndex}, "${column.id}", "${newValue}")`);
+                                updateCell(rowIndex, column.id, newValue);
+                                
                                 // Limpiar la opción opuesta
                                 const oppositeId = column.id.includes('_si') ? 
                                   column.id.replace('_si', '_no') : 
@@ -1228,12 +1234,17 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                                 console.log(`[CHECKBOX] Limpiando campo opuesto: ${oppositeId}`);
                                 updateCell(rowIndex, oppositeId, 'vacio');
                               } else {
-                                console.log(`[CHECKBOX] Desmarcando ${column.id} como 'vacio'`);
+                                console.log(`[CHECKBOX] ❌ Desmarcando ${column.id} como 'vacio'`);
                                 updateCell(rowIndex, column.id, 'vacio');
                               }
                             } else {
                               updateCell(rowIndex, column.id, checked ? 'si' : 'vacio');
                             }
+                            
+                            // Verificar que se aplicó el cambio
+                            setTimeout(() => {
+                              console.log(`[CHECKBOX-VERIFY] Valor después de updateCell:`, tableData[rowIndex]?.[column.id]);
+                            }, 100);
                           }}
                           disabled={readOnly || column.readOnly}
                           className="h-5 w-5 border-2"
