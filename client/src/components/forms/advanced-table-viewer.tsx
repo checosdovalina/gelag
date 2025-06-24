@@ -144,6 +144,14 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     );
   }
 
+  // Debug logging para identificar tipos de columnas
+  console.log('[TABLE-DEBUG] Columnas disponibles:', config.columns?.map(c => `${c.id}:${c.type}`).join(', ') || 'No hay columnas');
+  config.columns?.forEach(col => {
+    if (col.type === 'checkbox') {
+      console.log(`[CHECKBOX-COLUMN] ✅ Encontrada columna checkbox: ${col.id}`);
+    }
+  });
+
   // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
   useEffect(() => {
     console.log("AdvancedTableViewer useEffect - Valor recibido:", value);
