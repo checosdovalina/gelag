@@ -1205,19 +1205,24 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     {column.type === 'checkbox' && (
                       <div className="flex items-center justify-center">
                         <Checkbox
-                          checked={rowData[column.id] && rowData[column.id] !== 'vacio'}
+                          checked={rowData[column.id] === 'si'}
                           onCheckedChange={(checked) => {
-                            console.log(`[CHECKBOX] ${column.id} cambiado a:`, checked);
+                            console.log(`[CHECKBOX] ${column.id} fila ${rowIndex} cambiado a:`, checked);
+                            console.log(`[CHECKBOX] Valor actual en datos:`, rowData[column.id]);
+                            
                             // Para checkboxes SI/NO mutuamente excluyentes
                             if (column.id.includes('revision_visual')) {
                               if (checked) {
+                                console.log(`[CHECKBOX] Marcando ${column.id} como 'si'`);
                                 updateCell(rowIndex, column.id, 'si');
                                 // Limpiar la opción opuesta
                                 const oppositeId = column.id.includes('_si') ? 
                                   column.id.replace('_si', '_no') : 
                                   column.id.replace('_no', '_si');
+                                console.log(`[CHECKBOX] Limpiando campo opuesto: ${oppositeId}`);
                                 updateCell(rowIndex, oppositeId, 'vacio');
                               } else {
+                                console.log(`[CHECKBOX] Desmarcando ${column.id} como 'vacio'`);
                                 updateCell(rowIndex, column.id, 'vacio');
                               }
                             } else {
