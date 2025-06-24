@@ -150,6 +150,9 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     if (col.type === 'checkbox') {
       console.log(`[CHECKBOX-COLUMN] ✅ Encontrada columna checkbox: ${col.id}`);
     }
+    if (col.type === 'select' && col.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) {
+      console.log(`[CHECKBOX-SELECT-COLUMN] ✅ Encontrada columna select SI/NO (será checkbox): ${col.id}`);
+    }
   });
 
   // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
@@ -1198,7 +1201,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         }}
                       />
                     )}
-                    {column.type === 'select' && (
+                    {column.type === 'select' && !(column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && (
                       <Select
                         defaultValue={rowData[column.id] || ''}
                         onValueChange={(val) => updateCellLocally(rowIndex, column.id, val)}
@@ -1216,6 +1219,64 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         </SelectContent>
                       </Select>
                     )}
+                    {(column.type === 'select' && column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && (() => {
+                      console.log(`[CHECKBOX-SELECT] 🔧 Renderizando checkbox para select SI/NO ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}`);
+                      return (
+                        <div className="flex items-center justify-center p-2" style={{border: '2px solid red'}}>
+                          <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`[CHECKBOX-SELECT] 🎯 CLIC DETECTADO! ${column.id} fila ${rowIndex}`);
+                            console.log(`[CHECKBOX-SELECT] Valor actual en datos:`, rowData[column.id]);
+                            
+                            if (readOnly || column.readOnly) {
+                              console.log(`[CHECKBOX-SELECT] ⛔ Campo bloqueado`);
+                              return;
+                            }
+                            
+                            const currentValue = rowData[column.id];
+                            const newValue = currentValue === 'SI' ? 'vacio' : 'SI';
+                            
+                            console.log(`[CHECKBOX-SELECT] Cambiando de '${currentValue}' a '${newValue}'`);
+                            
+                            // Para checkboxes SI/NO mutuamente excluyentes
+                            if (column.id.includes('revision_visual')) {
+                              if (newValue === 'SI') {
+                                console.log(`[CHECKBOX-SELECT] ✅ Marcando ${column.id} como 'SI'`);
+                                updateCell(rowIndex, column.id, 'SI');
+                                
+                                // Limpiar la opción opuesta
+                                const oppositeId = column.id.includes('_si') ? 
+                                  column.id.replace('_si', '_no') : 
+                                  column.id.replace('_no', '_si');
+                                console.log(`[CHECKBOX-SELECT] Limpiando campo opuesto: ${oppositeId}`);
+                                updateCell(rowIndex, oppositeId, 'vacio');
+                              } else {
+                                console.log(`[CHECKBOX-SELECT] ❌ Desmarcando ${column.id} como 'vacio'`);
+                                updateCell(rowIndex, column.id, 'vacio');
+                              }
+                            } else {
+                              updateCell(rowIndex, column.id, newValue);
+                            }
+                          }}
+                          disabled={readOnly || column.readOnly}
+                          className={`h-5 w-5 border-2 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
+                            rowData[column.id] === 'SI' 
+                              ? 'bg-primary border-primary text-white' 
+                              : 'border-gray-300 hover:border-gray-400'
+                          } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
+                        >
+                          {rowData[column.id] === 'SI' && (
+                            <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                        </div>
+                      );
+                    })()}
                     {column.type === 'checkbox' && (() => {
                       console.log(`[CHECKBOX-RENDER] 🔧 Renderizando checkbox ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}, readOnly: ${readOnly}, column.readOnly: ${column.readOnly}`);
                       return (
