@@ -290,16 +290,25 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     
     doc.moveDown(0.5);
     
-    // Encabezados de revisión
+    // Encabezados de revisión - ajustar anchos para que quepan en la página
     const revisionTableY = doc.y;
-    const revisionColWidths = [80, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
+    const availableWidth = doc.page.width - 100; // Ancho disponible (dejando márgenes)
+    const totalColumns = 11;
+    const horaColWidth = 70; // Ancho fijo para columna "Hora"
+    const remainingWidth = availableWidth - horaColWidth;
+    const hourColWidth = remainingWidth / 10; // Dividir el resto entre las 10 columnas de horas
+    
+    const revisionColWidths = [horaColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth, hourColWidth];
     const revisionHeaders = ['Hora', 'h8', 'h9', 'h10', 'h11', 'h12', 'h13', 'h14', 'h15', 'h16', 'h17'];
     let revisionX = 50;
     
-    doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
+    doc.fontSize(7).font('Helvetica-Bold').fillColor('#000000'); // Reducir tamaño de fuente
     revisionHeaders.forEach((header, i) => {
       doc.rect(revisionX, revisionTableY, revisionColWidths[i], 15).stroke();
-      doc.text(header, revisionX + 2, revisionTableY + 3, { width: revisionColWidths[i] - 4 });
+      doc.text(header, revisionX + 1, revisionTableY + 4, { 
+        width: revisionColWidths[i] - 2, 
+        align: 'center'
+      });
       revisionX += revisionColWidths[i];
     });
     
@@ -308,7 +317,7 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
       const revisionRowY = revisionTableY + 15 + (rowIndex * 15);
       revisionX = 50;
       
-      doc.font('Helvetica').fontSize(8).fillColor('#000000');
+      doc.font('Helvetica').fontSize(7).fillColor('#000000'); // Reducir tamaño de fuente
       const revisionValues = [
         row.hora || '',
         row.h8 || '', row.h9 || '', row.h10 || '', row.h11 || '', row.h12 || '',
@@ -317,7 +326,10 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
       
       revisionValues.forEach((value, i) => {
         doc.rect(revisionX, revisionRowY, revisionColWidths[i], 15).stroke();
-        doc.text(value, revisionX + 2, revisionRowY + 3, { width: revisionColWidths[i] - 4 });
+        doc.text(String(value), revisionX + 1, revisionRowY + 4, { 
+          width: revisionColWidths[i] - 2,
+          align: 'center'
+        });
         revisionX += revisionColWidths[i];
       });
     });
