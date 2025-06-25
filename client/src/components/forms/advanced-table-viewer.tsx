@@ -1221,38 +1221,30 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                         <div className="flex items-center justify-center p-2">
                           <button
                           type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log(`[CHECKBOX-CLICK] Clic en ${column.id} fila ${rowIndex}, valor actual: ${rowData[column.id]}`);
+                          onClick={() => {
+                            console.log(`[CLICK-DEBUG] ✅ CLICK DETECTADO en ${column.id} fila ${rowIndex}`);
+                            console.log(`[CLICK-DEBUG] Valor actual: '${rowData[column.id]}'`);
+                            console.log(`[CLICK-DEBUG] ReadOnly: ${readOnly}, Column ReadOnly: ${column.readOnly}`);
                             
                             if (readOnly || column.readOnly) {
-                              console.log(`[CHECKBOX-CLICK] Campo bloqueado`);
+                              console.log(`[CLICK-DEBUG] ❌ Campo bloqueado`);
                               return;
                             }
                             
-                            const currentValue = rowData[column.id];
+                            const currentValue = rowData[column.id] || 'vacio';
                             const newValue = currentValue === 'SI' ? 'vacio' : 'SI';
-                            console.log(`[CHECKBOX-CLICK] Cambiando de '${currentValue}' a '${newValue}'`);
+                            console.log(`[CLICK-DEBUG] 🔄 Cambiando de '${currentValue}' a '${newValue}'`);
                             
-                            // Para checkboxes SI/NO mutuamente excluyentes
-                            if (column.id.includes('revision_visual')) {
-                              if (newValue === 'SI') {
-                                console.log(`[CHECKBOX-CLICK] Marcando ${column.id} como SI`);
-                                updateCellLocally(rowIndex, column.id, 'SI');
-                                
-                                // Limpiar la opción opuesta
-                                const oppositeId = column.id.includes('_si') ? 
-                                  column.id.replace('_si', '_no') : 
-                                  column.id.replace('_no', '_si');
-                                console.log(`[CHECKBOX-CLICK] Limpiando ${oppositeId}`);
-                                updateCellLocally(rowIndex, oppositeId, 'vacio');
-                              } else {
-                                console.log(`[CHECKBOX-CLICK] Desmarcando ${column.id}`);
-                                updateCellLocally(rowIndex, column.id, 'vacio');
-                              }
-                            } else {
-                              updateCellLocally(rowIndex, column.id, newValue);
+                            // Actualizar inmediatamente
+                            updateCellLocally(rowIndex, column.id, newValue);
+                            
+                            // Si es SI, limpiar la opción opuesta
+                            if (newValue === 'SI' && column.id.includes('revision_visual')) {
+                              const oppositeId = column.id.includes('_si') ? 
+                                column.id.replace('_si', '_no') : 
+                                column.id.replace('_no', '_si');
+                              console.log(`[CLICK-DEBUG] 🧹 Limpiando ${oppositeId}`);
+                              updateCellLocally(rowIndex, oppositeId, 'vacio');
                             }
                           }}
                           disabled={readOnly || column.readOnly}
