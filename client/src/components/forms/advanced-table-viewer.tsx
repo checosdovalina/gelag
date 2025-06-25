@@ -150,6 +150,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
   useEffect(() => {
     console.log("AdvancedTableViewer useEffect - Valor recibido:", value);
+    console.log("AdvancedTableViewer useEffect - hasLocalChanges:", hasLocalChanges);
+    
+    // No sobrescribir si hay cambios locales pendientes
+    if (hasLocalChanges) {
+      console.log("AdvancedTableViewer useEffect - Saltando actualización por cambios locales");
+      return;
+    }
     
     try {
       // Crear un objeto vacío para usar como plantilla de fila
@@ -399,6 +406,9 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     } else {
       newData[rowIndex][columnId] = value;
     }
+    
+    // Marcar que hay cambios locales para prevenir sobrescritura del useEffect
+    setHasLocalChanges(true);
     
     // Solo actualizar estado local, NO propagar cambios
     setTableData(newData);
