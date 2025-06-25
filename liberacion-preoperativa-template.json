@@ -26,6 +26,24 @@
             "displayName": "Fecha"
           },
           {
+            "id": "folio",
+            "type": "text",
+            "label": "FOLIO",
+            "required": true,
+            "displayName": "Folio",
+            "readOnly": false,
+            "roleAccess": ["superadmin", "admin", "calidad", "gerente_calidad", "produccion", "gerente_produccion"]
+          },
+          {
+            "id": "folio_produccion",
+            "type": "text",
+            "label": "FOLIO DE PRODUCCIÓN",
+            "required": true,
+            "displayName": "Folio de Producción",
+            "readOnly": false,
+            "roleAccess": ["superadmin", "admin", "calidad", "gerente_calidad", "produccion", "gerente_produccion"]
+          },
+          {
             "id": "departamento_emisor",
             "type": "text",
             "label": "Departamento emisor",
