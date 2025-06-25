@@ -988,6 +988,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (
         req.user?.role !== UserRole.SUPERADMIN &&
         req.user?.role !== UserRole.ADMIN && 
+        req.user?.role !== UserRole.PRODUCTION_MANAGER &&
+        req.user?.role !== UserRole.QUALITY_MANAGER &&
         entry.createdBy !== req.user?.id && 
         entry.department !== req.user?.department &&
         !(isProductionForm && (req.user?.role === UserRole.PRODUCTION || req.user?.role === UserRole.PRODUCTION_MANAGER))
@@ -1064,6 +1066,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (
         req.user?.role !== UserRole.SUPERADMIN &&
         req.user?.role !== UserRole.ADMIN && 
+        req.user?.role !== UserRole.PRODUCTION_MANAGER &&
+        req.user?.role !== UserRole.QUALITY_MANAGER &&
         entry.createdBy !== req.user?.id && 
         entry.department !== req.user?.department &&
         !(isProductionForm && (req.user?.role === UserRole.PRODUCTION || req.user?.role === UserRole.PRODUCTION_MANAGER))

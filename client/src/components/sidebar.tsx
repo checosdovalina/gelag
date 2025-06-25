@@ -107,7 +107,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Empleados",
       href: "/employees",
       icon: <UserCircle className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin,
+      show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager,
     },
     {
       title: "Configuración",

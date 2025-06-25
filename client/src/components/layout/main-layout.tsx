@@ -43,7 +43,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
   const canCreateForms = user && ["superadmin"].includes(user.role);
   const canAccessForms = user && ["superadmin", "admin", "produccion", "gerente_produccion", "calidad", "gerente_calidad", "viewer"].includes(user.role);
   const canAccessProcessForms = user && ["superadmin", "admin", "produccion", "gerente_produccion", "calidad", "gerente_calidad"].includes(user.role);
-  const canAccessEmployees = user && ["superadmin", "admin"].includes(user.role);
+  const canAccessEmployees = user && ["superadmin", "admin", "gerente_produccion", "gerente_calidad"].includes(user.role);
   const canAccessProducts = user && ["superadmin", "admin"].includes(user.role);
   const canAccessExports = user && ["superadmin", "admin"].includes(user.role);
   const canAccessUsers = user && ["superadmin", "admin"].includes(user.role);
