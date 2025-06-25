@@ -334,10 +334,10 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     try {
       console.log(`[PERCENTAGE] Calculando para fieldId: ${fieldId}, datos:`, tableData);
       
-      // Contar total de elementos y elementos marcados como "SI"
+      // Contar total de elementos y elementos marcados como "SI" (cualquier case)
       const totalItems = tableData.length;
       const siItems = tableData.filter(row => {
-        const hasSi = row.revision_visual_si === 'si';
+        const hasSi = row.revision_visual_si === 'SI' || row.revision_visual_si === 'si';
         console.log(`[PERCENTAGE] Fila: ${row.actividad}, SI: ${row.revision_visual_si}, cuenta: ${hasSi}`);
         return hasSi;
       }).length;
