@@ -349,8 +349,8 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
   }
   
   // TODOS LOS CAMPOS ADICIONALES DEL FORMULARIO
-  const leftCol = 50;
-  const rightCol = doc.page.width / 2;
+  const leftColAdditional = 50;
+  const rightColAdditional = doc.page.width / 2;
   
   // Campos adicionales que aparecen en el formulario
   const additionalFields = [
@@ -376,7 +376,7 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
   additionalFields.forEach((field, index) => {
     const value = data[field.key] || '';
     const isLeft = index % 2 === 0;
-    const x = isLeft ? leftCol : rightCol;
+    const x = isLeft ? leftColAdditional : rightColAdditional;
     
     if (isLeft) {
       doc.moveDown(0.3);
