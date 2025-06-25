@@ -723,8 +723,8 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
             finalData.forEach((row: any, index: number) => {
               console.log(`[PERCENTAGE-COUNT] Fila ${index}:`, row);
               
-              // Verificar si hay una selección SI marcada en esta fila
-              const hasSiSelected = row.revision_visual_si && row.revision_visual_si !== 'vacio';
+              // Verificar si hay una selección SI marcada en esta fila (tanto minúsculas como mayúsculas)
+              const hasSiSelected = row.revision_visual_si === 'SI' || row.revision_visual_si === 'si';
               
               if (hasSiSelected) {
                 // Obtener el porcentaje de esta actividad
