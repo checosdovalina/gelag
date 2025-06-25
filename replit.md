@@ -137,6 +137,7 @@ GELAG is a comprehensive form management system designed for quality control and
 - **Proven functionality**: System verified working with live data showing 92% total from individual section percentages
 - **Fixed PDF export formatting**: Replaced JSON display with professional structured format for Liberación Preoperativa forms
 - **Added folio filter**: New filter in captured forms page allows searching by folio number or production folio
+- **Employee module access for managers**: Production and quality managers can now access employee module, create operative employees, but cannot delete any employees
 
 ### June 24, 2025 - Checkbox System Resolution and Enhancement
 - **Fixed checkbox rendering issue**: Resolved template/code mismatch where columns were defined as "select" type but needed checkbox behavior
