@@ -817,7 +817,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Employee routes
-  app.get("/api/employees", async (req, res, next) => {
+  app.get("/api/employees", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       const employees = await storage.getAllEmployees();
       console.log("[Employees API] Devolviendo empleados:", employees.length);
@@ -832,15 +832,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/employees", async (req, res, next) => {
+  app.post("/api/employees", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       console.log("[Employee Creation] Datos recibidos:", req.body);
-      const employee = await storage.createEmployee(req.body);
+      
+      // Managers can only create operative employees
+      if ((req.user.role === UserRole.PRODUCTION_MANAGER || req.user.role === UserRole.QUALITY_MANAGER) && 
+          req.body.employeeType !== 'operativo') {
+        return res.status(403).json({ message: "Solo puede crear empleados de tipo operativo" });
+      }
+      
+      // Add creator information
+      const employeeData = {
+        ...req.body,
+        createdBy: req.user.id
+      };
+      
+      const employee = await storage.createEmployee(employeeData);
       console.log("[Employee Creation] Empleado creado:", employee);
       res.status(200).json(employee);
     } catch (error) {
       console.error("[Employee Creation] Error:", error);
       res.status(500).json({ message: "Error al crear empleado", error: String(error) });
+    }
+  });
+
+  // Update employee - only admins and managers can update, but managers only operative employees
+  app.put("/api/employees/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
+    try {
+      const employeeId = parseInt(req.params.id);
+      if (isNaN(employeeId)) {
+        return res.status(400).json({ message: "ID de empleado inválido" });
+      }
+      
+      // Get existing employee
+      const existingEmployee = await storage.getEmployee(employeeId);
+      if (!existingEmployee) {
+        return res.status(404).json({ message: "Empleado no encontrado" });
+      }
+      
+      // Managers can only update operative employees
+      if ((req.user.role === UserRole.PRODUCTION_MANAGER || req.user.role === UserRole.QUALITY_MANAGER)) {
+        if (existingEmployee.employeeType !== 'operativo' || req.body.employeeType !== 'operativo') {
+          return res.status(403).json({ message: "Solo puede modificar empleados de tipo operativo" });
+        }
+      }
+      
+      const updatedEmployee = await storage.updateEmployee(employeeId, req.body);
+      res.json(updatedEmployee);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Delete employee - only admins can delete
+  app.delete("/api/employees/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+    try {
+      const employeeId = parseInt(req.params.id);
+      if (isNaN(employeeId)) {
+        return res.status(400).json({ message: "ID de empleado inválido" });
+      }
+      
+      const employee = await storage.getEmployee(employeeId);
+      if (!employee) {
+        return res.status(404).json({ message: "Empleado no encontrado" });
+      }
+      
+      await storage.deleteEmployee(employeeId);
+      res.json({ message: "Empleado eliminado correctamente" });
+    } catch (error) {
+      next(error);
     }
   });
 

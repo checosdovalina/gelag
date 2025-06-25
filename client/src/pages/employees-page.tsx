@@ -81,6 +81,10 @@ export default function EmployeesPage() {
     department: ""
   });
 
+  // Check if user is a manager (can't delete employees)
+  const isManager = user?.role === 'production_manager' || user?.role === 'quality_manager';
+  const canDelete = user?.role === 'admin' || user?.role === 'superadmin';
+
   // Obtener empleados
   const { data: employees, isLoading, refetch } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
@@ -311,24 +315,28 @@ export default function EmployeesPage() {
                           <span>Operativo</span>
                         </div>
                       </SelectItem>
-                      <SelectItem value={EmployeeType.QUALITY}>
-                        <div className="flex items-center">
-                          <Users className="mr-2 h-4 w-4" />
-                          <span>Calidad</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value={EmployeeType.PRODUCTION}>
-                        <div className="flex items-center">
-                          <Briefcase className="mr-2 h-4 w-4" />
-                          <span>Producción</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value={EmployeeType.ADMINISTRATIVE}>
-                        <div className="flex items-center">
-                          <Users className="mr-2 h-4 w-4" />
-                          <span>Administrativo</span>
-                        </div>
-                      </SelectItem>
+                      {!isManager && (
+                        <>
+                          <SelectItem value={EmployeeType.QUALITY}>
+                            <div className="flex items-center">
+                              <Users className="mr-2 h-4 w-4" />
+                              <span>Calidad</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value={EmployeeType.PRODUCTION}>
+                            <div className="flex items-center">
+                              <Briefcase className="mr-2 h-4 w-4" />
+                              <span>Producción</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value={EmployeeType.ADMINISTRATIVE}>
+                            <div className="flex items-center">
+                              <Users className="mr-2 h-4 w-4" />
+                              <span>Administrativo</span>
+                            </div>
+                          </SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -429,24 +437,28 @@ export default function EmployeesPage() {
                         <span>Operativo</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value={EmployeeType.QUALITY}>
-                      <div className="flex items-center">
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>Calidad</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value={EmployeeType.PRODUCTION}>
-                      <div className="flex items-center">
-                        <Briefcase className="mr-2 h-4 w-4" />
-                        <span>Producción</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value={EmployeeType.ADMINISTRATIVE}>
-                      <div className="flex items-center">
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>Administrativo</span>
-                      </div>
-                    </SelectItem>
+                    {!isManager && (
+                      <>
+                        <SelectItem value={EmployeeType.QUALITY}>
+                          <div className="flex items-center">
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Calidad</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value={EmployeeType.PRODUCTION}>
+                          <div className="flex items-center">
+                            <Briefcase className="mr-2 h-4 w-4" />
+                            <span>Producción</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value={EmployeeType.ADMINISTRATIVE}>
+                          <div className="flex items-center">
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Administrativo</span>
+                          </div>
+                        </SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
