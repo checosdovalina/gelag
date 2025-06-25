@@ -641,6 +641,13 @@ function generatePDFContent(
   // Avanzar para el contenido principal (más compacto)
   doc.moveDown(1);
   
+  // Verificar si es un formulario de Liberación Preoperativa
+  if (template.name?.includes('LIBERACION PREOPERATIVA') || template.name?.includes('CA-RE-03-01')) {
+    generateLiberacionPreoperativaContentPDF(doc, entry);
+    doc.end();
+    return;
+  }
+
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
     const fields = template.structure.fields;
@@ -1690,4 +1697,148 @@ function getStatusLabel(status: string): string {
     default:
       return status;
   }
+}
+
+// Función específica para generar contenido de Liberación Preoperativa en PDF
+function generateLiberacionPreoperativaContentPDF(doc: any, entry: FormEntry): void {
+  const data = entry.data as any;
+  
+  // Información general
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('INFORMACIÓN GENERAL', 50, doc.y);
+  doc.moveDown(0.5);
+  
+  // Campos básicos
+  const infoFields = [
+    { label: 'Fecha', value: data.fecha || 'No especificado' },
+    { label: 'Folio', value: data.folio || 'No especificado' },
+    { label: 'Folio de Producción', value: data.folio_produccion || 'No especificado' },
+    { label: 'Departamento Emisor', value: data.departamento_emisor || 'No especificado' }
+  ];
+  
+  infoFields.forEach(field => {
+    doc.fontSize(10).font('Helvetica-Bold')
+      .text(`${field.label}:`, 50, doc.y, { continued: true });
+    doc.font('Helvetica')
+      .text(` ${field.value}`);
+    doc.moveDown(0.3);
+  });
+  
+  doc.moveDown(0.5);
+  
+  // Resumen de cumplimiento
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('RESUMEN DE CUMPLIMIENTO', 50, doc.y);
+  doc.moveDown(0.5);
+  
+  const complianceData = [
+    { section: 'Marmitas', percentage: data.porcentaje_cumplimiento_marmitas || '0%' },
+    { section: 'Dulces', percentage: data.porcentaje_cumplimiento_dulces || '0%' },
+    { section: 'Producción', percentage: data.porcentaje_cumplimiento_produccion || '0%' },
+    { section: 'Reposo', percentage: data.porcentaje_cumplimiento_reposo || '0%' },
+    { section: 'Limpieza', percentage: data.porcentaje_cumplimiento_limpieza || '0%' }
+  ];
+  
+  // Tabla de resumen
+  const tableStartY = doc.y;
+  const colWidth = 150;
+  const rowHeight = 20;
+  
+  // Encabezados
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.rect(50, tableStartY, colWidth, rowHeight).stroke();
+  doc.text('Sección', 55, tableStartY + 5);
+  doc.rect(50 + colWidth, tableStartY, colWidth, rowHeight).stroke();
+  doc.text('Porcentaje de Cumplimiento', 55 + colWidth, tableStartY + 5);
+  
+  // Filas de datos
+  complianceData.forEach((item, index) => {
+    const rowY = tableStartY + rowHeight + (index * rowHeight);
+    doc.fontSize(9).font('Helvetica');
+    doc.rect(50, rowY, colWidth, rowHeight).stroke();
+    doc.text(item.section, 55, rowY + 5);
+    doc.rect(50 + colWidth, rowY, colWidth, rowHeight).stroke();
+    doc.text(item.percentage, 55 + colWidth, rowY + 5);
+  });
+  
+  // Fila total
+  const totalRowY = tableStartY + rowHeight + (complianceData.length * rowHeight);
+  doc.fontSize(10).font('Helvetica-Bold');
+  doc.rect(50, totalRowY, colWidth, rowHeight).fillAndStroke('#f9f9f9', '#000');
+  doc.fillColor('#000').text('TOTAL', 55, totalRowY + 5);
+  doc.rect(50 + colWidth, totalRowY, colWidth, rowHeight).fillAndStroke('#f9f9f9', '#000');
+  doc.fillColor('#000').text(data.porcentaje_cumplimiento_total || '0%', 55 + colWidth, totalRowY + 5);
+  
+  doc.y = totalRowY + rowHeight + 20;
+  
+  // Secciones de checklist
+  const sections = [
+    { title: 'SECCIÓN MARMITAS', data: data.seccion_marmitas_checklist },
+    { title: 'SECCIÓN DULCES', data: data.seccion_dulces_checklist },
+    { title: 'ÁREA DE PRODUCCIÓN', data: data.seccion_area_produccion },
+    { title: 'ÁREA DE REPOSO', data: data.seccion_area_reposo },
+    { title: 'ESTACIÓN DE LIMPIEZA', data: data.estacion_limpieza }
+  ];
+  
+  sections.forEach(section => {
+    if (section.data && Array.isArray(section.data) && section.data.length > 0) {
+      // Verificar si necesitamos nueva página
+      if (doc.y > doc.page.height - 200) {
+        doc.addPage();
+      }
+      
+      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+      doc.text(section.title, 50, doc.y);
+      doc.moveDown(0.5);
+      
+      // Tabla de checklist
+      const checklistStartY = doc.y;
+      const actividadWidth = 200;
+      const porcentajeWidth = 60;
+      const cumpleWidth = 60;
+      const noCumpleWidth = 60;
+      const checkRowHeight = 18;
+      
+      // Encabezados
+      doc.fontSize(9).font('Helvetica-Bold');
+      doc.rect(50, checklistStartY, actividadWidth, checkRowHeight).stroke();
+      doc.text('Actividad', 55, checklistStartY + 5);
+      doc.rect(50 + actividadWidth, checklistStartY, porcentajeWidth, checkRowHeight).stroke();
+      doc.text('Porcentaje', 55 + actividadWidth, checklistStartY + 5);
+      doc.rect(50 + actividadWidth + porcentajeWidth, checklistStartY, cumpleWidth, checkRowHeight).stroke();
+      doc.text('Cumple (SI)', 55 + actividadWidth + porcentajeWidth, checklistStartY + 5);
+      doc.rect(50 + actividadWidth + porcentajeWidth + cumpleWidth, checklistStartY, noCumpleWidth, checkRowHeight).stroke();
+      doc.text('No Cumple (NO)', 55 + actividadWidth + porcentajeWidth + cumpleWidth, checklistStartY + 5);
+      
+      // Filas de datos
+      section.data.forEach((item, index) => {
+        const checkRowY = checklistStartY + checkRowHeight + (index * checkRowHeight);
+        
+        doc.fontSize(8).font('Helvetica');
+        
+        // Actividad
+        doc.rect(50, checkRowY, actividadWidth, checkRowHeight).stroke();
+        doc.text(item.actividad || 'No especificado', 55, checkRowY + 5, { 
+          width: actividadWidth - 10, 
+          height: checkRowHeight - 10 
+        });
+        
+        // Porcentaje
+        doc.rect(50 + actividadWidth, checkRowY, porcentajeWidth, checkRowHeight).stroke();
+        doc.text(item.porcentaje || '0%', 55 + actividadWidth, checkRowY + 5);
+        
+        // Cumple SI
+        doc.rect(50 + actividadWidth + porcentajeWidth, checkRowY, cumpleWidth, checkRowHeight).stroke();
+        const cumpleSi = item.revision_visual_si === 'SI' ? '✓' : '';
+        doc.text(cumpleSi, 55 + actividadWidth + porcentajeWidth + 20, checkRowY + 5);
+        
+        // No Cumple NO
+        doc.rect(50 + actividadWidth + porcentajeWidth + cumpleWidth, checkRowY, noCumpleWidth, checkRowHeight).stroke();
+        const cumpleNo = item.revision_visual_no === 'SI' ? '✓' : '';
+        doc.text(cumpleNo, 55 + actividadWidth + porcentajeWidth + cumpleWidth + 20, checkRowY + 5);
+      });
+      
+      doc.y = checklistStartY + checkRowHeight + (section.data.length * checkRowHeight) + 20;
+    }
+  });
 }
