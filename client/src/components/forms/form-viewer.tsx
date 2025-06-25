@@ -1742,11 +1742,41 @@ export default function FormViewer({
                             });
                             console.log(`[PERCENTAGE-AUTO] ✅ Campo ${percentageFieldName} actualizado a ${percentageValue}`);
                             
-                            // Actualizar el porcentaje total después de actualizar porcentaje individual
+                            // Actualizar el porcentaje total inmediatamente
+                            console.log("[PERCENTAGE-AUTO] 🔄 Calculando porcentaje total directo...");
+                            
+                            // Obtener todos los porcentajes actuales
                             setTimeout(() => {
-                              console.log("[PERCENTAGE-AUTO] 🔄 Llamando updateTotalPercentage después de actualizar porcentaje individual...");
-                              updateTotalPercentage();
-                            }, 200);
+                              const currentValues = form.getValues();
+                              const sections = [
+                                { field: 'porcentaje_cumplimiento_marmitas', weight: 20, name: 'Marmitas' },
+                                { field: 'porcentaje_cumplimiento_dulces', weight: 20, name: 'Dulces' },
+                                { field: 'porcentaje_cumplimiento_produccion', weight: 20, name: 'Producción' },
+                                { field: 'porcentaje_cumplimiento_reposo', weight: 20, name: 'Reposo' },
+                                { field: 'porcentaje_cumplimiento_limpieza', weight: 20, name: 'Limpieza' }
+                              ];
+                              
+                              let total = 0;
+                              let count = 0;
+                              
+                              sections.forEach(({ field, weight, name }) => {
+                                const value = currentValues[field];
+                                if (value && value !== '0%') {
+                                  const num = parseInt(value.replace('%', ''));
+                                  if (!isNaN(num)) {
+                                    total += num * (weight / 100);
+                                    count++;
+                                    console.log(`[TOTAL-CALC-DIRECT] ${name}: ${num}% x ${weight}% = ${num * (weight / 100)}`);
+                                  }
+                                }
+                              });
+                              
+                              if (count > 0) {
+                                const totalPercentage = Math.round(total);
+                                form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`);
+                                console.log(`[TOTAL-CALC-DIRECT] ✅ Total actualizado: ${totalPercentage}%`);
+                              }
+                            }, 300);
                           }
                         }
                         
