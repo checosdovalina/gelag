@@ -103,6 +103,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const { toast } = useToast();
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
   
   // Identificar si es una tabla de horarios (sin auto-guardado)
   const fieldId = (field as any).id;

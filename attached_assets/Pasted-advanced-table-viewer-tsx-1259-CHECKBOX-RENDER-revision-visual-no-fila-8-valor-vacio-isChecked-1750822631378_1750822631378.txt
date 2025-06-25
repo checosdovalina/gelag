@@ -1,0 +1,112 @@
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 8: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 9: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 9: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 10: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 10: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 11: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 11: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 12: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 12: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 13: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 13: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 6: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 6: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 7: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 7: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 8: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 8: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 9: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 9: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 6: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 6: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 7: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 7: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 8: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 8: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 3: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 4: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 5: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1225 [CLICK-DEBUG] ✅ CLICK DETECTADO en revision_visual_si fila 0
+advanced-table-viewer.tsx:1226 [CLICK-DEBUG] Valor actual: 'vacio'
+advanced-table-viewer.tsx:1227 [CLICK-DEBUG] ReadOnly: false, Column ReadOnly: undefined
+advanced-table-viewer.tsx:1236 [CLICK-DEBUG] 🔄 Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_si = SI en fila 0
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 0: SI
+advanced-table-viewer.tsx:1246 [CLICK-DEBUG] 🧹 Limpiando revision_visual_no
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_no = vacio en fila 0
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 0: vacio
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1225 [CLICK-DEBUG] ✅ CLICK DETECTADO en revision_visual_no fila 1
+advanced-table-viewer.tsx:1226 [CLICK-DEBUG] Valor actual: 'vacio'
+advanced-table-viewer.tsx:1227 [CLICK-DEBUG] ReadOnly: false, Column ReadOnly: undefined
+advanced-table-viewer.tsx:1236 [CLICK-DEBUG] 🔄 Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_no = SI en fila 1
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 1: SI
+advanced-table-viewer.tsx:1246 [CLICK-DEBUG] 🧹 Limpiando revision_visual_si
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_si = vacio en fila 1
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 1: vacio
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1225 [CLICK-DEBUG] ✅ CLICK DETECTADO en revision_visual_no fila 2
+advanced-table-viewer.tsx:1226 [CLICK-DEBUG] Valor actual: 'vacio'
+advanced-table-viewer.tsx:1227 [CLICK-DEBUG] ReadOnly: false, Column ReadOnly: undefined
+advanced-table-viewer.tsx:1236 [CLICK-DEBUG] 🔄 Cambiando de 'vacio' a 'SI'
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_no = SI en fila 2
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 2: SI
+advanced-table-viewer.tsx:1246 [CLICK-DEBUG] 🧹 Limpiando revision_visual_si
+advanced-table-viewer.tsx:395 [updateCellLocally] Checkbox update: revision_visual_si = vacio en fila 2
+advanced-table-viewer.tsx:404 [updateCellLocally] Estado actualizado, nuevo valor en fila 2: vacio
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 0: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fila 1: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_si fila 2: valor='vacio', isChecked=false
+advanced-table-viewer.tsx:1259 [CHECKBOX-RENDER] revision_visual_no fil
