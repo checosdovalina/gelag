@@ -103,7 +103,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   const { toast } = useToast();
   const [tableData, setTableData] = useState<Record<string, any>[]>(value || []);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const [checkboxStates, setCheckboxStates] = useState<Record<string, 'SI' | 'NO' | null>>({});
   
   // Identificar si es una tabla de horarios (sin auto-guardado)
   const fieldId = (field as any).id;
@@ -150,13 +150,6 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
   // Inicializar datos si están vacíos - Versión robusta que evita problemas de referencia
   useEffect(() => {
     console.log("AdvancedTableViewer useEffect - Valor recibido:", value);
-    console.log("AdvancedTableViewer useEffect - hasLocalChanges:", hasLocalChanges);
-    
-    // No sobrescribir si hay cambios locales pendientes
-    if (hasLocalChanges) {
-      console.log("AdvancedTableViewer useEffect - Saltando actualización por cambios locales");
-      return;
-    }
     
     try {
       // Crear un objeto vacío para usar como plantilla de fila
@@ -210,7 +203,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // En caso de error, inicializamos con datos vacíos
       setTableData([{}]);
     }
-  }, [config.rows, config.sections, config.columns, config.initialData, value, hasLocalChanges]);
+  }, [config.rows, config.sections, config.columns, config.initialData, value]);
   
   // Obtener el valor de referencia de otra columna para cálculos automáticos
   const getSourceValue = (rowIndex: number, sourceColumnId: string) => {
@@ -389,6 +382,46 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     col.id.toLowerCase().includes('litro')
   );
 
+  // Función para manejar checkboxes SI/NO con estado independiente
+  const handleCheckboxClick = (rowIndex: number, columnId: string, isNoColumn: boolean = false) => {
+    const checkboxKey = `${rowIndex}-${columnId}`;
+    const oppositeKey = `${rowIndex}-${columnId.replace(isNoColumn ? '_no' : '_si', isNoColumn ? '_si' : '_no')}`;
+    
+    console.log(`[CHECKBOX-NEW] Click en ${columnId} fila ${rowIndex}`);
+    
+    // Obtener estado actual
+    const currentState = checkboxStates[checkboxKey];
+    const newState = currentState === 'SI' ? null : 'SI';
+    
+    // Actualizar estados de checkboxes
+    const newCheckboxStates = { ...checkboxStates };
+    newCheckboxStates[checkboxKey] = newState;
+    newCheckboxStates[oppositeKey] = null; // Limpiar el opuesto
+    
+    setCheckboxStates(newCheckboxStates);
+    
+    // Actualizar tableData
+    const newData = [...tableData];
+    if (!newData[rowIndex]) {
+      newData[rowIndex] = {};
+    }
+    
+    newData[rowIndex][columnId] = newState === 'SI' ? 'SI' : 'vacio';
+    const oppositeColumnId = columnId.replace(isNoColumn ? '_no' : '_si', isNoColumn ? '_si' : '_no');
+    newData[rowIndex][oppositeColumnId] = 'vacio';
+    
+    setTableData(newData);
+    onChange(newData);
+    
+    console.log(`[CHECKBOX-NEW] Actualizado: ${columnId} = ${newState}, ${oppositeColumnId} = vacio`);
+  };
+
+  // Función para obtener estado de checkbox
+  const getCheckboxState = (rowIndex: number, columnId: string): boolean => {
+    const checkboxKey = `${rowIndex}-${columnId}`;
+    return checkboxStates[checkboxKey] === 'SI';
+  };
+
   // Función para actualizar solo localmente sin auto-guardado (para navegación)
   const updateCellLocally = (rowIndex: number, columnId: string, value: any) => {
     const newData = JSON.parse(JSON.stringify(tableData));
@@ -397,22 +430,13 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       newData[rowIndex] = {};
     }
     
-    // Para checkboxes mantener siempre como string
-    if (columnId.includes('revision_visual')) {
-      newData[rowIndex][columnId] = value;
-      console.log(`[updateCellLocally] Checkbox update: ${columnId} = ${value} en fila ${rowIndex}`);
-    } else if (typeof value === "string" && !isNaN(Number(value))) {
+    if (typeof value === "string" && !isNaN(Number(value))) {
       newData[rowIndex][columnId] = Number(value);
     } else {
       newData[rowIndex][columnId] = value;
     }
     
-    // Marcar que hay cambios locales para prevenir sobrescritura del useEffect
-    setHasLocalChanges(true);
-    
-    // Solo actualizar estado local, NO propagar cambios
     setTableData(newData);
-    console.log(`[updateCellLocally] Estado actualizado, nuevo valor en fila ${rowIndex}: ${newData[rowIndex][columnId]}`);
   };
 
   // Actualizar una celda
@@ -1227,59 +1251,26 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       </Select>
                     )}
                     {((column.type === 'select' && column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) || 
-                      (column.type === 'select' && column.id.includes('revision_visual'))) && (() => {
-                      return (
+                      (column.type === 'select' && column.id.includes('revision_visual'))) && (
                         <div className="flex items-center justify-center p-2">
                           <button
-                          type="button"
-                          onClick={() => {
-                            console.log(`[CLICK-DEBUG] ✅ CLICK DETECTADO en ${column.id} fila ${rowIndex}`);
-                            console.log(`[CLICK-DEBUG] Valor actual: '${rowData[column.id]}'`);
-                            console.log(`[CLICK-DEBUG] ReadOnly: ${readOnly}, Column ReadOnly: ${column.readOnly}`);
-                            
-                            if (readOnly || column.readOnly) {
-                              console.log(`[CLICK-DEBUG] ❌ Campo bloqueado`);
-                              return;
-                            }
-                            
-                            const currentValue = rowData[column.id] || 'vacio';
-                            const newValue = currentValue === 'SI' ? 'vacio' : 'SI';
-                            console.log(`[CLICK-DEBUG] 🔄 Cambiando de '${currentValue}' a '${newValue}'`);
-                            
-                            // Actualizar inmediatamente
-                            updateCellLocally(rowIndex, column.id, newValue);
-                            
-                            // Si es SI, limpiar la opción opuesta
-                            if (newValue === 'SI' && column.id.includes('revision_visual')) {
-                              const oppositeId = column.id.includes('_si') ? 
-                                column.id.replace('_si', '_no') : 
-                                column.id.replace('_no', '_si');
-                              console.log(`[CLICK-DEBUG] 🧹 Limpiando ${oppositeId}`);
-                              updateCellLocally(rowIndex, oppositeId, 'vacio');
-                            }
-                          }}
-                          disabled={readOnly || column.readOnly}
-                          className={`h-5 w-5 border-2 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
-                            (tableData[rowIndex]?.[column.id] || 'vacio') === 'SI' 
-                              ? 'bg-primary border-primary text-white' 
-                              : 'border-gray-300 hover:border-gray-400'
-                          } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
-                        >
-                          {(() => {
-                            // Usar tableData directamente en lugar de rowData para obtener valores actualizados
-                            const currentValue = tableData[rowIndex]?.[column.id] || 'vacio';
-                            const isChecked = currentValue === 'SI';
-                            console.log(`[CHECKBOX-RENDER] ${column.id} fila ${rowIndex}: valor='${currentValue}', isChecked=${isChecked}`);
-                            return isChecked && (
+                            type="button"
+                            onClick={() => handleCheckboxClick(rowIndex, column.id, column.id.includes('_no'))}
+                            disabled={readOnly || column.readOnly}
+                            className={`h-5 w-5 border-2 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
+                              getCheckboxState(rowIndex, column.id)
+                                ? 'bg-primary border-primary text-white' 
+                                : 'border-gray-300 hover:border-gray-400'
+                            } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
+                          >
+                            {getCheckboxState(rowIndex, column.id) && (
                               <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
-                            );
-                          })()}
-                        </button>
+                            )}
+                          </button>
                         </div>
-                      );
-                    })()}
+                      )}
                     {column.type === 'checkbox' && (() => {
                       console.log(`[CHECKBOX-RENDER] 🔧 Renderizando checkbox ${column.id} fila ${rowIndex}, valor: ${rowData[column.id]}, readOnly: ${readOnly}, column.readOnly: ${column.readOnly}`);
                       return (
