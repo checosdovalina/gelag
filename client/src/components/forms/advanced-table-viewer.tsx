@@ -210,7 +210,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       // En caso de error, inicializamos con datos vacíos
       setTableData([{}]);
     }
-  }, [config.rows, config.sections, config.columns, config.initialData, value]);
+  }, [config.rows, config.sections, config.columns, config.initialData, value, hasLocalChanges]);
   
   // Obtener el valor de referencia de otra columna para cálculos automáticos
   const getSourceValue = (rowIndex: number, sourceColumnId: string) => {
@@ -1260,14 +1260,16 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                           }}
                           disabled={readOnly || column.readOnly}
                           className={`h-5 w-5 border-2 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
-                            rowData[column.id] === 'SI' 
+                            (tableData[rowIndex]?.[column.id] || 'vacio') === 'SI' 
                               ? 'bg-primary border-primary text-white' 
                               : 'border-gray-300 hover:border-gray-400'
                           } ${(readOnly || column.readOnly) ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}`}
                         >
                           {(() => {
-                            const isChecked = rowData[column.id] === 'SI';
-                            console.log(`[CHECKBOX-RENDER] ${column.id} fila ${rowIndex}: valor='${rowData[column.id]}', isChecked=${isChecked}`);
+                            // Usar tableData directamente en lugar de rowData para obtener valores actualizados
+                            const currentValue = tableData[rowIndex]?.[column.id] || 'vacio';
+                            const isChecked = currentValue === 'SI';
+                            console.log(`[CHECKBOX-RENDER] ${column.id} fila ${rowIndex}: valor='${currentValue}', isChecked=${isChecked}`);
                             return isChecked && (
                               <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
