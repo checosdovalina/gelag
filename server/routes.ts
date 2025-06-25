@@ -1160,8 +1160,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let completedActivities = 0;
             
             checklistData.forEach((row: any) => {
-              // Verificar si hay una selección SI marcada en esta fila
-              const hasSiSelected = row.revision_visual_si === 'si';
+              // Verificar si hay una selección SI marcada en esta fila (tanto minúsculas como mayúsculas)
+              const hasSiSelected = row.revision_visual_si === 'si' || row.revision_visual_si === 'SI';
               
               if (hasSiSelected) {
                 // Obtener el porcentaje de esta actividad
