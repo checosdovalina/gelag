@@ -368,6 +368,12 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           detail: { fieldId: percentageFieldId, value: `${percentage}%` }
         });
         window.dispatchEvent(event);
+        
+        // También disparar recalculo del total
+        setTimeout(() => {
+          const totalEvent = new CustomEvent('recalculateTotal');
+          window.dispatchEvent(totalEvent);
+        }, 300);
       }
       
     } catch (error) {
