@@ -45,11 +45,15 @@
           },
           {
             "id": "departamento_emisor",
-            "type": "text",
+            "type": "select",
             "label": "Departamento emisor",
             "required": false,
             "displayName": "Departamento emisor",
-            "defaultValue": "Control de Calidad"
+            "defaultValue": "Calidad",
+            "options": [
+              { "value": "Calidad", "label": "Calidad" },
+              { "value": "Produccion", "label": "Producción" }
+            ]
           }
         ]
       },
