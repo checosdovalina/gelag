@@ -61,34 +61,33 @@
         "title": "Sección de Marmitas",
         "fields": [
           {
-            "id": "seccion_marmitas",
+            "id": "seccion_marmitas_checklist",
             "type": "advancedTable",
             "label": "Sección de Marmitas",
             "required": true,
             "advancedTableConfig": {
               "columns": [
-                { "id": "actividad", "type": "text", "header": "Actividad", "width": "40%" },
-                { "id": "revision_visual", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
-                { "id": "url", "type": "text", "header": "URL", "width": "15%" },
-                { "id": "porcentaje", "type": "text", "header": "%", "width": "10%" },
-                { "id": "revision_visual_2", "type": "select", "header": "Revisión visual", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
-                { "id": "porcentaje_2", "type": "text", "header": "%", "width": "10%" }
+                { "id": "actividad", "type": "text", "header": "Actividad", "width": "50%" },
+                { "id": "porcentaje", "type": "text", "header": "%", "width": "15%" },
+                { "id": "revision_visual_si", "type": "select", "header": "SI", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "revision_visual_no", "type": "select", "header": "NO", "width": "15%", "options": [{"value": "SI", "label": "SI"}, {"value": "NO", "label": "NO"}] },
+                { "id": "url", "type": "text", "header": "URL", "width": "5%" }
               ],
               "initialData": [
-                { "actividad": "Limpieza interior y exterior de marmita No 1", "porcentaje": "9%" },
-                { "actividad": "Tubo de salida producto terminado marmita No 1", "porcentaje": "9%" },
-                { "actividad": "Limpieza interior y exterior de marmita No 2", "porcentaje": "9%" },
-                { "actividad": "Tubo de salida producto terminado marmita No 2", "porcentaje": "9%" },
-                { "actividad": "Limpieza interior y exterior de marmita No 3", "porcentaje": "9%" },
-                { "actividad": "Tubo de salida producto terminado marmita No 3", "porcentaje": "9%" },
-                { "actividad": "Limpieza interior y exterior de marmita No 4", "porcentaje": "5%" },
-                { "actividad": "Limpieza interior y exterior de marmita No 5", "porcentaje": "8%" },
-                { "actividad": "Limpieza de plataforma", "porcentaje": "7%" },
-                { "actividad": "Limpieza de escalera", "porcentaje": "3%" },
-                { "actividad": "Limpieza de tubería", "porcentaje": "8%" },
-                { "actividad": "Limpieza de paredes", "porcentaje": "5%" },
-                { "actividad": "Extractores limpios", "porcentaje": "5%" },
-                { "actividad": "Ausencia de basura", "porcentaje": "5%" }
+                { "actividad": "Limpieza interior y exterior de marmita No 1", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Tubo de salida producto terminado marmita No 1", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza interior y exterior de marmita No 2", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Tubo de salida producto terminado marmita No 2", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza interior y exterior de marmita No 3", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Tubo de salida producto terminado marmita No 3", "porcentaje": "9%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza interior y exterior de marmita No 4", "porcentaje": "5%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza interior y exterior de marmita No 5", "porcentaje": "8%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza de plataforma", "porcentaje": "7%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza de escalera", "porcentaje": "3%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza de tubería", "porcentaje": "8%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Limpieza de paredes", "porcentaje": "5%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Extractores limpios", "porcentaje": "5%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" },
+                { "actividad": "Ausencia de basura", "porcentaje": "5%", "revision_visual_si": "vacio", "revision_visual_no": "vacio", "url": "" }
               ]
             }
           },

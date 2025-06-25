@@ -1,0 +1,140 @@
+dvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 10
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 11
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 12
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 13
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla seccion_marmitas_checklist: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: seccion_marmitas_checklist, Datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Limpieza interior y exterior de marmita No 1', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 1 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 1
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 1" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza interior y exterior de marmita No 1": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Tubo de salida producto terminado marmita No 1', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 1 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 1
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 1" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Tubo de salida producto terminado marmita No 1": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Limpieza interior y exterior de marmita No 2', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 2 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 2
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 2" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza interior y exterior de marmita No 2": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 3 completa: {actividad: 'Tubo de salida producto terminado marmita No 2', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 2 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 2
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 2" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Tubo de salida producto terminado marmita No 2": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 4 completa: {actividad: 'Limpieza interior y exterior de marmita No 3', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 3 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 3
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 3" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza interior y exterior de marmita No 3": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 5 completa: {actividad: 'Tubo de salida producto terminado marmita No 3', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 3 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 3
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 3" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Tubo de salida producto terminado marmita No 3": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 6 completa: {actividad: 'Limpieza interior y exterior de marmita No 4', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 4 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 4
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 4" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza interior y exterior de marmita No 4": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 7 completa: {actividad: 'Limpieza interior y exterior de marmita No 5', revision_visual_si: 'vacio', revision_visual_no: 'SI', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 5 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 5
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 8 completa: {actividad: 'Limpieza de plataforma', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de plataforma (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de plataforma
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de plataforma" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza de plataforma": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 9 completa: {actividad: 'Limpieza de escalera', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de escalera (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de escalera
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de escalera" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza de escalera": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 10 completa: {actividad: 'Limpieza de tubería', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de tubería (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de tubería
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de tubería" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza de tubería": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 11 completa: {actividad: 'Limpieza de paredes', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de paredes (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de paredes
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de paredes" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Limpieza de paredes": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 12 completa: {actividad: 'Extractores limpios', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Extractores limpios (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Extractores limpios
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Extractores limpios" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Extractores limpios": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 13 completa: {actividad: 'Ausencia de basura', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Ausencia de basura (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Ausencia de basura
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Ausencia de basura" marcada como SI
+form-viewer.tsx:1630 [PERCENTAGE-AUTO] ⚠️ Porcentaje inválido en "Ausencia de basura": ""
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] seccion_marmitas_checklist: Total sumado = 0%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_marmitas
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_marmitas actualizado a 0%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
