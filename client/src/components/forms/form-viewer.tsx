@@ -472,14 +472,21 @@ export default function FormViewer({
   
   // Función para calcular porcentaje total de Liberación Preoperativa
   const updateTotalPercentage = () => {
-    console.log(`[TOTAL-PERCENTAGE] 🔍 Verificando template: "${formTemplate.name}"`);
+    console.log(`[TOTAL-PERCENTAGE] Verificando template: "${formTemplate.name || 'undefined'}"`);
+    console.log(`[TOTAL-PERCENTAGE] Form title: "${formTitle || 'undefined'}"`);
     
     const formValues = form.getValues();
     
-    // Verificar si es un formulario de Liberación Preoperativa (buscar por partes del nombre)
-    const isLiberacionForm = formTemplate.name?.includes('LIBERACION') || 
-                           formTemplate.name?.includes('PREOPERATIVA') ||
-                           formTemplate.name?.includes('CA-RE-03-01');
+    // Verificar si es un formulario de Liberación Preoperativa (buscar en múltiples campos)
+    const isLiberacionForm = (
+      formTemplate.name?.includes('LIBERACION') || 
+      formTemplate.name?.includes('PREOPERATIVA') ||
+      formTemplate.name?.includes('CA-RE-03-01') ||
+      formTitle?.includes('LIBERACION') ||
+      formTitle?.includes('PREOPERATIVA') ||
+      formTemplate.structure?.title?.includes('LIBERACION') ||
+      formTemplate.structure?.code === 'CA-RE-03-01'
+    );
     
     console.log(`[TOTAL-PERCENTAGE] Es formulario de liberación: ${isLiberacionForm}`);
     
@@ -551,40 +558,32 @@ export default function FormViewer({
     return () => subscription.unsubscribe();
   }, [form, updateTotalPercentage]);
 
-  // Forzar actualización del total cuando hay porcentajes disponibles
-  useEffect(() => {
-    const formValues = form.getValues();
-    const hasPercentages = [
-      'porcentaje_cumplimiento_marmitas',
-      'porcentaje_cumplimiento_dulces', 
-      'porcentaje_cumplimiento_produccion',
-      'porcentaje_cumplimiento_reposo',
-      'porcentaje_cumplimiento_limpieza'
-    ].some(field => formValues[field] && formValues[field] !== '0%');
 
-    if (hasPercentages && formTemplate.name?.includes('LIBERACION')) {
-      console.log("[FORCE-UPDATE] 🔄 Detectados porcentajes, forzando actualización total...");
-      setTimeout(() => {
-        updateTotalPercentage();
-      }, 500);
-    }
-  }, [form.watch()]);  // Ejecutar cada vez que cambien los valores del formulario
 
   // Actualizar total cuando el formulario se inicializa
   useEffect(() => {
-    console.log(`[TOTAL-INIT] Template name: "${formTemplate.name}"`);
-    const isLiberacionForm = formTemplate.name?.includes('LIBERACION') || 
-                           formTemplate.name?.includes('PREOPERATIVA') ||
-                           formTemplate.name?.includes('CA-RE-03-01');
+    console.log(`[TOTAL-INIT] Template name: "${formTemplate.name || 'undefined'}"`);
+    console.log(`[TOTAL-INIT] Form title: "${formTitle || 'undefined'}"`);
+    
+    const isLiberacionForm = (
+      formTemplate.name?.includes('LIBERACION') || 
+      formTemplate.name?.includes('PREOPERATIVA') ||
+      formTemplate.name?.includes('CA-RE-03-01') ||
+      formTitle?.includes('LIBERACION') ||
+      formTitle?.includes('PREOPERATIVA') ||
+      formTemplate.structure?.title?.includes('LIBERACION') ||
+      formTemplate.structure?.code === 'CA-RE-03-01'
+    );
+    
     console.log(`[TOTAL-INIT] Es formulario de liberación: ${isLiberacionForm}`);
     
     if (isLiberacionForm) {
-      console.log("[TOTAL-INIT] 🚀 Inicializando cálculo de porcentaje total...");
+      console.log("[TOTAL-INIT] Inicializando cálculo de porcentaje total...");
       setTimeout(() => {
         updateTotalPercentage();
       }, 1000);
     }
-  }, [formTemplate.name, updateTotalPercentage]);
+  }, [formTemplate.name, formTitle]);
 
   // Función manual para probar el cálculo (temporal)
   const testTotalCalculation = () => {
