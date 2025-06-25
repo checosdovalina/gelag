@@ -423,8 +423,8 @@ export default function FormViewer({
         form.reset(currentValues);
         
         // Trigger percentage total update for Liberación Preoperativa forms
-        if (formTemplate.title?.includes('LIBERACION PREOPERATIVA')) {
-          setTimeout(() => updateTotalPercentage(), 200);
+        if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+          setTimeout(() => updateTotalPercentage(), 500);
         }
       } catch (error) {
         console.error(`[FORM-VIEWER] Error actualizando campo ${fieldId}:`, error);
@@ -476,33 +476,44 @@ export default function FormViewer({
     
     // Verificar si es un formulario de Liberación Preoperativa
     if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
-      const sectionPercentages = [
-        { field: 'porcentaje_cumplimiento_marmitas', weight: 50 },
-        { field: 'porcentaje_cumplimiento_dulces', weight: 20 },
-        { field: 'porcentaje_cumplimiento_produccion', weight: 15 },
-        { field: 'porcentaje_cumplimiento_reposo', weight: 10 },
-        { field: 'porcentaje_cumplimiento_limpieza', weight: 5 }
+      console.log('[TOTAL-CALC] Calculando porcentaje total basado en secciones...');
+      
+      const sectionFields = [
+        'porcentaje_cumplimiento_marmitas',
+        'porcentaje_cumplimiento_dulces', 
+        'porcentaje_cumplimiento_produccion',
+        'porcentaje_cumplimiento_reposo',
+        'porcentaje_cumplimiento_limpieza'
       ];
       
-      let totalWeightedPercentage = 0;
-      let completedSections = 0;
+      let totalSum = 0;
+      let validSections = 0;
       
-      sectionPercentages.forEach(({ field, weight }) => {
+      sectionFields.forEach(field => {
         const percentageValue = formValues[field];
-        if (percentageValue && percentageValue !== '0%') {
+        if (percentageValue) {
           const numericValue = parseFloat(percentageValue.replace('%', ''));
-          if (!isNaN(numericValue)) {
-            totalWeightedPercentage += (numericValue * weight) / 100;
-            completedSections++;
+          if (!isNaN(numericValue) && numericValue > 0) {
+            totalSum += numericValue;
+            validSections++;
+            console.log(`[TOTAL-CALC] ${field}: ${numericValue}%`);
           }
         }
       });
       
-      // Solo calcular total si hay al menos una sección completada
-      if (completedSections > 0) {
-        const totalPercentage = Math.round(totalWeightedPercentage);
-        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`);
-      }
+      // Calcular promedio de las secciones completadas
+      const totalPercentage = validSections > 0 ? Math.round(totalSum / validSections) : 0;
+      
+      console.log(`[TOTAL-CALC] Resultado: (${totalSum} / ${validSections}) = ${totalPercentage}%`);
+      
+      // Actualizar el campo total
+      form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true
+      });
+      
+      console.log(`[TOTAL-CALC] ✅ Porcentaje total actualizado: ${totalPercentage}%`);
     }
   };
 
@@ -1665,6 +1676,12 @@ export default function FormViewer({
                               shouldValidate: true
                             });
                             console.log(`[PERCENTAGE-AUTO] ✅ Campo ${percentageFieldName} actualizado a ${percentageValue}`);
+                            
+                            // Disparar cálculo del porcentaje total después de actualizar cualquier sección
+                            setTimeout(() => {
+                              console.log('[TRIGGER-TOTAL] Disparando cálculo de porcentaje total...');
+                              updateTotalPercentage();
+                            }, 1000);
                           }
                         }
                         
