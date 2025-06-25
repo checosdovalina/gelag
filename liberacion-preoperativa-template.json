@@ -38,7 +38,7 @@
             "id": "folio_produccion",
             "type": "text",
             "label": "FOLIO DE PRODUCCIÓN",
-            "required": true,
+            "required": false,
             "displayName": "Folio de Producción",
             "readOnly": false,
             "roleAccess": ["superadmin", "admin", "calidad", "gerente_calidad", "produccion", "gerente_produccion"]
@@ -47,7 +47,7 @@
             "id": "departamento_emisor",
             "type": "text",
             "label": "Departamento emisor",
-            "required": true,
+            "required": false,
             "displayName": "Departamento emisor",
             "defaultValue": "Control de Calidad"
           }
