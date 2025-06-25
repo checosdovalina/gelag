@@ -113,6 +113,7 @@ export default function CapturedFormsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [contentSearchTerm, setContentSearchTerm] = useState(""); // Término para buscar en el contenido
+  const [folioFilter, setFolioFilter] = useState(""); // Filtro específico para folio
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [workflowStatusFilter, setWorkflowStatusFilter] = useState("all"); // Filtro para el estado del flujo de trabajo
@@ -302,6 +303,12 @@ export default function CapturedFormsPage() {
         // Content search (búsqueda en el contenido del formulario)
         const passesContentSearch = contentSearchTerm === "" || searchInFormContent(entry, contentSearchTerm);
         
+        // Folio filter (búsqueda en folio o folio de producción)
+        const passesFolioFilter = folioFilter === "" || 
+          (entry.folioNumber && entry.folioNumber.toString().toLowerCase().includes(folioFilter.toLowerCase())) ||
+          (entry.data?.folio && entry.data.folio.toString().toLowerCase().includes(folioFilter.toLowerCase())) ||
+          (entry.data?.folio_produccion && entry.data.folio_produccion.toString().toLowerCase().includes(folioFilter.toLowerCase()));
+        
         // Department filter
         const passesDepartmentFilter = 
           departmentFilter === "all" || 
@@ -346,6 +353,7 @@ export default function CapturedFormsPage() {
         
         return hasSearchTerm && 
                passesContentSearch &&
+               passesFolioFilter &&
                passesDepartmentFilter && 
                passesStatusFilter && 
                passesWorkflowStatusFilter &&
@@ -909,6 +917,7 @@ export default function CapturedFormsPage() {
   const clearFilters = () => {
     setSearchTerm("");
     setContentSearchTerm("");
+    setFolioFilter("");
     setDepartmentFilter("all");
     setStatusFilter("all");
     setWorkflowStatusFilter("all");
@@ -1049,6 +1058,15 @@ export default function CapturedFormsPage() {
                       onChange={(e) => setContentSearchTerm(e.target.value)}
                     />
                   </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Filtrar por Folio</label>
+                  <Input
+                    placeholder="Número de folio o folio de producción..."
+                    value={folioFilter}
+                    onChange={(e) => setFolioFilter(e.target.value)}
+                  />
                 </div>
                 
                 <div className="space-y-2">

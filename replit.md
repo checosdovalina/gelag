@@ -127,7 +127,7 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
-### June 25, 2025 - Complete Total Percentage Calculation System
+### June 25, 2025 - Complete Total Percentage Calculation System & PDF Export Fix
 - **Implemented automatic total percentage calculation** for Liberación Preoperativa forms
 - **Multi-field detection**: Enhanced template detection to work with formTemplate.name, formTitle, and structure properties
 - **Real-time total updates**: "Porcentaje Cumplimiento Total" field updates automatically when individual section percentages change
@@ -135,6 +135,8 @@ GELAG is a comprehensive form management system designed for quality control and
 - **Direct calculation integration**: Total percentage updates immediately after individual section calculations complete
 - **Comprehensive logging**: Detailed console logs for debugging and verification of calculation process
 - **Proven functionality**: System verified working with live data showing 92% total from individual section percentages
+- **Fixed PDF export formatting**: Replaced JSON display with professional structured format for Liberación Preoperativa forms
+- **Added folio filter**: New filter in captured forms page allows searching by folio number or production folio
 
 ### June 24, 2025 - Checkbox System Resolution and Enhancement
 - **Fixed checkbox rendering issue**: Resolved template/code mismatch where columns were defined as "select" type but needed checkbox behavior
