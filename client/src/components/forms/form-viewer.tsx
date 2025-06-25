@@ -476,32 +476,49 @@ export default function FormViewer({
     
     // Verificar si es un formulario de Liberación Preoperativa
     if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+      console.log("[TOTAL-PERCENTAGE] Iniciando cálculo de porcentaje total...");
+      
+      // Usar pesos iguales para todas las secciones (20% cada una)
       const sectionPercentages = [
-        { field: 'porcentaje_cumplimiento_marmitas', weight: 50 },
-        { field: 'porcentaje_cumplimiento_dulces', weight: 20 },
-        { field: 'porcentaje_cumplimiento_produccion', weight: 15 },
-        { field: 'porcentaje_cumplimiento_reposo', weight: 10 },
-        { field: 'porcentaje_cumplimiento_limpieza', weight: 5 }
+        { field: 'porcentaje_cumplimiento_marmitas', weight: 20, name: 'Marmitas' },
+        { field: 'porcentaje_cumplimiento_dulces', weight: 20, name: 'Dulces' },
+        { field: 'porcentaje_cumplimiento_produccion', weight: 20, name: 'Producción' },
+        { field: 'porcentaje_cumplimiento_reposo', weight: 20, name: 'Reposo' },
+        { field: 'porcentaje_cumplimiento_limpieza', weight: 20, name: 'Limpieza' }
       ];
       
       let totalWeightedPercentage = 0;
       let completedSections = 0;
+      let totalWeight = 0;
       
-      sectionPercentages.forEach(({ field, weight }) => {
+      sectionPercentages.forEach(({ field, weight, name }) => {
         const percentageValue = formValues[field];
-        if (percentageValue && percentageValue !== '0%') {
+        console.log(`[TOTAL-PERCENTAGE] ${name} (${field}): ${percentageValue || 'sin valor'}`);
+        
+        if (percentageValue && percentageValue !== '0%' && percentageValue !== '') {
           const numericValue = parseFloat(percentageValue.replace('%', ''));
           if (!isNaN(numericValue)) {
-            totalWeightedPercentage += (numericValue * weight) / 100;
+            totalWeightedPercentage += numericValue * (weight / 100);
             completedSections++;
+            totalWeight += weight;
+            console.log(`[TOTAL-PERCENTAGE] ✅ ${name}: ${numericValue}% x ${weight}% = ${numericValue * (weight / 100)}`);
           }
+        } else {
+          console.log(`[TOTAL-PERCENTAGE] ⚪ ${name}: no completado`);
         }
       });
       
-      // Solo calcular total si hay al menos una sección completada
+      // Calcular total si hay al menos una sección completada
       if (completedSections > 0) {
         const totalPercentage = Math.round(totalWeightedPercentage);
-        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`);
+        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true
+        });
+        console.log(`[TOTAL-PERCENTAGE] 🎯 Total calculado: ${totalPercentage}% (${completedSections}/${sectionPercentages.length} secciones)`);
+      } else {
+        console.log("[TOTAL-PERCENTAGE] ⚠️ No hay secciones completadas");
       }
     }
   };
@@ -510,11 +527,24 @@ export default function FormViewer({
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name && name.startsWith('porcentaje_cumplimiento_') && !name.includes('total')) {
-        updateTotalPercentage();
+        console.log(`[WATCH-PERCENTAGE] Campo cambiado: ${name} = ${value[name]}`);
+        // Esperar un poco para asegurar que todos los porcentajes se hayan actualizado
+        setTimeout(() => {
+          updateTotalPercentage();
+        }, 100);
       }
     });
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Actualizar total cuando el formulario se inicializa
+  useEffect(() => {
+    if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+      setTimeout(() => {
+        updateTotalPercentage();
+      }, 500);
+    }
+  }, [formTemplate.name]);
   
   // Watch for proceso field changes to conditionally show Cono tab
   const watchedProceso = form.watch("proceso");
@@ -1665,6 +1695,11 @@ export default function FormViewer({
                               shouldValidate: true
                             });
                             console.log(`[PERCENTAGE-AUTO] ✅ Campo ${percentageFieldName} actualizado a ${percentageValue}`);
+                            
+                            // Actualizar el porcentaje total después de actualizar porcentaje individual
+                            setTimeout(() => {
+                              updateTotalPercentage();
+                            }, 200);
                           }
                         }
                         

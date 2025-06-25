@@ -1,0 +1,679 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+form-viewer.tsx:434 [FORM-VIEWER] Registrando listeners...
+form-viewer.tsx:1152 [FOLIO] Campos de folio disponibles para entrada manual
+form-viewer.tsx:467 [FORM-VIEWER] Removiendo listeners...
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+form-viewer.tsx:434 [FORM-VIEWER] Registrando listeners...
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1115 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1125 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1152 [FOLIO] Campos de folio disponibles para entrada manual
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_marmitas_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_dulces_checklist
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_produccion
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada seccion_area_reposo
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1504 Inicializando tabla avanzada estacion_limpieza
+form-viewer.tsx:1514 Usando datos iniciales de la configuración: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 0
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 1
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 2
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = null, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 4
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 5
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 6
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 7
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 13
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 12
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 11
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 10
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 9
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 8
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_marmitas_checklist con datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla seccion_marmitas_checklist: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: seccion_marmitas_checklist, Datos: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Limpieza interior y exterior de marmita No 1', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 1 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 1
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 1" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Limpieza interior y exterior de marmita No 1"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Tubo de salida producto terminado marmita No 1', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 1 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 1
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 1" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Tubo de salida producto terminado marmita No 1"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Limpieza interior y exterior de marmita No 2', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 2 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 2
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 2" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Limpieza interior y exterior de marmita No 2"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 3 completa: {actividad: 'Tubo de salida producto terminado marmita No 2', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 2 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 2
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 2" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Tubo de salida producto terminado marmita No 2"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 4 completa: {actividad: 'Limpieza interior y exterior de marmita No 3', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 3 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 3
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 3" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Limpieza interior y exterior de marmita No 3"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 5 completa: {actividad: 'Tubo de salida producto terminado marmita No 3', porcentaje: '9%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tubo de salida producto terminado marmita No 3 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tubo de salida producto terminado marmita No 3
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 9% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tubo de salida producto terminado marmita No 3" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 9% de "Tubo de salida producto terminado marmita No 3"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 6 completa: {actividad: 'Limpieza interior y exterior de marmita No 4', porcentaje: '5%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 4 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 4
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 4" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Limpieza interior y exterior de marmita No 4"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 7 completa: {actividad: 'Limpieza interior y exterior de marmita No 5', porcentaje: '8%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza interior y exterior de marmita No 5 (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza interior y exterior de marmita No 5
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 8% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza interior y exterior de marmita No 5" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 8% de "Limpieza interior y exterior de marmita No 5"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 8 completa: {actividad: 'Limpieza de plataforma', porcentaje: '7%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de plataforma (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de plataforma
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 7% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de plataforma" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 7% de "Limpieza de plataforma"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 9 completa: {actividad: 'Limpieza de escalera', porcentaje: '3%', revision_visual_si: 'vacio', revision_visual_no: 'SI', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de escalera (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de escalera
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 3% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 10 completa: {actividad: 'Limpieza de tubería', porcentaje: '8%', revision_visual_si: 'vacio', revision_visual_no: 'SI', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de tubería (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de tubería
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 8% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 11 completa: {actividad: 'Limpieza de paredes', porcentaje: '5%', revision_visual_si: 'vacio', revision_visual_no: 'SI', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de paredes (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de paredes
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 12 completa: {actividad: 'Extractores limpios', porcentaje: '5%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Extractores limpios (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Extractores limpios
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Extractores limpios" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Extractores limpios"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 13 completa: {actividad: 'Ausencia de basura', porcentaje: '5%', revision_visual_si: 'SI', revision_visual_no: 'vacio', url: ''}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Ausencia de basura (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Ausencia de basura
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Ausencia de basura" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Ausencia de basura"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo url:  (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] seccion_marmitas_checklist: Total sumado = 84%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_marmitas
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_marmitas actualizado a 84%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 0
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 1
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 2
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 4
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 5
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 6
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 7
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 8
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 9
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_dulces_checklist con datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla seccion_dulces_checklist: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: seccion_dulces_checklist, Datos: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Limpieza de mesa de trabajo', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '30%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de mesa de trabajo (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de mesa de trabajo
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de mesa de trabajo" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 30% de "Limpieza de mesa de trabajo"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 30% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Limpieza de básculas', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '15%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de básculas (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de básculas
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de básculas" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 15% de "Limpieza de básculas"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 15% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Limpieza de charolas', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '15%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de charolas (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de charolas
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de charolas" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 15% de "Limpieza de charolas"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 15% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 3 completa: {actividad: 'Limpieza de conero', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de conero (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de conero
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de conero" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Limpieza de conero"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 4 completa: {actividad: 'Codificadora en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '2%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Codificadora en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Codificadora en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Codificadora en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 2% de "Codificadora en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 2% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 5 completa: {actividad: 'Limpieza de báscula de piso', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de báscula de piso (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de báscula de piso
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de báscula de piso" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Limpieza de báscula de piso"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 6 completa: {actividad: 'Tarja limpia y en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '4%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarja limpia y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tarja limpia y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tarja limpia y en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 4% de "Tarja limpia y en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 4% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 7 completa: {actividad: 'Pisos limpios', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Pisos limpios (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Pisos limpios
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Pisos limpios" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Pisos limpios"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 8 completa: {actividad: 'Paredes limpias', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '4%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Paredes limpias (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Paredes limpias
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Paredes limpias" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 4% de "Paredes limpias"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 4% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 9 completa: {actividad: 'Ausencia de basura', revision_visual_si: 'vacio', revision_visual_no: 'SI', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Ausencia de basura (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Ausencia de basura
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] seccion_dulces_checklist: Total sumado = 95%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_dulces
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_dulces actualizado a 95%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 0
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 1
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 2
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 4
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 5
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 6
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 7
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_no fila 8
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_produccion con datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_no = SI, revision_visual_si = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla seccion_area_produccion: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: seccion_area_produccion, Datos: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Mesas de trabajo limpias', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '15%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Mesas de trabajo limpias (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Mesas de trabajo limpias
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Mesas de trabajo limpias" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 15% de "Mesas de trabajo limpias"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 15% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Equipo dosificador de mangas limpio', revision_visual_si: 'vacio', revision_visual_no: 'SI', porcentaje: '20%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Equipo dosificador de mangas limpio (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Equipo dosificador de mangas limpio
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 20% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Cubetas limpias y en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '15%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Cubetas limpias y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Cubetas limpias y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Cubetas limpias y en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 15% de "Cubetas limpias y en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 15% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 3 completa: {actividad: 'Limpieza de pisos', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de pisos (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de pisos
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de pisos" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Limpieza de pisos"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 4 completa: {actividad: 'Limpieza de paredes', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Limpieza de paredes (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Limpieza de paredes
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Limpieza de paredes" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Limpieza de paredes"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 5 completa: {actividad: 'Tanques limpios', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tanques limpios (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tanques limpios
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tanques limpios" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Tanques limpios"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 6 completa: {actividad: 'Codificadora en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Codificadora en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Codificadora en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Codificadora en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Codificadora en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 7 completa: {actividad: 'Rejillas limpias', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '5%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Rejillas limpias (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Rejillas limpias
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Rejillas limpias" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 5% de "Rejillas limpias"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 5% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 8 completa: {actividad: 'Ausencia de basura', revision_visual_si: 'vacio', revision_visual_no: 'SI', porcentaje: '20%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Ausencia de basura (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Ausencia de basura
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: SI (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 20% (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] seccion_area_produccion: Total sumado = 60%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_produccion
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_produccion actualizado a 60%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 0
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 1
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 2
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 3
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 4
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 5
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla seccion_area_reposo con datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla seccion_area_reposo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: seccion_area_reposo, Datos: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Tarimas respetando limitaciones', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarimas respetando limitaciones (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tarimas respetando limitaciones
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tarimas respetando limitaciones" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Tarimas respetando limitaciones"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Tarimas en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarimas en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tarimas en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tarimas en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Tarimas en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Báscula en piso limpia', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '30%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Báscula en piso limpia (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Báscula en piso limpia
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Báscula en piso limpia" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 30% de "Báscula en piso limpia"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 30% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 3 completa: {actividad: 'Materia prima en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '10%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Materia prima en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Materia prima en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Materia prima en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 10% de "Materia prima en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 10% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 4 completa: {actividad: 'Piso limpio', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '20%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Piso limpio (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Piso limpio
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Piso limpio" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 20% de "Piso limpio"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 20% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 5 completa: {actividad: 'Ausencia de basura', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '20%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Ausencia de basura (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Ausencia de basura
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Ausencia de basura" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 20% de "Ausencia de basura"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 20% (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] seccion_area_reposo: Total sumado = 100%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_reposo
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_reposo actualizado a 100%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 0
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla estacion_limpieza con datos: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 1
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla estacion_limpieza con datos: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:390 [CHECKBOX-NEW] Click en revision_visual_si fila 2
+form-viewer.tsx:1537 [renderAdvancedTableField] Actualizando tabla estacion_limpieza con datos: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:416 [CHECKBOX-NEW] Actualizado: revision_visual_si = SI, revision_visual_no = vacio
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1583 [Guardar Tabla] Guardando datos de tabla estacion_limpieza: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1603 [PERCENTAGE-AUTO] ✅ Detectado campo de checklist, calculando porcentaje...
+form-viewer.tsx:1604 [PERCENTAGE-AUTO] Campo: estacion_limpieza, Datos: (3) [{…}, {…}, {…}]
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 0 completa: {actividad: 'Tarjas limpias', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '25%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Tarjas limpias (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Tarjas limpias
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Tarjas limpias" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 25% de "Tarjas limpias"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 25% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 1 completa: {actividad: 'Cepillero limpio y en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '35%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Cepillero limpio y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Cepillero limpio y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Cepillero limpio y en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 35% de "Cepillero limpio y en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 35% (tipo: string)
+form-viewer.tsx:1612 [PERCENTAGE-AUTO] Fila 2 completa: {actividad: 'Moldes limpios y en orden', revision_visual_si: 'SI', revision_visual_no: 'vacio', porcentaje: '40%'}
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo actividad: Moldes limpios y en orden (tipo: string)
+form-viewer.tsx:1633 [PERCENTAGE-AUTO] Procesando actividad: Moldes limpios y en orden
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_si: SI (tipo: string)
+form-viewer.tsx:1619 [PERCENTAGE-AUTO] ✅ Actividad "Moldes limpios y en orden" marcada como SI
+form-viewer.tsx:1628 [PERCENTAGE-AUTO] ✅ Sumando 40% de "Moldes limpios y en orden"
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo revision_visual_no: vacio (tipo: string)
+form-viewer.tsx:1615 [PERCENTAGE-AUTO] Revisando campo porcentaje: 40% (tipo: string)
+form-viewer.tsx:1641 [PERCENTAGE-AUTO] estacion_limpieza: Total sumado = 100%
+form-viewer.tsx:1657 [PERCENTAGE-AUTO] Campo objetivo: porcentaje_cumplimiento_limpieza
+form-viewer.tsx:1667 [PERCENTAGE-AUTO] ✅ Campo porcentaje_cumplimiento_limpieza actualizado a 100%
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+form-viewer.tsx:2339 [FormViewer] No hay tablas avanzadas, enviando formulario directamente...
+form-viewer.tsx:2340 [FormViewer] Datos del formulario antes del envío: {seccion_marmitas_checklist: Array(14), seccion_dulces_checklist: Array(10), seccion_area_produccion: Array(9), seccion_area_reposo: Array(6), estacion_limpieza: Array(3), …}
+form-viewer.tsx:2344 [FormViewer] Llamando onSubmit directamente con datos: {seccion_marmitas_checklist: Array(14), seccion_dulces_checklist: Array(10), seccion_area_produccion: Array(9), seccion_area_reposo: Array(6), estacion_limpieza: Array(3), …}
+form-capture.tsx:125 [FormCapture] Preparando formulario para envío: {seccion_marmitas_checklist: Array(14), seccion_dulces_checklist: Array(10), seccion_area_produccion: Array(9), seccion_area_reposo: Array(6), estacion_limpieza: Array(3), …}
+form-viewer.tsx:1152 [FOLIO] Campos de folio disponibles para entrada manual
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+advanced-table-viewer.tsx:152 AdvancedTableViewer useEffect - Valor recibido: (3) [{…}, {…}, {…}]
+advanced-table-viewer.tsx:197 Actualizando tableData con valor externo: (3) [{…}, {…}, {…}]
+form-capture.tsx:160 [FormCapture] Enviando formulario al servidor: {formTemplateId: 24, data: {…}, department: 'Calidad', id: 0, createdBy: 1, …}
+form-viewer.tsx:467 [FORM-VIEWER] Removiendo listeners...
