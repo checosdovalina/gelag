@@ -264,13 +264,13 @@ function generateFormHTML(
       formContent += `</div>`;
     });
   } else {
-    // Si no tiene estructura definida, mostrar los datos crudos
-    formContent += `
-      <div class="section">
-        <h3 class="section-title">Datos del formulario</h3>
-        <pre>${JSON.stringify(entry.data, null, 2)}</pre>
-      </div>
-    `;
+    // Verificar si es un formulario de Liberación Preoperativa
+    if (template.name?.includes('LIBERACION PREOPERATIVA') || template.name?.includes('CA-RE-03-01')) {
+      formContent += generateLiberacionPreoperativaHTML(entry.data);
+    } else {
+      // Para otros formularios, mostrar estructura básica
+      formContent += generateBasicFormHTML(entry.data);
+    }
   }
   
   // Generar sección de firma si existe
@@ -440,4 +440,176 @@ function getStatusLabel(status: string): string {
     default:
       return status;
   }
+}
+
+// Función para generar HTML específico para formularios de Liberación Preoperativa
+function generateLiberacionPreoperativaHTML(data: any): string {
+  let html = '';
+  
+  // Sección de Información General
+  html += `
+    <div class="section">
+      <h3 class="section-title">Información General</h3>
+      <div class="field">
+        <div class="field-label">Fecha:</div>
+        <div class="field-value">${data.fecha || 'No especificado'}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Folio:</div>
+        <div class="field-value">${data.folio || 'No especificado'}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Folio de Producción:</div>
+        <div class="field-value">${data.folio_produccion || 'No especificado'}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Departamento Emisor:</div>
+        <div class="field-value">${data.departamento_emisor || 'No especificado'}</div>
+      </div>
+    </div>
+  `;
+
+  // Sección de Resumen de Cumplimiento
+  html += `
+    <div class="section">
+      <h3 class="section-title">Resumen de Cumplimiento</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sección</th>
+            <th>Porcentaje de Cumplimiento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Marmitas</td>
+            <td>${data.porcentaje_cumplimiento_marmitas || '0%'}</td>
+          </tr>
+          <tr>
+            <td>Dulces</td>
+            <td>${data.porcentaje_cumplimiento_dulces || '0%'}</td>
+          </tr>
+          <tr>
+            <td>Producción</td>
+            <td>${data.porcentaje_cumplimiento_produccion || '0%'}</td>
+          </tr>
+          <tr>
+            <td>Reposo</td>
+            <td>${data.porcentaje_cumplimiento_reposo || '0%'}</td>
+          </tr>
+          <tr>
+            <td>Limpieza</td>
+            <td>${data.porcentaje_cumplimiento_limpieza || '0%'}</td>
+          </tr>
+          <tr style="font-weight: bold; background-color: #f9f9f9;">
+            <td>TOTAL</td>
+            <td>${data.porcentaje_cumplimiento_total || '0%'}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  // Sección de Marmitas
+  if (data.seccion_marmitas_checklist && Array.isArray(data.seccion_marmitas_checklist)) {
+    html += generateChecklistSection('Sección Marmitas', data.seccion_marmitas_checklist);
+  }
+
+  // Sección de Dulces
+  if (data.seccion_dulces_checklist && Array.isArray(data.seccion_dulces_checklist)) {
+    html += generateChecklistSection('Sección Dulces', data.seccion_dulces_checklist);
+  }
+
+  // Sección de Producción
+  if (data.seccion_area_produccion && Array.isArray(data.seccion_area_produccion)) {
+    html += generateChecklistSection('Área de Producción', data.seccion_area_produccion);
+  }
+
+  // Sección de Reposo
+  if (data.seccion_area_reposo && Array.isArray(data.seccion_area_reposo)) {
+    html += generateChecklistSection('Área de Reposo', data.seccion_area_reposo);
+  }
+
+  // Estación de Limpieza
+  if (data.estacion_limpieza && Array.isArray(data.estacion_limpieza)) {
+    html += generateChecklistSection('Estación de Limpieza', data.estacion_limpieza);
+  }
+
+  return html;
+}
+
+// Función para generar una sección de checklist
+function generateChecklistSection(title: string, items: any[]): string {
+  let html = `
+    <div class="section">
+      <h3 class="section-title">${title}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th>Porcentaje</th>
+            <th>Cumple (SI)</th>
+            <th>No Cumple (NO)</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  items.forEach(item => {
+    const cumpleSi = item.revision_visual_si === 'SI' ? '✓' : '';
+    const cumpleNo = item.revision_visual_no === 'SI' ? '✓' : '';
+    
+    html += `
+      <tr>
+        <td>${item.actividad || 'No especificado'}</td>
+        <td>${item.porcentaje || '0%'}</td>
+        <td style="text-align: center;">${cumpleSi}</td>
+        <td style="text-align: center;">${cumpleNo}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  return html;
+}
+
+// Función para generar HTML básico para otros formularios
+function generateBasicFormHTML(data: any): string {
+  let html = `
+    <div class="section">
+      <h3 class="section-title">Datos del Formulario</h3>
+  `;
+
+  // Recorrer los datos y mostrarlos de manera organizada
+  Object.keys(data).forEach(key => {
+    const value = data[key];
+    let displayValue = '';
+
+    if (value === null || value === undefined) {
+      displayValue = 'No especificado';
+    } else if (typeof value === 'object') {
+      if (Array.isArray(value)) {
+        displayValue = `${value.length} elementos`;
+      } else {
+        displayValue = JSON.stringify(value, null, 2);
+      }
+    } else {
+      displayValue = value.toString();
+    }
+
+    html += `
+      <div class="field">
+        <div class="field-label">${key.replace(/_/g, ' ').toUpperCase()}:</div>
+        <div class="field-value">${displayValue}</div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  return html;
 }
