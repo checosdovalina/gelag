@@ -349,15 +349,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       
       // Mapear field IDs a los campos de porcentaje correspondientes
       let percentageFieldId = '';
-      if (fieldId.includes('marmitas')) {
+      if (fieldId.includes('marmitas') || fieldId === 'seccion_marmitas') {
         percentageFieldId = 'porcentaje_cumplimiento_marmitas';
-      } else if (fieldId.includes('dulces')) {
+      } else if (fieldId.includes('dulces') || fieldId === 'seccion_dulces') {
         percentageFieldId = 'porcentaje_cumplimiento_dulces';
-      } else if (fieldId.includes('produccion')) {
+      } else if (fieldId.includes('produccion') || fieldId === 'seccion_area_produccion') {
         percentageFieldId = 'porcentaje_cumplimiento_produccion';
-      } else if (fieldId.includes('reposo')) {
+      } else if (fieldId.includes('reposo') || fieldId === 'seccion_area_reposo') {
         percentageFieldId = 'porcentaje_cumplimiento_reposo';
-      } else if (fieldId.includes('limpieza')) {
+      } else if (fieldId.includes('limpieza') || fieldId === 'estacion_limpieza') {
         percentageFieldId = 'porcentaje_cumplimiento_limpieza';
       }
       

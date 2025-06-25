@@ -1616,7 +1616,12 @@ export default function FormViewer({
                           field.id.includes('reposo') ||
                           field.id.includes('area_reposo') ||
                           field.id.includes('limpieza') ||
-                          field.id.includes('estacion_limpieza')
+                          field.id.includes('estacion_limpieza') ||
+                          field.id === 'seccion_marmitas' ||
+                          field.id === 'seccion_dulces' ||
+                          field.id === 'seccion_area_produccion' ||
+                          field.id === 'seccion_area_reposo' ||
+                          field.id === 'estacion_limpieza'
                         );
                         
                         if (isLiberacionTable) {
@@ -1662,15 +1667,15 @@ export default function FormViewer({
                           
                           // Mapear al campo de porcentaje correspondiente
                           let percentageFieldName = '';
-                          if (field.id.includes('marmitas')) {
+                          if (field.id.includes('marmitas') || field.id === 'seccion_marmitas') {
                             percentageFieldName = 'porcentaje_cumplimiento_marmitas';
-                          } else if (field.id.includes('dulces')) {
+                          } else if (field.id.includes('dulces') || field.id === 'seccion_dulces') {
                             percentageFieldName = 'porcentaje_cumplimiento_dulces';
-                          } else if (field.id.includes('produccion') || field.id.includes('area_produccion')) {
+                          } else if (field.id.includes('produccion') || field.id.includes('area_produccion') || field.id === 'seccion_area_produccion') {
                             percentageFieldName = 'porcentaje_cumplimiento_produccion';
-                          } else if (field.id.includes('reposo') || field.id.includes('area_reposo')) {
+                          } else if (field.id.includes('reposo') || field.id.includes('area_reposo') || field.id === 'seccion_area_reposo') {
                             percentageFieldName = 'porcentaje_cumplimiento_reposo';
-                          } else if (field.id.includes('limpieza') || field.id.includes('estacion_limpieza')) {
+                          } else if (field.id.includes('limpieza') || field.id.includes('estacion_limpieza') || field.id === 'estacion_limpieza') {
                             percentageFieldName = 'porcentaje_cumplimiento_limpieza';
                           }
                           

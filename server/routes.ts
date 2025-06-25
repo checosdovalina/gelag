@@ -1143,8 +1143,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Mapeo de secciones a campos de porcentaje
         const sectionMapping: { [key: string]: string } = {
-          'seccion_marmitas_checklist': 'porcentaje_cumplimiento_marmitas',
-          'seccion_dulces_checklist': 'porcentaje_cumplimiento_dulces',
+          'seccion_marmitas': 'porcentaje_cumplimiento_marmitas',
+          'seccion_dulces': 'porcentaje_cumplimiento_dulces',
           'seccion_area_produccion': 'porcentaje_cumplimiento_produccion',
           'seccion_area_reposo': 'porcentaje_cumplimiento_reposo',
           'estacion_limpieza': 'porcentaje_cumplimiento_limpieza'
