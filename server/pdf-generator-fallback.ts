@@ -644,7 +644,6 @@ function generatePDFContent(
   // Verificar si es un formulario de Liberación Preoperativa
   if (template.name?.includes('LIBERACION PREOPERATIVA') || template.name?.includes('CA-RE-03-01')) {
     generateLiberacionPreoperativaContentPDF(doc, entry);
-    doc.end();
     return;
   }
 
