@@ -279,9 +279,20 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     doc.y = muestreoTableY + 15 + (Math.min(data.muestreo_table.length, 3) * 15) + 10;
   }
   
+  // CREAR NUEVA PÁGINA PARA REVISIÓN Y CAMPOS ADICIONALES
+  doc.addPage();
+  
+  // Título para la nueva página
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000')
+    .text('REVISIÓN Y DATOS ADICIONALES', 50, 50, { 
+      align: 'center',
+      width: doc.page.width - 100
+    });
+  
+  doc.y = 80;
+  
   // Tabla de Revisión
   if (data.revision_table && Array.isArray(data.revision_table) && data.revision_table.length > 0) {
-    doc.moveDown(1);
     doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
       .text('REVISIÓN', 50, doc.y, { 
         align: 'center',
@@ -334,8 +345,56 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
       });
     });
     
-    doc.y = revisionTableY + 15 + (Math.min(data.revision_table.length, 6) * 15) + 10;
+    doc.y = revisionTableY + 15 + (Math.min(data.revision_table.length, 6) * 15) + 20;
   }
+  
+  // TODOS LOS CAMPOS ADICIONALES DEL FORMULARIO
+  const leftCol = 50;
+  const rightCol = doc.page.width / 2;
+  
+  // Campos adicionales que aparecen en el formulario
+  const additionalFields = [
+    { key: 'folio_liberacion', label: 'Folio Liberación' },
+    { key: 'folio_baja_mp', label: 'Folio Baja MP' },
+    { key: 'folio_baja_empaque', label: 'Folio Baja Empaque' },
+    { key: 'total_prod_terminado', label: 'Total Producto Terminado' },
+    { key: 'hora_inicio', label: 'Hora Inicio' },
+    { key: 'hora_fin', label: 'Hora Fin' },
+    { key: 'caducidad', label: 'Caducidad' },
+    { key: 'observaciones', label: 'Observaciones' }
+  ];
+  
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000')
+    .text('CAMPOS ADICIONALES', 50, doc.y, { 
+      align: 'center',
+      width: doc.page.width - 100
+    });
+  
+  doc.moveDown(0.5);
+  
+  // Mostrar campos adicionales en dos columnas
+  additionalFields.forEach((field, index) => {
+    const value = data[field.key] || '';
+    const isLeft = index % 2 === 0;
+    const x = isLeft ? leftCol : rightCol;
+    
+    if (isLeft) {
+      doc.moveDown(0.3);
+    }
+    
+    const currentY = doc.y;
+    
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
+    doc.text(`${field.label}:`, x, currentY);
+    
+    doc.fontSize(9).font('Helvetica').fillColor('#000000');
+    const displayValue = field.key === 'observaciones' ? String(value).substring(0, 100) : String(value);
+    doc.text(displayValue, x + 100, currentY, { width: 180 });
+    
+    if (!isLeft) {
+      doc.y = currentY + 15;
+    }
+  });
   
   // Material de Empaque
   if (data.empaque_table && Array.isArray(data.empaque_table) && data.empaque_table.length > 0) {
