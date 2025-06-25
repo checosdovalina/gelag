@@ -334,10 +334,10 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
     try {
       console.log(`[PERCENTAGE] Calculando para fieldId: ${fieldId}, datos:`, tableData);
       
-      // Contar total de elementos y elementos marcados como "SI" (cualquier case)
+      // Contar total de elementos y elementos marcados como "SI"
       const totalItems = tableData.length;
       const siItems = tableData.filter(row => {
-        const hasSi = row.revision_visual_si === 'SI' || row.revision_visual_si === 'si';
+        const hasSi = row.revision_visual_si === 'si';
         console.log(`[PERCENTAGE] Fila: ${row.actividad}, SI: ${row.revision_visual_si}, cuenta: ${hasSi}`);
         return hasSi;
       }).length;
@@ -349,15 +349,15 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
       
       // Mapear field IDs a los campos de porcentaje correspondientes
       let percentageFieldId = '';
-      if (fieldId.includes('marmitas') || fieldId === 'seccion_marmitas') {
+      if (fieldId.includes('marmitas')) {
         percentageFieldId = 'porcentaje_cumplimiento_marmitas';
-      } else if (fieldId.includes('dulces') || fieldId === 'seccion_dulces') {
+      } else if (fieldId.includes('dulces')) {
         percentageFieldId = 'porcentaje_cumplimiento_dulces';
-      } else if (fieldId.includes('produccion') || fieldId === 'seccion_area_produccion') {
+      } else if (fieldId.includes('produccion')) {
         percentageFieldId = 'porcentaje_cumplimiento_produccion';
-      } else if (fieldId.includes('reposo') || fieldId === 'seccion_area_reposo') {
+      } else if (fieldId.includes('reposo')) {
         percentageFieldId = 'porcentaje_cumplimiento_reposo';
-      } else if (fieldId.includes('limpieza') || fieldId === 'estacion_limpieza') {
+      } else if (fieldId.includes('limpieza')) {
         percentageFieldId = 'porcentaje_cumplimiento_limpieza';
       }
       
@@ -368,12 +368,6 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
           detail: { fieldId: percentageFieldId, value: `${percentage}%` }
         });
         window.dispatchEvent(event);
-        
-        // También disparar recalculo del total
-        setTimeout(() => {
-          const totalEvent = new CustomEvent('recalculateTotal');
-          window.dispatchEvent(totalEvent);
-        }, 300);
       }
       
     } catch (error) {

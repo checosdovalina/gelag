@@ -423,8 +423,8 @@ export default function FormViewer({
         form.reset(currentValues);
         
         // Trigger percentage total update for Liberación Preoperativa forms
-        if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
-          setTimeout(() => updateTotalPercentage(), 800);
+        if (formTemplate.title?.includes('LIBERACION PREOPERATIVA')) {
+          setTimeout(() => updateTotalPercentage(), 200);
         }
       } catch (error) {
         console.error(`[FORM-VIEWER] Error actualizando campo ${fieldId}:`, error);
@@ -472,58 +472,38 @@ export default function FormViewer({
   
   // Función para calcular porcentaje total de Liberación Preoperativa
   const updateTotalPercentage = () => {
-    // Pequeño delay para asegurar que los valores estén actualizados
-    setTimeout(() => {
-      const formValues = form.getValues();
+    const formValues = form.getValues();
+    
+    // Verificar si es un formulario de Liberación Preoperativa
+    if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
+      const sectionPercentages = [
+        { field: 'porcentaje_cumplimiento_marmitas', weight: 50 },
+        { field: 'porcentaje_cumplimiento_dulces', weight: 20 },
+        { field: 'porcentaje_cumplimiento_produccion', weight: 15 },
+        { field: 'porcentaje_cumplimiento_reposo', weight: 10 },
+        { field: 'porcentaje_cumplimiento_limpieza', weight: 5 }
+      ];
       
-      // Verificar si es un formulario de Liberación Preoperativa
-      if (formTemplate.name?.includes('LIBERACION PREOPERATIVA')) {
-        console.log('[TOTAL-CALC] Calculando porcentaje total basado en secciones...');
-        console.log('[TOTAL-CALC] Valores actuales del formulario:', formValues);
-        
-        const sectionFields = [
-          'porcentaje_cumplimiento_marmitas',
-          'porcentaje_cumplimiento_dulces', 
-          'porcentaje_cumplimiento_produccion',
-          'porcentaje_cumplimiento_reposo',
-          'porcentaje_cumplimiento_limpieza'
-        ];
-        
-        let totalSum = 0;
-        let validSections = 0;
-        
-        sectionFields.forEach(field => {
-          const percentageValue = formValues[field];
-          console.log(`[TOTAL-CALC] Revisando ${field}: "${percentageValue}"`);
-          if (percentageValue && percentageValue !== '0%' && percentageValue !== '' && percentageValue !== 'undefined%') {
-            const numericValue = parseFloat(percentageValue.replace('%', ''));
-            if (!isNaN(numericValue) && numericValue > 0) {
-              totalSum += numericValue;
-              validSections++;
-              console.log(`[TOTAL-CALC] ✅ ${field}: ${numericValue}% (sumado)`);
-            } else {
-              console.log(`[TOTAL-CALC] ❌ ${field}: valor inválido "${percentageValue}"`);
-            }
-          } else {
-            console.log(`[TOTAL-CALC] ⚪ ${field}: vacío o 0%`);
+      let totalWeightedPercentage = 0;
+      let completedSections = 0;
+      
+      sectionPercentages.forEach(({ field, weight }) => {
+        const percentageValue = formValues[field];
+        if (percentageValue && percentageValue !== '0%') {
+          const numericValue = parseFloat(percentageValue.replace('%', ''));
+          if (!isNaN(numericValue)) {
+            totalWeightedPercentage += (numericValue * weight) / 100;
+            completedSections++;
           }
-        });
-        
-        // Calcular promedio de las secciones completadas
-        const totalPercentage = validSections > 0 ? Math.round(totalSum / validSections) : 0;
-        
-        console.log(`[TOTAL-CALC] Resultado final: (${totalSum} / ${validSections}) = ${totalPercentage}%`);
-        
-        // Actualizar el campo total
-        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`, {
-          shouldDirty: true,
-          shouldTouch: true,
-          shouldValidate: true
-        });
-        
-        console.log(`[TOTAL-CALC] ✅ Porcentaje total actualizado: ${totalPercentage}%`);
+        }
+      });
+      
+      // Solo calcular total si hay al menos una sección completada
+      if (completedSections > 0) {
+        const totalPercentage = Math.round(totalWeightedPercentage);
+        form.setValue('porcentaje_cumplimiento_total', `${totalPercentage}%`);
       }
-    }, 200);
+    }
   };
 
   // Escuchar cambios en los campos de porcentaje para actualizar el total
@@ -1616,12 +1596,7 @@ export default function FormViewer({
                           field.id.includes('reposo') ||
                           field.id.includes('area_reposo') ||
                           field.id.includes('limpieza') ||
-                          field.id.includes('estacion_limpieza') ||
-                          field.id === 'seccion_marmitas' ||
-                          field.id === 'seccion_dulces' ||
-                          field.id === 'seccion_area_produccion' ||
-                          field.id === 'seccion_area_reposo' ||
-                          field.id === 'estacion_limpieza'
+                          field.id.includes('estacion_limpieza')
                         );
                         
                         if (isLiberacionTable) {
@@ -1667,15 +1642,15 @@ export default function FormViewer({
                           
                           // Mapear al campo de porcentaje correspondiente
                           let percentageFieldName = '';
-                          if (field.id.includes('marmitas') || field.id === 'seccion_marmitas') {
+                          if (field.id.includes('marmitas')) {
                             percentageFieldName = 'porcentaje_cumplimiento_marmitas';
-                          } else if (field.id.includes('dulces') || field.id === 'seccion_dulces') {
+                          } else if (field.id.includes('dulces')) {
                             percentageFieldName = 'porcentaje_cumplimiento_dulces';
-                          } else if (field.id.includes('produccion') || field.id.includes('area_produccion') || field.id === 'seccion_area_produccion') {
+                          } else if (field.id.includes('produccion') || field.id.includes('area_produccion')) {
                             percentageFieldName = 'porcentaje_cumplimiento_produccion';
-                          } else if (field.id.includes('reposo') || field.id.includes('area_reposo') || field.id === 'seccion_area_reposo') {
+                          } else if (field.id.includes('reposo') || field.id.includes('area_reposo')) {
                             percentageFieldName = 'porcentaje_cumplimiento_reposo';
-                          } else if (field.id.includes('limpieza') || field.id.includes('estacion_limpieza') || field.id === 'estacion_limpieza') {
+                          } else if (field.id.includes('limpieza') || field.id.includes('estacion_limpieza')) {
                             percentageFieldName = 'porcentaje_cumplimiento_limpieza';
                           }
                           
@@ -1690,12 +1665,6 @@ export default function FormViewer({
                               shouldValidate: true
                             });
                             console.log(`[PERCENTAGE-AUTO] ✅ Campo ${percentageFieldName} actualizado a ${percentageValue}`);
-                            
-                            // Disparar cálculo del porcentaje total después de actualizar cualquier sección
-                            setTimeout(() => {
-                              console.log('[TRIGGER-TOTAL] Disparando cálculo de porcentaje total...');
-                              updateTotalPercentage();
-                            }, 1500);
                           }
                         }
                         
