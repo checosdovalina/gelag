@@ -189,6 +189,7 @@ export default function ProductionForm({
     initialData.status || ProductionFormStatus.DRAFT
   );
   const [autoCalculatedIngredients, setAutoCalculatedIngredients] = useState<any[]>([]);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
   
   // Función para cargar ingredientes automáticamente basados en producto y litros
   const loadProductRecipe = async (productId: string, liters: number) => {
@@ -246,6 +247,8 @@ export default function ProductionForm({
     // Auto-guardar antes de cambiar de pestaña
     console.log("Cambiando de pestaña, auto-guardando datos...");
     
+    setIsAutoSaving(true);
+    
     // Mostrar un toast sutil de auto-guardado
     toast({
       title: "Guardando automáticamente...",
@@ -258,7 +261,8 @@ export default function ProductionForm({
     // Pequeño delay para asegurar que el guardado se complete
     setTimeout(() => {
       setActiveTab(newTab);
-    }, 100);
+      setIsAutoSaving(false);
+    }, 1000);
   };
   
   // Determinar rol del usuario actual
@@ -331,7 +335,9 @@ export default function ProductionForm({
     if (['startTime', 'endTime', 'responsible', 'lotNumber', 'finalBrix', 'yield', 'cmConsistometer'].includes(field)) {
       setTimeout(() => {
         console.log(`Auto-guardando por cambio en ${field}...`);
+        setIsAutoSaving(true);
         handleSave();
+        setTimeout(() => setIsAutoSaving(false), 1000);
       }, 2000); // Guardar 2 segundos después del cambio
     }
   };
@@ -466,9 +472,15 @@ export default function ProductionForm({
           </div>
         </div>
         
-        <div className="flex gap-2">
-          <Button onClick={handleSave} disabled={readOnly}>
-            Guardar
+        <div className="flex gap-2 items-center">
+          {isAutoSaving && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Guardando...</span>
+            </div>
+          )}
+          <Button onClick={handleSave} disabled={readOnly || isAutoSaving}>
+            {isAutoSaving ? "Guardando..." : "Guardar"}
           </Button>
           
           {/* Botones de cambio de estado según el rol del usuario */}
