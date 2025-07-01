@@ -267,9 +267,9 @@ export default function ProductionForm({
     return section.allowedRoles.includes(currentUserRole);
   };
   
-  // Actualizar materias primas al cambiar producto o litros
+  // Actualizar materias primas solo al cambiar producto o litros (no sobrescribir datos existentes)
   useEffect(() => {
-    if (formData.productId && formData.liters) {
+    if (formData.productId && formData.liters && (!formData.ingredients || formData.ingredients.length === 0)) {
       const selectedProduct = PRODUCTS.find(p => p.id === formData.productId);
       if (selectedProduct) {
         const updatedIngredients = selectedProduct.ingredients.map(ingredient => ({
@@ -288,19 +288,24 @@ export default function ProductionForm({
   
   // Manejar cambios en los campos
   const handleChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log(`Campo actualizado: ${field} =`, value);
+    
+    setFormData((prev: any) => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      console.log("Datos actualizados:", newData);
+      return newData;
+    });
     
     // Auto-cambio de estado basado en el workflow
     autoUpdateStatus(field, value);
     
-    // Si se cambió el producto o los litros, cargar receta automáticamente
+    // Si se cambió el producto o los litros, cargar receta automáticamente solo si no hay ingredientes
     if (field === "productId" || field === "liters") {
       const updatedData = { ...formData, [field]: value };
-      if (updatedData.productId && updatedData.liters && updatedData.liters > 0) {
-        // Usar setTimeout para asegurar que el estado se actualice antes de cargar la receta
+      if (updatedData.productId && updatedData.liters && updatedData.liters > 0 && (!formData.ingredients || formData.ingredients.length === 0)) {
         setTimeout(() => {
           loadProductRecipe(updatedData.productId, updatedData.liters);
         }, 100);

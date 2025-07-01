@@ -41,27 +41,28 @@ export default function ProductionFormPage() {
 
   // Cargar datos si estamos editando un formulario existente
   useEffect(() => {
-    if (form && match && !isLoadingForm) {
-      // Log temporal para verificar qué datos llegan del servidor
+    if (form && match && !isLoadingForm && !hasLoadedInitialData) {
+      // Solo cargar datos del servidor una vez al inicio
       console.log("Datos del servidor:", {
         responsible: form.responsible,
         lotNumber: form.lotNumber,
-        folio: form.folio
+        folio: form.folio,
+        startTime: form.startTime
       });
       
-      // SIEMPRE cargar los datos más recientes del servidor cuando cambie el usuario
       setFormData(form);
       setIsNewForm(false);
       setHasLoadedInitialData(true);
-    } else if (user && !match) {
+    } else if (user && !match && !hasLoadedInitialData) {
       // Si es un nuevo formulario, agregar el nombre del usuario actual como responsable
       setFormData((prevData: any) => ({
         ...prevData,
         responsible: user.name || user.username
       }));
       setIsNewForm(true);
+      setHasLoadedInitialData(true);
     }
-  }, [form, match, user, isLoadingForm]);
+  }, [form, match, user, isLoadingForm, hasLoadedInitialData]);
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
@@ -87,14 +88,9 @@ export default function ProductionFormPage() {
         // Actualizar formulario existente
         if (match && params?.id) {
           const formId = parseInt(params.id);
-          await updateFormMutation.mutateAsync(data);
-          // Actualizar el estado local con los datos guardados
-          setFormData(data);
-          
-          toast({
-            title: "Formulario actualizado",
-            description: "Los cambios han sido guardados correctamente"
-          });
+          const updatedForm = await updateFormMutation.mutateAsync(data);
+          // Actualizar el estado local con los datos guardados (incluyendo campos calculados del servidor)
+          setFormData(updatedForm);
         }
       }
     } catch (error) {
