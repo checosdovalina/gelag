@@ -208,12 +208,17 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     // Campos de seguimiento de proceso
     if (req.body.startTime !== undefined) {
+      console.log("=== STARTTIME DEBUG ===");
+      console.log("Valor recibido:", req.body.startTime);
+      console.log("Tipo:", typeof req.body.startTime);
+      console.log("Es string vacía:", req.body.startTime === "");
       // No convertir string vacía a null para campos de tiempo
-      updateFields.start_time = req.body.startTime === "" ? "" : req.body.startTime;
+      updateFields.startTime = req.body.startTime === "" ? "" : req.body.startTime;
+      console.log("Valor a guardar:", updateFields.startTime);
     }
     if (req.body.endTime !== undefined) {
       // No convertir string vacía a null para campos de tiempo
-      updateFields.end_time = req.body.endTime === "" ? "" : req.body.endTime;
+      updateFields.endTime = req.body.endTime === "" ? "" : req.body.endTime;
     }
     if (req.body.temperature !== undefined) updateFields.temperature = req.body.temperature;
     if (req.body.pressure !== undefined) updateFields.pressure = req.body.pressure;
