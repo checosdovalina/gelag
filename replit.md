@@ -127,6 +127,16 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 1, 2025 - Production Form Time Field Persistence Fix & Quality Verification Table Design
+- **RESOLVED**: Fixed time field persistence issue in production forms where startTime/endTime were not saving correctly
+- **Root cause**: Frontend useEffect was overwriting user input with null values from server responses
+- **Solution implemented**: Modified state synchronization to preserve local time values when server returns null/empty
+- **Data flow corrected**: Fixed incorrect parameter passing between page and mutation hook
+- **Quality verification redesign**: Converted quality verification view from overlapping grid layout to clean table format
+- **Table structure**: New table displays all quality metrics (Hora, Brix, Temp, Textura, Color, Viscosidad, Olor, Sabor, Material Extraño, Estado) in organized rows
+- **Data filtering**: Table only shows rows with actual data, preventing empty row display
+- **Responsive design**: Added horizontal scroll for table on smaller screens
+
 ### June 25, 2025 - Complete Total Percentage Calculation System & PDF Export Fix
 - **Implemented automatic total percentage calculation** for Liberación Preoperativa forms
 - **Multi-field detection**: Enhanced template detection to work with formTemplate.name, formTitle, and structure properties

@@ -153,10 +153,6 @@ export function useProductionForm(id?: number) {
     mutationFn: async (data: Partial<ProductionForm>) => {
       if (!id) throw new Error("ID de formulario no proporcionado");
       
-      console.log("=== HOOK CORRECTO - DATOS RECIBIDOS ===");
-      console.log("data.startTime en hook correcto:", data.startTime);
-      console.log("data.endTime en hook correcto:", data.endTime);
-      
       // Limpiar datos para evitar problemas con timestamps
       const {
         id: dataId,
@@ -166,10 +162,6 @@ export function useProductionForm(id?: number) {
         createdBy,
         ...cleanData
       } = data as any;
-      
-      console.log("=== DESPUÉS DEL CLEANING ===");
-      console.log("cleanData.startTime:", cleanData.startTime);
-      console.log("cleanData.endTime:", cleanData.endTime);
       
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, cleanData);
       return await res.json();

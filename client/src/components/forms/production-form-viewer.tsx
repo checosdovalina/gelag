@@ -220,74 +220,101 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
       )}
 
       {/* Verificación de Calidad */}
-      {(formData.brix || formData.qualityTemp || formData.texture || formData.color || formData.viscosity || formData.smell || formData.taste) && (
+      {(formData.qualityTimes || formData.brix || formData.qualityTemp || formData.texture || formData.color || formData.viscosity || formData.smell || formData.taste || formData.foreignMaterial || formData.statusCheck) && (
         <Card>
           <CardHeader>
             <CardTitle>Verificación de Calidad</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {formData.brix && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Brix</p>
-                  <p className="text-lg">{formData.brix}</p>
-                </div>
-              )}
-              {formData.qualityTemp && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Temperatura</p>
-                  <p className="text-lg">{formData.qualityTemp}</p>
-                </div>
-              )}
-              {formData.texture && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Textura</p>
-                  <p className="text-lg">{formData.texture}</p>
-                </div>
-              )}
-              {formData.color && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Color</p>
-                  <p className="text-lg">{formData.color}</p>
-                </div>
-              )}
-              {formData.viscosity && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Viscosidad</p>
-                  <p className="text-lg">{formData.viscosity}</p>
-                </div>
-              )}
-              {formData.smell && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Olor</p>
-                  <p className="text-lg">{formData.smell}</p>
-                </div>
-              )}
-              {formData.taste && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Sabor</p>
-                  <p className="text-lg">{formData.taste}</p>
-                </div>
-              )}
-              {formData.foreignMaterial && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Material Extraño</p>
-                  <p className="text-lg">{formData.foreignMaterial}</p>
-                </div>
-              )}
-              {formData.statusCheck && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Estado</p>
-                  <p className="text-lg">{formData.statusCheck}</p>
-                </div>
-              )}
-              {formData.qualityNotes && (
-                <div className="col-span-full">
-                  <p className="text-sm font-medium text-muted-foreground">Observaciones de Calidad</p>
-                  <p className="text-lg">{formData.qualityNotes}</p>
-                </div>
-              )}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Hora</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Brix</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Temp. (°C)</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Textura</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Color</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Viscosidad</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Olor</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Sabor</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Mat. Extraño</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: Math.max(
+                    formData.qualityTimes?.length || 0,
+                    formData.brix?.length || 0,
+                    formData.qualityTemp?.length || 0,
+                    formData.texture?.length || 0,
+                    formData.color?.length || 0,
+                    formData.viscosity?.length || 0,
+                    formData.smell?.length || 0,
+                    formData.taste?.length || 0,
+                    formData.foreignMaterial?.length || 0,
+                    formData.statusCheck?.length || 0
+                  ) }).map((_, index) => {
+                    // Solo mostrar filas que tengan al menos un dato
+                    const hasData = (formData.qualityTimes && formData.qualityTimes[index] && formData.qualityTimes[index] !== '') ||
+                                   (formData.brix && formData.brix[index] && formData.brix[index] !== '') ||
+                                   (formData.qualityTemp && formData.qualityTemp[index] && formData.qualityTemp[index] !== '') ||
+                                   (formData.texture && formData.texture[index] && formData.texture[index] !== '') ||
+                                   (formData.color && formData.color[index] && formData.color[index] !== '') ||
+                                   (formData.viscosity && formData.viscosity[index] && formData.viscosity[index] !== '') ||
+                                   (formData.smell && formData.smell[index] && formData.smell[index] !== '') ||
+                                   (formData.taste && formData.taste[index] && formData.taste[index] !== '') ||
+                                   (formData.foreignMaterial && formData.foreignMaterial[index] && formData.foreignMaterial[index] !== '') ||
+                                   (formData.statusCheck && formData.statusCheck[index] && formData.statusCheck[index] !== '');
+                    
+                    if (!hasData) return null;
+                    
+                    return (
+                      <tr key={index}>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.qualityTimes?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.brix?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.qualityTemp?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.texture?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.color?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.viscosity?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.smell?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.taste?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.foreignMaterial?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-3 py-2 text-sm">
+                          {formData.statusCheck?.[index] || ''}
+                        </td>
+                      </tr>
+                    );
+                  }).filter(Boolean)}
+                </tbody>
+              </table>
             </div>
+            
+            {/* Notas de calidad */}
+            {formData.qualityNotes && (
+              <div className="mt-6">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Observaciones de Calidad</p>
+                <p className="text-sm bg-gray-50 p-3 rounded border">{formData.qualityNotes}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

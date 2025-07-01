@@ -189,10 +189,6 @@ export default function ProductionForm({
   // Efecto para sincronizar datos cuando el backend los actualiza
   useEffect(() => {
     if (initialData) {
-      console.log("Sincronizando datos del servidor:", {
-        startTime: initialData.startTime,
-        endTime: initialData.endTime
-      });
       
       setFormData((prevData: any) => {
         // Solo sobrescribir campos de tiempo si NO son null/undefined en el servidor
