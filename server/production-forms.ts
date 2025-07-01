@@ -259,6 +259,10 @@ export async function updateProductionForm(req: Request, res: Response) {
       updateFields.lastUpdatedBy = req.user.id;
     }
     
+    console.log("=== DATOS RECIBIDOS ===");
+    console.log("req.body completo:", JSON.stringify(req.body, null, 2));
+    console.log("req.body.startTime:", req.body.startTime);
+    console.log("req.body.endTime:", req.body.endTime);
     console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
     
     // Usar actualización directa con campos mapeados correctamente
