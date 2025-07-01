@@ -193,16 +193,25 @@ export default function ProductionForm({
         startTime: initialData.startTime,
         endTime: initialData.endTime
       });
-      setFormData({
-        ...initialData,
-        startTime: initialData.startTime || "",
-        endTime: initialData.endTime || "",
-        hourTracking: initialData.hourTracking || Array(7).fill(""),
-        temperature: initialData.temperature || Array(7).fill(""),
-        pressure: initialData.pressure || Array(7).fill(""),
+      
+      setFormData((prevData: any) => {
+        // Solo sobrescribir campos de tiempo si NO son null/undefined en el servidor
+        // Y si hay un valor real del servidor (no vacío)
+        const shouldUpdateStartTime = initialData.startTime !== null && initialData.startTime !== undefined && initialData.startTime !== "";
+        const shouldUpdateEndTime = initialData.endTime !== null && initialData.endTime !== undefined && initialData.endTime !== "";
+        
+        return {
+          ...initialData,
+          // Preservar valores locales de tiempo si el servidor no tiene valores válidos
+          startTime: shouldUpdateStartTime ? initialData.startTime : (prevData.startTime || ""),
+          endTime: shouldUpdateEndTime ? initialData.endTime : (prevData.endTime || ""),
+          hourTracking: initialData.hourTracking || Array(7).fill(""),
+          temperature: initialData.temperature || Array(7).fill(""),
+          pressure: initialData.pressure || Array(7).fill(""),
+        };
       });
     }
-  }, [initialData?.startTime, initialData?.endTime, initialData?.id]);
+  }, [initialData?.id]); // Solo reaccionar al cambio de ID, no a startTime/endTime
   const [status, setStatus] = useState<ProductionFormStatus>(
     initialData.status || ProductionFormStatus.DRAFT
   );
