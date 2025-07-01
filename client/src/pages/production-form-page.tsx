@@ -66,6 +66,11 @@ export default function ProductionFormPage() {
   
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
+    console.log("=== DATOS ENVIADOS AL SERVIDOR ===");
+    console.log("data.startTime:", data.startTime);
+    console.log("data.endTime:", data.endTime);
+    console.log("Datos completos:", JSON.stringify(data, null, 2));
+    
     try {
       if (isNewForm) {
         // Crear nuevo formulario
