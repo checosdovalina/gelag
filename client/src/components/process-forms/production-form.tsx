@@ -178,13 +178,31 @@ export default function ProductionForm({
   const [formData, setFormData] = useState<any>({
     // Inicializar campos base
     ...initialData,
-    // Asegurar que los campos de tiempo existan - mantener null si es null
-    startTime: initialData.startTime ?? "",
-    endTime: initialData.endTime ?? "",
+    // Asegurar que los campos de tiempo existan - mantener valores como strings
+    startTime: initialData.startTime || "",
+    endTime: initialData.endTime || "",
     hourTracking: initialData.hourTracking || Array(7).fill(""),
     temperature: initialData.temperature || Array(7).fill(""),
     pressure: initialData.pressure || Array(7).fill(""),
   });
+  
+  // Efecto para sincronizar datos cuando el backend los actualiza
+  useEffect(() => {
+    if (initialData) {
+      console.log("Sincronizando datos del servidor:", {
+        startTime: initialData.startTime,
+        endTime: initialData.endTime
+      });
+      setFormData({
+        ...initialData,
+        startTime: initialData.startTime || "",
+        endTime: initialData.endTime || "",
+        hourTracking: initialData.hourTracking || Array(7).fill(""),
+        temperature: initialData.temperature || Array(7).fill(""),
+        pressure: initialData.pressure || Array(7).fill(""),
+      });
+    }
+  }, [initialData?.startTime, initialData?.endTime, initialData?.id]);
   const [status, setStatus] = useState<ProductionFormStatus>(
     initialData.status || ProductionFormStatus.DRAFT
   );

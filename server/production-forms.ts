@@ -61,7 +61,17 @@ export async function getProductionFormById(req: Request, res: Response) {
       return res.status(404).json({ message: "Formulario no encontrado" });
     }
     
-    return res.json(form);
+    // Transformar campos de base de datos a camelCase para el frontend
+    const transformedForm = {
+      ...form,
+      startTime: form.start_time || "",
+      endTime: form.end_time || "",
+      // Eliminar los campos originales para evitar confusión
+      start_time: undefined,
+      end_time: undefined
+    };
+    
+    return res.json(transformedForm);
   } catch (error) {
     console.error("Error al obtener formulario de producción:", error);
     return res.status(500).json({ message: "Error al obtener formulario de producción" });
@@ -207,8 +217,14 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.ingredientTimes !== undefined) updateFields.ingredientTimes = req.body.ingredientTimes;
     
     // Campos de seguimiento de proceso
-    if (req.body.startTime !== undefined) updateFields.start_time = req.body.startTime;
-    if (req.body.endTime !== undefined) updateFields.end_time = req.body.endTime;
+    if (req.body.startTime !== undefined) {
+      // No convertir string vacía a null para campos de tiempo
+      updateFields.start_time = req.body.startTime === "" ? "" : req.body.startTime;
+    }
+    if (req.body.endTime !== undefined) {
+      // No convertir string vacía a null para campos de tiempo
+      updateFields.end_time = req.body.endTime === "" ? "" : req.body.endTime;
+    }
     if (req.body.temperature !== undefined) updateFields.temperature = req.body.temperature;
     if (req.body.pressure !== undefined) updateFields.pressure = req.body.pressure;
     if (req.body.hourTracking !== undefined) updateFields.hourTracking = req.body.hourTracking;
@@ -258,7 +274,17 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     console.log("Formulario actualizado:", JSON.stringify(updatedForm, null, 2));
     
-    return res.json(updatedForm);
+    // Transformar campos de base de datos a camelCase para el frontend
+    const transformedForm = {
+      ...updatedForm,
+      startTime: updatedForm.start_time || "",
+      endTime: updatedForm.end_time || "",
+      // Eliminar los campos originales para evitar confusión
+      start_time: undefined,
+      end_time: undefined
+    };
+    
+    return res.json(transformedForm);
   } catch (error) {
     console.error("Error al actualizar formulario de producción:", error);
     return res.status(500).json({ message: "Error al actualizar formulario de producción" });
