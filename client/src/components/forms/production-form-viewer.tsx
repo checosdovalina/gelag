@@ -15,6 +15,39 @@ interface ProductionFormData {
   lotNumber?: string;
   createdBy: number;
   createdAt: string;
+  ingredients?: Array<{
+    name: string;
+    quantity: number;
+    unit: string;
+  }>;
+  caducidad?: string;
+  temperature?: string[];
+  pressure?: string[];
+  hourTracking?: string[];
+  startTime?: string;
+  endTime?: string;
+  brix?: any;
+  qualityTemp?: any;
+  texture?: any;
+  color?: any;
+  viscosity?: any;
+  smell?: any;
+  taste?: any;
+  foreignMaterial?: any;
+  statusCheck?: any;
+  qualityNotes?: string;
+  destinationType?: string;
+  destinationKilos?: any;
+  destinationProduct?: string;
+  destinationEstimation?: any;
+  totalKilos?: any;
+  liberationFolio?: string;
+  finalBrix?: any;
+  yield?: any;
+  cmConsistometer?: any;
+  cP?: any;
+  startState?: string;
+  endState?: string;
   [key: string]: any; // Para campos adicionales del proceso
 }
 
@@ -97,202 +130,255 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
         </CardContent>
       </Card>
 
+      {/* Ingredientes */}
+      {formData.ingredients && formData.ingredients.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Ingredientes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="border border-gray-300 px-4 py-2 text-left">Nombre</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Cantidad</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Unidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {formData.ingredients.map((ingredient: any, index: number) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-4 py-2">{ingredient.name}</td>
+                      <td className="border border-gray-300 px-4 py-2">{ingredient.quantity}</td>
+                      <td className="border border-gray-300 px-4 py-2">{ingredient.unit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Control de Proceso */}
-      {(formData.temperature || formData.pressure) && (
+      {(formData.temperature || formData.pressure || formData.hourTracking) && (
         <Card>
           <CardHeader>
             <CardTitle>Control de Proceso</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-gray-300 px-4 py-2 text-left">Tiempo</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Temperatura</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Presión</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.max(
-                    formData.temperature?.length || 0,
-                    formData.pressure?.length || 0
-                  )}).map((_, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {index < 6 ? `Hora ${index}` : 'Fin'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.temperature?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.pressure?.[index] || '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Control de Calidad */}
-      {(formData.qualityTimes || formData.brix || formData.qualityTemp) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Control de Calidad</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300 text-sm">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-gray-300 px-2 py-2 text-left">Hora</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Brix</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Temp</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Textura</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Color</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Viscosidad</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Olor</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Sabor</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.max(
-                    formData.qualityTimes?.length || 0,
-                    formData.brix?.length || 0,
-                    formData.qualityTemp?.length || 0,
-                    formData.texture?.length || 0,
-                    formData.color?.length || 0,
-                    formData.viscosity?.length || 0,
-                    formData.smell?.length || 0,
-                    formData.taste?.length || 0,
-                    formData.statusCheck?.length || 0
-                  )}).map((_, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.qualityTimes?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.brix?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.qualityTemp?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.texture?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.color?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.viscosity?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.smell?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.taste?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-2">
-                        {formData.statusCheck?.[index] || '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Resultados Finales */}
-      {(formData.cmConsistometer || formData.finalBrix || formData.yield) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resultados Finales</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {formData.cmConsistometer && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {formData.startTime && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Consistómetro (cm)</p>
-                  <p className="text-lg font-semibold">{formData.cmConsistometer}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Hora Inicio</p>
+                  <p className="text-lg">{formData.startTime}</p>
+                </div>
+              )}
+              {formData.endTime && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Hora Fin</p>
+                  <p className="text-lg">{formData.endTime}</p>
+                </div>
+              )}
+            </div>
+            
+            {(formData.temperature || formData.pressure || formData.hourTracking) && (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 px-4 py-2 text-left">Hora</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Temperatura</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Presión</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: Math.max(
+                      formData.hourTracking?.length || 0,
+                      formData.temperature?.length || 0,
+                      formData.pressure?.length || 0
+                    ) }).map((_, index) => (
+                      <tr key={index}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {formData.hourTracking?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {formData.temperature?.[index] || ''}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {formData.pressure?.[index] || ''}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Verificación de Calidad */}
+      {(formData.brix || formData.qualityTemp || formData.texture || formData.color || formData.viscosity || formData.smell || formData.taste) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Verificación de Calidad</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {formData.brix && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Brix</p>
+                  <p className="text-lg">{formData.brix}</p>
+                </div>
+              )}
+              {formData.qualityTemp && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Temperatura</p>
+                  <p className="text-lg">{formData.qualityTemp}</p>
+                </div>
+              )}
+              {formData.texture && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Textura</p>
+                  <p className="text-lg">{formData.texture}</p>
+                </div>
+              )}
+              {formData.color && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Color</p>
+                  <p className="text-lg">{formData.color}</p>
+                </div>
+              )}
+              {formData.viscosity && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Viscosidad</p>
+                  <p className="text-lg">{formData.viscosity}</p>
+                </div>
+              )}
+              {formData.smell && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Olor</p>
+                  <p className="text-lg">{formData.smell}</p>
+                </div>
+              )}
+              {formData.taste && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Sabor</p>
+                  <p className="text-lg">{formData.taste}</p>
+                </div>
+              )}
+              {formData.foreignMaterial && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Material Extraño</p>
+                  <p className="text-lg">{formData.foreignMaterial}</p>
+                </div>
+              )}
+              {formData.statusCheck && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Estado</p>
+                  <p className="text-lg">{formData.statusCheck}</p>
+                </div>
+              )}
+              {formData.qualityNotes && (
+                <div className="col-span-full">
+                  <p className="text-sm font-medium text-muted-foreground">Observaciones de Calidad</p>
+                  <p className="text-lg">{formData.qualityNotes}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Información de Destino */}
+      {(formData.destinationType || formData.destinationKilos || formData.destinationProduct || formData.totalKilos) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Información de Destino</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {formData.destinationType && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Tipo de Destino</p>
+                  <p className="text-lg">{formData.destinationType}</p>
+                </div>
+              )}
+              {formData.destinationKilos && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Kilos Destino</p>
+                  <p className="text-lg">{formData.destinationKilos}</p>
+                </div>
+              )}
+              {formData.destinationProduct && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Producto Destino</p>
+                  <p className="text-lg">{formData.destinationProduct}</p>
+                </div>
+              )}
+              {formData.destinationEstimation && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Estimación</p>
+                  <p className="text-lg">{formData.destinationEstimation}</p>
+                </div>
+              )}
+              {formData.totalKilos && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Kilos</p>
+                  <p className="text-lg">{formData.totalKilos}</p>
+                </div>
+              )}
+              {formData.liberationFolio && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Folio de Liberación</p>
+                  <p className="text-lg">{formData.liberationFolio}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Información Adicional */}
+      {(formData.caducidad || formData.finalBrix || formData.yield || formData.cmConsistometer || formData.cP) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Adicional</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {formData.caducidad && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Fecha de Caducidad</p>
+                  <p className="text-lg">{format(new Date(formData.caducidad), "dd/MM/yyyy", { locale: es })}</p>
                 </div>
               )}
               {formData.finalBrix && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Brix Final</p>
-                  <p className="text-lg font-semibold">{formData.finalBrix}</p>
+                  <p className="text-lg">{formData.finalBrix}</p>
                 </div>
               )}
               {formData.yield && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Rendimiento</p>
-                  <p className="text-lg font-semibold">{formData.yield}</p>
+                  <p className="text-lg">{formData.yield}</p>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Destino del Producto */}
-      {(formData.destinationType || formData.destinationKilos || formData.destinationProduct) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Destino del Producto</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-gray-300 px-4 py-2 text-left">Tipo</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Kilos</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Producto</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Estimación</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.max(
-                    formData.destinationType?.length || 0,
-                    formData.destinationKilos?.length || 0,
-                    formData.destinationProduct?.length || 0,
-                    formData.destinationEstimation?.length || 0
-                  )}).map((_, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.destinationType?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.destinationKilos?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.destinationProduct?.[index] || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {formData.destinationEstimation?.[index] || '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Estados del Proceso */}
-      {(formData.startState || formData.endState) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Estado del Proceso</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {formData.cmConsistometer && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Consistómetro (cm)</p>
+                  <p className="text-lg">{formData.cmConsistometer}</p>
+                </div>
+              )}
+              {formData.cP && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Viscosidad (cP)</p>
+                  <p className="text-lg">{formData.cP}</p>
+                </div>
+              )}
               {formData.startState && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Estado Inicial</p>
@@ -305,43 +391,6 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
                   <p className="text-lg">{formData.endState}</p>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Ingredientes */}
-      {formData.ingredients && Array.isArray(formData.ingredients) && formData.ingredients.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Ingredientes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-gray-300 px-4 py-2 text-left">Nombre</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Cantidad</th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">Unidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.ingredients.map((ingredient: any, index: number) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {ingredient.name || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {ingredient.quantity || '-'}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {ingredient.unit || '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </CardContent>
         </Card>
