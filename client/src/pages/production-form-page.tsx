@@ -55,7 +55,7 @@ export default function ProductionFormPage() {
       setHasLoadedInitialData(true);
     } else if (user && !match) {
       // Si es un nuevo formulario, agregar el nombre del usuario actual como responsable
-      setFormData(prevData => ({
+      setFormData((prevData: any) => ({
         ...prevData,
         responsible: user.name || user.username
       }));
@@ -86,9 +86,15 @@ export default function ProductionFormPage() {
       } else {
         // Actualizar formulario existente
         if (match && params?.id) {
+          const formId = parseInt(params.id);
           await updateFormMutation.mutateAsync(data);
           // Actualizar el estado local con los datos guardados
           setFormData(data);
+          
+          toast({
+            title: "Formulario actualizado",
+            description: "Los cambios han sido guardados correctamente"
+          });
         }
       }
     } catch (error) {

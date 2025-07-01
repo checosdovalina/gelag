@@ -162,12 +162,16 @@ export function useProductionForm(id?: number) {
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, cleanData);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (updatedForm) => {
       toast({
         title: "Formulario actualizado",
         description: "El formulario ha sido actualizado correctamente.",
       });
+      // Invalidar tanto la consulta específica como la lista general
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms', id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      // También actualizar directamente la cache con los nuevos datos
+      queryClient.setQueryData(['/api/production-forms', id], updatedForm);
     },
     onError: (error: Error) => {
       toast({
