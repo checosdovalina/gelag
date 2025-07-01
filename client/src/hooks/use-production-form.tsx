@@ -153,11 +153,10 @@ export function useProductionForm(id?: number) {
         id: dataId,
         createdAt,
         updatedAt,
-        lastUpdatedAt,
         lastUpdatedBy,
         createdBy,
         ...cleanData
-      } = data;
+      } = data as any;
       
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, cleanData);
       return await res.json();
