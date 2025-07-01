@@ -61,17 +61,7 @@ export async function getProductionFormById(req: Request, res: Response) {
       return res.status(404).json({ message: "Formulario no encontrado" });
     }
     
-    // Transformar campos de base de datos a camelCase para el frontend
-    const transformedForm = {
-      ...form,
-      startTime: form.start_time || "",
-      endTime: form.end_time || "",
-      // Eliminar los campos originales para evitar confusión
-      start_time: undefined,
-      end_time: undefined
-    };
-    
-    return res.json(transformedForm);
+    return res.json(form);
   } catch (error) {
     console.error("Error al obtener formulario de producción:", error);
     return res.status(500).json({ message: "Error al obtener formulario de producción" });
@@ -274,17 +264,7 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     console.log("Formulario actualizado:", JSON.stringify(updatedForm, null, 2));
     
-    // Transformar campos de base de datos a camelCase para el frontend
-    const transformedForm = {
-      ...updatedForm,
-      startTime: updatedForm.start_time || "",
-      endTime: updatedForm.end_time || "",
-      // Eliminar los campos originales para evitar confusión
-      start_time: undefined,
-      end_time: undefined
-    };
-    
-    return res.json(transformedForm);
+    return res.json(updatedForm);
   } catch (error) {
     console.error("Error al actualizar formulario de producción:", error);
     return res.status(500).json({ message: "Error al actualizar formulario de producción" });
