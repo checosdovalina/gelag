@@ -44,6 +44,11 @@ export function useProductionForms() {
   // Actualizar un formulario existente
   const updateFormMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      console.log("=== MUTATION ENVIANDO AL SERVIDOR ===");
+      console.log("data.startTime en mutation:", data.startTime);
+      console.log("data.endTime en mutation:", data.endTime);
+      console.log("data completo en mutation:", JSON.stringify(data, null, 2));
+      
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, data);
       return await res.json();
     },
