@@ -178,9 +178,9 @@ export default function ProductionForm({
   const [formData, setFormData] = useState<any>({
     // Inicializar campos base
     ...initialData,
-    // Asegurar que los campos de tiempo existan
-    startTime: initialData.startTime || "",
-    endTime: initialData.endTime || "",
+    // Asegurar que los campos de tiempo existan - mantener null si es null
+    startTime: initialData.startTime ?? "",
+    endTime: initialData.endTime ?? "",
     hourTracking: initialData.hourTracking || Array(7).fill(""),
     temperature: initialData.temperature || Array(7).fill(""),
     pressure: initialData.pressure || Array(7).fill(""),
@@ -241,9 +241,24 @@ export default function ProductionForm({
     }
   }, [formData.productType, formData.liters]);
   
-  // Cambiar de pestaña sin auto-guardado
+  // Cambiar de pestaña con auto-guardado
   const handleTabChange = (newTab: string) => {
-    setActiveTab(newTab);
+    // Auto-guardar antes de cambiar de pestaña
+    console.log("Cambiando de pestaña, auto-guardando datos...");
+    
+    // Mostrar un toast sutil de auto-guardado
+    toast({
+      title: "Guardando automáticamente...",
+      description: "Los cambios se están guardando",
+      duration: 1500,
+    });
+    
+    handleSave();
+    
+    // Pequeño delay para asegurar que el guardado se complete
+    setTimeout(() => {
+      setActiveTab(newTab);
+    }, 100);
   };
   
   // Determinar rol del usuario actual
@@ -311,6 +326,14 @@ export default function ProductionForm({
         }, 100);
       }
     }
+    
+    // Auto-guardar para campos importantes después de un pequeño delay
+    if (['startTime', 'endTime', 'responsible', 'lotNumber', 'finalBrix', 'yield', 'cmConsistometer'].includes(field)) {
+      setTimeout(() => {
+        console.log(`Auto-guardando por cambio en ${field}...`);
+        handleSave();
+      }, 2000); // Guardar 2 segundos después del cambio
+    }
   };
   
   // Función para auto-actualizar estado según el workflow
@@ -318,6 +341,9 @@ export default function ProductionForm({
     if (!user) return;
     
     const userRole = mapUserRoleToAppRole(user.role);
+    
+    // Debug para seguimiento
+    console.log(`Auto-update check: ${field} = ${value}, userRole = ${userRole}, status = ${status}`);
     
     // Gerente de Producción: Al llenar información general -> IN_PROGRESS
     if (userRole === "production_manager" && 
@@ -329,7 +355,7 @@ export default function ProductionForm({
     // Operador: Al completar seguimiento de proceso -> PENDING_REVIEW
     if (userRole === "operator" && 
         (field === "startTime" || field === "endTime" || field === "temperature" || field === "pressure") && 
-        value && status === ProductionFormStatus.IN_PROGRESS) {
+        value && value !== "" && status === ProductionFormStatus.IN_PROGRESS) {
       setStatus(ProductionFormStatus.PENDING_REVIEW);
     }
     
@@ -742,7 +768,7 @@ export default function ProductionForm({
                   <Label>Hora Inicio</Label>
                   <Input
                     type="time"
-                    value={formData.startTime || ""}
+                    value={formData.startTime ?? ""}
                     onChange={(e) => handleChange("startTime", e.target.value)}
                     disabled={!canEditSection("process-tracking") || readOnly}
                   />
