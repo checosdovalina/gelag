@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useProducts } from "@/hooks/use-products";
 import { useUsers } from "@/hooks/use-users";
@@ -214,6 +214,9 @@ export default function ProductionForm({
   const [autoCalculatedIngredients, setAutoCalculatedIngredients] = useState<any[]>([]);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   
+  // Referencia para el timeout del debounce de auto-guardado
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   // Función para cargar ingredientes automáticamente basados en producto y litros
   const loadProductRecipe = async (productId: string, liters: number) => {
     if (!productId || !liters || liters <= 0) {
@@ -264,6 +267,15 @@ export default function ProductionForm({
       loadProductRecipe(formData.productType, formData.liters);
     }
   }, [formData.productType, formData.liters]);
+  
+  // Limpiar timeout al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
   
   // Cambiar de pestaña con auto-guardado
   const handleTabChange = (newTab: string) => {
@@ -354,14 +366,20 @@ export default function ProductionForm({
       }
     }
     
-    // Auto-guardar para campos importantes después de un pequeño delay
+    // Auto-guardar para campos importantes después de un delay con debounce
     if (['startTime', 'endTime', 'responsible', 'lotNumber', 'finalBrix', 'yield', 'cmConsistometer'].includes(field)) {
-      setTimeout(() => {
+      // Limpiar timeout previo si existe
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+      
+      // Establecer nuevo timeout
+      autoSaveTimeoutRef.current = setTimeout(() => {
         console.log(`Auto-guardando por cambio en ${field}...`);
         setIsAutoSaving(true);
         handleSave();
         setTimeout(() => setIsAutoSaving(false), 1000);
-      }, 2000); // Guardar 2 segundos después del cambio
+      }, 3000); // Guardar 3 segundos después del último cambio
     }
   };
   

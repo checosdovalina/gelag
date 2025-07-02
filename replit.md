@@ -127,6 +127,14 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 2, 2025 - Production Form Auto-Save Bug Fix - Critical Resolution
+- **CRITICAL BUG RESOLVED**: Fixed multiple form saves when typing in "Responsable" field in production forms
+- **Root cause**: Auto-save triggered on every keystroke instead of after user finished typing
+- **Solution implemented**: Debounce mechanism that cancels previous timeouts and only saves after 3 seconds of inactivity
+- **Technical improvements**: Added useRef for timeout management and cleanup on component unmount
+- **User experience**: Users can now type freely without creating multiple form entries per character
+- **Data integrity**: Prevents database pollution with incomplete/duplicate form entries
+
 ### July 2, 2025 - Complete PDF Standardization for CA-RE Forms - Table Format Implementation
 - **SYSTEMATIC PDF ENHANCEMENT**: Implemented comprehensive PDF generation system for all specialized forms
 - **CA-RE-08-01 (Temperature Registration)**: Fixed incorrect field mapping, implemented table format with proper field identification
