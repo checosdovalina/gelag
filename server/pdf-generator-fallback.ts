@@ -727,6 +727,15 @@ function generatePDFContent(
     return;
   }
 
+  // Verificar si es un formulario de Registro de Temperaturas
+  if (template.name?.includes('CA-RE-08-01') || template.name?.includes('REGISTRO DE TEMPERATURAS')) {
+    console.log('=== GENERANDO PDF DE REGISTRO DE TEMPERATURAS ===');
+    console.log('Template name:', template.name);
+    console.log('Entry data keys:', Object.keys(entry.data || {}));
+    generateRegistroTemperaturasContentPDF(doc, entry, template);
+    return;
+  }
+
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
     const fields = template.structure.fields;
@@ -1776,6 +1785,78 @@ function getStatusLabel(status: string): string {
     default:
       return status;
   }
+}
+
+// Función específica para generar contenido de Registro de Temperaturas en PDF
+function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, template: FormTemplate): void {
+  const data = entry.data as any;
+  
+  console.log('=== DATOS DEL FORMULARIO CA-RE-08-01 ===');
+  console.log(JSON.stringify(data, null, 2));
+  
+  // Mapeo directo de los datos conocidos del formulario
+  // Según los datos del log: folio: "D22223", equipo: "TESR", serie: "re443434", fecha: "2025-07-01", hora: "03:43", temperatura: "34", observacion: "test", reviso: 2
+  
+  // Formato en sección GENERAL de dos columnas
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('GENERAL', 50, doc.y, { align: 'center', width: doc.page.width - 100 });
+  doc.moveDown(0.5);
+  
+  // Línea divisoria
+  doc.strokeColor('#000000').lineWidth(1);
+  doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
+  doc.moveDown(0.3);
+  
+  // Información en dos columnas - MAPEO CORRECTO
+  const leftCol = 50;
+  const rightCol = doc.page.width / 2 + 20;
+  const startY = doc.y;
+  
+  // Mapeo correcto según datos reales vs labels del PDF
+  const leftFields = [
+    { label: 'Folio', value: data.folio || 'No especificado' },
+    { label: 'Folio', value: '' }, // No hay folio de producción en este formulario
+    { label: 'Fechaemision', value: '' }, // No especificado en este formulario
+    { label: 'Remplaza', value: '' }, // No especificado
+    { label: 'Departamentomisor', value: '' }, // No especificado
+    { label: 'Tipo de Documento', value: '' }, // No especificado
+    { label: 'Equipo', value: data.equipo || 'No especificado' } // Cambiado de "Fecha" a "Equipo"
+  ];
+  
+  // Mapeo correcto para columna derecha
+  const rightFields = [
+    { label: 'Serie', value: data.serie || 'No especificado' }, // Cambiado de "Fecha de caducidad"
+    { label: 'Fecha', value: data.fecha ? new Date(data.fecha).toLocaleDateString('es-MX') : 'No especificado' }, // Cambiado de "Producto"
+    { label: 'Hora', value: data.hora || 'No especificado' }, // Cambiado de "Fecha de caducidad"  
+    { label: 'Temperatura', value: data.temperatura || 'No especificado' }, // Cambiado de "Lote"
+    { label: 'Observación', value: data.observacion || 'No especificado' }, // Cambiado de "Apariencia"
+    { label: 'Revisó', value: data.reviso || 'No especificado' } // Cambiado de "Observaciones"
+  ];
+  
+  // Renderizar columna izquierda
+  let currentY = startY;
+  leftFields.forEach(field => {
+    if (field.value) { // Solo mostrar campos que tienen valor
+      doc.fontSize(9).font('Helvetica-Bold')
+        .text(`${field.label}:`, leftCol, currentY, { continued: true });
+      doc.font('Helvetica')
+        .text(` ${field.value}`, leftCol + 80, currentY);
+      currentY += 15;
+    }
+  });
+  
+  // Renderizar columna derecha
+  currentY = startY;
+  rightFields.forEach(field => {
+    doc.fontSize(9).font('Helvetica-Bold')
+      .text(`${field.label}:`, rightCol, currentY, { continued: true });
+    doc.font('Helvetica')
+      .text(` ${field.value}`, rightCol + 80, currentY);
+    currentY += 15;
+  });
+  
+  // Ajustar posición Y para continuar después de las columnas
+  doc.y = Math.max(startY + (leftFields.length * 15), startY + (rightFields.length * 15)) + 20;
 }
 
 // Función específica para generar contenido de Inspección Diaria de Limpieza en PDF
