@@ -373,11 +373,33 @@ export default function ProductionForm({
         clearTimeout(autoSaveTimeoutRef.current);
       }
       
-      // Establecer nuevo timeout
+      // Establecer nuevo timeout con captura del estado actual
       autoSaveTimeoutRef.current = setTimeout(() => {
         console.log(`Auto-guardando por cambio en ${field}...`);
         setIsAutoSaving(true);
-        handleSave();
+        
+        // Usar setFormData para obtener el estado más reciente y luego guardar
+        setFormData((currentFormData: any) => {
+          console.log("Estado actual capturado para auto-guardado:", currentFormData);
+          
+          // Determinar el nuevo estado basado en el rol y datos completados
+          let newStatus = status;
+          
+          if (currentUserRole === "production_manager") {
+            if (currentFormData.responsible && currentFormData.lotNumber && status === ProductionFormStatus.DRAFT) {
+              newStatus = ProductionFormStatus.IN_PROGRESS;
+            }
+          }
+          
+          // Guardar con el estado actual
+          onSave({
+            ...currentFormData,
+            status: newStatus,
+          });
+          
+          return currentFormData; // No modificar el estado, solo usarlo para guardar
+        });
+        
         setTimeout(() => setIsAutoSaving(false), 1000);
       }, 3000); // Guardar 3 segundos después del último cambio
     }
