@@ -745,6 +745,15 @@ function generatePDFContent(
     return;
   }
 
+  // Verificar si es un formulario de Análisis de Leche
+  if (template.name?.includes('CA-RE-14-01') || template.name?.includes('Analisis de Leche')) {
+    console.log('=== GENERANDO PDF DE ANÁLISIS DE LECHE ===');
+    console.log('Template name:', template.name);
+    console.log('Entry data keys:', Object.keys(entry.data || {}));
+    generateAnalisisLecheContentPDF(doc, entry, template);
+    return;
+  }
+
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
     const fields = template.structure.fields;
@@ -1992,6 +2001,183 @@ function generateLiberacionLecheContentPDF(doc: any, entry: FormEntry, template:
     { campo: 'Temperatura de Tanque', valor: temperatura || 'No especificado' },
     { campo: 'Lote', valor: lote || 'No especificado' },
     { campo: 'Se Aprueba', valor: seAprueba === 'si' ? 'SÍ ✓' : seAprueba === 'no' ? 'NO ✗' : seAprueba || 'No especificado' },
+    { campo: 'Observaciones', valor: observaciones || 'No especificado' }
+  ];
+  
+  // Dibujar encabezados de tabla
+  let currentX = tableStartX;
+  let currentY = tableStartY;
+  
+  // Encabezado "Campo"
+  doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+  doc.stroke();
+  doc.fontSize(10).font('Helvetica-Bold').fillColor('#000');
+  doc.text('Campo', currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+  
+  // Encabezado "Valor"
+  currentX += columnWidths[0];
+  doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+  doc.stroke();
+  doc.text('Valor', currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+  
+  // Dibujar filas de datos
+  currentY += rowHeight;
+  tableData.forEach(row => {
+    currentX = tableStartX;
+    
+    // Columna Campo
+    doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000');
+    doc.text(row.campo, currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+    
+    // Columna Valor
+    currentX += columnWidths[0];
+    doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica').fillColor('#000');
+    doc.text(row.valor, currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+    
+    currentY += rowHeight;
+  });
+  
+  // Ajustar posición Y para continuar después de la tabla
+  doc.y = currentY + 20;
+}
+
+// Función específica para generar contenido de Análisis de Leche en PDF
+function generateAnalisisLecheContentPDF(doc: any, entry: FormEntry, template: FormTemplate): void {
+  const data = entry.data as any;
+  
+  console.log('=== DATOS DEL FORMULARIO CA-RE-14-01 ===');
+  console.log(JSON.stringify(data, null, 2));
+  
+  // Obtener los campos del template para mapear IDs a labels
+  const fields = (template.structure as any)?.fields || [];
+  const fieldMap: Record<string, string> = {};
+  
+  fields.forEach((field: any) => {
+    fieldMap[field.id] = field.label;
+  });
+  
+  console.log('=== MAPEO DE CAMPOS ===');
+  console.log(JSON.stringify(fieldMap, null, 2));
+  
+  // Mapear datos usando los IDs reales del formulario
+  let folio = '';
+  let fecha = '';
+  let hora = '';
+  let departamentoEmisor = '';
+  let tipoDocumento = '';
+  let remplaza = '';
+  let temperatura = '';
+  let grasa = '';
+  let sng = '';
+  let densidad = '';
+  let lactosa = '';
+  let proteina = '';
+  let agua = '';
+  let solidos = '';
+  let puntoCongelacion = '';
+  let ph = '';
+  let apariencia = '';
+  let fechaCaducidad = '';
+  let lote = '';
+  let producto = '';
+  let observaciones = '';
+  
+  Object.keys(data).forEach(key => {
+    const fieldLabel = fieldMap[key]?.toLowerCase() || '';
+    const value = data[key];
+    
+    console.log(`Mapeando: ${key} -> ${fieldLabel} = ${value}`);
+    
+    if (fieldLabel.includes('folio') && !fieldLabel.includes('produccion')) {
+      folio = value;
+    } else if (fieldLabel.includes('fecha') && !fieldLabel.includes('caducidad') && !fieldLabel.includes('emisión')) {
+      fecha = value;
+    } else if (fieldLabel.includes('hora')) {
+      hora = value;
+    } else if (fieldLabel.includes('departamento')) {
+      departamentoEmisor = value;
+    } else if (fieldLabel.includes('tipo de documento')) {
+      tipoDocumento = value;
+    } else if (fieldLabel.includes('remplaza')) {
+      remplaza = value;
+    } else if (fieldLabel.includes('temp') && fieldLabel.includes('°c')) {
+      temperatura = value;
+    } else if (fieldLabel.includes('grasa')) {
+      grasa = value;
+    } else if (fieldLabel.includes('sng')) {
+      sng = value;
+    } else if (fieldLabel.includes('densidad')) {
+      densidad = value;
+    } else if (fieldLabel.includes('lactosa')) {
+      lactosa = value;
+    } else if (fieldLabel.includes('proteina')) {
+      proteina = value;
+    } else if (fieldLabel.includes('agua')) {
+      agua = value;
+    } else if (fieldLabel.includes('solidos')) {
+      solidos = value;
+    } else if (fieldLabel.includes('punto de congelacion')) {
+      puntoCongelacion = value;
+    } else if (fieldLabel.includes('ph')) {
+      ph = value;
+    } else if (fieldLabel.includes('apariencia')) {
+      apariencia = value;
+    } else if (fieldLabel.includes('fecha de caducidad')) {
+      fechaCaducidad = value;
+    } else if (fieldLabel.includes('lote')) {
+      lote = value;
+    } else if (fieldLabel.includes('producto')) {
+      producto = value;
+    } else if (fieldLabel.includes('observacion')) {
+      observaciones = value;
+    }
+  });
+  
+  console.log('=== VALORES MAPEADOS ===');
+  console.log(`Folio: ${folio}, Fecha: ${fecha}, Hora: ${hora}, Temp: ${temperatura}, Grasa: ${grasa}, SNG: ${sng}, Densidad: ${densidad}`);
+  
+  // Formato en tabla organizada
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('DATOS DE ANÁLISIS DE LECHE', 50, doc.y, { align: 'center', width: doc.page.width - 100 });
+  doc.moveDown(0.5);
+  
+  // Crear tabla con todos los datos organizados
+  const tableStartX = 50;
+  const tableStartY = doc.y;
+  const columnWidths = [180, 200]; // Campo, Valor
+  const rowHeight = 18;
+  
+  // Datos para la tabla - organizar en secciones lógicas
+  const tableData = [
+    // Información del documento
+    { campo: 'Folio', valor: folio || 'No especificado' },
+    { campo: 'Fecha', valor: fecha ? new Date(fecha).toLocaleDateString('es-MX') : 'No especificado' },
+    { campo: 'Hora', valor: hora || 'No especificado' },
+    { campo: 'Departamento Emisor', valor: departamentoEmisor || 'No especificado' },
+    { campo: 'Tipo de Documento', valor: tipoDocumento || 'No especificado' },
+    { campo: 'Remplaza', valor: remplaza || 'No especificado' },
+    
+    // Análisis físico-químico
+    { campo: 'Temperatura (°C)', valor: temperatura || 'No especificado' },
+    { campo: 'Grasa (%)', valor: grasa || 'No especificado' },
+    { campo: 'SNG (%)', valor: sng || 'No especificado' },
+    { campo: 'Densidad', valor: densidad || 'No especificado' },
+    { campo: 'Lactosa (%)', valor: lactosa || 'No especificado' },
+    { campo: 'Proteína (%)', valor: proteina || 'No especificado' },
+    { campo: 'Agua (%)', valor: agua || 'No especificado' },
+    { campo: 'Sólidos (%)', valor: solidos || 'No especificado' },
+    { campo: 'Punto de Congelación', valor: puntoCongelacion || 'No especificado' },
+    { campo: 'pH', valor: ph || 'No especificado' },
+    
+    // Información del producto
+    { campo: 'Apariencia', valor: apariencia || 'No especificado' },
+    { campo: 'Fecha de Caducidad', valor: fechaCaducidad ? new Date(fechaCaducidad).toLocaleDateString('es-MX') : 'No especificado' },
+    { campo: 'Lote', valor: lote || 'No especificado' },
+    { campo: 'Producto', valor: producto || 'No especificado' },
     { campo: 'Observaciones', valor: observaciones || 'No especificado' }
   ];
   
