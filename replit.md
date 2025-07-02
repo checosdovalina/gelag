@@ -127,6 +127,18 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 2, 2025 - New Liberación de Pastas y Cajetas Form (CA-RE-05-01) - Complete Implementation
+- **NEW FORM**: Created complete "Registro de Liberación de Pastas y Cajetas" form system (CA-RE-05-01)
+- **Template structure**: Professional form with document information header and comprehensive data table
+- **Quality control table**: 10-column table including fecha elaboración, producto, grados Bx, consistómetro, temperatura, viscosidad, etc.
+- **Advanced form fields**: 
+  - Select dropdowns for apariencia (Buena/Regular/Mala) and turno (AM/PM/NOC)
+  - Employee selector for responsible quality control personnel
+  - Document metadata fields (empresa, revisión, departamento emisor)
+- **Data capacity**: 24 rows for multiple product liberation records
+- **Database integration**: Successfully created template ID 27 in database using direct SQL insertion
+- **Form structure**: Follows GELAG company standards with proper headers and Control de Calidad section
+
 ### July 2, 2025 - Daily Cleaning Inspection System (CA-RE-07-01) - Complete Enhancement
 - **NEW SYSTEM**: Created complete daily cleaning inspection system with checklist-based format
 - **Template structure**: 12 inspection sections covering all facility areas (Aduana Personal, Almacén Materia Prima, Área de Reposo, etc.)
