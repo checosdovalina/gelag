@@ -134,7 +134,7 @@ GELAG is a comprehensive form management system designed for quality control and
 - **System Stability**: Eliminated JavaScript errors and session logout issues caused by auto-save conflicts
 - **Manual Save Only**: Users now save forms manually using the "Guardar" button for better control
 - **Data Quality**: Employee dropdown prevents typos and ensures consistent naming across forms
-- **Filtered Selection**: Dropdown excludes viewer-only employees, showing only active production staff
+- **Filtered Selection**: Dropdown excludes viewer-only employees and users without departments, showing only active production staff
 - **Department Display**: Employee dropdown shows name and department for better identification
 
 ### July 2, 2025 - Complete PDF Standardization for CA-RE Forms - Table Format Implementation

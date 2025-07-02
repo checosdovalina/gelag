@@ -693,9 +693,9 @@ export default function ProductionForm({
                         <SelectValue placeholder="Seleccionar responsable" />
                       </SelectTrigger>
                       <SelectContent>
-                        {employees?.filter((emp: any) => emp.role !== 'viewer').map((employee: any) => (
+                        {employees?.filter((emp: any) => emp.role !== 'viewer' && emp.department).map((employee: any) => (
                           <SelectItem key={employee.id} value={employee.name}>
-                            {employee.name} - {employee.department || 'Sin departamento'}
+                            {employee.name} - {employee.department}
                           </SelectItem>
                         ))}
                       </SelectContent>
