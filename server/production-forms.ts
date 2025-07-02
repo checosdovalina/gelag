@@ -327,8 +327,9 @@ export async function updateProductionFormStatus(req: Request, res: Response) {
 // Eliminar un formulario de producción
 export async function deleteProductionForm(req: Request, res: Response) {
   try {
-    // Verificar si el usuario está autenticado y es superadmin
-    if (!req.isAuthenticated() || req.user?.role !== 'superadmin') {
+    // Verificar si el usuario está autenticado y tiene permisos de eliminación
+    const allowedRoles = ['superadmin', 'admin', 'gerente_produccion', 'gerente_calidad'];
+    if (!req.isAuthenticated() || !allowedRoles.includes(req.user?.role || '')) {
       return res.status(403).json({ message: "No autorizado para eliminar formularios" });
     }
 
