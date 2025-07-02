@@ -1821,17 +1821,17 @@ function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, temp
     
     console.log(`Mapeando: ${key} -> ${fieldLabel} = ${value}`);
     
-    if (fieldLabel.includes('folio')) {
+    if (fieldLabel.includes('folio') && !fieldLabel.includes('produccion')) {
       folio = value;
     } else if (fieldLabel.includes('equipo')) {
       equipo = value;
     } else if (fieldLabel.includes('serie')) {
       serie = value;
-    } else if (fieldLabel.includes('fecha')) {
+    } else if (fieldLabel.includes('fecha') && !fieldLabel.includes('emisión')) {
       fecha = value;
     } else if (fieldLabel.includes('hora')) {
       hora = value;
-    } else if (fieldLabel.includes('temperatura')) {
+    } else if (fieldLabel.includes('temperatura') || fieldLabel.includes('temperatutra')) { // Corregir error tipográfico
       temperatura = value;
     } else if (fieldLabel.includes('observacion')) {
       observacion = value;
@@ -1843,59 +1843,68 @@ function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, temp
   console.log('=== VALORES MAPEADOS ===');
   console.log(`Folio: ${folio}, Equipo: ${equipo}, Serie: ${serie}, Fecha: ${fecha}, Hora: ${hora}, Temperatura: ${temperatura}, Observación: ${observacion}, Revisó: ${reviso}`);
   
-  // Formato en sección GENERAL de dos columnas
+  // Formato en tabla organizada
   doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
-  doc.text('GENERAL', 50, doc.y, { align: 'center', width: doc.page.width - 100 });
+  doc.text('DATOS DE REGISTRO', 50, doc.y, { align: 'center', width: doc.page.width - 100 });
   doc.moveDown(0.5);
   
-  // Línea divisoria
-  doc.strokeColor('#000000').lineWidth(1);
-  doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
-  doc.moveDown(0.3);
+  // Crear tabla con todos los datos organizados
+  const tableStartX = 50;
+  const tableStartY = doc.y;
+  const columnWidths = [150, 180]; // Campo, Valor
+  const rowHeight = 18;
   
-  // Información en dos columnas - MAPEO CORRECTO
-  const leftCol = 50;
-  const rightCol = doc.page.width / 2 + 20;
-  const startY = doc.y;
-  
-  // Columna izquierda con solo el folio
-  const leftFields = [
-    { label: 'Folio', value: folio || 'No especificado' },
-    { label: 'Equipo', value: equipo || 'No especificado' }
+  // Datos para la tabla
+  const tableData = [
+    { campo: 'Folio', valor: folio || 'No especificado' },
+    { campo: 'Equipo', valor: equipo || 'No especificado' },
+    { campo: 'Serie', valor: serie || 'No especificado' },
+    { campo: 'Fecha', valor: fecha ? new Date(fecha).toLocaleDateString('es-MX') : 'No especificado' },
+    { campo: 'Hora', valor: hora || 'No especificado' },
+    { campo: 'Temperatura', valor: temperatura || 'No especificado' },
+    { campo: 'Observación', valor: observacion || 'No especificado' },
+    { campo: 'Revisó', valor: reviso || 'No especificado' }
   ];
   
-  // Columna derecha con el resto de datos
-  const rightFields = [
-    { label: 'Serie', value: serie || 'No especificado' },
-    { label: 'Fecha', value: fecha ? new Date(fecha).toLocaleDateString('es-MX') : 'No especificado' },
-    { label: 'Hora', value: hora || 'No especificado' },
-    { label: 'Temperatura', value: temperatura || 'No especificado' },
-    { label: 'Observación', value: observacion || 'No especificado' },
-    { label: 'Revisó', value: reviso || 'No especificado' }
-  ];
+  // Dibujar encabezados de tabla
+  let currentX = tableStartX;
+  let currentY = tableStartY;
   
-  // Renderizar columna izquierda
-  let currentY = startY;
-  leftFields.forEach(field => {
-    doc.fontSize(9).font('Helvetica-Bold')
-      .text(`${field.label}:`, leftCol, currentY, { continued: true });
-    doc.font('Helvetica')
-      .text(` ${field.value}`, leftCol + 80, currentY);
-    currentY += 15;
+  // Encabezado "Campo"
+  doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+  doc.stroke();
+  doc.fontSize(10).font('Helvetica-Bold').fillColor('#000');
+  doc.text('Campo', currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+  
+  // Encabezado "Valor"
+  currentX += columnWidths[0];
+  doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+  doc.stroke();
+  doc.text('Valor', currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+  
+  // Dibujar filas de datos
+  currentY += rowHeight;
+  tableData.forEach(row => {
+    currentX = tableStartX;
+    
+    // Columna Campo
+    doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000');
+    doc.text(row.campo, currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+    
+    // Columna Valor
+    currentX += columnWidths[0];
+    doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica').fillColor('#000');
+    doc.text(row.valor, currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+    
+    currentY += rowHeight;
   });
   
-  // Renderizar columna derecha
-  currentY = startY;
-  rightFields.forEach(field => {
-    doc.fontSize(9).font('Helvetica-Bold')
-      .text(`${field.label}:`, rightCol, currentY, { continued: true });
-    doc.font('Helvetica')
-      .text(` ${field.value}`, rightCol + 80, currentY);
-    currentY += 15;
-  });
-  
-  // Ajustar posición Y para continuar después de las columnas
-  doc.y = Math.max(startY + (leftFields.length * 15), startY + (rightFields.length * 15)) + 20;
+  // Ajustar posición Y para continuar después de la tabla
+  doc.y = currentY + 20;
 }
 
 // Función específica para generar contenido de Inspección Diaria de Limpieza en PDF
