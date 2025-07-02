@@ -373,32 +373,13 @@ export default function ProductionForm({
         clearTimeout(autoSaveTimeoutRef.current);
       }
       
-      // Establecer nuevo timeout con captura del estado actual
+      // Establecer nuevo timeout con referencia al estado actual
       autoSaveTimeoutRef.current = setTimeout(() => {
         console.log(`Auto-guardando por cambio en ${field}...`);
         setIsAutoSaving(true);
         
-        // Usar setFormData para obtener el estado más reciente y luego guardar
-        setFormData((currentFormData: any) => {
-          console.log("Estado actual capturado para auto-guardado:", currentFormData);
-          
-          // Determinar el nuevo estado basado en el rol y datos completados
-          let newStatus = status;
-          
-          if (currentUserRole === "production_manager") {
-            if (currentFormData.responsible && currentFormData.lotNumber && status === ProductionFormStatus.DRAFT) {
-              newStatus = ProductionFormStatus.IN_PROGRESS;
-            }
-          }
-          
-          // Guardar con el estado actual
-          onSave({
-            ...currentFormData,
-            status: newStatus,
-          });
-          
-          return currentFormData; // No modificar el estado, solo usarlo para guardar
-        });
+        // Ejecutar el guardado manual que ya funciona correctamente
+        handleSave();
         
         setTimeout(() => setIsAutoSaving(false), 1000);
       }, 3000); // Guardar 3 segundos después del último cambio
@@ -438,61 +419,70 @@ export default function ProductionForm({
   
   // Manejar guardado del formulario con cambio automático de estado
   const handleSave = () => {
-    // Debug: verificar rol actual
-    console.log("Rol actual del usuario:", currentUserRole);
-    console.log("Estado actual:", status);
-    console.log("Datos de seguimiento:", {
-      startTime: formData.startTime,
-      hasTemperature: formData.temperature?.some((t: string) => t),
-      hasPressure: formData.pressure?.some((p: string) => p)
-    });
-    
-    // Determinar el nuevo estado basado en el rol y datos completados
-    let newStatus = status;
-    
-    if (currentUserRole === "production_manager") {
-      // Gerente de Producción: si completa información general → EN PROCESO
-      if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
-        newStatus = ProductionFormStatus.IN_PROGRESS;
+    try {
+      // Debug: verificar rol actual
+      console.log("Rol actual del usuario:", currentUserRole);
+      console.log("Estado actual:", status);
+      console.log("Datos de seguimiento:", {
+        startTime: formData.startTime,
+        hasTemperature: formData.temperature?.some((t: string) => t),
+        hasPressure: formData.pressure?.some((p: string) => p)
+      });
+      
+      // Determinar el nuevo estado basado en el rol y datos completados
+      let newStatus = status;
+      
+      if (currentUserRole === "production_manager") {
+        // Gerente de Producción: si completa información general → EN PROCESO
+        if (formData.responsible && formData.lotNumber && status === ProductionFormStatus.DRAFT) {
+          newStatus = ProductionFormStatus.IN_PROGRESS;
+        }
+      } else if (currentUserRole === "operator") {
+        // Operador: si completa seguimiento → PENDIENTE DE REVISIÓN
+        if ((formData.startTime || formData.temperature?.some((t: string) => t) || 
+             formData.pressure?.some((p: string) => p)) && 
+            (status === ProductionFormStatus.IN_PROGRESS || status === ProductionFormStatus.DRAFT)) {
+          newStatus = ProductionFormStatus.PENDING_REVIEW;
+          console.log("¡Cambiando estado a PENDING_REVIEW!");
+        }
+      } else if (currentUserRole === "quality_manager") {
+        // Gerente de Calidad: si completa verificación → COMPLETADO
+        if ((formData.finalBrix || formData.c_p || formData.yield)) {
+          newStatus = ProductionFormStatus.COMPLETED;
+          console.log("¡Cambiando estado a COMPLETED por Gerente de Calidad!");
+        }
       }
-    } else if (currentUserRole === "operator") {
-      // Operador: si completa seguimiento → PENDIENTE DE REVISIÓN
-      if ((formData.startTime || formData.temperature?.some((t: string) => t) || 
-           formData.pressure?.some((p: string) => p)) && 
-          (status === ProductionFormStatus.IN_PROGRESS || status === ProductionFormStatus.DRAFT)) {
-        newStatus = ProductionFormStatus.PENDING_REVIEW;
-        console.log("¡Cambiando estado a PENDING_REVIEW!");
+      
+      onSave({
+        ...formData,
+        status: newStatus,
+      });
+      
+      // Mostrar mensaje apropiado
+      let message = "Los cambios han sido guardados correctamente";
+      if (newStatus !== status) {
+        const statusNames = {
+          [ProductionFormStatus.DRAFT]: "Borrador",
+          [ProductionFormStatus.IN_PROGRESS]: "En Proceso",
+          [ProductionFormStatus.PENDING_REVIEW]: "Pendiente de Revisión", 
+          [ProductionFormStatus.COMPLETED]: "Completado"
+        };
+        message = `Estado actualizado automáticamente a: ${statusNames[newStatus]}`;
+        setStatus(newStatus);
       }
-    } else if (currentUserRole === "quality_manager") {
-      // Gerente de Calidad: si completa verificación → COMPLETADO
-      if ((formData.finalBrix || formData.c_p || formData.yield)) {
-        newStatus = ProductionFormStatus.COMPLETED;
-        console.log("¡Cambiando estado a COMPLETED por Gerente de Calidad!");
-      }
+      
+      toast({
+        title: "Formulario guardado",
+        description: message
+      });
+    } catch (error) {
+      console.error("Error en handleSave:", error);
+      toast({
+        title: "Error al guardar",
+        description: "Hubo un problema al guardar el formulario",
+        variant: "destructive"
+      });
     }
-    
-    onSave({
-      ...formData,
-      status: newStatus,
-    });
-    
-    // Mostrar mensaje apropiado
-    let message = "Los cambios han sido guardados correctamente";
-    if (newStatus !== status) {
-      const statusNames = {
-        [ProductionFormStatus.DRAFT]: "Borrador",
-        [ProductionFormStatus.IN_PROGRESS]: "En Proceso",
-        [ProductionFormStatus.PENDING_REVIEW]: "Pendiente de Revisión", 
-        [ProductionFormStatus.COMPLETED]: "Completado"
-      };
-      message = `Estado actualizado automáticamente a: ${statusNames[newStatus]}`;
-      setStatus(newStatus);
-    }
-    
-    toast({
-      title: "Formulario guardado",
-      description: message
-    });
   };
   
   // Manejar cambio de estado
