@@ -1796,14 +1796,14 @@ function generateInspeccionLimpiezaContentPDF(doc: any, entry: FormEntry, templa
   ];
   
   infoFields.forEach(field => {
-    doc.fontSize(10).font('Helvetica-Bold')
+    doc.fontSize(9).font('Helvetica-Bold')
       .text(`${field.label}:`, 50, doc.y, { continued: true });
     doc.font('Helvetica')
       .text(` ${field.value}`);
-    doc.moveDown(0.3);
+    doc.moveDown(0.2);
   });
   
-  doc.moveDown(1);
+  doc.moveDown(0.5);
   
   // Secciones de inspección
   const inspectionSections = [
@@ -1832,9 +1832,9 @@ function generateInspeccionLimpiezaContentPDF(doc: any, entry: FormEntry, templa
     }
     
     // Título de la sección
-    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+    doc.fontSize(10).font('Helvetica-Bold').fillColor('#000');
     doc.text(section.title, 50, doc.y);
-    doc.moveDown(0.5);
+    doc.moveDown(0.3);
     
     // Encontrar la sección en el template para obtener las actividades
     const templateSection = sectionData.find((s: any) => s.id === section.key);
@@ -1850,7 +1850,7 @@ function generateInspeccionLimpiezaContentPDF(doc: any, entry: FormEntry, templa
       const actividadWidth = 250;
       const pasaWidth = 80;
       const noPasaWidth = 80;
-      const rowHeight = 20;
+      const rowHeight = 16;
       
       // Encabezados de la tabla
       doc.fontSize(10).font('Helvetica-Bold');
@@ -1895,19 +1895,19 @@ function generateInspeccionLimpiezaContentPDF(doc: any, entry: FormEntry, templa
         doc.text(noPasaValue, 55 + actividadWidth + pasaWidth + 25, rowY + 6);
       });
       
-      doc.y = tableStartY + rowHeight + (activities.length * rowHeight) + 10;
+      doc.y = tableStartY + rowHeight + (activities.length * rowHeight) + 8;
     }
     
     // Mostrar empleado que realizó la inspección (si aplica)
     if (section.employee_key && sectionInfo[section.employee_key]) {
-      doc.fontSize(10).font('Helvetica-Bold')
+      doc.fontSize(8).font('Helvetica-Bold')
         .text('Realizado por:', 50, doc.y, { continued: true });
       doc.font('Helvetica')
         .text(` Empleado ID: ${sectionInfo[section.employee_key]}`);
-      doc.moveDown(0.3);
+      doc.moveDown(0.2);
     }
     
-    doc.moveDown(1);
+    doc.moveDown(0.5);
   });
   
   // Observaciones generales
