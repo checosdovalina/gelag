@@ -3,32 +3,53 @@
   "description": "Formulario para inspección diaria de limpieza de todas las áreas de la planta",
   "department": "Calidad",
   "version": "1.0",
-  "fields": [
+  "fields": [],
+  "sections": [
     {
-      "id": "folio",
-      "type": "text",
-      "label": "Folio",
-      "required": true,
-      "displayName": "Folio",
-      "placeholder": "Ingrese el folio",
-      "displayOrder": 1
-    },
-    {
-      "id": "fecha",
-      "type": "date",
-      "label": "Fecha",
-      "required": true,
-      "displayName": "Fecha",
-      "displayOrder": 2
-    },
-    {
-      "id": "departamento_emisor",
-      "type": "text",
-      "label": "Departamento emisor",
-      "required": true,
-      "displayName": "Departamento emisor",
-      "placeholder": "Control de Calidad",
-      "displayOrder": 3
+      "id": "informacion_documento",
+      "title": "Información del Documento",
+      "type": "section",
+      "fields": [
+        {
+          "id": "fecha",
+          "type": "date",
+          "label": "FECHA",
+          "required": true,
+          "displayName": "FECHA",
+          "displayOrder": 1
+        },
+        {
+          "id": "folio",
+          "type": "text",
+          "label": "FOLIO",
+          "required": true,
+          "displayName": "FOLIO",
+          "placeholder": "Ingresa el folio manualmente",
+          "displayOrder": 2
+        },
+        {
+          "id": "folio_produccion",
+          "type": "text",
+          "label": "FOLIO DE PRODUCCIÓN",
+          "required": false,
+          "displayName": "FOLIO DE PRODUCCIÓN",
+          "placeholder": "Ingresa el folio manualmente",
+          "displayOrder": 3
+        },
+        {
+          "id": "departamento_emisor",
+          "type": "select",
+          "label": "Departamento emisor",
+          "required": true,
+          "displayName": "Departamento emisor",
+          "options": [
+            { "value": "control_calidad", "label": "Control de Calidad" },
+            { "value": "produccion", "label": "Producción" },
+            { "value": "administracion", "label": "Administración" }
+          ],
+          "displayOrder": 4
+        }
+      ]
     },
     {
       "id": "tipo_documento",
