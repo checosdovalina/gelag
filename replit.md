@@ -127,15 +127,15 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
-### July 2, 2025 - Production Form Auto-Save Bug Fix - Critical Resolution
-- **CRITICAL BUG RESOLVED**: Fixed multiple form saves when typing in "Responsable" field in production forms
-- **Root cause**: Auto-save triggered on every keystroke instead of after user finished typing
-- **Solution implemented**: Debounce mechanism that cancels previous timeouts and only saves after 3 seconds of inactivity
-- **Technical improvements**: Added useRef for timeout management and cleanup on component unmount
-- **User experience**: Users can now type freely without creating multiple form entries per character
-- **Data integrity**: Prevents database pollution with incomplete/duplicate form entries
-- **Session stability**: Added error handling to prevent session logout from auto-save errors
-- **Simplified approach**: Changed to use existing handleSave function instead of complex state capture
+### July 2, 2025 - Auto-Save System Disabled & Employee Dropdown Implementation
+- **AUTO-SAVE COMPLETELY DISABLED**: Removed problematic auto-save functionality that caused multiple form saves and session issues
+- **ENHANCED USER INTERFACE**: Replaced "Responsable" text input with dropdown selection from active employees
+- **Employee Integration**: Connected production forms to employee database for consistent data entry
+- **System Stability**: Eliminated JavaScript errors and session logout issues caused by auto-save conflicts
+- **Manual Save Only**: Users now save forms manually using the "Guardar" button for better control
+- **Data Quality**: Employee dropdown prevents typos and ensures consistent naming across forms
+- **Filtered Selection**: Dropdown excludes viewer-only employees, showing only active production staff
+- **Department Display**: Employee dropdown shows name and department for better identification
 
 ### July 2, 2025 - Complete PDF Standardization for CA-RE Forms - Table Format Implementation
 - **SYSTEMATIC PDF ENHANCEMENT**: Implemented comprehensive PDF generation system for all specialized forms

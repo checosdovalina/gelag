@@ -174,6 +174,7 @@ export default function ProductionForm({
 }: ProductionFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { users: employees = [] } = useUsers();
   const [activeTab, setActiveTab] = useState("general-info");
   const [formData, setFormData] = useState<any>({
     // Inicializar campos base
@@ -366,24 +367,8 @@ export default function ProductionForm({
       }
     }
     
-    // Auto-guardar para campos importantes después de un delay con debounce
-    if (['startTime', 'endTime', 'responsible', 'lotNumber', 'finalBrix', 'yield', 'cmConsistometer'].includes(field)) {
-      // Limpiar timeout previo si existe
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-      
-      // Establecer nuevo timeout con referencia al estado actual
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        console.log(`Auto-guardando por cambio en ${field}...`);
-        setIsAutoSaving(true);
-        
-        // Ejecutar el guardado manual que ya funciona correctamente
-        handleSave();
-        
-        setTimeout(() => setIsAutoSaving(false), 1000);
-      }, 3000); // Guardar 3 segundos después del último cambio
-    }
+    // Auto-guardado desactivado para mejorar estabilidad del sistema
+    // Los usuarios pueden guardar manualmente usando el botón "Guardar"
   };
   
   // Función para auto-actualizar estado según el workflow
@@ -699,13 +684,22 @@ export default function ProductionForm({
                   
                   <div>
                     <Label htmlFor="responsible">Responsable</Label>
-                    <Input
-                      id="responsible"
-                      value={formData.responsible || ""}
-                      onChange={(e) => handleChange("responsible", e.target.value)}
-                      placeholder="Nombre del responsable"
+                    <Select 
+                      value={formData.responsible || ""} 
+                      onValueChange={(value) => handleChange("responsible", value)}
                       disabled={!canEditSection("general-info") || readOnly}
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar responsable" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {employees?.filter((emp: any) => emp.role !== 'viewer').map((employee: any) => (
+                          <SelectItem key={employee.id} value={employee.name}>
+                            {employee.name} - {employee.department || 'Sin departamento'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <div>
