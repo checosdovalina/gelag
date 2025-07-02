@@ -2541,7 +2541,7 @@ export default function FormViewer({
                       )}
                       <div className="p-4 rounded border bg-gray-50">
                         {section.fields && section.fields.map((field) => renderField(field))}
-                        {section.type === "checklist_table" && section.columns && section.rows && (
+                        {section.type === "checklist_table" && (section.data || (section.columns && section.rows)) && (
                           <div className="mt-4">
                             <Table>
                               <TableHeader>
@@ -2552,7 +2552,7 @@ export default function FormViewer({
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {section.rows.map((row: any, rowIndex: number) => (
+                                {(section.data || section.rows || []).map((row: any, rowIndex: number) => (
                                   <TableRow key={rowIndex}>
                                     <TableCell className="text-sm">{row.actividad}</TableCell>
                                     <TableCell className="text-center">
