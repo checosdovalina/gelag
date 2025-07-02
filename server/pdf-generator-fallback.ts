@@ -717,6 +717,12 @@ function generatePDFContent(
     generateLiberacionPreoperativaContentPDF(doc, entry);
     return;
   }
+  
+  // Verificar si es un formulario de Inspección Diaria de Limpieza
+  if (template.name?.includes('INSPECCIÓN DIARIA DE LIMPIEZA') || template.name?.includes('CA-RE-07-01')) {
+    generateInspeccionLimpiezaContentPDF(doc, entry, template);
+    return;
+  }
 
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
@@ -1911,4 +1917,156 @@ function generateLiberacionPreoperativaContentPDF(doc: any, entry: FormEntry): v
       doc.y = checklistStartY + checkRowHeight + (section.data.length * checkRowHeight) + 20;
     }
   });
+}
+
+// Función específica para generar contenido de Inspección Diaria de Limpieza en PDF
+function generateInspeccionLimpiezaContentPDF(doc: any, entry: FormEntry, template: FormTemplate): void {
+  const data = entry.data as any;
+  
+  // Información general del documento
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('INFORMACIÓN DEL DOCUMENTO', 50, doc.y);
+  doc.moveDown(0.5);
+  
+  // Campos básicos de información
+  const infoFields = [
+    { label: 'Fecha', value: data.fecha || 'No especificado' },
+    { label: 'Folio', value: data.folio || 'No especificado' },
+    { label: 'Folio de Producción', value: data.folio_produccion || 'No especificado' },
+    { label: 'Departamento Emisor', value: data.departamento_emisor || 'No especificado' }
+  ];
+  
+  infoFields.forEach(field => {
+    doc.fontSize(10).font('Helvetica-Bold')
+      .text(`${field.label}:`, 50, doc.y, { continued: true });
+    doc.font('Helvetica')
+      .text(` ${field.value}`);
+    doc.moveDown(0.3);
+  });
+  
+  doc.moveDown(1);
+  
+  // Secciones de inspección
+  const inspectionSections = [
+    { title: 'ADUANA PERSONAL', key: 'aduana_personal', employee_key: 'realizado_por' },
+    { title: 'ALMACÉN MATERIA PRIMA', key: 'almacen_materia_prima' },
+    { title: 'ÁREA DE REPOSO', key: 'area_reposo' },
+    { title: 'ÁREA DE DULCES', key: 'area_dulces' },
+    { title: 'ÁREA DE PRODUCCIÓN', key: 'area_produccion' },
+    { title: 'ÁREA DE EMPAQUE', key: 'area_empaque' },
+    { title: 'ÁREA DE ENVASADO', key: 'area_envasado' },
+    { title: 'SERVICIOS SANITARIOS', key: 'servicios_sanitarios', employee_key: 'realizado_por' },
+    { title: 'ÁREAS EXTERNAS', key: 'areas_externas', employee_key: 'realizado_por' },
+    { title: 'ALMACÉN PRODUCTO TERMINADO', key: 'almacen_producto_terminado', employee_key: 'realizado_por' }
+  ];
+  
+  // Obtener el template para acceder a la estructura de datos
+  const sectionData = template.structure?.sections || [];
+  
+  inspectionSections.forEach(section => {
+    const sectionInfo = data[section.key];
+    if (!sectionInfo) return;
+    
+    // Verificar si necesitamos nueva página
+    if (doc.y > doc.page.height - 150) {
+      doc.addPage();
+    }
+    
+    // Título de la sección
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+    doc.text(section.title, 50, doc.y);
+    doc.moveDown(0.5);
+    
+    // Encontrar la sección en el template para obtener las actividades
+    const templateSection = sectionData.find(s => s.id === section.key);
+    let activities = [];
+    
+    if (templateSection && templateSection.data) {
+      activities = templateSection.data;
+    }
+    
+    // Si tenemos actividades del template, mostrarlas en formato tabla
+    if (activities.length > 0) {
+      const tableStartY = doc.y;
+      const actividadWidth = 250;
+      const pasaWidth = 80;
+      const noPasaWidth = 80;
+      const rowHeight = 20;
+      
+      // Encabezados de la tabla
+      doc.fontSize(10).font('Helvetica-Bold');
+      doc.rect(50, tableStartY, actividadWidth, rowHeight).fillAndStroke('#f0f0f0', '#000');
+      doc.fillColor('#000').text('Actividad', 55, tableStartY + 6);
+      doc.rect(50 + actividadWidth, tableStartY, pasaWidth, rowHeight).fillAndStroke('#f0f0f0', '#000');
+      doc.fillColor('#000').text('Pasa', 55 + actividadWidth + 20, tableStartY + 6);
+      doc.rect(50 + actividadWidth + pasaWidth, tableStartY, noPasaWidth, rowHeight).fillAndStroke('#f0f0f0', '#000');
+      doc.fillColor('#000').text('No Pasa', 55 + actividadWidth + pasaWidth + 15, tableStartY + 6);
+      
+      // Filas de datos
+      activities.forEach((activity, index) => {
+        const rowY = tableStartY + rowHeight + (index * rowHeight);
+        
+        doc.fontSize(9).font('Helvetica');
+        
+        // Actividad
+        doc.rect(50, rowY, actividadWidth, rowHeight).stroke();
+        doc.text(activity.actividad || `Actividad ${index + 1}`, 55, rowY + 6, {
+          width: actividadWidth - 10,
+          height: rowHeight - 12
+        });
+        
+        // Pasa
+        doc.rect(50 + actividadWidth, rowY, pasaWidth, rowHeight).stroke();
+        let pasaValue = '';
+        if (Array.isArray(sectionInfo)) {
+          pasaValue = sectionInfo[index]?.pasa ? '✓' : '';
+        } else if (sectionInfo[index]) {
+          pasaValue = sectionInfo[index].pasa ? '✓' : '';
+        }
+        doc.text(pasaValue, 55 + actividadWidth + 30, rowY + 6);
+        
+        // No Pasa
+        doc.rect(50 + actividadWidth + pasaWidth, rowY, noPasaWidth, rowHeight).stroke();
+        let noPasaValue = '';
+        if (Array.isArray(sectionInfo)) {
+          noPasaValue = sectionInfo[index]?.no_pasa ? '✓' : '';
+        } else if (sectionInfo[index]) {
+          noPasaValue = sectionInfo[index].no_pasa ? '✓' : '';
+        }
+        doc.text(noPasaValue, 55 + actividadWidth + pasaWidth + 25, rowY + 6);
+      });
+      
+      doc.y = tableStartY + rowHeight + (activities.length * rowHeight) + 10;
+    }
+    
+    // Mostrar empleado que realizó la inspección (si aplica)
+    if (section.employee_key && sectionInfo[section.employee_key]) {
+      doc.fontSize(10).font('Helvetica-Bold')
+        .text('Realizado por:', 50, doc.y, { continued: true });
+      doc.font('Helvetica')
+        .text(` Empleado ID: ${sectionInfo[section.employee_key]}`);
+      doc.moveDown(0.3);
+    }
+    
+    doc.moveDown(1);
+  });
+  
+  // Observaciones generales
+  if (data.observaciones_generales) {
+    // Verificar si necesitamos nueva página
+    if (doc.y > doc.page.height - 100) {
+      doc.addPage();
+    }
+    
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+    doc.text('OBSERVACIONES GENERALES', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    doc.fontSize(10).font('Helvetica');
+    doc.text(data.observaciones_generales, 50, doc.y, {
+      width: doc.page.width - 100,
+      align: 'justify'
+    });
+    doc.moveDown(1);
+  }
 }
