@@ -160,16 +160,16 @@ export default function FormViewer({
   const { data: employees = [], isLoading: employeesLoading } = useQuery<Employee[]>({
     queryKey: ['/api/employees'],
     queryFn: async () => {
+      console.log('[FORM-VIEWER] Cargando empleados...');
       const response = await fetch('/api/employees');
       if (!response.ok) {
         throw new Error('Error al cargar empleados');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('[FORM-VIEWER] Empleados cargados:', data);
+      return data;
     },
-    enabled: formTemplate.fields ? formTemplate.fields.some(field => field.type === 'employee' || field.type === 'employeeByType') : 
-             formTemplate.sections ? formTemplate.sections.some(section => 
-               section.fields && section.fields.some(field => field.type === 'employee' || field.type === 'employeeByType')
-             ) : false
+    enabled: true  // Siempre cargar empleados para formularios de checklist
   });
 
   // Cargar lista de usuarios
@@ -2615,11 +2615,17 @@ export default function FormViewer({
                                             <SelectValue placeholder="Seleccionar empleado..." />
                                           </SelectTrigger>
                                           <SelectContent>
-                                            {employees?.map((employee) => (
-                                              <SelectItem key={employee.id} value={employee.id.toString()}>
-                                                {employee.name}
+                                            {employees && employees.length > 0 ? (
+                                              employees.map((employee) => (
+                                                <SelectItem key={employee.id} value={employee.id.toString()}>
+                                                  {employee.name}
+                                                </SelectItem>
+                                              ))
+                                            ) : (
+                                              <SelectItem value="" disabled>
+                                                {employeesLoading ? "Cargando empleados..." : "No hay empleados disponibles"}
                                               </SelectItem>
-                                            ))}
+                                            )}
                                           </SelectContent>
                                         </Select>
                                       )}
