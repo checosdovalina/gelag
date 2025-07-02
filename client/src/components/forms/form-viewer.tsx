@@ -2622,7 +2622,7 @@ export default function FormViewer({
                                                 </SelectItem>
                                               ))
                                             ) : (
-                                              <SelectItem value="" disabled>
+                                              <SelectItem value="no_employees" disabled>
                                                 {employeesLoading ? "Cargando empleados..." : "No hay empleados disponibles"}
                                               </SelectItem>
                                             )}
