@@ -137,6 +137,7 @@ GELAG is a comprehensive form management system designed for quality control and
 - **Filtered Selection**: Dropdown excludes viewer-only employees and users without departments, showing only active production staff
 - **Department Display**: Employee dropdown shows name and department for better identification
 - **Enhanced Deletion Permissions**: Admin, gerente_produccion, and gerente_calidad roles can now delete production forms
+- **User Management Access**: Production and Quality managers now have access to user management module for creating and editing users
 
 ### July 2, 2025 - Complete PDF Standardization for CA-RE Forms - Table Format Implementation
 - **SYSTEMATIC PDF ENHANCEMENT**: Implemented comprehensive PDF generation system for all specialized forms

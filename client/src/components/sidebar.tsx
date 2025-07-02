@@ -53,7 +53,7 @@ export default function Sidebar({ className }: SidebarProps) {
       title: "Gestión de Usuarios",
       href: "/users",
       icon: <Users className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin,
+      show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager,
     },
     {
       title: "Crear Formularios",

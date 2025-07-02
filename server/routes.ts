@@ -338,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       console.log("[UserCreation] Datos recibidos:", JSON.stringify(req.body, null, 2));
       
@@ -384,7 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  app.put("/api/users/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id);
       if (isNaN(userId)) {
