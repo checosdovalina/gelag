@@ -736,6 +736,15 @@ function generatePDFContent(
     return;
   }
 
+  // Verificar si es un formulario de Liberación de Leche
+  if (template.name?.includes('CA-RE-11-01') || template.name?.includes('Liberacion de Leche')) {
+    console.log('=== GENERANDO PDF DE LIBERACIÓN DE LECHE ===');
+    console.log('Template name:', template.name);
+    console.log('Entry data keys:', Object.keys(entry.data || {}));
+    generateLiberacionLecheContentPDF(doc, entry, template);
+    return;
+  }
+
   // Contenido del formulario
   if (template.structure && template.structure.fields) {
     const fields = template.structure.fields;
@@ -1864,6 +1873,126 @@ function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, temp
     { campo: 'Temperatura', valor: temperatura || 'No especificado' },
     { campo: 'Observación', valor: observacion || 'No especificado' },
     { campo: 'Revisó', valor: reviso || 'No especificado' }
+  ];
+  
+  // Dibujar encabezados de tabla
+  let currentX = tableStartX;
+  let currentY = tableStartY;
+  
+  // Encabezado "Campo"
+  doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+  doc.stroke();
+  doc.fontSize(10).font('Helvetica-Bold').fillColor('#000');
+  doc.text('Campo', currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+  
+  // Encabezado "Valor"
+  currentX += columnWidths[0];
+  doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+  doc.stroke();
+  doc.text('Valor', currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+  
+  // Dibujar filas de datos
+  currentY += rowHeight;
+  tableData.forEach(row => {
+    currentX = tableStartX;
+    
+    // Columna Campo
+    doc.rect(currentX, currentY, columnWidths[0], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#000');
+    doc.text(row.campo, currentX + 5, currentY + 5, { width: columnWidths[0] - 10 });
+    
+    // Columna Valor
+    currentX += columnWidths[0];
+    doc.rect(currentX, currentY, columnWidths[1], rowHeight);
+    doc.stroke();
+    doc.fontSize(9).font('Helvetica').fillColor('#000');
+    doc.text(row.valor, currentX + 5, currentY + 5, { width: columnWidths[1] - 10 });
+    
+    currentY += rowHeight;
+  });
+  
+  // Ajustar posición Y para continuar después de la tabla
+  doc.y = currentY + 20;
+}
+
+// Función específica para generar contenido de Liberación de Leche en PDF
+function generateLiberacionLecheContentPDF(doc: any, entry: FormEntry, template: FormTemplate): void {
+  const data = entry.data as any;
+  
+  console.log('=== DATOS DEL FORMULARIO CA-RE-11-01 ===');
+  console.log(JSON.stringify(data, null, 2));
+  
+  // Obtener los campos del template para mapear IDs a labels
+  const fields = (template.structure as any)?.fields || [];
+  const fieldMap: Record<string, string> = {};
+  
+  fields.forEach((field: any) => {
+    fieldMap[field.id] = field.label;
+  });
+  
+  console.log('=== MAPEO DE CAMPOS ===');
+  console.log(JSON.stringify(fieldMap, null, 2));
+  
+  // Mapear datos usando los IDs reales del formulario
+  let folio = '';
+  let fecha = '';
+  let tipoLeche = '';
+  let acidez = '';
+  let temperatura = '';
+  let lote = '';
+  let seAprueba = '';
+  let observaciones = '';
+  
+  Object.keys(data).forEach(key => {
+    const fieldLabel = fieldMap[key]?.toLowerCase() || '';
+    const value = data[key];
+    
+    console.log(`Mapeando: ${key} -> ${fieldLabel} = ${value}`);
+    
+    if (fieldLabel.includes('folio') && !fieldLabel.includes('produccion')) {
+      folio = value;
+    } else if (fieldLabel.includes('fecha') && !fieldLabel.includes('emisión')) {
+      fecha = value;
+    } else if (fieldLabel.includes('tipo de leche')) {
+      tipoLeche = value;
+    } else if (fieldLabel.includes('acidez')) {
+      acidez = value;
+    } else if (fieldLabel.includes('temperatura')) {
+      temperatura = value;
+    } else if (fieldLabel.includes('lote')) {
+      lote = value;
+    } else if (fieldLabel.includes('aprueba')) {
+      seAprueba = value;
+    } else if (fieldLabel.includes('observacion')) {
+      observaciones = value;
+    }
+  });
+  
+  console.log('=== VALORES MAPEADOS ===');
+  console.log(`Folio: ${folio}, Fecha: ${fecha}, Tipo Leche: ${tipoLeche}, Acidez: ${acidez}, Temperatura: ${temperatura}, Lote: ${lote}, Se Aprueba: ${seAprueba}, Observaciones: ${observaciones}`);
+  
+  // Formato en tabla organizada
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
+  doc.text('DATOS DE LIBERACIÓN DE LECHE', 50, doc.y, { align: 'center', width: doc.page.width - 100 });
+  doc.moveDown(0.5);
+  
+  // Crear tabla con todos los datos organizados
+  const tableStartX = 50;
+  const tableStartY = doc.y;
+  const columnWidths = [180, 200]; // Campo, Valor
+  const rowHeight = 18;
+  
+  // Datos para la tabla
+  const tableData = [
+    { campo: 'Folio', valor: folio || 'No especificado' },
+    { campo: 'Fecha', valor: fecha ? new Date(fecha).toLocaleDateString('es-MX') : 'No especificado' },
+    { campo: 'Tipo de Leche', valor: tipoLeche || 'No especificado' },
+    { campo: 'Acidez (°Dornic)', valor: acidez || 'No especificado' },
+    { campo: 'Temperatura de Tanque', valor: temperatura || 'No especificado' },
+    { campo: 'Lote', valor: lote || 'No especificado' },
+    { campo: 'Se Aprueba', valor: seAprueba === 'si' ? 'SÍ ✓' : seAprueba === 'no' ? 'NO ✗' : seAprueba || 'No especificado' },
+    { campo: 'Observaciones', valor: observaciones || 'No especificado' }
   ];
   
   // Dibujar encabezados de tabla
