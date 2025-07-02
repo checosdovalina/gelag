@@ -1794,8 +1794,54 @@ function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, temp
   console.log('=== DATOS DEL FORMULARIO CA-RE-08-01 ===');
   console.log(JSON.stringify(data, null, 2));
   
-  // Mapeo directo de los datos conocidos del formulario
-  // Según los datos del log: folio: "D22223", equipo: "TESR", serie: "re443434", fecha: "2025-07-01", hora: "03:43", temperatura: "34", observacion: "test", reviso: 2
+  // Obtener los campos del template para mapear IDs a labels
+  const fields = (template.structure as any)?.fields || [];
+  const fieldMap: Record<string, string> = {};
+  
+  fields.forEach((field: any) => {
+    fieldMap[field.id] = field.label;
+  });
+  
+  console.log('=== MAPEO DE CAMPOS ===');
+  console.log(JSON.stringify(fieldMap, null, 2));
+  
+  // Mapear datos usando los IDs reales del formulario
+  let folio = '';
+  let equipo = '';
+  let serie = '';
+  let fecha = '';
+  let hora = '';
+  let temperatura = '';
+  let observacion = '';
+  let reviso = '';
+  
+  Object.keys(data).forEach(key => {
+    const fieldLabel = fieldMap[key]?.toLowerCase() || '';
+    const value = data[key];
+    
+    console.log(`Mapeando: ${key} -> ${fieldLabel} = ${value}`);
+    
+    if (fieldLabel.includes('folio')) {
+      folio = value;
+    } else if (fieldLabel.includes('equipo')) {
+      equipo = value;
+    } else if (fieldLabel.includes('serie')) {
+      serie = value;
+    } else if (fieldLabel.includes('fecha')) {
+      fecha = value;
+    } else if (fieldLabel.includes('hora')) {
+      hora = value;
+    } else if (fieldLabel.includes('temperatura')) {
+      temperatura = value;
+    } else if (fieldLabel.includes('observacion')) {
+      observacion = value;
+    } else if (fieldLabel.includes('reviso')) {
+      reviso = value;
+    }
+  });
+  
+  console.log('=== VALORES MAPEADOS ===');
+  console.log(`Folio: ${folio}, Equipo: ${equipo}, Serie: ${serie}, Fecha: ${fecha}, Hora: ${hora}, Temperatura: ${temperatura}, Observación: ${observacion}, Revisó: ${reviso}`);
   
   // Formato en sección GENERAL de dos columnas
   doc.fontSize(12).font('Helvetica-Bold').fillColor('#000');
@@ -1812,37 +1858,30 @@ function generateRegistroTemperaturasContentPDF(doc: any, entry: FormEntry, temp
   const rightCol = doc.page.width / 2 + 20;
   const startY = doc.y;
   
-  // Mapeo correcto según datos reales vs labels del PDF
+  // Columna izquierda con solo el folio
   const leftFields = [
-    { label: 'Folio', value: data.folio || 'No especificado' },
-    { label: 'Folio', value: '' }, // No hay folio de producción en este formulario
-    { label: 'Fechaemision', value: '' }, // No especificado en este formulario
-    { label: 'Remplaza', value: '' }, // No especificado
-    { label: 'Departamentomisor', value: '' }, // No especificado
-    { label: 'Tipo de Documento', value: '' }, // No especificado
-    { label: 'Equipo', value: data.equipo || 'No especificado' } // Cambiado de "Fecha" a "Equipo"
+    { label: 'Folio', value: folio || 'No especificado' },
+    { label: 'Equipo', value: equipo || 'No especificado' }
   ];
   
-  // Mapeo correcto para columna derecha
+  // Columna derecha con el resto de datos
   const rightFields = [
-    { label: 'Serie', value: data.serie || 'No especificado' }, // Cambiado de "Fecha de caducidad"
-    { label: 'Fecha', value: data.fecha ? new Date(data.fecha).toLocaleDateString('es-MX') : 'No especificado' }, // Cambiado de "Producto"
-    { label: 'Hora', value: data.hora || 'No especificado' }, // Cambiado de "Fecha de caducidad"  
-    { label: 'Temperatura', value: data.temperatura || 'No especificado' }, // Cambiado de "Lote"
-    { label: 'Observación', value: data.observacion || 'No especificado' }, // Cambiado de "Apariencia"
-    { label: 'Revisó', value: data.reviso || 'No especificado' } // Cambiado de "Observaciones"
+    { label: 'Serie', value: serie || 'No especificado' },
+    { label: 'Fecha', value: fecha ? new Date(fecha).toLocaleDateString('es-MX') : 'No especificado' },
+    { label: 'Hora', value: hora || 'No especificado' },
+    { label: 'Temperatura', value: temperatura || 'No especificado' },
+    { label: 'Observación', value: observacion || 'No especificado' },
+    { label: 'Revisó', value: reviso || 'No especificado' }
   ];
   
   // Renderizar columna izquierda
   let currentY = startY;
   leftFields.forEach(field => {
-    if (field.value) { // Solo mostrar campos que tienen valor
-      doc.fontSize(9).font('Helvetica-Bold')
-        .text(`${field.label}:`, leftCol, currentY, { continued: true });
-      doc.font('Helvetica')
-        .text(` ${field.value}`, leftCol + 80, currentY);
-      currentY += 15;
-    }
+    doc.fontSize(9).font('Helvetica-Bold')
+      .text(`${field.label}:`, leftCol, currentY, { continued: true });
+    doc.font('Helvetica')
+      .text(` ${field.value}`, leftCol + 80, currentY);
+    currentY += 15;
   });
   
   // Renderizar columna derecha
