@@ -540,6 +540,133 @@ export async function generatePDFFallback(
   });
 }
 
+// Función para generar contenido específico del formulario CA-RE-05-01
+function generateCARE0501Content(doc: any, entry: FormEntry): void {
+  const data = entry.data as any;
+  
+  // Header del documento
+  doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000');
+  doc.text('CA-RE-05-01 REGISTRO DE LIBERACIÓN DE PASTAS Y CAJETAS', 50, 50, { align: 'center' });
+  
+  // Información de la empresa
+  doc.fontSize(9).font('Helvetica');
+  doc.text('GELAG S.A. DE C.V. - BLVD. SANTA RITA #842, PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO.', 50, 75, { align: 'center' });
+  
+  // Sección de información del documento
+  const leftCol = 50;
+  const rightCol = doc.page.width / 2 + 50;
+  let currentY = 100;
+  
+  doc.fontSize(9).font('Helvetica-Bold');
+  
+  // Primera fila
+  doc.text('Folio:', leftCol, currentY);
+  doc.font('Helvetica').text(data.folio || data['880d4f31-50bf-4c54-9763-5ceeb11ae675'] || '', leftCol + 40, currentY);
+  
+  doc.font('Helvetica-Bold').text('Creado por:', rightCol, currentY);
+  doc.font('Helvetica').text('Super Admin', rightCol + 70, currentY);
+  
+  currentY += 15;
+  
+  // Segunda fila
+  doc.font('Helvetica-Bold').text('Fecha:', leftCol, currentY);
+  doc.font('Helvetica').text(data.fecha_emision || data['09422a8c-6f04-4ba6-8da9-571119f85d01'] || new Date().toLocaleDateString('es-MX'), leftCol + 40, currentY);
+  
+  doc.font('Helvetica-Bold').text('Departamento:', rightCol, currentY);
+  doc.font('Helvetica').text(data.departamento_emisor || data['2808c764-21d6-466d-b7ee-13d688286046'] || 'Calidad', rightCol + 70, currentY);
+  
+  currentY += 15;
+  
+  // Tercera fila
+  doc.font('Helvetica-Bold').text('Estado:', leftCol, currentY);
+  doc.font('Helvetica').text('Borrador', leftCol + 40, currentY);
+  
+  currentY += 30;
+  
+  // Línea separadora
+  doc.moveTo(leftCol, currentY).lineTo(doc.page.width - 50, currentY).stroke();
+  currentY += 20;
+  
+  // Sección GENERAL
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
+  doc.text('GENERAL', doc.page.width / 2 - 30, currentY, { align: 'center' });
+  currentY += 25;
+  
+  // Datos del formulario en dos columnas
+  doc.fontSize(9).font('Helvetica-Bold');
+  
+  // Columna izquierda
+  doc.text('Folio:', leftCol, currentY);
+  doc.font('Helvetica').text(data['880d4f31-50bf-4c54-9763-5ceeb11ae675'] || '', leftCol + 80, currentY);
+  
+  // Columna derecha
+  doc.font('Helvetica-Bold').text('Fecha de caducidad:', rightCol, currentY);
+  doc.font('Helvetica').text(data['c60d665f-d192-4de0-a3fe-ce975003a47a'] || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Segunda fila de datos
+  doc.font('Helvetica-Bold').text('Folio:', leftCol, currentY);
+  doc.font('Helvetica').text(data['5e5b9332-25a1-407b-bb26-16255ec08a14'] || '', leftCol + 80, currentY);
+  
+  doc.font('Helvetica-Bold').text('Producto:', rightCol, currentY);
+  doc.font('Helvetica').text(getProductName(data['e2f03c78-baf5-425a-aed5-50b4a8a2e394']) || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Tercera fila
+  doc.font('Helvetica-Bold').text('Fecha/emisión:', leftCol, currentY);
+  doc.font('Helvetica').text(data['47d82551-be7b-4843-a234-739f6b5cff2d'] || '', leftCol + 80, currentY);
+  
+  doc.font('Helvetica-Bold').text('Fecha de caducidad:', rightCol, currentY);
+  doc.font('Helvetica').text(data['ad358527-4023-4a0b-aa26-b02aad16233d'] || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Cuarta fila
+  doc.font('Helvetica-Bold').text('Remplaza:', leftCol, currentY);
+  doc.font('Helvetica').text(data['0b79cfeb-f7a3-40f7-89d1-156679f2ec2f'] || '', leftCol + 80, currentY);
+  
+  doc.font('Helvetica-Bold').text('Lote:', rightCol, currentY);
+  doc.font('Helvetica').text(data['267d6fdf-1569-4e33-8c3a-91a0df8e10d7'] || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Quinta fila
+  doc.font('Helvetica-Bold').text('Departamento/emisor:', leftCol, currentY);
+  doc.font('Helvetica').text(data['2808c764-21d6-466d-b7ee-13d688286046'] || '', leftCol + 80, currentY);
+  
+  doc.font('Helvetica-Bold').text('Apariencia:', rightCol, currentY);
+  doc.font('Helvetica').text(data['eba1cdfd-fb35-4145-82cf-32e92a3abaf7'] || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Sexta fila
+  doc.font('Helvetica-Bold').text('Tipo de Documento:', leftCol, currentY);
+  doc.font('Helvetica').text(data['45e1d284-cf5f-4354-9b4d-188dc41f0db2'] || '', leftCol + 80, currentY);
+  
+  doc.font('Helvetica-Bold').text('Observaciones:', rightCol, currentY);
+  doc.font('Helvetica').text(data['e3c86587-2cd8-45c5-96ca-32590e51afd6'] || '', rightCol + 100, currentY);
+  
+  currentY += 15;
+  
+  // Séptima fila
+  doc.font('Helvetica-Bold').text('Fecha:', leftCol, currentY);
+  doc.font('Helvetica').text(data['47d82551-be7b-4843-a234-739f6b5cff2d'] || '', leftCol + 80, currentY);
+  
+  currentY += 30;
+  doc.y = currentY;
+}
+
+// Función auxiliar para obtener nombre del producto
+function getProductName(productId: any): string {
+  // Esta función debería obtener el nombre real del producto desde la base de datos
+  // Por ahora retornamos el ID o un valor por defecto
+  if (productId === 5) return 'Cajeta Envinada';
+  if (productId === 28) return 'CAJETON ESPESA';
+  return productId ? `Producto ${productId}` : '';
+}
+
 // Función para generar el contenido del PDF
 function generatePDFContent(
   doc: any, // Usar any en lugar de PDFKit.PDFDocument para evitar errores de tipado
@@ -724,6 +851,15 @@ function generatePDFContent(
     console.log('Template name:', template.name);
     console.log('Entry data keys:', Object.keys(entry.data || {}));
     generateInspeccionLimpiezaContentPDF(doc, entry, template);
+    return;
+  }
+  
+  // Verificar si es un formulario de Liberación de Pastas y Cajetas
+  if (template.name?.includes('LIBERACIÓN DE PASTAS Y CAJETAS') || template.name?.includes('CA-RE-05-01')) {
+    console.log('=== GENERANDO PDF DE LIBERACIÓN DE PASTAS Y CAJETAS ===');
+    console.log('Template name:', template.name);
+    console.log('Entry data keys:', Object.keys(entry.data || {}));
+    generateCARE0501Content(doc, entry);
     return;
   }
 
