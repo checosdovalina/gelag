@@ -1,0 +1,441 @@
+{
+  "title": "CA-RE-05-01 - Registro de Liberación de Pastas y Cajetas",
+  "fields": [
+    {
+      "id": "info_documento",
+      "type": "text",
+      "label": "INFORMACIÓN DEL DOCUMENTO",
+      "disabled": true,
+      "value": "REGISTRO DE LIBERACIÓN DE PASTAS Y CAJETAS - CARE-05-01"
+    },
+    {
+      "id": "empresa_info",
+      "type": "text", 
+      "label": "Empresa",
+      "disabled": true,
+      "value": "GELAG S.A. DE C.V. - BLVD. SANTA RITA #842 PARQUE INDUSTRIAL SANTA RITA, GOMEZ PALACIO, DGO."
+    },
+    {
+      "id": "fecha_emision",
+      "type": "date",
+      "label": "Fecha de emisión",
+      "required": true
+    },
+    {
+      "id": "revision",
+      "type": "text",
+      "label": "Revisión",
+      "value": "02-2023",
+      "disabled": true
+    },
+    {
+      "id": "pagina",
+      "type": "text",
+      "label": "Página",
+      "value": "1 de 1",
+      "disabled": true
+    },
+    {
+      "id": "departamento_emisor",
+      "type": "select",
+      "label": "Departamento emisor",
+      "options": [
+        { "label": "Control de Calidad", "value": "control_calidad" },
+        { "label": "Producción", "value": "produccion" },
+        { "label": "Administración", "value": "administracion" }
+      ],
+      "required": true
+    },
+    {
+      "id": "recibido_plana",
+      "type": "text",
+      "label": "Recibido Plana",
+      "value": "No Aplica",
+      "disabled": true
+    },
+    {
+      "id": "tipo_documento",
+      "type": "text",
+      "label": "Tipo de Documento",
+      "value": "Registro",
+      "disabled": true
+    },
+    {
+      "id": "tabla_liberacion",
+      "type": "table",
+      "label": "Registro de Liberación de Pastas y Cajetas",
+      "columns": [
+        {
+          "id": "fecha_elaboracion",
+          "header": "FECHA DE ELABORACIÓN",
+          "type": "text"
+        },
+        {
+          "id": "producto",
+          "header": "PRODUCTO",
+          "type": "text"
+        },
+        {
+          "id": "grados_bx",
+          "header": "GRADOS °Bx",
+          "type": "text"
+        },
+        {
+          "id": "consistometro",
+          "header": "CONSISTÓMETRO No. CM",
+          "type": "text"
+        },
+        {
+          "id": "temp_adicion_sorbato",
+          "header": "TEMP DE ADICIÓN SORBATO",
+          "type": "text"
+        },
+        {
+          "id": "viscosidad",
+          "header": "VISCOSIDAD (cP)",
+          "type": "text"
+        },
+        {
+          "id": "apariencia",
+          "header": "APARIENCIA (BUENA, REGULAR, MALA)",
+          "type": "select",
+          "options": [
+            { "label": "BUENA", "value": "buena" },
+            { "label": "REGULAR", "value": "regular" },
+            { "label": "MALA", "value": "mala" }
+          ]
+        },
+        {
+          "id": "folio_certificado_leche",
+          "header": "FOLIO CERTIFICADO DE LECHE",
+          "type": "text"
+        },
+        {
+          "id": "no_marmita",
+          "header": "NO. MARMITA",
+          "type": "text"
+        },
+        {
+          "id": "turno",
+          "header": "TURNO (AM/PM/NOC)",
+          "type": "select",
+          "options": [
+            { "label": "AM", "value": "am" },
+            { "label": "PM", "value": "pm" },
+            { "label": "NOC", "value": "noc" }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        },
+        {
+          "fecha_elaboracion": "",
+          "producto": "",
+          "grados_bx": "",
+          "consistometro": "",
+          "temp_adicion_sorbato": "",
+          "viscosidad": "",
+          "apariencia": "",
+          "folio_certificado_leche": "",
+          "no_marmita": "",
+          "turno": ""
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "control_calidad_seccion",
+      "type": "text",
+      "label": "Control de Calidad",
+      "disabled": true,
+      "value": "Control de Calidad"
+    },
+    {
+      "id": "responsable_calidad",
+      "type": "employee",
+      "label": "Responsable de Control de Calidad",
+      "required": true
+    },
+    {
+      "id": "observaciones",
+      "type": "textarea",
+      "label": "Observaciones",
+      "placeholder": "Observaciones adicionales sobre el registro..."
+    }
+  ]
+}
