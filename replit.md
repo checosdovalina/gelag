@@ -127,14 +127,22 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
-### July 2, 2025 - Daily Cleaning Inspection System (CA-RE-07-01)
+### July 2, 2025 - Daily Cleaning Inspection System (CA-RE-07-01) - Complete Enhancement
 - **NEW SYSTEM**: Created complete daily cleaning inspection system with checklist-based format
 - **Template structure**: 12 inspection sections covering all facility areas (Aduana Personal, Almacén Materia Prima, Área de Reposo, etc.)
-- **Checklist tables**: Implemented rendering support for checklist_table type with activity rows and checkbox functionality
-- **Data format**: Each section displays activities with "REALIZO" checkboxes for completion tracking
+- **Enhanced checklist tables**: Implemented "Pasa/No Pasa" mutually exclusive options replacing simple checkboxes
+- **Employee integration**: Added "Realizado por" dropdown selection at the end of each inspection section
+- **Employee data loading**: Fixed query conditions to ensure employee list loads correctly for checklist forms
+- **Document information section**: Added comprehensive "Información del Documento" section with:
+  - FECHA (required date field)
+  - FOLIO (required manual text entry)
+  - FOLIO DE PRODUCCIÓN (optional manual text entry)
+  - Departamento emisor (dropdown with Control de Calidad, Producción, Administración options)
+- **Data format**: Each section displays activities with "Pasa" and "No Pasa" columns for binary assessment
 - **Observations field**: Added dedicated observations section for additional comments and notes
 - **Form integration**: Fully integrated with existing form system for creation, saving, and data management
 - **UI enhancement**: Sections display as collapsible accordions with professional styling
+- **Employee dropdown functionality**: Successfully resolved employee loading issues for dropdown population
 
 ### July 1, 2025 - Production Form Time Field Persistence Fix & Quality Verification Table Design
 - **RESOLVED**: Fixed time field persistence issue in production forms where startTime/endTime were not saving correctly
