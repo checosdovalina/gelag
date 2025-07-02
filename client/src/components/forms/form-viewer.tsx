@@ -2541,9 +2541,75 @@ export default function FormViewer({
                       )}
                       <div className="p-4 rounded border bg-gray-50">
                         {section.fields && section.fields.map((field) => renderField(field))}
+                        {section.type === "checklist_table" && section.columns && section.rows && (
+                          <div className="mt-4">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  {section.columns.map((column: any) => (
+                                    <TableHead key={column.id} className="text-center">
+                                      {column.title}
+                                    </TableHead>
+                                  ))}
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {section.rows.map((row: any, rowIndex: number) => (
+                                  <TableRow key={rowIndex}>
+                                    {section.columns.map((column: any) => (
+                                      <TableCell key={`${rowIndex}-${column.id}`} className="text-center">
+                                        {column.type === "checkbox" ? (
+                                          <Controller
+                                            name={`${section.id}.${rowIndex}.${column.id}`}
+                                            control={form.control}
+                                            defaultValue={row[column.id] || false}
+                                            render={({ field }) => (
+                                              <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                                disabled={isReadOnly || column.editable === false}
+                                              />
+                                            )}
+                                          />
+                                        ) : (
+                                          <span className="text-sm">{row[column.id]}</span>
+                                        )}
+                                      </TableCell>
+                                    ))}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Renderizar observaciones si existen */}
+                  {formTemplate.observaciones && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold p-3 rounded bg-gray-600 text-white">
+                        {formTemplate.observaciones.label || "OBSERVACIONES"}
+                      </h3>
+                      <div className="p-4 rounded border bg-gray-50">
+                        <Controller
+                          name="observaciones"
+                          control={form.control}
+                          defaultValue=""
+                          render={({ field }) => (
+                            <Textarea
+                              {...field}
+                              placeholder={formTemplate.observaciones.placeholder || "Ingrese observaciones..."}
+                              rows={formTemplate.observaciones.rows || 5}
+                              disabled={isReadOnly}
+                              className="w-full"
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )
             ) : (
