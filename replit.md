@@ -127,6 +127,15 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 2, 2025 - Daily Cleaning Inspection System (CA-RE-07-01)
+- **NEW SYSTEM**: Created complete daily cleaning inspection system with checklist-based format
+- **Template structure**: 12 inspection sections covering all facility areas (Aduana Personal, Almacén Materia Prima, Área de Reposo, etc.)
+- **Checklist tables**: Implemented rendering support for checklist_table type with activity rows and checkbox functionality
+- **Data format**: Each section displays activities with "REALIZO" checkboxes for completion tracking
+- **Observations field**: Added dedicated observations section for additional comments and notes
+- **Form integration**: Fully integrated with existing form system for creation, saving, and data management
+- **UI enhancement**: Sections display as collapsible accordions with professional styling
+
 ### July 1, 2025 - Production Form Time Field Persistence Fix & Quality Verification Table Design
 - **RESOLVED**: Fixed time field persistence issue in production forms where startTime/endTime were not saving correctly
 - **Root cause**: Frontend useEffect was overwriting user input with null values from server responses

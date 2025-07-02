@@ -2546,38 +2546,86 @@ export default function FormViewer({
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  {section.columns.map((column: any) => (
-                                    <TableHead key={column.id} className="text-center">
-                                      {column.title}
-                                    </TableHead>
-                                  ))}
+                                  <TableHead className="text-center">Actividad</TableHead>
+                                  <TableHead className="text-center">Pasa</TableHead>
+                                  <TableHead className="text-center">No Pasa</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {section.rows.map((row: any, rowIndex: number) => (
                                   <TableRow key={rowIndex}>
-                                    {section.columns.map((column: any) => (
-                                      <TableCell key={`${rowIndex}-${column.id}`} className="text-center">
-                                        {column.type === "checkbox" ? (
-                                          <Controller
-                                            name={`${section.id}.${rowIndex}.${column.id}`}
-                                            control={form.control}
-                                            defaultValue={row[column.id] || false}
-                                            render={({ field }) => (
-                                              <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                                disabled={isReadOnly || column.editable === false}
-                                              />
-                                            )}
+                                    <TableCell className="text-sm">{row.actividad}</TableCell>
+                                    <TableCell className="text-center">
+                                      <Controller
+                                        name={`${section.id}.${rowIndex}.pasa`}
+                                        control={form.control}
+                                        defaultValue={false}
+                                        render={({ field }) => (
+                                          <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={(checked) => {
+                                              field.onChange(checked);
+                                              if (checked) {
+                                                // Limpiar "No Pasa" si se marca "Pasa"
+                                                form.setValue(`${section.id}.${rowIndex}.no_pasa`, false);
+                                              }
+                                            }}
+                                            disabled={isReadOnly}
                                           />
-                                        ) : (
-                                          <span className="text-sm">{row[column.id]}</span>
                                         )}
-                                      </TableCell>
-                                    ))}
+                                      />
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                      <Controller
+                                        name={`${section.id}.${rowIndex}.no_pasa`}
+                                        control={form.control}
+                                        defaultValue={false}
+                                        render={({ field }) => (
+                                          <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={(checked) => {
+                                              field.onChange(checked);
+                                              if (checked) {
+                                                // Limpiar "Pasa" si se marca "No Pasa"
+                                                form.setValue(`${section.id}.${rowIndex}.pasa`, false);
+                                              }
+                                            }}
+                                            disabled={isReadOnly}
+                                          />
+                                        )}
+                                      />
+                                    </TableCell>
                                   </TableRow>
                                 ))}
+                                {/* Fila de empleado que realizó la inspección */}
+                                <TableRow className="bg-blue-50">
+                                  <TableCell className="font-medium">Realizado por:</TableCell>
+                                  <TableCell colSpan={2}>
+                                    <Controller
+                                      name={`${section.id}.realizado_por`}
+                                      control={form.control}
+                                      defaultValue=""
+                                      render={({ field }) => (
+                                        <Select 
+                                          value={field.value} 
+                                          onValueChange={field.onChange}
+                                          disabled={isReadOnly}
+                                        >
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Seleccionar empleado..." />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {employees?.map((employee) => (
+                                              <SelectItem key={employee.id} value={employee.id.toString()}>
+                                                {employee.name}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                      )}
+                                    />
+                                  </TableCell>
+                                </TableRow>
                               </TableBody>
                             </Table>
                           </div>
