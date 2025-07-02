@@ -226,14 +226,6 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
             <CardTitle>Verificación de Calidad</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Debug temporal */}
-            <div className="mb-4 p-2 bg-yellow-50 text-xs border rounded">
-              <p>Debug - Datos recibidos:</p>
-              <p>texture type: {typeof formData.texture} | isArray: {Array.isArray(formData.texture)}</p>
-              <p>texture value: {JSON.stringify(formData.texture)}</p>
-              <p>brix type: {typeof formData.brix} | isArray: {Array.isArray(formData.brix)}</p>
-              <p>brix value: {JSON.stringify(formData.brix)}</p>
-            </div>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-gray-300">
                 <thead>

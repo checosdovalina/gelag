@@ -1,0 +1,535 @@
+{
+  "title": "CA-RE-07-01 Inspección Diaria de Limpieza",
+  "description": "Formulario para inspección diaria de limpieza de todas las áreas de la planta",
+  "department": "Calidad",
+  "version": "1.0",
+  "fields": [
+    {
+      "id": "folio",
+      "type": "text",
+      "label": "Folio",
+      "required": true,
+      "displayName": "Folio",
+      "placeholder": "Ingrese el folio",
+      "displayOrder": 1
+    },
+    {
+      "id": "fecha",
+      "type": "date",
+      "label": "Fecha",
+      "required": true,
+      "displayName": "Fecha",
+      "displayOrder": 2
+    },
+    {
+      "id": "departamento_emisor",
+      "type": "text",
+      "label": "Departamento emisor",
+      "required": true,
+      "displayName": "Departamento emisor",
+      "placeholder": "Control de Calidad",
+      "displayOrder": 3
+    },
+    {
+      "id": "tipo_documento",
+      "type": "text",
+      "label": "Tipo de documento",
+      "required": true,
+      "displayName": "Tipo de documento",
+      "placeholder": "Registro",
+      "displayOrder": 4
+    },
+    {
+      "id": "folio_produccion",
+      "type": "text",
+      "label": "Folio de producción",
+      "required": false,
+      "displayName": "Folio de producción",
+      "placeholder": "Opcional",
+      "displayOrder": 5
+    }
+  ],
+  "sections": [
+    {
+      "id": "aduana_personal",
+      "title": "ADUANA DE PERSONAL",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza y orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Tapete Sanitario",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de Lavamanos",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza Vitrina de Cofias y Cubrebocas",
+          "realizo": false
+        },
+        {
+          "actividad": "Depósito de Jabón",
+          "realizo": false
+        },
+        {
+          "actividad": "Depósito de Sanitizante",
+          "realizo": false
+        },
+        {
+          "actividad": "Las tapas con jabón y líquido",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza en paredes y piso",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "almacen_materia_prima",
+      "title": "ALMACÉN MATERIA PRIMA",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza y orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de pisos y paredes",
+          "realizo": false
+        },
+        {
+          "actividad": "Materia en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "almacen_producto_terminado",
+      "title": "ALMACÉN PRODUCTO TERMINADO",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Producto en área correspondiente",
+          "realizo": false
+        },
+        {
+          "actividad": "Producto identificado",
+          "realizo": false
+        },
+        {
+          "actividad": "No derrame de producto terminado",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "area_reposo",
+      "title": "ÁREA DE REPOSO",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza en paredes y piso",
+          "realizo": false
+        },
+        {
+          "actividad": "Tarimas en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Cubetas en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Producto en inspección identificado",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "almacen_material_empaque",
+      "title": "ALMACÉN MATERIAL DE EMPAQUE",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza y orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de pisos y paredes",
+          "realizo": false
+        },
+        {
+          "actividad": "Material en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "estacion_lavado",
+      "title": "ESTACIÓN DE LAVADO",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza en interior y exterior de tarja",
+          "realizo": false
+        },
+        {
+          "actividad": "Cepillos, limpios y en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Cepillera en orden y limpios",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza en piso y paredes",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza en rejillas",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "area_elaboracion_dulces",
+      "title": "ÁREA DE ELABORACIÓN DE DULCES",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Pisos y paredes limpias",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de mesas de trabajo",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de básculas",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de coneras",
+          "realizo": false
+        },
+        {
+          "actividad": "Codificadores en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Tarja limpia y en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "area_produccion",
+      "title": "ÁREA DE PRODUCCIÓN",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Cubetas en desuso limpias y en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Equipo dosificador de margasa limpio",
+          "realizo": false
+        },
+        {
+          "actividad": "Mesas de trabajo limpias",
+          "realizo": false
+        },
+        {
+          "actividad": "Rejillas Limpias",
+          "realizo": false
+        },
+        {
+          "actividad": "Pisos y paredes limpios",
+          "realizo": false
+        },
+        {
+          "actividad": "Orden y limpieza continuo",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza en rejillas",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "seccion_marmitas",
+      "title": "SECCIÓN DE MARMITAS",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza exterior de marmitas",
+          "realizo": false
+        },
+        {
+          "actividad": "Materia prima en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Limpieza de mesa y escalera",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "cuarto_quimicos",
+      "title": "CUARTO DE QUÍMICOS",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Cuarto cerrado",
+          "realizo": false
+        },
+        {
+          "actividad": "Químicos en orden",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        },
+        {
+          "actividad": "No derrames",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de químicos fuera de este",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "seccion_tanques_frios",
+      "title": "SECCIÓN DE TANQUES FRÍOS",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Limpieza en pisos y paredes",
+          "realizo": false
+        },
+        {
+          "actividad": "Orden y limpieza continuo",
+          "realizo": false
+        },
+        {
+          "actividad": "Ausencia de basura",
+          "realizo": false
+        },
+        {
+          "actividad": "No derrames",
+          "realizo": false
+        }
+      ]
+    },
+    {
+      "id": "control_calidad",
+      "title": "Control de calidad",
+      "type": "checklist_table",
+      "columns": [
+        {
+          "id": "actividad",
+          "title": "Actividad",
+          "type": "text",
+          "editable": false
+        },
+        {
+          "id": "realizo",
+          "title": "REALIZO",
+          "type": "checkbox"
+        }
+      ],
+      "rows": [
+        {
+          "actividad": "Área limpia y ordenada",
+          "realizo": false
+        }
+      ]
+    }
+  ],
+  "observaciones": {
+    "id": "observaciones",
+    "type": "textarea",
+    "label": "OBSERVACIONES",
+    "required": false,
+    "displayName": "Observaciones",
+    "placeholder": "Ingrese observaciones adicionales...",
+    "rows": 5
+  }
+}
