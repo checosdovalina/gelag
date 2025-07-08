@@ -125,13 +125,22 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
     const possibleTransitions: Record<UserRole, Record<FormWorkflowStatus, {status: FormWorkflowStatus, label: string}[]>> = {
       [UserRole.PRODUCTION_MANAGER]: {
         [FormWorkflowStatus.INITIATED]: [
-          { status: FormWorkflowStatus.IN_PROGRESS, label: "Iniciar proceso (En progreso)" }
+          { status: FormWorkflowStatus.IN_PROGRESS, label: "Marcar en progreso" },
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Enviar a calidad" },
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
         ],
         [FormWorkflowStatus.IN_PROGRESS]: [
-          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Enviar a calidad" }
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Enviar a calidad" },
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
         ],
-        [FormWorkflowStatus.PENDING_QUALITY]: [],
-        [FormWorkflowStatus.COMPLETED]: [],
+        [FormWorkflowStatus.PENDING_QUALITY]: [
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
+          { status: FormWorkflowStatus.IN_PROGRESS, label: "Regresar a producción" },
+        ],
+        [FormWorkflowStatus.COMPLETED]: [
+          { status: FormWorkflowStatus.SIGNED, label: "Firmar y aprobar" },
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Regresar a calidad" },
+        ],
         [FormWorkflowStatus.SIGNED]: [],
         [FormWorkflowStatus.APPROVED]: [],
         [FormWorkflowStatus.REJECTED]: [],
@@ -146,12 +155,23 @@ export default function WorkflowStatusUpdater({ formEntry, onStatusUpdated }: Wo
         [FormWorkflowStatus.REJECTED]: [],
       },
       [UserRole.QUALITY_MANAGER]: {
-        [FormWorkflowStatus.INITIATED]: [],
-        [FormWorkflowStatus.IN_PROGRESS]: [],
-        [FormWorkflowStatus.PENDING_QUALITY]: [
-          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" }
+        [FormWorkflowStatus.INITIATED]: [
+          { status: FormWorkflowStatus.IN_PROGRESS, label: "Marcar en progreso" },
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Enviar a calidad" },
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
         ],
-        [FormWorkflowStatus.COMPLETED]: [],
+        [FormWorkflowStatus.IN_PROGRESS]: [
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Enviar a calidad" },
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
+        ],
+        [FormWorkflowStatus.PENDING_QUALITY]: [
+          { status: FormWorkflowStatus.COMPLETED, label: "Marcar como completado" },
+          { status: FormWorkflowStatus.IN_PROGRESS, label: "Regresar a producción" },
+        ],
+        [FormWorkflowStatus.COMPLETED]: [
+          { status: FormWorkflowStatus.SIGNED, label: "Firmar y aprobar" },
+          { status: FormWorkflowStatus.PENDING_QUALITY, label: "Regresar a calidad" },
+        ],
         [FormWorkflowStatus.SIGNED]: [],
         [FormWorkflowStatus.APPROVED]: [],
         [FormWorkflowStatus.REJECTED]: [],

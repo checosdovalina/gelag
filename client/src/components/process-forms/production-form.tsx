@@ -125,31 +125,31 @@ const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
   {
     id: "general-info",
     title: "Información General",
-    allowedRoles: ["production_manager"],
+    allowedRoles: ["production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "raw-materials",
     title: "Materias Primas",
-    allowedRoles: ["production_manager"],
+    allowedRoles: ["production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "process-tracking",
     title: "Seguimiento de Proceso",
-    allowedRoles: ["operator", "production_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "quality-verification",
     title: "Verificación de Calidad",
-    allowedRoles: ["operator", "production_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "product-destination",
     title: "Destino de Producto",
-    allowedRoles: ["operator", "production_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
@@ -161,7 +161,7 @@ const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
   {
     id: "liberation-data",
     title: "Datos de Liberación",
-    allowedRoles: ["quality_manager"],
+    allowedRoles: ["production_manager", "quality_manager"],
     editable: true
   }
 ];

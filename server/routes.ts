@@ -168,13 +168,18 @@ async function canUserUpdateWorkflow(
     canEditStatuses: FormWorkflowStatus[];
     canTransitionTo: Partial<Record<FormWorkflowStatus, FormWorkflowStatus[]>>; 
   }> = {
-    // Gerente de Producción inicia el flujo y puede transicionar a IN_PROGRESS
+    // Gerente de Producción tiene acceso completo sin restricciones
     [UserRole.PRODUCTION_MANAGER]: {
       canInitiate: true,
-      canEditStatuses: [FormWorkflowStatus.INITIATED, FormWorkflowStatus.IN_PROGRESS],
+      canEditStatuses: Object.values(FormWorkflowStatus),
       canTransitionTo: {
-        [FormWorkflowStatus.INITIATED]: [FormWorkflowStatus.IN_PROGRESS],
-        [FormWorkflowStatus.IN_PROGRESS]: [FormWorkflowStatus.PENDING_QUALITY]
+        [FormWorkflowStatus.INITIATED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.IN_PROGRESS]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.PENDING_QUALITY]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.COMPLETED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.SIGNED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.APPROVED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.REJECTED]: Object.values(FormWorkflowStatus)
       }
     },
     
@@ -187,12 +192,18 @@ async function canUserUpdateWorkflow(
       }
     },
     
-    // Gerente de Calidad puede revisar y completar cuando está pendiente de calidad
+    // Gerente de Calidad tiene acceso completo sin restricciones
     [UserRole.QUALITY_MANAGER]: {
-      canInitiate: false,
-      canEditStatuses: [FormWorkflowStatus.PENDING_QUALITY],
+      canInitiate: true,
+      canEditStatuses: Object.values(FormWorkflowStatus),
       canTransitionTo: {
-        [FormWorkflowStatus.PENDING_QUALITY]: [FormWorkflowStatus.COMPLETED]
+        [FormWorkflowStatus.INITIATED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.IN_PROGRESS]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.PENDING_QUALITY]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.COMPLETED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.SIGNED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.APPROVED]: Object.values(FormWorkflowStatus),
+        [FormWorkflowStatus.REJECTED]: Object.values(FormWorkflowStatus)
       }
     },
     
