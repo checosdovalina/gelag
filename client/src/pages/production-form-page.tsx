@@ -67,12 +67,15 @@ export default function ProductionFormPage() {
   // Manejar guardado del formulario
   const handleSave = async (data: any) => {
     console.log("=== DATOS ENVIADOS AL SERVIDOR ===");
+    console.log("isNewForm:", isNewForm);
+    console.log("match:", match);
+    console.log("params?.id:", params?.id);
     console.log("data.startTime:", data.startTime);
     console.log("data.endTime:", data.endTime);
     console.log("Datos completos:", JSON.stringify(data, null, 2));
     
     try {
-      if (isNewForm) {
+      if (isNewForm || !match || !params?.id) {
         // Crear nuevo formulario
         await createFormMutation.mutateAsync({
           ...data,
@@ -91,11 +94,19 @@ export default function ProductionFormPage() {
         }, 1500);
       } else {
         // Actualizar formulario existente
-        if (match && params?.id) {
-          const updatedForm = await updateFormMutation.mutateAsync(data);
-          // Actualizar el estado local con los datos guardados (incluyendo campos calculados del servidor)
-          setFormData(updatedForm);
-        }
+        const formId = parseInt(params.id);
+        console.log("Actualizando formulario con ID:", formId);
+        const updatedForm = await updateFormMutation.mutateAsync({
+          id: formId,
+          data: data
+        });
+        // Actualizar el estado local con los datos guardados (incluyendo campos calculados del servidor)
+        setFormData(updatedForm);
+        
+        toast({
+          title: "Formulario actualizado",
+          description: "El formulario ha sido actualizado correctamente"
+        });
       }
     } catch (error) {
       console.error("Error al guardar el formulario:", error);
