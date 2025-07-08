@@ -642,14 +642,31 @@ export default function ProductionForm({
                   
                   <div>
                     <Label htmlFor="liters">Litros a producción</Label>
-                    <Input
-                      id="liters"
-                      type="number"
-                      value={formData.liters || ""}
-                      onChange={(e) => handleChange("liters", parseFloat(e.target.value))}
-                      placeholder="Ej: 500"
-                      disabled={!canEditSection("general-info") || readOnly}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="liters"
+                        type="number"
+                        value={formData.liters || ""}
+                        onChange={(e) => handleChange("liters", parseFloat(e.target.value))}
+                        placeholder="Ej: 500"
+                        disabled={!canEditSection("general-info") || readOnly}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (formData.productType && formData.liters && formData.liters > 0) {
+                            loadProductRecipe(formData.productType, formData.liters);
+                          }
+                        }}
+                        disabled={!formData.productType || !formData.liters || formData.liters <= 0 || readOnly}
+                        className="px-3"
+                      >
+                        ↻
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
