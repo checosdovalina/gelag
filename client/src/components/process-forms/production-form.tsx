@@ -760,7 +760,9 @@ export default function ProductionForm({
                   </thead>
                   <tbody>
                     {formData.ingredients ? (
-                      formData.ingredients.map((ingredient: any, index: number) => (
+                      formData.ingredients
+                        .filter((ingredient: any) => ingredient.quantity > 0) // Ocultar ingredientes con cantidad cero
+                        .map((ingredient: any, index: number) => (
                         <tr key={index} className="border-t">
                           <td className="px-4 py-3">{ingredient.name}</td>
                           <td className="px-4 py-3">{ingredient.quantity.toFixed(3)}</td>

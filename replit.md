@@ -134,6 +134,7 @@ GELAG is a comprehensive form management system designed for quality control and
 - **DUPLICATE FORM ISSUE FIXED**: Resolved bug where "Guardar" button was creating new forms instead of updating existing ones
 - **SERVER ERRORS FIXED**: Corrected "users is not defined" and "desc is not defined" errors in dashboard and activity feeds
 - **HORNEABLE RECIPE UPDATED**: Adjusted ingredient quantities for Horneable product to match production requirements
+- **INGREDIENTS TABLE FILTERED**: Ingredients with zero quantities are now hidden from the materials table for cleaner display
 
 ### July 2, 2025 - Auto-Save System Disabled & Employee Dropdown Implementation
 - **AUTO-SAVE COMPLETELY DISABLED**: Removed problematic auto-save functionality that caused multiple form saves and session issues

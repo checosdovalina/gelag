@@ -147,7 +147,9 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
                   </tr>
                 </thead>
                 <tbody>
-                  {formData.ingredients.map((ingredient: any, index: number) => (
+                  {formData.ingredients
+                    .filter((ingredient: any) => ingredient.quantity > 0) // Ocultar ingredientes con cantidad cero
+                    .map((ingredient: any, index: number) => (
                     <tr key={index}>
                       <td className="border border-gray-300 px-4 py-2">{ingredient.name}</td>
                       <td className="border border-gray-300 px-4 py-2">{ingredient.quantity}</td>
