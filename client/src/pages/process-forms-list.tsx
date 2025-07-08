@@ -53,9 +53,9 @@ export default function ProcessFormsList() {
   const userRole = user?.role.toLowerCase();
 
   // Incluimos los gerentes en las reglas de permisos
-  const canCreateForms = user && userRole && ["superadmin", "admin", "produccion", "gerente_produccion"].includes(userRole);
+  const canCreateForms = user && userRole && ["superadmin", "admin", "produccion", "gerente_produccion", "gerente_calidad"].includes(userRole);
   const canEditForms = user && userRole && ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"].includes(userRole);
-  const canDeleteForms = user && userRole && ["superadmin", "admin", "gerente_produccion"].includes(userRole);
+  const canDeleteForms = user && userRole && ["superadmin", "admin", "gerente_produccion", "gerente_calidad"].includes(userRole);
   
   const handleCreate = () => {
     navigate("/production-form");
