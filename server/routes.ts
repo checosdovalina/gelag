@@ -326,17 +326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // User routes
-  app.get("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
-    try {
-      const users = await storage.getAllUsers();
-      // Remove passwords from response
-      const sanitizedUsers = users.map(({ password, ...rest }) => rest);
-      res.json(sanitizedUsers);
-    } catch (error) {
-      next(error);
-    }
-  });
+  // User routes - moved to line 429 without authorization requirement for dropdowns
 
   app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
@@ -425,12 +415,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all users (for dropdowns and selections)
+  // Get all users (for dropdowns and selections) - any authenticated user can access
   app.get("/api/users", async (req, res, next) => {
+    // Check if user is authenticated
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
     try {
       const users = await storage.getAllUsers();
+      // Filter users suitable for dropdown (have department, exclude viewer role)
+      const suitableUsers = users.filter(user => 
+        user.department && 
+        user.department.trim() !== '' && 
+        user.role !== 'viewer'
+      );
       // Return users without passwords for security
-      const usersWithoutPasswords = users.map(user => {
+      const usersWithoutPasswords = suitableUsers.map(user => {
         const { password, ...userWithoutPassword } = user;
         return userWithoutPassword;
       });
