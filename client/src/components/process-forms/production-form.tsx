@@ -252,9 +252,11 @@ export default function ProductionForm({
           ingredients: formattedIngredients
         }));
         
+        console.log(`✅ Ingredientes actualizados para ${liters}L:`, formattedIngredients);
+        
         toast({
           title: "Materiales actualizados",
-          description: `Se cargaron ${recipeData.ingredients?.length || 0} ingredientes para ${recipeData.recipeName}`,
+          description: `Se cargaron ${recipeData.ingredients?.length || 0} ingredientes para ${recipeData.recipeName} (${liters}L)`,
         });
       }
     } catch (error) {
@@ -265,6 +267,7 @@ export default function ProductionForm({
   // Efecto para auto-cargar receta cuando cambie producto o litros
   useEffect(() => {
     if (formData.productType && formData.liters && formData.liters > 0) {
+      console.log(`🔄 Recargando receta: ${formData.productType}, ${formData.liters}L`);
       loadProductRecipe(formData.productType, formData.liters);
     }
   }, [formData.productType, formData.liters]);
