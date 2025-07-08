@@ -278,27 +278,10 @@ export default function ProductionForm({
     };
   }, []);
   
-  // Cambiar de pestaña con auto-guardado
+  // Cambiar de pestaña sin auto-guardado (auto-save deshabilitado)
   const handleTabChange = (newTab: string) => {
-    // Auto-guardar antes de cambiar de pestaña
-    console.log("Cambiando de pestaña, auto-guardando datos...");
-    
-    setIsAutoSaving(true);
-    
-    // Mostrar un toast sutil de auto-guardado
-    toast({
-      title: "Guardando automáticamente...",
-      description: "Los cambios se están guardando",
-      duration: 1500,
-    });
-    
-    handleSave();
-    
-    // Pequeño delay para asegurar que el guardado se complete
-    setTimeout(() => {
-      setActiveTab(newTab);
-      setIsAutoSaving(false);
-    }, 1000);
+    // Simplemente cambiar de pestaña sin auto-guardar
+    setActiveTab(newTab);
   };
   
   // Determinar rol del usuario actual
@@ -377,8 +360,8 @@ export default function ProductionForm({
     
     const userRole = mapUserRoleToAppRole(user.role);
     
-    // Debug para seguimiento
-    console.log(`Auto-update check: ${field} = ${value}, userRole = ${userRole}, status = ${status}`);
+    // Debug para seguimiento (opcional)
+    // console.log(`Field update: ${field} = ${value}, userRole = ${userRole}, status = ${status}`);
     
     // Gerente de Producción: Al llenar información general -> IN_PROGRESS
     if (userRole === "production_manager" && 

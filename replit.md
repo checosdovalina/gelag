@@ -127,6 +127,11 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 8, 2025 - Auto-Save System Completely Disabled & Tab Navigation Fixed
+- **AUTO-SAVE COMPLETELY DISABLED**: Removed all auto-save functionality that caused form navigation issues and session logouts
+- **TAB NAVIGATION FIXED**: Users can now switch between form tabs without being logged out or redirected
+- **MANUAL SAVE ONLY**: Forms now save only when users click "Guardar" button for better control
+
 ### July 2, 2025 - Auto-Save System Disabled & Employee Dropdown Implementation
 - **AUTO-SAVE COMPLETELY DISABLED**: Removed problematic auto-save functionality that caused multiple form saves and session issues
 - **ENHANCED USER INTERFACE**: Replaced "Responsable" text input with dropdown selection from active employees
