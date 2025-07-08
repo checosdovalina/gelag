@@ -66,7 +66,7 @@ export default function Dashboard() {
   // Fetch activity logs
   const { data: activitiesData, isLoading: isLoadingActivities } = useQuery({
     queryKey: ["/api/activity", { limit: 10 }],
-    enabled: user?.role === UserRole.ADMIN,
+    enabled: !!user,
   });
 
   // Fetch recent forms
@@ -92,20 +92,18 @@ export default function Dashboard() {
     }
   }, [statsData]);
 
-  // Process activity logs
+  // Process activity logs - using real production form data
   useEffect(() => {
     if (activitiesData && activitiesData.length > 0) {
-      const processedActivities: Activity[] = activitiesData.map((log: any, index: number) => {
+      const processedActivities: Activity[] = activitiesData.map((log: any) => {
         // Get action text based on log type
         let actionText = "Realizó acción";
-        if (log.action === "created" && log.resourceType === "form_template") {
+        if (log.action === "created" && log.resourceType === "production_form") {
           actionText = "Creó formulario";
-        } else if (log.action === "created" && log.resourceType === "form_entry") {
-          actionText = "Capturó datos";
+        } else if (log.action === "updated" && log.resourceType === "production_form") {
+          actionText = "Actualizó formulario";
         } else if (log.action === "exported") {
           actionText = "Exportó datos";
-        } else if (log.action === "updated") {
-          actionText = "Actualizó formulario";
         }
 
         return {
@@ -115,44 +113,15 @@ export default function Dashboard() {
             role: log.details?.role || "Usuario"
           },
           action: actionText,
-          form: log.details?.formTemplateName || "Formulario",
+          form: log.details?.formFolio || "Formulario",
           date: formatDate(new Date(log.timestamp))
         };
       });
 
       setActivities(processedActivities);
     } else {
-      // Default activities when no data is available
-      setActivities([
-        {
-          id: 1,
-          user: { name: "María González", role: "Producción" },
-          action: "Capturó datos",
-          form: "Control de Calidad 10-A",
-          date: "Hoy, 10:25"
-        },
-        {
-          id: 2,
-          user: { name: "Carlos Rivera", role: "Administrador" },
-          action: "Creó formulario",
-          form: "Registro de Producción B-22",
-          date: "Hoy, 9:12"
-        },
-        {
-          id: 3,
-          user: { name: "Laura Sánchez", role: "Calidad" },
-          action: "Exportó datos",
-          form: "Inspección Final QC-85",
-          date: "Ayer, 15:40"
-        },
-        {
-          id: 4,
-          user: { name: "Pedro Martínez", role: "Producción" },
-          action: "Capturó datos",
-          form: "Registro Diario de Producción",
-          date: "Ayer, 11:05"
-        }
-      ]);
+      // Show empty state when no data is available
+      setActivities([]);
     }
   }, [activitiesData]);
 

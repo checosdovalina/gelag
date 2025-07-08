@@ -276,6 +276,30 @@ async function canUserUpdateWorkflow(
   return { allowed: true };
 }
 
+// Helper function to get role display name
+function getRoleDisplayName(role: string | null): string {
+  if (!role) return "Usuario";
+  
+  switch (role.toLowerCase()) {
+    case 'superadmin':
+      return 'Super Administrador';
+    case 'admin':
+      return 'Administrador';
+    case 'gerente_produccion':
+      return 'Gerente de Producción';
+    case 'gerente_calidad':
+      return 'Gerente de Calidad';
+    case 'produccion':
+      return 'Producción';
+    case 'calidad':
+      return 'Calidad';
+    case 'viewer':
+      return 'Visualizador';
+    default:
+      return role;
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
@@ -1461,13 +1485,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Activity log routes
-  app.get("/api/activity", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
+  // Activity log routes - available for all authenticated users, shows real system activity
+  app.get("/api/activity", async (req, res, next) => {
     try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+      
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const activities = await storage.getRecentActivity(limit);
+      
+      // Get real activity from production forms with user info
+      const recentForms = await db
+        .select({
+          id: productionForms.id,
+          folio: productionForms.folio,
+          createdAt: productionForms.createdAt,
+          updatedAt: productionForms.updatedAt,
+          status: productionForms.status,
+          createdBy: productionForms.createdBy,
+          updatedBy: productionForms.updatedBy,
+          userName: users.name,
+          userRole: users.role,
+          department: users.department
+        })
+        .from(productionForms)
+        .leftJoin(users, eq(productionForms.createdBy, users.id))
+        .orderBy(desc(productionForms.updatedAt))
+        .limit(limit);
+      
+      // Transform to activity format
+      const activities = recentForms.map(form => ({
+        id: form.id,
+        timestamp: form.updatedAt,
+        action: form.createdAt === form.updatedAt ? "created" : "updated",
+        resourceType: "production_form",
+        resourceId: form.id,
+        details: {
+          username: form.userName,
+          role: getRoleDisplayName(form.userRole),
+          formFolio: form.folio,
+          formStatus: form.status,
+          department: form.department
+        }
+      }));
+      
       res.json(activities);
     } catch (error) {
+      console.error("Error fetching activities:", error);
       next(error);
     }
   });
