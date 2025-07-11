@@ -266,11 +266,11 @@ export default function ProductionForm({
 
   // Efecto para auto-cargar receta cuando cambie producto o litros
   useEffect(() => {
-    if (formData.productType && formData.liters && formData.liters > 0) {
-      console.log(`🔄 Recargando receta: ${formData.productType}, ${formData.liters}L`);
-      loadProductRecipe(formData.productType, formData.liters);
+    if (formData.productId && formData.liters && formData.liters > 0) {
+      console.log(`🔄 Recargando receta: ${formData.productId}, ${formData.liters}L`);
+      loadProductRecipe(formData.productId, formData.liters);
     }
-  }, [formData.productType, formData.liters]);
+  }, [formData.productId, formData.liters]);
   
   // Limpiar timeout al desmontar el componente
   useEffect(() => {
@@ -590,7 +590,15 @@ export default function ProductionForm({
                     <Label htmlFor="process">Proceso</Label>
                     <Select
                       value={formData.productId || ""}
-                      onValueChange={(value) => handleChange("productId", value)}
+                      onValueChange={(value) => {
+                        handleChange("productId", value);
+                        // Trigger recipe reload after state update
+                        if (value && formData.liters > 0) {
+                          setTimeout(() => {
+                            loadProductRecipe(value, formData.liters);
+                          }, 100);
+                        }
+                      }}
                       disabled={!canEditSection("general-info") || readOnly}
                     >
                       <SelectTrigger>
@@ -650,7 +658,16 @@ export default function ProductionForm({
                         id="liters"
                         type="number"
                         value={formData.liters || ""}
-                        onChange={(e) => handleChange("liters", parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const newLiters = parseFloat(e.target.value);
+                          handleChange("liters", newLiters);
+                          // Trigger recipe reload after state update
+                          if (formData.productId && newLiters > 0) {
+                            setTimeout(() => {
+                              loadProductRecipe(formData.productId, newLiters);
+                            }, 100);
+                          }
+                        }}
                         placeholder="Ej: 500"
                         disabled={!canEditSection("general-info") || readOnly}
                         className="flex-1"
@@ -660,11 +677,11 @@ export default function ProductionForm({
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          if (formData.productType && formData.liters && formData.liters > 0) {
-                            loadProductRecipe(formData.productType, formData.liters);
+                          if (formData.productId && formData.liters && formData.liters > 0) {
+                            loadProductRecipe(formData.productId, formData.liters);
                           }
                         }}
-                        disabled={!formData.productType || !formData.liters || formData.liters <= 0 || readOnly}
+                        disabled={!formData.productId || !formData.liters || formData.liters <= 0 || readOnly}
                         className="px-3"
                       >
                         ↻
