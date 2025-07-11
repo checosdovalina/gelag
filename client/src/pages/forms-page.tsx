@@ -62,6 +62,7 @@ export default function FormsPage() {
   
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPERADMIN;
   const isSuperAdmin = user?.role === UserRole.SUPERADMIN;
+  const canManageForms = isAdmin || isSuperAdmin;
 
   // Fetch forms
   const { data: forms, isLoading, refetch } = useQuery<FormTemplate[]>({
@@ -220,7 +221,7 @@ export default function FormsPage() {
               <Eye className="h-4 w-4" />
             </Button>
             
-            {isSuperAdmin && (
+            {canManageForms && (
               <>
                 <Link href={`/form-editor?id=${form.id}`}>
                   <Button 
@@ -355,7 +356,7 @@ export default function FormsPage() {
             />
           </div>
           
-          {isSuperAdmin && (
+          {canManageForms && (
             <Link href="/form-editor">
               <Button className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />

@@ -29,11 +29,23 @@ export async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Función para verificar si el usuario es superadmin con acceso completo
+export const isSuperAdmin = (user: any): boolean => {
+  return user && user.role === UserRole.SUPERADMIN;
+};
+
 // Middleware para autorizar roles específicos
 export const authorize = (roles: UserRole[] = []) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "No autenticado" });
+    }
+    
+    // SUPERADMIN tiene acceso completo sin restricciones
+    if (isSuperAdmin(req.user)) {
+      console.log(`🔑 SUPERADMIN ${req.user!.username} acceso completo autorizado`);
+      next();
+      return;
     }
     
     // Si no se especifican roles, permitir a todos los usuarios autenticados

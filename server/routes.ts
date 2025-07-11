@@ -95,6 +95,11 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
 
   const schedule = roleSchedules[userRole];
   
+  // SUPERADMIN tiene acceso completo 24/7 sin restricciones
+  if (userRole === UserRole.SUPERADMIN) {
+    return { allowed: true };
+  }
+  
   // Roles con acceso completo
   if ('allowed' in schedule && schedule.allowed) {
     return { allowed: true };
@@ -510,7 +515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/form-templates", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+  app.post("/api/form-templates", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       // Primero añadimos el createdBy al objeto para que pase la validación
       const dataToValidate = {
@@ -563,7 +568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Endpoint directo para actualizar campos en formularios
-  app.patch("/api/form-templates/:id/field/:fieldId/display-name", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+  app.patch("/api/form-templates/:id/field/:fieldId/display-name", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       console.log("\n\n=== NUEVO ENDPOINT PARA ACTUALIZAR DISPLAYNAME ===\n");
       
@@ -689,7 +694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+  app.put("/api/form-templates/:id", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       console.log("\n\n==================================================");
       console.log("=== ACTUALIZACIÓN DE FORMULARIO INICIADA ===");
@@ -810,7 +815,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Eliminar plantilla de formulario (sólo SuperAdmin)
+  // Eliminar plantilla de formulario (SuperAdmin con acceso completo)
   app.delete("/api/form-templates/:id", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
@@ -824,7 +829,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Formulario no encontrado" });
       }
       
-      // Verificar si hay entradas asociadas a este formulario
+      // SUPERADMIN puede eliminar formularios incluso con entradas asociadas
+      if (req.user.role === UserRole.SUPERADMIN) {
+        console.log(`🔥 SUPERADMIN ${req.user.username} eliminando formulario ${template.name} con acceso completo`);
+        
+        // Primero eliminar todas las entradas asociadas
+        const entries = await storage.getFormEntriesByTemplate(id);
+        if (entries && entries.length > 0) {
+          console.log(`🗑️ Eliminando ${entries.length} entradas asociadas al formulario`);
+          for (const entry of entries) {
+            await storage.deleteFormEntry(entry.id);
+          }
+        }
+        
+        // Luego eliminar el formulario
+        await storage.deleteFormTemplate(id);
+        
+        // Log activity
+        await storage.createActivityLog({
+          userId: req.user.id,
+          action: "deleted",
+          resourceType: "form_template",
+          resourceId: id,
+          details: { 
+            name: template.name, 
+            entriesDeleted: entries?.length || 0,
+            superadminAccess: true 
+          }
+        });
+        
+        res.json({ 
+          message: "Formulario eliminado correctamente (SUPERADMIN: acceso completo)",
+          entriesDeleted: entries?.length || 0
+        });
+        return;
+      }
+      
+      // Para otros roles, verificar entradas asociadas
       const entries = await storage.getFormEntriesByTemplate(id);
       if (entries && entries.length > 0) {
         return res.status(400).json({ 
@@ -1632,7 +1673,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Endpoint para clonar un formulario existente
-  app.post("/api/form-templates/:id/clone", authorize([UserRole.SUPERADMIN]), async (req, res, next) => {
+  app.post("/api/form-templates/:id/clone", authorize([UserRole.SUPERADMIN, UserRole.ADMIN]), async (req, res, next) => {
     try {
       const templateId = parseInt(req.params.id);
       if (isNaN(templateId)) {
