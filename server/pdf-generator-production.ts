@@ -325,36 +325,46 @@ function generateProductionPDFContent(
     doc.moveTo(50, destTableY + 15).lineTo(450, destTableY + 15).stroke();
     
     let currentDestY = destTableY + 25;
-    doc.font('Helvetica').fontSize(9);
+    doc.font('Helvetica').fontSize(8);
     
-    const maxDestRows = Math.max(
-      processData.destinationType?.length || 0,
-      processData.destinationKilos?.length || 0,
-      processData.destinationProduct?.length || 0,
-      processData.destinationEstimation?.length || 0
-    );
-    
-    for (let i = 0; i < maxDestRows; i++) {
-      const type = processData.destinationType?.[i] || '';
-      const kilos = processData.destinationKilos?.[i] || '';
-      const product = processData.destinationProduct?.[i] || '';
-      const estimation = processData.destinationEstimation?.[i] || '';
-      
-      if (type || kilos || product || estimation) {
-        doc.text(type, 50, currentDestY);
-        doc.text(kilos, 150, currentDestY);
-        doc.text(product, 220, currentDestY);
-        doc.text(estimation, 320, currentDestY);
-        currentDestY += 15;
-      }
+    // Mostrar datos de destino si existen
+    if (processData.destinationKilos && typeof processData.destinationKilos === 'object') {
+      Object.entries(processData.destinationKilos).forEach(([key, value]) => {
+        if (value) {
+          doc.text(key, 50, currentDestY);
+          doc.text(value.toString(), 150, currentDestY);
+          currentDestY += 15;
+        }
+      });
     }
     
-    doc.y = currentDestY + 20;
+    if (processData.destinationProduct) {
+      doc.text('Producto:', 220, destTableY + 25);
+      doc.text(processData.destinationProduct, 280, destTableY + 25);
+    }
+    
+    if (processData.destinationEstimation && typeof processData.destinationEstimation === 'object') {
+      let estY = destTableY + 25;
+      Object.entries(processData.destinationEstimation).forEach(([key, value]) => {
+        if (value) {
+          doc.text(key, 320, estY);
+          doc.text(value.toString(), 380, estY);
+          estY += 15;
+        }
+      });
+    }
+    
+    if (processData.totalKilos) {
+      doc.font('Helvetica-Bold').text('Total Kilos:', 50, Math.max(currentDestY, destTableY + 60));
+      doc.font('Helvetica').text(processData.totalKilos.toString(), 120, Math.max(currentDestY, destTableY + 60));
+    }
+    
+    doc.y = Math.max(currentDestY, destTableY + 80);
   }
   
-  // Estados inicial y final
+  // Información adicional final
   if (processData.startState || processData.endState) {
-    doc.font('Helvetica-Bold').fontSize(12).text('ESTADO DEL PROCESO:', 50, doc.y);
+    doc.font('Helvetica-Bold').fontSize(12).text('ESTADOS:', 50, doc.y);
     doc.moveDown(0.5);
     
     const stateY = doc.y;
@@ -373,7 +383,61 @@ function generateProductionPDFContent(
     doc.y = stateY + 30;
   }
   
-
+  // Agregar datos de empaque si existen
+  if (processData.conoData || processData.empaqueData) {
+    doc.font('Helvetica-Bold').fontSize(12).text('DATOS DE EMPAQUE:', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    if (processData.conoData && typeof processData.conoData === 'object') {
+      doc.font('Helvetica-Bold').fontSize(10).text('Datos de Cono:', 50, doc.y);
+      doc.moveDown(0.3);
+      
+      let conoY = doc.y;
+      doc.fontSize(9).font('Helvetica');
+      
+      Object.entries(processData.conoData).forEach(([key, value]) => {
+        if (value) {
+          doc.text(`${key}:`, 50, conoY);
+          doc.text(value.toString(), 200, conoY);
+          conoY += 12;
+        }
+      });
+      
+      doc.y = conoY + 10;
+    }
+    
+    if (processData.empaqueData && typeof processData.empaqueData === 'object') {
+      doc.font('Helvetica-Bold').fontSize(10).text('Datos de Empaque:', 50, doc.y);
+      doc.moveDown(0.3);
+      
+      let empaqueY = doc.y;
+      doc.fontSize(9).font('Helvetica');
+      
+      Object.entries(processData.empaqueData).forEach(([key, value]) => {
+        if (value) {
+          doc.text(`${key}:`, 50, empaqueY);
+          doc.text(value.toString(), 200, empaqueY);
+          empaqueY += 12;
+        }
+      });
+      
+      doc.y = empaqueY + 10;
+    }
+  }
+  
+  // Observaciones de calidad si existen
+  if (processData.qualityNotes) {
+    doc.font('Helvetica-Bold').fontSize(12).text('OBSERVACIONES DE CALIDAD:', 50, doc.y);
+    doc.moveDown(0.5);
+    
+    doc.font('Helvetica').fontSize(10);
+    doc.text(processData.qualityNotes, 50, doc.y, {
+      width: 500,
+      align: 'justify'
+    });
+    
+    doc.moveDown(1);
+  }
   
   // Información de tiempos de proceso
   if (processData.startTime || processData.endTime) {
@@ -430,7 +494,7 @@ function generateProductionPDFContent(
   }
   
   // Datos del Colador Final
-  if (processData.totalKilos || processData.yield || processData.startState || processData.endState) {
+  if (processData.totalKilos || processData.yield) {
     doc.font('Helvetica-Bold').fontSize(12).text('COLADOR FINAL:', 50, doc.y);
     doc.moveDown(0.5);
     
@@ -447,32 +511,11 @@ function generateProductionPDFContent(
       doc.font('Helvetica').text(processData.yield, 330, coladorY);
     }
     
-    const colador2Y = coladorY + 20;
-    
-    if (processData.startState || processData.endState) {
-      doc.font('Helvetica-Bold').text('Estado del Colador:', 50, colador2Y);
-      const stateText = `Inicio: ${processData.startState || 'N/A'} | Final: ${processData.endState || 'N/A'}`;
-      doc.font('Helvetica').text(stateText, 150, colador2Y);
-    }
-    
-    doc.y = colador2Y + 30;
-  }
-  
-  // Notas de calidad
-  if (processData.qualityNotes) {
-    doc.font('Helvetica-Bold').fontSize(12).text('NOTAS DE VERIFICACIÓN DE CALIDAD:', 50, doc.y);
-    doc.moveDown(0.5);
-    
-    doc.fontSize(10).font('Helvetica');
-    const notesText = processData.qualityNotes.length > 300 ? 
-      processData.qualityNotes.substring(0, 300) + '...' : 
-      processData.qualityNotes;
-    doc.text(notesText, 50, doc.y, { width: pageWidth - 100, align: 'left' });
-    doc.moveDown(1);
+    doc.y = coladorY + 30;
   }
   
   // Información adicional del formulario
-  if (processData.caducidad || processData.marmita) {
+  if (processData.caducidad) {
     doc.font('Helvetica-Bold').fontSize(12).text('INFORMACIÓN ADICIONAL:', 50, doc.y);
     doc.moveDown(0.5);
     

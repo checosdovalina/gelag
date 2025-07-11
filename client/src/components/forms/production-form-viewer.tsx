@@ -24,6 +24,7 @@ interface ProductionFormData {
   temperature?: string[];
   pressure?: string[];
   hourTracking?: string[];
+  ingredientTimes?: string[];
   startTime?: string;
   endTime?: string;
   brix?: any;
@@ -35,6 +36,7 @@ interface ProductionFormData {
   taste?: any;
   foreignMaterial?: any;
   statusCheck?: any;
+  qualityTimes?: string[];
   qualityNotes?: string;
   destinationType?: string;
   destinationKilos?: any;
@@ -48,6 +50,8 @@ interface ProductionFormData {
   cP?: any;
   startState?: string;
   endState?: string;
+  conoData?: any;
+  empaqueData?: any;
   [key: string]: any; // Para campos adicionales del proceso
 }
 
