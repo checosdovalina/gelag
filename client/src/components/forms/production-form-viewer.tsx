@@ -167,264 +167,254 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
         </Card>
       )}
 
-      {/* Control de Proceso */}
-      {(formData.temperature || formData.pressure || formData.hourTracking) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Control de Proceso</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              {formData.startTime && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Hora Inicio</p>
-                  <p className="text-lg">{formData.startTime}</p>
-                </div>
-              )}
-              {formData.endTime && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Hora Fin</p>
-                  <p className="text-lg">{formData.endTime}</p>
-                </div>
-              )}
+      {/* Control de Proceso - SIEMPRE MOSTRAR */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Control de Proceso</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Hora Inicio</p>
+              <p className="text-lg">{formData.startTime || 'No registrado'}</p>
             </div>
-            
-            {(formData.temperature || formData.pressure || formData.hourTracking) && (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-300 px-4 py-2 text-left">Hora</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left">Temperatura</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left">Presión</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.from({ length: Math.max(
-                      formData.hourTracking?.length || 0,
-                      formData.temperature?.length || 0,
-                      formData.pressure?.length || 0
-                    ) }).map((_, index) => (
-                      <tr key={index}>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {formData.hourTracking?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {formData.temperature?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {formData.pressure?.[index] || ''}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Verificación de Calidad */}
-      {(formData.qualityTimes || formData.brix || formData.qualityTemp || formData.texture || formData.color || formData.viscosity || formData.smell || formData.taste || formData.foreignMaterial || formData.statusCheck) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Verificación de Calidad</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Hora</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Brix</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Temp. (°C)</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Textura</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Color</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Viscosidad</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Olor</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Sabor</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Mat. Extraño</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Estado</th>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Hora Fin</p>
+              <p className="text-lg">{formData.endTime || 'No registrado'}</p>
+            </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-300 px-4 py-2 text-left">Hora</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Temperatura (°C)</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Presión (PSI)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {formData.hourTracking?.[index] || `Hora ${index + 1}`}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {formData.temperature?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {formData.pressure?.[index] || '-'}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.max(
-                    formData.qualityTimes?.length || 0,
-                    formData.brix?.length || 0,
-                    formData.qualityTemp?.length || 0,
-                    formData.texture?.length || 0,
-                    formData.color?.length || 0,
-                    formData.viscosity?.length || 0,
-                    formData.smell?.length || 0,
-                    formData.taste?.length || 0,
-                    formData.foreignMaterial?.length || 0,
-                    formData.statusCheck?.length || 0
-                  ) }).map((_, index) => {
-                    // Solo mostrar filas que tengan al menos un dato
-                    const hasData = (formData.qualityTimes && formData.qualityTimes[index] && formData.qualityTimes[index] !== '') ||
-                                   (formData.brix && formData.brix[index] && formData.brix[index] !== '') ||
-                                   (formData.qualityTemp && formData.qualityTemp[index] && formData.qualityTemp[index] !== '') ||
-                                   (formData.texture && formData.texture[index] && formData.texture[index] !== '') ||
-                                   (formData.color && formData.color[index] && formData.color[index] !== '') ||
-                                   (formData.viscosity && formData.viscosity[index] && formData.viscosity[index] !== '') ||
-                                   (formData.smell && formData.smell[index] && formData.smell[index] !== '') ||
-                                   (formData.taste && formData.taste[index] && formData.taste[index] !== '') ||
-                                   (formData.foreignMaterial && formData.foreignMaterial[index] && formData.foreignMaterial[index] !== '') ||
-                                   (formData.statusCheck && formData.statusCheck[index] && formData.statusCheck[index] !== '');
-                    
-                    if (!hasData) return null;
-                    
-                    return (
-                      <tr key={index}>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.qualityTimes?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.brix?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.qualityTemp?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.texture?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.color?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.viscosity?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.smell?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.taste?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.foreignMaterial?.[index] || ''}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-sm">
-                          {formData.statusCheck?.[index] || ''}
-                        </td>
-                      </tr>
-                    );
-                  }).filter(Boolean)}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Verificación de Calidad - SIEMPRE MOSTRAR */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Verificación de Calidad</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Hora</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Brix</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Temp. (°C)</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Textura</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Color</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Viscosidad</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Olor</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Sabor</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Mat. Extraño</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left text-xs font-medium">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.qualityTimes?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.brix?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.qualityTemp?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.texture?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.color?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.viscosity?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.smell?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.taste?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.foreignMaterial?.[index] || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm">
+                      {formData.statusCheck?.[index] || '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Notas de calidad */}
+          <div className="mt-6">
+            <p className="text-sm font-medium text-muted-foreground mb-2">Observaciones de Calidad</p>
+            <p className="text-sm bg-gray-50 p-3 rounded border">{formData.qualityNotes || 'Sin observaciones registradas'}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Información de Destino - SIEMPRE MOSTRAR */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Información de Destino</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Tipo de Destino</p>
+              <p className="text-lg">{formData.destinationType || 'No especificado'}</p>
             </div>
-            
-            {/* Notas de calidad */}
-            {formData.qualityNotes && (
-              <div className="mt-6">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Observaciones de Calidad</p>
-                <p className="text-sm bg-gray-50 p-3 rounded border">{formData.qualityNotes}</p>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Kilos Destino</p>
+              <p className="text-lg">{formData.destinationKilos || 'No registrado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Producto Destino</p>
+              <p className="text-lg">{formData.destinationProduct || 'No especificado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Estimación</p>
+              <p className="text-lg">{formData.destinationEstimation || 'No registrada'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Kilos</p>
+              <p className="text-lg">{formData.totalKilos || 'No calculado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Folio de Liberación</p>
+              <p className="text-lg">{formData.liberationFolio || 'No asignado'}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Información Adicional - SIEMPRE MOSTRAR */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Información Adicional</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Fecha de Caducidad</p>
+              <p className="text-lg">
+                {formData.caducidad ? 
+                  format(new Date(formData.caducidad), "dd/MM/yyyy", { locale: es }) : 
+                  'No establecida'
+                }
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Brix Final</p>
+              <p className="text-lg">{formData.finalBrix || 'No medido'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Rendimiento</p>
+              <p className="text-lg">{formData.yield || 'No calculado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Consistómetro (cm)</p>
+              <p className="text-lg">{formData.cmConsistometer || 'No medido'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Viscosidad (cP)</p>
+              <p className="text-lg">{formData.cP || 'No medida'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Estado Inicial</p>
+              <p className="text-lg">{formData.startState || 'No registrado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Estado Final</p>
+              <p className="text-lg">{formData.endState || 'No registrado'}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Información de Empaque si existe */}
+      {(formData.conoData || formData.empaqueData) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Datos de Empaque</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {formData.conoData && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">Datos de Cono</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-300 p-2 text-left">Campo</th>
+                        <th className="border border-gray-300 p-2 text-left">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(formData.conoData).map(([key, value]) => (
+                        <tr key={key}>
+                          <td className="border border-gray-300 p-2 font-medium">{key}</td>
+                          <td className="border border-gray-300 p-2">{value as string}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Información de Destino */}
-      {(formData.destinationType || formData.destinationKilos || formData.destinationProduct || formData.totalKilos) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Información de Destino</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {formData.destinationType && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Tipo de Destino</p>
-                  <p className="text-lg">{formData.destinationType}</p>
+            
+            {formData.empaqueData && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">Datos de Empaque</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-300 p-2 text-left">Campo</th>
+                        <th className="border border-gray-300 p-2 text-left">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(formData.empaqueData).map(([key, value]) => (
+                        <tr key={key}>
+                          <td className="border border-gray-300 p-2 font-medium">{key}</td>
+                          <td className="border border-gray-300 p-2">{value as string}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-              {formData.destinationKilos && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Kilos Destino</p>
-                  <p className="text-lg">{formData.destinationKilos}</p>
-                </div>
-              )}
-              {formData.destinationProduct && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Producto Destino</p>
-                  <p className="text-lg">{formData.destinationProduct}</p>
-                </div>
-              )}
-              {formData.destinationEstimation && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Estimación</p>
-                  <p className="text-lg">{formData.destinationEstimation}</p>
-                </div>
-              )}
-              {formData.totalKilos && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Kilos</p>
-                  <p className="text-lg">{formData.totalKilos}</p>
-                </div>
-              )}
-              {formData.liberationFolio && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Folio de Liberación</p>
-                  <p className="text-lg">{formData.liberationFolio}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Información Adicional */}
-      {(formData.caducidad || formData.finalBrix || formData.yield || formData.cmConsistometer || formData.cP) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Información Adicional</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {formData.caducidad && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Fecha de Caducidad</p>
-                  <p className="text-lg">{format(new Date(formData.caducidad), "dd/MM/yyyy", { locale: es })}</p>
-                </div>
-              )}
-              {formData.finalBrix && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Brix Final</p>
-                  <p className="text-lg">{formData.finalBrix}</p>
-                </div>
-              )}
-              {formData.yield && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Rendimiento</p>
-                  <p className="text-lg">{formData.yield}</p>
-                </div>
-              )}
-              {formData.cmConsistometer && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Consistómetro (cm)</p>
-                  <p className="text-lg">{formData.cmConsistometer}</p>
-                </div>
-              )}
-              {formData.cP && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Viscosidad (cP)</p>
-                  <p className="text-lg">{formData.cP}</p>
-                </div>
-              )}
-              {formData.startState && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Estado Inicial</p>
-                  <p className="text-lg">{formData.startState}</p>
-                </div>
-              )}
-              {formData.endState && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Estado Final</p>
-                  <p className="text-lg">{formData.endState}</p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
