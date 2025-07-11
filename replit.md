@@ -127,6 +127,21 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 11, 2025 - Mielmex Recipe Updated for 3800L Production & Complete Form Display
+- **MIELMEX RECIPE UPDATED**: Updated Mielmex 65° Brix recipe for 3800 liter production with exact specifications:
+  - Leche de Cabra: 3800 kg (primary ingredient)
+  - Azúcar: 760 kg
+  - Bicarbonato: 6.08 kg
+  - Sorbato: 2.38 kg
+  - All other ingredients set to 0 (Leche de Vaca, Glucosa, Malto, etc.)
+- **PRODUCTION FORM COMPLETE DISPLAY**: All production form sections now display regardless of data presence:
+  - Control de Proceso (always visible with 7-row temperature/pressure table)
+  - Verificación de Calidad (complete 10-column quality verification table)
+  - Información de Destino (destination information always shown)
+  - Información Adicional (technical data including caducidad, brix, rendimiento)
+- **INGREDIENT TABLE ENHANCED**: Added "Hora" (time) column to ingredient tables in both web view and PDF
+- **STRUCTURED DATA DISPLAY**: Forms show default values when no data exists (e.g., "No registrado", "No medido")
+
 ### July 11, 2025 - Enhanced Production Form Visualization & Complete PDF Generation
 - **COMPLETE FORM VISUALIZATION**: Production forms now display all content sections including materials, process control, quality verification, destination info, and packaging data
 - **COMPREHENSIVE PDF GENERATION**: PDFs now include all form data with proper formatting including:

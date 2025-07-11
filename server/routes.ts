@@ -2306,9 +2306,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   normalizedQuantity = 1; // Fallback seguro
                 }
                 
+                // Para recetas base de 3800L, usar cantidades directas sin escalado
+                let finalQuantity;
+                if (liters === 3800) {
+                  finalQuantity = normalizedQuantity.toFixed(3);
+                } else {
+                  finalQuantity = (normalizedQuantity * liters / 100).toFixed(3);
+                }
+                
                 return {
                   name: ingredient.material_name,
-                  quantity: (normalizedQuantity * liters / 100).toFixed(3),
+                  quantity: finalQuantity,
                   unit: 'kg'
                 };
               });
