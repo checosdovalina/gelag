@@ -148,6 +148,7 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
                     <th className="border border-gray-300 px-4 py-2 text-left">Nombre</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Cantidad</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Unidad</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Hora</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,6 +159,9 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
                       <td className="border border-gray-300 px-4 py-2">{ingredient.name}</td>
                       <td className="border border-gray-300 px-4 py-2">{ingredient.quantity}</td>
                       <td className="border border-gray-300 px-4 py-2">{ingredient.unit}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formData.ingredientTimes?.[index] || 'No registrada'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

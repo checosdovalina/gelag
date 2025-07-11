@@ -172,11 +172,13 @@ function generateProductionPDFContent(
     doc.font('Helvetica').fontSize(9);
     
     form.ingredients.forEach((ingredient: any, index: number) => {
-      const time = processData.ingredientTimes?.[index] || '';
-      doc.text(ingredient.name || '', 50, currentIngredientY);
-      doc.text(ingredient.quantity?.toString() || '', 200, currentIngredientY);
-      doc.text(time, 350, currentIngredientY);
-      currentIngredientY += 15;
+      const time = processData.ingredientTimes?.[index] || 'No registrada';
+      if (ingredient.quantity > 0) { // Solo mostrar ingredientes con cantidad mayor a 0
+        doc.text(ingredient.name || '', 50, currentIngredientY);
+        doc.text(`${ingredient.quantity} ${ingredient.unit}` || '', 200, currentIngredientY);
+        doc.text(time, 350, currentIngredientY);
+        currentIngredientY += 15;
+      }
     });
     
     doc.y = currentIngredientY + 20;
