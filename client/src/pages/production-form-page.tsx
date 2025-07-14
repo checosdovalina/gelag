@@ -96,10 +96,7 @@ export default function ProductionFormPage() {
         // Actualizar formulario existente
         const formId = parseInt(params.id);
         console.log("Actualizando formulario con ID:", formId);
-        const updatedForm = await updateFormMutation.mutateAsync({
-          id: formId,
-          data: data
-        });
+        const updatedForm = await updateFormMutation.mutateAsync({ id: formId, data });
         // Actualizar el estado local con los datos guardados (incluyendo campos calculados del servidor)
         setFormData(updatedForm);
         

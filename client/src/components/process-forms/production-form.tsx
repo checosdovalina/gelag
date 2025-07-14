@@ -424,6 +424,12 @@ export default function ProductionForm({
         }
       }
       
+      console.log("=== DATOS QUE PASA handleSave AL PADRE ===");
+      console.log("formData.startTime:", formData.startTime);
+      console.log("formData.endTime:", formData.endTime);
+      console.log("formData.ingredientTimes:", formData.ingredientTimes);
+      console.log("formData completo:", JSON.stringify(formData, null, 2));
+      
       onSave({
         ...formData,
         status: newStatus,
