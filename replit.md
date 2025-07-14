@@ -127,6 +127,15 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 14, 2025 - Production Form Data Persistence System Fixed
+- **JSON FIELD PRESERVATION**: Fixed critical bug where temperature, pressure, and hour_tracking fields were being filtered out in useProductionForm hook
+- **COMPREHENSIVE DATA HANDLING**: Updated updateFormMutation to explicitly preserve all JSON fields including temperature, pressure, hour_tracking, ingredientTimes, qualityTimes, conoData, empaqueData, additionalFields, and states
+- **SERVER ENDPOINT ENHANCEMENT**: Added comprehensive support for all JSON fields in production-forms.ts update endpoint
+- **DEBUG LOGGING SYSTEM**: Implemented detailed logging for both client and server sides to track data flow
+- **COMPLETE FORM PERSISTENCE**: All production form sections now save and persist data correctly including Control de Proceso temperature/pressure tables
+- **FIELD MAPPING FIXES**: Resolved field mapping issues between frontend form data and backend database storage
+- **DATA INTEGRITY RESTORED**: Production forms now maintain all entered data across sessions and updates
+
 ### July 11, 2025 - Mielmex Recipe Updated for 3800L Production & Complete Form Display
 - **MIELMEX RECIPE UPDATED**: Updated Mielmex 65° Brix recipe for 3800 liter production with exact specifications:
   - Leche de Cabra: 3800 kg (primary ingredient)

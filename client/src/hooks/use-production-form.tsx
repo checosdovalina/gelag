@@ -153,7 +153,7 @@ export function useProductionForm(id?: number) {
     mutationFn: async (data: Partial<ProductionForm>) => {
       if (!id) throw new Error("ID de formulario no proporcionado");
       
-      // Limpiar datos para evitar problemas con timestamps
+      // Limpiar datos para evitar problemas con timestamps pero preservar campos JSON
       const {
         id: dataId,
         createdAt,
@@ -163,7 +163,27 @@ export function useProductionForm(id?: number) {
         ...cleanData
       } = data as any;
       
-      const res = await apiRequest('PUT', `/api/production-forms/${id}`, cleanData);
+      // Asegurar que los campos JSON se preserven correctamente
+      const finalData = {
+        ...cleanData,
+        // Preservar campos JSON específicos si existen
+        ...(data.temperature && { temperature: data.temperature }),
+        ...(data.pressure && { pressure: data.pressure }),
+        ...(data.hour_tracking && { hour_tracking: data.hour_tracking }),
+        ...(data.ingredientTimes && { ingredientTimes: data.ingredientTimes }),
+        ...(data.qualityTimes && { qualityTimes: data.qualityTimes }),
+        ...(data.conoData && { conoData: data.conoData }),
+        ...(data.empaqueData && { empaqueData: data.empaqueData }),
+        ...(data.additionalFields && { additionalFields: data.additionalFields }),
+        ...(data.states && { states: data.states })
+      };
+      
+      console.log("=== DATOS FINALES ENVIADOS AL SERVIDOR ===");
+      console.log("finalData.temperature:", finalData.temperature);
+      console.log("finalData.pressure:", finalData.pressure);
+      console.log("finalData.hour_tracking:", finalData.hour_tracking);
+      
+      const res = await apiRequest('PUT', `/api/production-forms/${id}`, finalData);
       return await res.json();
     },
     onSuccess: (updatedForm) => {

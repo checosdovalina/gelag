@@ -172,8 +172,13 @@ export async function createProductionForm(req: Request, res: Response) {
 // Actualizar un formulario de producción existente
 export async function updateProductionForm(req: Request, res: Response) {
   try {
+    console.log("=== ACTUALIZAR FORMULARIO DE PRODUCCIÓN ===");
+    console.log("Usuario autenticado:", req.isAuthenticated());
+    console.log("Body recibido:", JSON.stringify(req.body, null, 2));
+    
     // Verificar si el usuario está autenticado
     if (!req.isAuthenticated()) {
+      console.log("ERROR: Usuario no autenticado");
       return res.status(401).json({ message: "No autenticado" });
     }
 
@@ -205,6 +210,11 @@ export async function updateProductionForm(req: Request, res: Response) {
     // Campos JSON
     if (req.body.ingredients !== undefined) updateFields.ingredients = req.body.ingredients;
     if (req.body.ingredientTimes !== undefined) updateFields.ingredientTimes = req.body.ingredientTimes;
+    if (req.body.conoData !== undefined) updateFields.conoData = req.body.conoData;
+    if (req.body.empaqueData !== undefined) updateFields.empaqueData = req.body.empaqueData;
+    if (req.body.additionalFields !== undefined) updateFields.additionalFields = req.body.additionalFields;
+    if (req.body.states !== undefined) updateFields.states = req.body.states;
+    if (req.body.hour_tracking !== undefined) updateFields.hourTracking = req.body.hour_tracking;
     
     // Campos de seguimiento de proceso
     if (req.body.startTime !== undefined) {
@@ -220,8 +230,20 @@ export async function updateProductionForm(req: Request, res: Response) {
       // No convertir string vacía a null para campos de tiempo
       updateFields.endTime = req.body.endTime === "" ? "" : req.body.endTime;
     }
-    if (req.body.temperature !== undefined) updateFields.temperature = req.body.temperature;
-    if (req.body.pressure !== undefined) updateFields.pressure = req.body.pressure;
+    if (req.body.temperature !== undefined) {
+      console.log("=== TEMPERATURE DEBUG ===");
+      console.log("Valor recibido:", req.body.temperature);
+      console.log("Tipo:", typeof req.body.temperature);
+      console.log("Array.isArray:", Array.isArray(req.body.temperature));
+      updateFields.temperature = req.body.temperature;
+    }
+    if (req.body.pressure !== undefined) {
+      console.log("=== PRESSURE DEBUG ===");
+      console.log("Valor recibido:", req.body.pressure);
+      console.log("Tipo:", typeof req.body.pressure);
+      console.log("Array.isArray:", Array.isArray(req.body.pressure));
+      updateFields.pressure = req.body.pressure;
+    }
     if (req.body.hourTracking !== undefined) updateFields.hourTracking = req.body.hourTracking;
     
     // Campos de calidad
@@ -263,6 +285,8 @@ export async function updateProductionForm(req: Request, res: Response) {
     console.log("req.body completo:", JSON.stringify(req.body, null, 2));
     console.log("req.body.startTime:", req.body.startTime);
     console.log("req.body.endTime:", req.body.endTime);
+    console.log("req.body.temperature:", req.body.temperature);
+    console.log("req.body.pressure:", req.body.pressure);
     console.log("Campos a actualizar:", JSON.stringify(updateFields, null, 2));
     
     // Usar actualización directa con campos mapeados correctamente
