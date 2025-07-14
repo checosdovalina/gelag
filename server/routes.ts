@@ -1246,11 +1246,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const entryId = parseInt(req.params.id);
       
       if (isNaN(entryId)) {
+        console.log("[FORM-UPDATE] ID inválido:", req.params.id);
         return res.status(400).json({ message: "ID de entrada inválido" });
       }
       
       console.log("[FORM-UPDATE] ID:", entryId);
-      console.log("[FORM-UPDATE] Datos recibidos:", req.body);
+      console.log("[FORM-UPDATE] Usuario actual:", req.user?.username, "ID:", req.user?.id, "Role:", req.user?.role);
+      console.log("[FORM-UPDATE] Datos recibidos:", JSON.stringify(req.body, null, 2));
+      console.log("[FORM-UPDATE] Headers:", req.headers);
       
       // Verificar autenticación
       if (!req.user) {
@@ -1271,6 +1274,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("[FORM-UPDATE] Entrada no encontrada");
         return res.status(404).json({ message: "Entrada de formulario no encontrada" });
       }
+      
+      console.log("[FORM-UPDATE] Entrada existente - Creada por:", existingEntry.createdBy, "Última actualización por:", existingEntry.lastUpdatedBy);
       
       // Validación de datos
       const { data } = req.body;
