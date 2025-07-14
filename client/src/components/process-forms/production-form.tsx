@@ -98,40 +98,50 @@ const PRODUCTS: ProductRecipe[] = [
   }
 ];
 
-// Mapeo de roles de usuario a roles de aplicación
+// Mapeo de roles de usuario a roles de aplicación - ACCESO AMPLIADO PARA TODOS LOS USUARIOS
 const mapUserRoleToAppRole = (userRole: string): UserRole => {
   // Normalizar el rol a minúsculas para evitar problemas con mayúsculas/minúsculas
   const normalizedRole = userRole.toLowerCase();
   
-  if (normalizedRole === "superadmin" || normalizedRole === "admin" || normalizedRole === "gerente_produccion") {
+  // SuperAdmin y Admin tienen acceso completo como production_manager
+  if (normalizedRole === "superadmin" || normalizedRole === "admin") {
     return "production_manager";
   }
   
-  if (normalizedRole === "produccion") {
-    return "operator";
+  // Gerentes mantienen sus roles específicos
+  if (normalizedRole === "gerente_produccion") {
+    return "production_manager";
   }
   
-  if (normalizedRole === "calidad" || normalizedRole === "gerente_calidad") {
+  if (normalizedRole === "gerente_calidad") {
     return "quality_manager";
   }
   
-  // Por defecto, asignamos un rol de operator para evitar errores
-  // Esto permite al menos ver el formulario
-  return "operator";
+  // CAMBIO IMPORTANTE: Usuarios de producción y calidad ahora tienen acceso completo
+  if (normalizedRole === "produccion") {
+    return "production_manager"; // Cambio de "operator" a "production_manager"
+  }
+  
+  if (normalizedRole === "calidad") {
+    return "quality_manager"; // Cambio de mapeo para acceso completo
+  }
+  
+  // Por defecto, asignamos production_manager para máximo acceso
+  return "production_manager";
 };
 
-// Definición de secciones del formulario
+// Definición de secciones del formulario - ACCESO COMPLETO PARA TODOS LOS USUARIOS CON PERMISOS
 const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
   {
     id: "general-info",
     title: "Información General",
-    allowedRoles: ["production_manager", "quality_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "raw-materials",
     title: "Materias Primas",
-    allowedRoles: ["production_manager", "quality_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
@@ -155,13 +165,13 @@ const PRODUCTION_FORM_SECTIONS: ProductionFormSection[] = [
   {
     id: "final-strainer",
     title: "Colador Final",
-    allowedRoles: ["production_manager", "quality_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   },
   {
     id: "liberation-data",
     title: "Datos de Liberación",
-    allowedRoles: ["production_manager", "quality_manager"],
+    allowedRoles: ["operator", "production_manager", "quality_manager"],
     editable: true
   }
 ];
