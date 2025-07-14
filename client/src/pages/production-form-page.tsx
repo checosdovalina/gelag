@@ -31,10 +31,10 @@ export default function ProductionFormPage() {
   const [isNewForm, setIsNewForm] = useState(true);
   
   // Hooks para interactuar con los formularios
-  const { form, isLoading: isLoadingForm, updateFormMutation } = useProductionForm(
+  const { form, isLoading: isLoadingForm } = useProductionForm(
     match && params?.id ? parseInt(params.id) : undefined
   );
-  const { createFormMutation } = useProductionForms();
+  const { createFormMutation, updateFormMutation } = useProductionForms();
   
   // Referencia para saber si ya se cargaron los datos iniciales
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
