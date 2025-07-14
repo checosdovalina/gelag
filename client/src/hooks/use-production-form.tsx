@@ -177,9 +177,9 @@ export function useProductionForm(id?: number) {
       if (data.additionalFields !== undefined) finalData.additionalFields = data.additionalFields;
       if (data.states !== undefined) finalData.states = data.states;
       
-      // Preservar campos de tiempo específicos
-      if (data.startTime !== undefined) finalData.startTime = data.startTime;
-      if (data.endTime !== undefined) finalData.endTime = data.endTime;
+      // Preservar campos de tiempo específicos - incluir null y undefined
+      finalData.startTime = data.startTime;
+      finalData.endTime = data.endTime;
       
       // Preservar campos de calidad específicos
       if (data.brix !== undefined) finalData.brix = data.brix;
@@ -202,6 +202,11 @@ export function useProductionForm(id?: number) {
       console.log("finalData.hour_tracking:", finalData.hour_tracking);
       console.log("finalData.startTime:", finalData.startTime);
       console.log("finalData.endTime:", finalData.endTime);
+      console.log("=== VERIFICACIÓN DE TIPO DE DATOS ===");
+      console.log("typeof data.startTime:", typeof data.startTime);
+      console.log("typeof data.endTime:", typeof data.endTime);
+      console.log("data.startTime === null:", data.startTime === null);
+      console.log("data.endTime === null:", data.endTime === null);
       console.log("finalData.ingredientTimes:", finalData.ingredientTimes);
       console.log("finalData.brix:", finalData.brix);
       console.log("finalData.qualityTemp:", finalData.qualityTemp);
