@@ -222,13 +222,13 @@ export async function updateProductionForm(req: Request, res: Response) {
       console.log("Valor recibido:", req.body.startTime);
       console.log("Tipo:", typeof req.body.startTime);
       console.log("Es string vacía:", req.body.startTime === "");
-      // No convertir string vacía a null para campos de tiempo
-      updateFields.startTime = req.body.startTime === "" ? "" : req.body.startTime;
+      // Preservar valores de tiempo exactamente como se reciben
+      updateFields.startTime = req.body.startTime;
       console.log("Valor a guardar:", updateFields.startTime);
     }
     if (req.body.endTime !== undefined) {
-      // No convertir string vacía a null para campos de tiempo
-      updateFields.endTime = req.body.endTime === "" ? "" : req.body.endTime;
+      // Preservar valores de tiempo exactamente como se reciben
+      updateFields.endTime = req.body.endTime;
     }
     if (req.body.temperature !== undefined) {
       console.log("=== TEMPERATURE DEBUG ===");
@@ -247,15 +247,28 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.hourTracking !== undefined) updateFields.hourTracking = req.body.hourTracking;
     
     // Campos de calidad
-    if (req.body.qualityTimes !== undefined) updateFields.qualityTimes = req.body.qualityTimes;
-    if (req.body.brix !== undefined) updateFields.brix = req.body.brix;
+    if (req.body.qualityTimes !== undefined) {
+      console.log("=== QUALITY TIMES DEBUG ===");
+      console.log("Valor recibido:", req.body.qualityTimes);
+      updateFields.qualityTimes = req.body.qualityTimes;
+    }
+    if (req.body.brix !== undefined) {
+      console.log("=== BRIX DEBUG ===");
+      console.log("Valor recibido:", req.body.brix);
+      updateFields.brix = req.body.brix;
+    }
     if (req.body.qualityTemp !== undefined) updateFields.qualityTemp = req.body.qualityTemp;
     if (req.body.texture !== undefined) updateFields.texture = req.body.texture;
     if (req.body.color !== undefined) updateFields.color = req.body.color;
     if (req.body.viscosity !== undefined) updateFields.viscosity = req.body.viscosity;
     if (req.body.smell !== undefined) updateFields.smell = req.body.smell;
     if (req.body.taste !== undefined) updateFields.taste = req.body.taste;
-    if (req.body.statusCheck !== undefined) updateFields.statusCheck = req.body.statusCheck;
+    if (req.body.foreignMaterial !== undefined) updateFields.foreignMaterial = req.body.foreignMaterial;
+    if (req.body.statusCheck !== undefined) {
+      console.log("=== STATUS CHECK DEBUG ===");
+      console.log("Valor recibido:", req.body.statusCheck);
+      updateFields.statusCheck = req.body.statusCheck;
+    }
     if (req.body.qualityNotes !== undefined) updateFields.qualityNotes = req.body.qualityNotes;
     
     // Campos de destino

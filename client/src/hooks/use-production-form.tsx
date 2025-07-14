@@ -165,23 +165,36 @@ export function useProductionForm(id?: number) {
       
       // Asegurar que los campos JSON se preserven correctamente
       const finalData = {
-        ...cleanData,
-        // Preservar campos JSON específicos si existen
-        ...(data.temperature && { temperature: data.temperature }),
-        ...(data.pressure && { pressure: data.pressure }),
-        ...(data.hour_tracking && { hour_tracking: data.hour_tracking }),
-        ...(data.ingredientTimes && { ingredientTimes: data.ingredientTimes }),
-        ...(data.qualityTimes && { qualityTimes: data.qualityTimes }),
-        ...(data.conoData && { conoData: data.conoData }),
-        ...(data.empaqueData && { empaqueData: data.empaqueData }),
-        ...(data.additionalFields && { additionalFields: data.additionalFields }),
-        ...(data.states && { states: data.states })
+        ...cleanData
       };
+      
+      // Preservar campos JSON específicos si existen (incluyendo arrays vacíos)
+      if (data.temperature !== undefined) finalData.temperature = data.temperature;
+      if (data.pressure !== undefined) finalData.pressure = data.pressure;
+      if (data.hour_tracking !== undefined) finalData.hour_tracking = data.hour_tracking;
+      if (data.ingredientTimes !== undefined) finalData.ingredientTimes = data.ingredientTimes;
+      if (data.qualityTimes !== undefined) finalData.qualityTimes = data.qualityTimes;
+      if (data.conoData !== undefined) finalData.conoData = data.conoData;
+      if (data.empaqueData !== undefined) finalData.empaqueData = data.empaqueData;
+      if (data.additionalFields !== undefined) finalData.additionalFields = data.additionalFields;
+      if (data.states !== undefined) finalData.states = data.states;
       
       console.log("=== DATOS FINALES ENVIADOS AL SERVIDOR ===");
       console.log("finalData.temperature:", finalData.temperature);
       console.log("finalData.pressure:", finalData.pressure);
       console.log("finalData.hour_tracking:", finalData.hour_tracking);
+      console.log("finalData.startTime:", finalData.startTime);
+      console.log("finalData.endTime:", finalData.endTime);
+      console.log("finalData.brix:", finalData.brix);
+      console.log("finalData.qualityTemp:", finalData.qualityTemp);
+      console.log("finalData.texture:", finalData.texture);
+      console.log("finalData.color:", finalData.color);
+      console.log("finalData.viscosity:", finalData.viscosity);
+      console.log("finalData.smell:", finalData.smell);
+      console.log("finalData.taste:", finalData.taste);
+      console.log("finalData.foreignMaterial:", finalData.foreignMaterial);
+      console.log("finalData.statusCheck:", finalData.statusCheck);
+      console.log("Objeto completo finalData:", JSON.stringify(finalData, null, 2));
       
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, finalData);
       return await res.json();
