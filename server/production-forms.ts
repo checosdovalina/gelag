@@ -209,7 +209,13 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     // Campos JSON
     if (req.body.ingredients !== undefined) updateFields.ingredients = req.body.ingredients;
-    if (req.body.ingredientTimes !== undefined) updateFields.ingredientTimes = req.body.ingredientTimes;
+    if (req.body.ingredientTimes !== undefined) {
+      console.log("=== INGREDIENT TIMES DEBUG ===");
+      console.log("Valor recibido:", req.body.ingredientTimes);
+      console.log("Tipo:", typeof req.body.ingredientTimes);
+      console.log("Array.isArray:", Array.isArray(req.body.ingredientTimes));
+      updateFields.ingredientTimes = req.body.ingredientTimes;
+    }
     if (req.body.conoData !== undefined) updateFields.conoData = req.body.conoData;
     if (req.body.empaqueData !== undefined) updateFields.empaqueData = req.body.empaqueData;
     if (req.body.additionalFields !== undefined) updateFields.additionalFields = req.body.additionalFields;

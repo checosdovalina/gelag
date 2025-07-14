@@ -163,10 +163,8 @@ export function useProductionForm(id?: number) {
         ...cleanData
       } = data as any;
       
-      // Asegurar que los campos JSON se preserven correctamente
-      const finalData = {
-        ...cleanData
-      };
+      // Crear objeto final con todos los campos preservados
+      const finalData = cleanData;
       
       // Preservar campos JSON específicos si existen (incluyendo arrays vacíos)
       if (data.temperature !== undefined) finalData.temperature = data.temperature;
@@ -179,12 +177,32 @@ export function useProductionForm(id?: number) {
       if (data.additionalFields !== undefined) finalData.additionalFields = data.additionalFields;
       if (data.states !== undefined) finalData.states = data.states;
       
+      // Preservar campos de tiempo específicos
+      if (data.startTime !== undefined) finalData.startTime = data.startTime;
+      if (data.endTime !== undefined) finalData.endTime = data.endTime;
+      
+      // Preservar campos de calidad específicos
+      if (data.brix !== undefined) finalData.brix = data.brix;
+      if (data.qualityTemp !== undefined) finalData.qualityTemp = data.qualityTemp;
+      if (data.texture !== undefined) finalData.texture = data.texture;
+      if (data.color !== undefined) finalData.color = data.color;
+      if (data.viscosity !== undefined) finalData.viscosity = data.viscosity;
+      if (data.smell !== undefined) finalData.smell = data.smell;
+      if (data.taste !== undefined) finalData.taste = data.taste;
+      if (data.foreignMaterial !== undefined) finalData.foreignMaterial = data.foreignMaterial;
+      if (data.statusCheck !== undefined) finalData.statusCheck = data.statusCheck;
+      if (data.qualityNotes !== undefined) finalData.qualityNotes = data.qualityNotes;
+      
       console.log("=== DATOS FINALES ENVIADOS AL SERVIDOR ===");
+      console.log("data.startTime:", data.startTime);
+      console.log("data.endTime:", data.endTime);
+      console.log("data.ingredientTimes:", data.ingredientTimes);
       console.log("finalData.temperature:", finalData.temperature);
       console.log("finalData.pressure:", finalData.pressure);
       console.log("finalData.hour_tracking:", finalData.hour_tracking);
       console.log("finalData.startTime:", finalData.startTime);
       console.log("finalData.endTime:", finalData.endTime);
+      console.log("finalData.ingredientTimes:", finalData.ingredientTimes);
       console.log("finalData.brix:", finalData.brix);
       console.log("finalData.qualityTemp:", finalData.qualityTemp);
       console.log("finalData.texture:", finalData.texture);
