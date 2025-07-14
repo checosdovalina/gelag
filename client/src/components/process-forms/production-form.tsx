@@ -189,7 +189,12 @@ export default function ProductionForm({
   
   // Efecto para sincronizar datos cuando el backend los actualiza
   useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData.id) {
+      console.log("=== EFECTO SINCRONIZANDO DATOS ===");
+      console.log("initialData.startTime:", initialData.startTime);
+      console.log("initialData.endTime:", initialData.endTime);
+      console.log("formData.startTime antes:", formData.startTime);
+      console.log("formData.endTime antes:", formData.endTime);
       
       setFormData((prevData: any) => {
         // Solo sobrescribir campos de tiempo si NO son null/undefined en el servidor
@@ -197,7 +202,10 @@ export default function ProductionForm({
         const shouldUpdateStartTime = initialData.startTime !== null && initialData.startTime !== undefined && initialData.startTime !== "";
         const shouldUpdateEndTime = initialData.endTime !== null && initialData.endTime !== undefined && initialData.endTime !== "";
         
-        return {
+        console.log("shouldUpdateStartTime:", shouldUpdateStartTime);
+        console.log("shouldUpdateEndTime:", shouldUpdateEndTime);
+        
+        const newData = {
           ...initialData,
           // Preservar valores locales de tiempo si el servidor no tiene valores válidos
           startTime: shouldUpdateStartTime ? initialData.startTime : (prevData.startTime || ""),
@@ -206,6 +214,12 @@ export default function ProductionForm({
           temperature: initialData.temperature || Array(7).fill(""),
           pressure: initialData.pressure || Array(7).fill(""),
         };
+        
+        console.log("=== DATOS DESPUÉS DE SINCRONIZAR ===");
+        console.log("newData.startTime:", newData.startTime);
+        console.log("newData.endTime:", newData.endTime);
+        
+        return newData;
       });
     }
   }, [initialData?.id]); // Solo reaccionar al cambio de ID, no a startTime/endTime

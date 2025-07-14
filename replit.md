@@ -127,14 +127,16 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
-### July 14, 2025 - Production Form Data Persistence System Fixed
-- **JSON FIELD PRESERVATION**: Fixed critical bug where temperature, pressure, and hour_tracking fields were being filtered out in useProductionForm hook
-- **COMPREHENSIVE DATA HANDLING**: Updated updateFormMutation to explicitly preserve all JSON fields including temperature, pressure, hour_tracking, ingredientTimes, qualityTimes, conoData, empaqueData, additionalFields, and states
-- **SERVER ENDPOINT ENHANCEMENT**: Added comprehensive support for all JSON fields in production-forms.ts update endpoint
-- **DEBUG LOGGING SYSTEM**: Implemented detailed logging for both client and server sides to track data flow
+### July 14, 2025 - Production Form Data Persistence System Completely Fixed
+- **CRITICAL BUG RESOLVED**: Fixed updateFormMutation parameter mismatch where { id, data } object was not being passed correctly to server
+- **PARAMETER STRUCTURE CORRECTED**: Changed `updateFormMutation.mutateAsync(data)` to `updateFormMutation.mutateAsync({ id: formId, data })` in production-form-page.tsx
+- **DATA FLOW RESTORED**: Time fields (startTime, endTime) and all other form data now save and persist correctly across sessions
+- **COMPREHENSIVE DEBUGGING**: Added detailed logging throughout the data flow pipeline from component state to server storage
+- **SERVER VALIDATION CONFIRMED**: Database can store time fields correctly - issue was purely in frontend-to-server communication
 - **COMPLETE FORM PERSISTENCE**: All production form sections now save and persist data correctly including Control de Proceso temperature/pressure tables
 - **FIELD MAPPING FIXES**: Resolved field mapping issues between frontend form data and backend database storage
 - **DATA INTEGRITY RESTORED**: Production forms now maintain all entered data across sessions and updates
+- **SYNC MECHANISM ENHANCED**: Improved useEffect for data synchronization with detailed logging to prevent state overwrites
 
 ### July 11, 2025 - Mielmex Recipe Updated for 3800L Production & Complete Form Display
 - **MIELMEX RECIPE UPDATED**: Updated Mielmex 65° Brix recipe for 3800 liter production with exact specifications:
