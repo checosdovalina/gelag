@@ -108,7 +108,7 @@ const PRODUCTS: ProductRecipe[] = [
       { name: "Bicarbonato", quantity: 0, unit: "kg", factor: 0 },
       { name: "Sorbato", quantity: 0, unit: "kg", factor: 0 },
       { name: "Lecitina", quantity: 0.039, unit: "kg", factor: 0.00059 }, // 0.039kg para 66L
-      { name: "Carragenina", quantity: 0.015, unit: "kg", factor: 0.00023 }, // 0.015kg para 66L
+      { name: "Carragenina", quantity: 0.015, unit: "kg", factor: 0.000227 }, // 0.015kg para 66L corregido
       { name: "Grasa", quantity: 0, unit: "kg", factor: 0 },
       { name: "Pasta", quantity: 66, unit: "kg", factor: 1 }, // 66kg para 66L
       { name: "Antiespumante", quantity: 0, unit: "kg", factor: 0 },
