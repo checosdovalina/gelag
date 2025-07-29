@@ -135,10 +135,11 @@ GELAG is a comprehensive form management system designed for quality control and
   - Displays configuration notification to user
   - Automatically loads the correct recipe for 66 liters
 - **RECIPE INTEGRATION**: Pasta Oblea Cajeton recipe configured with accurate ingredient ratios:
-  - Glucosa: 18kg for 66L (factor: 0.2727)
-  - Lecitina: 0.039kg for 66L (factor: 0.00059)
-  - Carragenina: 0.015kg for 66L (factor: 0.00023)
-  - Pasta: 66kg for 66L (factor: 1)
+  - Glucosa: 18kg for 66L (database factor: 27.273 base 100L)
+  - Lecitina: 0.039kg for 66L (database factor: 0.059 base 100L)
+  - Carragenina: 0.015kg for 66L (database factor: 0.0227 base 100L)
+  - Pasta: 66kg for 66L (database factor: 100 base 100L)
+- **DATABASE RECIPE CALIBRATION**: Updated recipe scaling factors to ensure exact quantities for 66L production
 - **WORKFLOW OPTIMIZATION**: Production form now provides intelligent defaults for specific processes
 - **USER EXPERIENCE ENHANCEMENT**: Toast notifications confirm automatic configuration changes
 - **FOLIO INTERNO FIELD ADDED**: Implemented complete "folio interno" field functionality in production forms
