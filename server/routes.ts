@@ -2313,10 +2313,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 
                 // Para recetas base de 3800L, usar cantidades directas sin escalado
                 let finalQuantity;
+                let calculatedQuantity;
                 if (liters === 3800) {
-                  finalQuantity = normalizedQuantity.toFixed(3);
+                  calculatedQuantity = normalizedQuantity;
                 } else {
-                  finalQuantity = (normalizedQuantity * liters / 100).toFixed(3);
+                  calculatedQuantity = normalizedQuantity * liters / 100;
+                }
+                
+                // Formatear sin decimales si es un número entero
+                if (calculatedQuantity % 1 === 0) {
+                  finalQuantity = calculatedQuantity.toString();
+                } else {
+                  finalQuantity = calculatedQuantity.toFixed(3);
                 }
                 
                 return {
@@ -2391,11 +2399,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const predefinedRecipe = predefinedRecipes[productId as keyof typeof predefinedRecipes];
         
         if (predefinedRecipe) {
-          const adjustedIngredients = predefinedRecipe.ingredients.map(ingredient => ({
-            name: ingredient.name,
-            quantity: (ingredient.baseQuantity * liters / 100).toFixed(3),
-            unit: ingredient.unit
-          }));
+          const adjustedIngredients = predefinedRecipe.ingredients.map(ingredient => {
+            const calculatedQuantity = ingredient.baseQuantity * liters / 100;
+            let formattedQuantity;
+            // Formatear sin decimales si es un número entero
+            if (calculatedQuantity % 1 === 0) {
+              formattedQuantity = calculatedQuantity.toString();
+            } else {
+              formattedQuantity = calculatedQuantity.toFixed(3);
+            }
+            return {
+              name: ingredient.name,
+              quantity: formattedQuantity,
+              unit: ingredient.unit
+            };
+          });
           
           recipeData = {
             recipeId: `fallback_${productId}`,
@@ -2412,9 +2430,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             baseLiters: 100,
             targetLiters: liters,
             ingredients: [
-              { name: "Leche Base", quantity: (liters * 0.7).toFixed(3), unit: "kg" },
-              { name: "Azúcar", quantity: (liters * 0.2).toFixed(3), unit: "kg" },
-              { name: "Aditivos", quantity: (liters * 0.05).toFixed(3), unit: "kg" }
+              { 
+                name: "Leche Base", 
+                quantity: (liters * 0.7) % 1 === 0 ? (liters * 0.7).toString() : (liters * 0.7).toFixed(3), 
+                unit: "kg" 
+              },
+              { 
+                name: "Azúcar", 
+                quantity: (liters * 0.2) % 1 === 0 ? (liters * 0.2).toString() : (liters * 0.2).toFixed(3), 
+                unit: "kg" 
+              },
+              { 
+                name: "Aditivos", 
+                quantity: (liters * 0.05) % 1 === 0 ? (liters * 0.05).toString() : (liters * 0.05).toFixed(3), 
+                unit: "kg" 
+              }
             ]
           };
         }
