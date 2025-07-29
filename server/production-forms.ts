@@ -110,9 +110,14 @@ export async function createProductionForm(req: Request, res: Response) {
     const validatedData = insertProductionFormSchema.parse(req.body);
     console.log("Datos validados:", JSON.stringify(validatedData, null, 2));
     
-    // Generar folio consecutivo automáticamente
-    const folio = await generateFolio();
-    console.log("Folio generado:", folio);
+    // Usar folio proporcionado o generar uno automáticamente si no existe
+    let folio = validatedData.folio;
+    if (!folio || folio.trim() === '') {
+      folio = await generateFolio();
+      console.log("Folio generado automáticamente:", folio);
+    } else {
+      console.log("Usando folio proporcionado:", folio);
+    }
     
     // Preparar datos para inserción
     const insertData = {
@@ -206,6 +211,15 @@ export async function updateProductionForm(req: Request, res: Response) {
     if (req.body.marmita !== undefined) updateFields.marmita = req.body.marmita;
     if (req.body.lotNumber !== undefined) updateFields.lotNumber = req.body.lotNumber;
     if (req.body.status !== undefined) updateFields.status = req.body.status;
+    
+    // Folio - preservar el valor exacto proporcionado por el usuario
+    if (req.body.folio !== undefined) {
+      console.log("=== FOLIO UPDATE DEBUG ===");
+      console.log("Folio recibido:", req.body.folio);
+      console.log("Folio actual:", existingForm.folio);
+      updateFields.folio = req.body.folio;
+      console.log("Folio a actualizar:", updateFields.folio);
+    }
     
     // Campos JSON
     if (req.body.ingredients !== undefined) updateFields.ingredients = req.body.ingredients;
