@@ -775,7 +775,7 @@ export default function ProductionForm({
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="folio">Folio</Label>
                     <Input
@@ -785,16 +785,6 @@ export default function ProductionForm({
                       placeholder="Ingrese el folio"
                       disabled={!canEditSection("general-info") || readOnly}
                       className="font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="folioInterno">Folio Interno</Label>
-                    <Input
-                      id="folioInterno"
-                      value={formData.folioInterno || ""}
-                      onChange={(e) => handleChange("folioInterno", e.target.value)}
-                      placeholder="Ingrese el folio interno"
-                      disabled={!canEditSection("general-info") || readOnly}
                     />
                   </div>
                   <div>

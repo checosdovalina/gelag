@@ -137,7 +137,6 @@ export async function createProductionForm(req: Request, res: Response) {
       ...(validatedData.ingredients && { ingredients: validatedData.ingredients }),
       ...(validatedData.ingredientTimes && { ingredientTimes: validatedData.ingredientTimes }),
       // Nuevos campos de folio
-      ...(validatedData.folioInterno && { folioInterno: validatedData.folioInterno }),
       ...(validatedData.folioBajaMP && { folioBajaMP: validatedData.folioBajaMP }),
       ...(validatedData.folioBajaME && { folioBajaME: validatedData.folioBajaME }),
       ...(validatedData.folioPT && { folioPT: validatedData.folioPT })
@@ -148,11 +147,11 @@ export async function createProductionForm(req: Request, res: Response) {
     // Insertar el nuevo formulario usando SQL directo
     const result = await db.execute(sql`
       INSERT INTO production_forms (
-        product_id, liters, date, responsible, caducidad, marmita, folio, folio_interno, folio_baja_mp, folio_baja_me, folio_pt, created_by, status, lot_number, ingredients, ingredient_times, created_at, updated_at
+        product_id, liters, date, responsible, caducidad, marmita, folio, folio_baja_mp, folio_baja_me, folio_pt, created_by, status, lot_number, ingredients, ingredient_times, created_at, updated_at
       ) VALUES (
         ${insertData.productId}, ${insertData.liters}, ${insertData.date}, 
         ${insertData.responsible}, ${insertData.caducidad || null}, ${insertData.marmita || null}, 
-        ${insertData.folio}, ${insertData.folioInterno || null}, ${insertData.folioBajaMP || null}, ${insertData.folioBajaME || null}, ${insertData.folioPT || null},
+        ${insertData.folio}, ${insertData.folioBajaMP || null}, ${insertData.folioBajaME || null}, ${insertData.folioPT || null},
         ${insertData.createdBy}, 
         ${insertData.status}, ${insertData.lotNumber || null}, 
         ${insertData.ingredients ? JSON.stringify(insertData.ingredients) : null}, 
@@ -228,7 +227,6 @@ export async function updateProductionForm(req: Request, res: Response) {
     }
     
     // Nuevos campos de folio
-    if (req.body.folioInterno !== undefined) updateFields.folioInterno = req.body.folioInterno;
     if (req.body.folioBajaMP !== undefined) updateFields.folioBajaMP = req.body.folioBajaMP;
     if (req.body.folioBajaME !== undefined) updateFields.folioBajaME = req.body.folioBajaME;
     if (req.body.folioPT !== undefined) updateFields.folioPT = req.body.folioPT;
