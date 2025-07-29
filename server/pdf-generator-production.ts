@@ -360,14 +360,20 @@ function generateProductionPDFContent(
   currentY = drawInfoTable(doc, form, currentY);
   currentY += 10;
   
-  // Secciones del formulario
+  // Secciones del formulario - primera página
   currentY = drawIngredientsTable(doc, form, currentY);
   currentY = drawProcessTable(doc, form, currentY);
   currentY = drawQualityTable(doc, form, currentY);
   currentY = drawFinalResults(doc, form, currentY);
+  
+  // Nueva página para destino del producto y tiempos
+  doc.addPage();
+  currentY = 40;
+  
+  // Secciones de la segunda página
   currentY = drawDestinationInfo(doc, form, currentY);
   
-  // Información adicional
+  // Información adicional - Tiempos de proceso
   const processData = form as any;
   
   if (processData.startTime || processData.endTime) {
@@ -389,6 +395,7 @@ function generateProductionPDFContent(
     currentY += 15;
   }
   
+  // Información adicional en la segunda página  
   if (processData.caducidad || form.marmita) {
     currentY = drawSectionHeader(doc, 'INFORMACIÓN ADICIONAL', currentY);
     doc.fillColor('#000000').fontSize(9).font('Helvetica');
@@ -406,7 +413,7 @@ function generateProductionPDFContent(
     }
   }
   
-  // Pie de página
+  // Pie de página para la segunda página
   const now = new Date();
   const dateString = now.toLocaleDateString('es-MX');
   const timeString = now.toLocaleTimeString('es-MX');
@@ -416,6 +423,18 @@ function generateProductionPDFContent(
     align: 'center',
     width: pageWidth - 80
   });
+
+  // Pie de página para la primera página también
+  const currentPageCount = doc.page.count;
+  if (currentPageCount > 1) {
+    // Ir a la primera página para agregar el pie de página
+    doc.switchToPage(0);
+    doc.fontSize(8).font('Helvetica').fillColor('#666666');
+    doc.text(`Generado el: ${dateString} a las ${timeString}`, 40, doc.page.height - 40, {
+      align: 'center',
+      width: pageWidth - 80
+    });
+  }
 }
 
 // Función auxiliar para obtener etiqueta de estado
