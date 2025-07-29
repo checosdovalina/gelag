@@ -303,11 +303,33 @@ export default function CapturedFormsPage() {
         // Content search (búsqueda en el contenido del formulario)
         const passesContentSearch = contentSearchTerm === "" || searchInFormContent(entry, contentSearchTerm);
         
-        // Folio filter (búsqueda en folio o folio de producción)
-        const passesFolioFilter = folioFilter === "" || 
-          (entry.folioNumber && entry.folioNumber.toString().toLowerCase().includes(folioFilter.toLowerCase())) ||
-          (entry.data?.folio && entry.data.folio.toString().toLowerCase().includes(folioFilter.toLowerCase())) ||
-          (entry.data?.folio_produccion && entry.data.folio_produccion.toString().toLowerCase().includes(folioFilter.toLowerCase()));
+        // Folio filter (búsqueda en TODOS los campos relacionados con folios)
+        const passesFolioFilter = folioFilter === "" || (() => {
+          const folioSearchTerm = folioFilter.toLowerCase();
+          const data = entry.data;
+          
+          // Buscar en todos los posibles campos de folio
+          const folioFields = [
+            entry.folioNumber, // Para formularios regulares
+            data?.folio, // Folio principal
+            data?.folioInterno, // Folio interno
+            data?.folio_produccion, // Folio de producción
+            data?.folioBajaMP, // Folio baja MP
+            data?.folioBajaME, // Folio baja ME
+            data?.folioPT, // Folio PT
+            data?.liberationFolio, // Folio de liberación
+            data?.lotNumber, // Número de lote
+            // También buscar en campos que puedan tener "folio" en el nombre
+            ...(data ? Object.entries(data)
+              .filter(([key]) => key.toLowerCase().includes('folio'))
+              .map(([, value]) => value) : [])
+          ];
+          
+          // Verificar si algún campo de folio contiene el término de búsqueda
+          return folioFields.some(field => 
+            field && field.toString().toLowerCase().includes(folioSearchTerm)
+          );
+        })();
         
         // Department filter
         const passesDepartmentFilter = 
