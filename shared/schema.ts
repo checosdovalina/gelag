@@ -473,8 +473,9 @@ export const insertProductionFormSchema = createInsertSchema(productionForms).om
   createdBy: true,
   createdAt: true,
   updatedAt: true,
-  updatedBy: true,
-  folio: true // El folio se genera automáticamente
+  updatedBy: true
+}).extend({
+  folio: z.string().optional() // El folio es opcional, se genera automáticamente si no se proporciona
 });
 
 export type ProductionForm = typeof productionForms.$inferSelect;

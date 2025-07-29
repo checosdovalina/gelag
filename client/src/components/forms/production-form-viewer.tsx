@@ -7,6 +7,9 @@ import { es } from "date-fns/locale";
 interface ProductionFormData {
   id: number;
   folio: string;
+  folioBajaMP?: string;
+  folioBajaME?: string;
+  folioPT?: string;
   date: string;
   productId: number;
   liters: number;
@@ -100,6 +103,24 @@ export function ProductionFormViewer({ formData, creator }: ProductionFormViewer
               <p className="text-sm font-medium text-muted-foreground">Folio</p>
               <p className="text-lg font-semibold">{formData.folio}</p>
             </div>
+            {formData.folioBajaMP && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Folio Baja MP</p>
+                <p className="text-lg">{formData.folioBajaMP}</p>
+              </div>
+            )}
+            {formData.folioBajaME && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Folio Baja ME</p>
+                <p className="text-lg">{formData.folioBajaME}</p>
+              </div>
+            )}
+            {formData.folioPT && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Folio PT</p>
+                <p className="text-lg">{formData.folioPT}</p>
+              </div>
+            )}
             <div>
               <p className="text-sm font-medium text-muted-foreground">Fecha</p>
               <p className="text-lg">{format(new Date(formData.date), "dd/MM/yyyy", { locale: es })}</p>

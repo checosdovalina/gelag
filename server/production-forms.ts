@@ -310,7 +310,7 @@ export async function updateProductionForm(req: Request, res: Response) {
     
     // Campos de liberación
     if (req.body.liberationFolio !== undefined) updateFields.liberationFolio = req.body.liberationFolio;
-    if (req.body.c_p !== undefined) updateFields.c_p = req.body.c_p;
+    if (req.body.cP !== undefined) updateFields.cP = req.body.cP; // Cambiar de c_p a cP para mapear correctamente
     if (req.body.cmConsistometer !== undefined) updateFields.cmConsistometer = req.body.cmConsistometer;
     if (req.body.finalBrix !== undefined) updateFields.finalBrix = req.body.finalBrix;
     if (req.body.yield !== undefined) updateFields.yield = req.body.yield;
