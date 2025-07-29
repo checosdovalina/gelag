@@ -127,6 +127,17 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
+### July 29, 2025 - Folio Interno Field Implementation & PDF Export Enhancement
+- **FOLIO INTERNO FIELD ADDED**: Implemented complete "folio interno" field functionality in production forms
+- **DATABASE SCHEMA UPDATED**: Added folio_interno column to production_forms table with proper data persistence
+- **FORM INTERFACE ENHANCED**: New field integrated into "Información General" section alongside main folio field
+- **VIEWER INTEGRATION**: Production form viewer displays folio interno conditionally when data exists
+- **PDF EXPORT UPDATED**: Folio interno now appears in PDF exports within main information table
+- **COMPLETE DATA FLOW**: Field properly maps between frontend form, database storage, viewer display, and PDF generation
+- **FIELD PERSISTENCE VERIFIED**: All folio fields (main, interno, baja MP, baja ME, PT) maintain data across sessions
+- **SERVER ENDPOINTS UPDATED**: Create and update operations handle the new folio interno field correctly
+- **USER CONFIRMATION**: PDF display of folio interno field verified working by user testing
+
 ### July 14, 2025 - Complete Production Form Access System Implemented
 - **UNIVERSAL EDITING ACCESS**: All production form sections now editable by any user with required permissions
 - **ROLE MAPPING ENHANCED**: Users with "produccion" and "calidad" roles now have full access (mapped to production_manager and quality_manager)
