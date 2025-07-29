@@ -95,6 +95,25 @@ const PRODUCTS: ProductRecipe[] = [
       { name: "Antiespumante", quantity: 0, unit: "kg", factor: 0 },
       { name: "Nuez", quantity: 0, unit: "kg", factor: 0 }
     ]
+  },
+  {
+    id: "pasta_oblea_cajeton",
+    name: "Pasta Oblea Cajeton",
+    ingredients: [
+      { name: "Leche de Vaca", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Leche de Cabra", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Azúcar", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Glucosa", quantity: 18, unit: "kg", factor: 0.2727 }, // 18kg para 66L
+      { name: "Malto", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Bicarbonato", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Sorbato", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Lecitina", quantity: 0.039, unit: "kg", factor: 0.00059 }, // 0.039kg para 66L
+      { name: "Carragenina", quantity: 0.015, unit: "kg", factor: 0.00023 }, // 0.015kg para 66L
+      { name: "Grasa", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Pasta", quantity: 66, unit: "kg", factor: 1 }, // 66kg para 66L
+      { name: "Antiespumante", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Nuez", quantity: 0, unit: "kg", factor: 0 }
+    ]
   }
 ];
 
@@ -622,8 +641,23 @@ export default function ProductionForm({
                       value={formData.productId || ""}
                       onValueChange={(value) => {
                         handleChange("productId", value);
-                        // Trigger recipe reload after state update
-                        if (value && formData.liters > 0) {
+                        
+                        // Auto-configurar Pasta Oblea Cajeton con 66 litros
+                        if (value === "23") { // ID de Pasta Oblea Cajeton
+                          console.log("🎯 Auto-configurando Pasta Oblea Cajeton: 66 litros");
+                          handleChange("liters", 66);
+                          
+                          toast({
+                            title: "Configuración automática",
+                            description: "Pasta Oblea Cajeton configurado para 66 litros automáticamente",
+                          });
+                          
+                          // Cargar receta para 66 litros después de un breve delay
+                          setTimeout(() => {
+                            loadProductRecipe(value, 66);
+                          }, 200);
+                        } else if (value && formData.liters > 0) {
+                          // Para otros productos, usar litros actuales
                           setTimeout(() => {
                             loadProductRecipe(value, formData.liters);
                           }, 100);

@@ -127,7 +127,20 @@ GELAG is a comprehensive form management system designed for quality control and
 
 ## Recent Changes
 
-### July 29, 2025 - Folio Interno Field Implementation & Comprehensive Folio Filtering System
+### July 29, 2025 - Pasta Oblea Cajeton Automation & Production Form Enhancement
+- **PASTA OBLEA CAJETON PRODUCT ADDED**: Added "Pasta Oblea Cajeton" to production form process selection
+- **INTELLIGENT AUTO-CONFIGURATION**: When "Pasta Oblea Cajeton" is selected, system automatically:
+  - Sets production litros to 66 (based on standard batch size)
+  - Pre-fills raw materials according to recipe specifications
+  - Displays configuration notification to user
+  - Automatically loads the correct recipe for 66 liters
+- **RECIPE INTEGRATION**: Pasta Oblea Cajeton recipe configured with accurate ingredient ratios:
+  - Glucosa: 18kg for 66L (factor: 0.2727)
+  - Lecitina: 0.039kg for 66L (factor: 0.00059)
+  - Carragenina: 0.015kg for 66L (factor: 0.00023)
+  - Pasta: 66kg for 66L (factor: 1)
+- **WORKFLOW OPTIMIZATION**: Production form now provides intelligent defaults for specific processes
+- **USER EXPERIENCE ENHANCEMENT**: Toast notifications confirm automatic configuration changes
 - **FOLIO INTERNO FIELD ADDED**: Implemented complete "folio interno" field functionality in production forms
 - **DATABASE SCHEMA UPDATED**: Added folio_interno column to production_forms table with proper data persistence
 - **FORM INTERFACE ENHANCED**: New field integrated into "Información General" section alongside main folio field
