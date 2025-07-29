@@ -788,6 +788,19 @@ export default function ProductionForm({
                     />
                   </div>
                   <div>
+                    <Label htmlFor="folioInterno">Folio Interno</Label>
+                    <Input
+                      id="folioInterno"
+                      value={formData.folioInterno || ""}
+                      onChange={(e) => handleChange("folioInterno", e.target.value)}
+                      placeholder="Ingrese folio interno"
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
                     <Label htmlFor="lotNumber" className="text-yellow-600 font-medium">Número de Lote</Label>
                     <Input
                       id="lotNumber"
