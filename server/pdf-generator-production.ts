@@ -270,17 +270,25 @@ function drawFinalResults(doc: any, form: ProductionForm, y: number): number {
   let currentY = startY;
   const lineHeight = 16;
   
+  // Primera fila
   if (processData.cmConsistometer) {
     doc.text(`Consistómetro (cm): ${processData.cmConsistometer}`, 50, currentY);
-    currentY += lineHeight;
   }
   
   if (processData.finalBrix) {
-    doc.text(`Brix Final: ${processData.finalBrix}`, 200, startY);
+    doc.text(`Brix Final: ${processData.finalBrix}`, 200, currentY);
   }
   
   if (processData.yield) {
-    doc.text(`Rendimiento: ${processData.yield}`, 350, startY);
+    doc.text(`Rendimiento: ${processData.yield}`, 350, currentY);
+  }
+  
+  currentY += lineHeight;
+  
+  // Segunda fila - agregar cP
+  if (processData.cP) {
+    doc.text(`Viscosidad (cP): ${processData.cP}`, 50, currentY);
+    currentY += lineHeight;
   }
   
   return currentY + 20;
