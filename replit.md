@@ -143,6 +143,7 @@ GELAG is a comprehensive form management system designed for quality control and
   - Folio de liberación, número de lote
   - Dynamic detection of any field containing "folio" in the name
 - **INTELLIGENT SEARCH**: Single folio filter input now searches through multiple folio fields simultaneously
+- **FOLIO PT FIELD ADDED TO DULCES FORM**: Added "Folio PT" field to PR-PR-02 Ficha técnica producción de dulces form in Observaciones section
 
 ### July 14, 2025 - Complete Production Form Access System Implemented
 - **UNIVERSAL EDITING ACCESS**: All production form sections now editable by any user with required permissions
