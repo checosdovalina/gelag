@@ -357,6 +357,7 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
     { key: 'folio_liberacion', label: 'Folio Liberación' },
     { key: 'folio_baja_mp', label: 'Folio Baja MP' },
     { key: 'folio_baja_empaque', label: 'Folio Baja Empaque' },
+    { key: 'folio_pt', label: 'Folio PT' },
     { key: 'total_prod_terminado', label: 'Total Producto Terminado' },
     { key: 'hora_inicio', label: 'Hora Inicio' },
     { key: 'hora_fin', label: 'Hora Fin' },
