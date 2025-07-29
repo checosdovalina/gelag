@@ -799,6 +799,40 @@ export default function ProductionForm({
                     />
                   </div>
                 </div>
+                
+                {/* Nuevos campos de folios adicionales */}
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <Label htmlFor="folioBajaMP">Folio Baja MP</Label>
+                    <Input
+                      id="folioBajaMP"
+                      value={formData.folioBajaMP || ""}
+                      onChange={(e) => handleChange("folioBajaMP", e.target.value)}
+                      placeholder="Folio Baja MP"
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="folioBajaME">Folio Baja ME</Label>
+                    <Input
+                      id="folioBajaME"
+                      value={formData.folioBajaME || ""}
+                      onChange={(e) => handleChange("folioBajaME", e.target.value)}
+                      placeholder="Folio Baja ME"
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="folioPT">Folio PT</Label>
+                    <Input
+                      id="folioPT" 
+                      value={formData.folioPT || ""}
+                      onChange={(e) => handleChange("folioPT", e.target.value)}
+                      placeholder="Folio PT"
+                      disabled={!canEditSection("general-info") || readOnly}
+                    />
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

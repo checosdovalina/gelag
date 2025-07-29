@@ -415,6 +415,9 @@ export const productionForms = pgTable("production_forms", {
   caducidad: text("caducidad"), // Fecha de caducidad
   marmita: text("marmita"), // Número de marmita
   folio: text("folio").notNull(), // Número de folio
+  folioBajaMP: text("folio_baja_mp"), // Folio Baja MP
+  folioBajaME: text("folio_baja_me"), // Folio Baja ME
+  folioPT: text("folio_pt"), // Folio PT
   status: text("status").$type<ProductionFormStatus>().notNull().default(ProductionFormStatus.DRAFT),
   lotNumber: text("lot_number"), // Número de lote
   ingredients: json("ingredients"), // Lista de ingredientes calculados

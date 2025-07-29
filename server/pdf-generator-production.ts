@@ -63,7 +63,9 @@ function drawInfoTable(doc: any, form: ProductionForm, y: number): number {
     ['Folio:', form.folio || 'N/A', 'Fecha:', form.date ? new Date(form.date).toLocaleDateString('es-MX') : 'N/A'],
     ['Producto ID:', form.productId?.toString() || 'N/A', 'Litros:', form.liters?.toString() || 'N/A'],
     ['Responsable:', form.responsible || 'N/A', 'Estado:', getStatusLabel(form.status)],
-    ['Lote:', form.lotNumber || 'N/A', 'Creado por:', form.createdBy?.toString() || 'N/A']
+    ['Lote:', form.lotNumber || 'N/A', 'Creado por:', form.createdBy?.toString() || 'N/A'],
+    ['Folio Baja MP:', form.folioBajaMP || 'N/A', 'Folio Baja ME:', form.folioBajaME || 'N/A'],
+    ['Folio PT:', form.folioPT || 'N/A', 'Marmita:', form.marmita || 'N/A']
   ];
   
   data.forEach((row, index) => {
