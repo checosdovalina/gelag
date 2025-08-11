@@ -11,6 +11,22 @@
 - [ ] PM2 instalado globalmente (`pm2 --version`)
 
 ### 2. Base de Datos
+
+#### Opción A: Base de Datos Clonada desde Neon
+- [ ] Script `database-migration.sh` ejecutado exitosamente
+- [ ] Base de datos local creada con datos migrados
+- [ ] Conexión local funcionando: `psql -h localhost -U gelag_user -d gelag_db`
+- [ ] Datos verificados (usuarios, formularios, productos)
+- [ ] Archivo `.env` actualizado automáticamente
+
+#### Opción B: Conexión Directa a Neon
+- [ ] Script `neon-connection-test.sh` ejecutado sin errores
+- [ ] Credenciales de Neon verificadas
+- [ ] Conexión remota funcionando
+- [ ] Archivo `.env` configurado para Neon
+- [ ] Latencia de conexión aceptable
+
+#### Opción C: Base de Datos Nueva Local
 - [ ] PostgreSQL iniciado y habilitado
 - [ ] Usuario `gelag_user` creado
 - [ ] Base de datos `gelag_db` creada
@@ -32,6 +48,20 @@
 - [ ] API responde: `curl http://localhost:5000/api/user`
 
 ### 5. Base de Datos Conectada
+
+#### Si migraste desde Neon:
+- [ ] Todas las tablas migradas correctamente
+- [ ] Usuarios existentes funcionan
+- [ ] Formularios existentes accesibles
+- [ ] Datos de producción intactos
+
+#### Si usas Neon directamente:
+- [ ] Conexión remota estable
+- [ ] Latencia aceptable (<500ms)
+- [ ] Todos los datos accesibles
+- [ ] Sin problemas de timeout
+
+#### Si creaste base nueva:
 - [ ] Tablas creadas correctamente
 - [ ] Usuario admin creado (`node create-admin.js`)
 - [ ] Login admin funciona (usuario: admin, contraseña: admin123)
@@ -77,10 +107,18 @@
 - [ ] Alertas básicas configuradas
 
 ### 12. Backup
-- [ ] Script de backup creado
+
+#### Para Base de Datos Local:
+- [ ] Script `/usr/local/bin/gelag-backup-local` creado
 - [ ] Backup manual funcionando
 - [ ] Cron job configurado para backups automáticos
 - [ ] Restauración de backup probada
+
+#### Para Conexión a Neon:
+- [ ] Script `/usr/local/bin/gelag-backup-neon` creado
+- [ ] Backup remoto funcionando
+- [ ] Backups regulares desde Neon
+- [ ] Plan de contingencia en caso de problemas con Neon
 
 ## ✅ Verificaciones Funcionales
 
@@ -136,9 +174,15 @@ tail -f /var/log/nginx/error.log
 curl -I http://localhost:5000/api/user
 curl -I http://tu-dominio.com
 
-# Verificar base de datos
+# Verificar base de datos local
 sudo -u postgres psql -c "\l" | grep gelag_db
 psql -h localhost -U gelag_user -d gelag_db -c "\dt"
+
+# Verificar conexión a Neon (si aplica)
+./neon-connection-test.sh
+
+# Test de migración
+./database-migration.sh --test-only
 
 # Verificar SSL (si aplica)
 openssl s_client -connect tu-dominio.com:443 -servername tu-dominio.com

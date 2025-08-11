@@ -51,9 +51,34 @@ psql --version
 
 ## 🗄️ Configuración de Base de Datos PostgreSQL
 
-### 1. Crear Base de Datos:
+### OPCIÓN 1: Clonar Base de Datos desde Neon
+**Recomendado para independencia total**
+
+```bash
+# Ejecutar script de migración automática
+chmod +x database-migration.sh
+./database-migration.sh
+```
+
+Este script te permite:
+- Exportar todos los datos desde tu base de datos Neon actual
+- Crear una base de datos PostgreSQL local idéntica
+- Migrar todos los usuarios, formularios, y datos existentes
+- Mantener total independencia de servicios externos
+
+### OPCIÓN 2: Usar la Misma Base de Datos Neon
+**Para mantener datos centralizados**
+
+```bash
+# Usar el mismo script pero seleccionar opción 2
+./database-migration.sh
+```
+
+Esto configura tu servidor local para conectarse directamente a tu base de datos Neon existente.
+
+### OPCIÓN 3: Crear Base de Datos Nueva (Manual):
 ```sql
--- Conectar como superusuario
+-- Solo si quieres empezar desde cero
 sudo -u postgres psql
 
 -- Crear usuario y base de datos
@@ -93,8 +118,10 @@ La aplicación utiliza **Drizzle ORM** con las siguientes tablas principales:
 ## 🔧 Configuración del Proyecto
 
 ### 1. Variables de Entorno (.env):
+
+#### Para Base de Datos Local (después de clonar):
 ```env
-# Base de Datos
+# Base de Datos Local
 DATABASE_URL=postgresql://gelag_user:tu_password_seguro@localhost:5432/gelag_db
 PGHOST=localhost
 PGPORT=5432
@@ -108,11 +135,27 @@ SESSION_SECRET=tu_session_secret_muy_largo_y_seguro_aqui
 # Entorno
 NODE_ENV=production
 PORT=5000
-
-# Opcional - Stripe (si usas pagos)
-STRIPE_SECRET_KEY=sk_live_...
-VITE_STRIPE_PUBLIC_KEY=pk_live_...
 ```
+
+#### Para Conexión Directa a Neon:
+```env
+# Base de Datos Neon (usar tus credenciales existentes)
+DATABASE_URL=postgresql://usuario:password@host.neon.tech:5432/database
+PGHOST=ep-xxx.us-east-1.aws.neon.tech
+PGPORT=5432
+PGUSER=tu_usuario_neon
+PGPASSWORD=tu_password_neon
+PGDATABASE=tu_database_neon
+
+# Sesiones
+SESSION_SECRET=tu_session_secret_muy_largo_y_seguro_aqui
+
+# Entorno
+NODE_ENV=production
+PORT=5000
+```
+
+**Nota**: El script `database-migration.sh` configura automáticamente estas variables.
 
 ### 2. Scripts de package.json:
 ```json
@@ -145,12 +188,28 @@ cp .env.example .env
 ```
 
 ### 2. Configurar Base de Datos:
+
+#### Si clonaste desde Neon:
+```bash
+# Los datos ya están migrados, solo verifica la conexión
+npm run dev
+# La aplicación debería iniciar con todos tus datos existentes
+```
+
+#### Si usas la misma base de datos Neon:
+```bash
+# Solo verificar conexión remota
+npm run dev
+# La aplicación se conectará directamente a Neon
+```
+
+#### Si creaste una base de datos nueva:
 ```bash
 # Aplicar esquema a la base de datos
 npm run db:push
 
-# Verificar conexión
-node -e "console.log('Testing DB...'); require('./server/db.js')"
+# Crear usuario administrador inicial
+node create-admin.js
 ```
 
 ### 3. Crear Usuario Administrativo Inicial:
