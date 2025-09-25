@@ -456,7 +456,8 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
 export async function generatePDFFallback(
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User
+  creator?: User,
+  storage?: any
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
@@ -530,7 +531,7 @@ export async function generatePDFFallback(
       }
       
       // Generar el contenido del PDF
-      generatePDFContent(doc, entry, template, creator);
+      await generatePDFContent(doc, entry, template, creator, storage);
       
       // Finalizar el documento
       doc.end();
@@ -542,12 +543,13 @@ export async function generatePDFFallback(
 }
 
 // Función para generar el contenido del PDF
-function generatePDFContent(
+async function generatePDFContent(
   doc: any, // Usar any en lugar de PDFKit.PDFDocument para evitar errores de tipado
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User
-): void {
+  creator?: User,
+  storage?: any
+): Promise<void> {
   // Fecha de creación formateada
   const createdAt = new Date(entry.createdAt).toLocaleDateString('es-MX');
   
@@ -759,6 +761,25 @@ function generatePDFContent(
   if (template.structure && template.structure.fields) {
     const fields = template.structure.fields;
     
+    // Pre-procesar campos de empleado para resolver nombres
+    const employeeNames: Map<string, string> = new Map();
+    if (storage) {
+      for (const field of fields) {
+        if (field.type === 'employee') {
+          const fieldValue = entry.data[field.id];
+          if (fieldValue) {
+            try {
+              const employee = await storage.getEmployee(fieldValue);
+              employeeNames.set(field.id, employee ? employee.name : `ID: ${fieldValue}`);
+            } catch (error) {
+              console.error(`Error al buscar empleado ${fieldValue}:`, error);
+              employeeNames.set(field.id, `ID: ${fieldValue}`);
+            }
+          }
+        }
+      }
+    }
+    
     // Agrupar campos por sección si existe la propiedad section
     const sections: Record<string, any[]> = {};
     
@@ -850,7 +871,10 @@ function generatePDFContent(
         }
         
         // Convertir el valor según el tipo de campo
-        if (field.type === 'select' || field.type === 'radio') {
+        if (field.type === 'employee') {
+          // Usar el nombre del empleado pre-resuelto
+          fieldValue = employeeNames.get(fieldId) || fieldValue || '';
+        } else if (field.type === 'select' || field.type === 'radio') {
           if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
             fieldValue = fieldValue.label;
           }
@@ -968,7 +992,10 @@ function generatePDFContent(
           }
           
           // Convertir el valor según el tipo de campo
-          if (field.type === 'select' || field.type === 'radio') {
+          if (field.type === 'employee') {
+            // Usar el nombre del empleado pre-resuelto
+            fieldValue = employeeNames.get(fieldId) || fieldValue || '';
+          } else if (field.type === 'select' || field.type === 'radio') {
             if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
               fieldValue = fieldValue.label;
             }
