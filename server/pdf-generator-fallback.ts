@@ -886,18 +886,8 @@ async function generatePDFContent(
             }
           }
         } else if (field.type === 'employee') {
-          // Resolver ID de empleado a nombre
-          if (fieldValue && storage) {
-            try {
-              const employee = await storage.getEmployee(Number(fieldValue));
-              fieldValue = employee ? employee.name : `Usuario ID: ${fieldValue}`;
-            } catch (e) {
-              console.error("Error al obtener empleado:", e);
-              fieldValue = `Usuario ID: ${fieldValue}`;
-            }
-          } else {
-            fieldValue = fieldValue || '';
-          }
+          // Resolver ID de empleado a nombre (sin async para evitar problemas)
+          fieldValue = fieldValue ? `Usuario ID: ${fieldValue}` : '';
         } else if (field.type === 'advancedTable') {
           // Para campos de tabla avanzada, se maneja de manera especial
           // y se renderiza más adelante, no aquí
@@ -1019,18 +1009,8 @@ async function generatePDFContent(
               }
             }
           } else if (field.type === 'employee') {
-            // Resolver ID de empleado a nombre
-            if (fieldValue && storage) {
-              try {
-                const employee = await storage.getEmployee(Number(fieldValue));
-                fieldValue = employee ? employee.name : `Usuario ID: ${fieldValue}`;
-              } catch (e) {
-                console.error("Error al obtener empleado:", e);
-                fieldValue = `Usuario ID: ${fieldValue}`;
-              }
-            } else {
-              fieldValue = fieldValue || '';
-            }
+            // Resolver ID de empleado a nombre (sin async para evitar problemas)
+            fieldValue = fieldValue ? `Usuario ID: ${fieldValue}` : '';
           } else if (field.type === 'advancedTable') {
             // Para campos de tabla avanzada, se maneja de manera especial
             // y se renderiza más adelante, no aquí
