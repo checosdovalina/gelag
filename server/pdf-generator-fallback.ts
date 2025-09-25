@@ -456,10 +456,9 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
 export async function generatePDFFallback(
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User,
-  storage?: any
+  creator?: User
 ): Promise<Buffer> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       console.log("Generando PDF para formulario (usando fallback):", template.name);
       // Depuración para ver qué valores tienen los campos
@@ -531,7 +530,7 @@ export async function generatePDFFallback(
       }
       
       // Generar el contenido del PDF
-      await generatePDFContent(doc, entry, template, creator, storage);
+      generatePDFContent(doc, entry, template, creator);
       
       // Finalizar el documento
       doc.end();
@@ -543,13 +542,12 @@ export async function generatePDFFallback(
 }
 
 // Función para generar el contenido del PDF
-async function generatePDFContent(
+function generatePDFContent(
   doc: any, // Usar any en lugar de PDFKit.PDFDocument para evitar errores de tipado
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User,
-  storage?: any
-): Promise<void> {
+  creator?: User
+): void {
   // Fecha de creación formateada
   const createdAt = new Date(entry.createdAt).toLocaleDateString('es-MX');
   
@@ -791,9 +789,7 @@ async function generatePDFContent(
     });
     
     // Imprimir cada sección con formato mejorado
-    const sectionNames = Object.keys(sections);
-    for (let sectionIndex = 0; sectionIndex < sectionNames.length; sectionIndex++) {
-      const sectionName = sectionNames[sectionIndex];
+    Object.keys(sections).forEach((sectionName, sectionIndex) => {
       // Añadir un espacio extra entre secciones, excepto la primera
       if (sectionIndex > 0) {
         doc.moveDown(0.5);
@@ -833,9 +829,7 @@ async function generatePDFContent(
       
       // Primera columna
       let currentY = doc.y;
-      const firstColumnFields = fieldsInSection.slice(0, middleIndex);
-      for (let fieldIndex = 0; fieldIndex < firstColumnFields.length; fieldIndex++) {
-        const field = firstColumnFields[fieldIndex];
+      fieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
         const fieldId = field.id;
         const fieldLabel = field.displayName || field.label;
         let fieldValue = entry.data[fieldId];
@@ -885,9 +879,6 @@ async function generatePDFContent(
               console.error("Error al formatear fecha:", e);
             }
           }
-        } else if (field.type === 'employee') {
-          // Resolver ID de empleado a nombre (sin async para evitar problemas)
-          fieldValue = fieldValue ? `Usuario ID: ${fieldValue}` : '';
         } else if (field.type === 'advancedTable') {
           // Para campos de tabla avanzada, se maneja de manera especial
           // y se renderiza más adelante, no aquí
@@ -947,7 +938,7 @@ async function generatePDFContent(
         if (fieldIndex === middleIndex - 1) {
           currentY = doc.y;
         }
-      }
+      });
       
       // Reiniciar la posición Y para la segunda columna
       doc.y = currentY - ((middleIndex - 1) * 15);
@@ -956,9 +947,7 @@ async function generatePDFContent(
       if (fieldsInSection.length > middleIndex) {
         const startY = doc.y;
         
-        const secondColumnFields = fieldsInSection.slice(middleIndex);
-        for (let fieldIndex = 0; fieldIndex < secondColumnFields.length; fieldIndex++) {
-          const field = secondColumnFields[fieldIndex];
+        fieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
           const fieldId = field.id;
           const fieldLabel = field.displayName || field.label;
           let fieldValue = entry.data[fieldId];
@@ -1008,9 +997,6 @@ async function generatePDFContent(
                 console.error("Error al formatear fecha:", e);
               }
             }
-          } else if (field.type === 'employee') {
-            // Resolver ID de empleado a nombre (sin async para evitar problemas)
-            fieldValue = fieldValue ? `Usuario ID: ${fieldValue}` : '';
           } else if (field.type === 'advancedTable') {
             // Para campos de tabla avanzada, se maneja de manera especial
             // y se renderiza más adelante, no aquí
@@ -1065,14 +1051,14 @@ async function generatePDFContent(
           // Valor a continuación
           doc.font('Helvetica')
             .text(` ${fieldValue}`);
-        }
+        });
       }
       
       // Avanzar a la siguiente sección
       doc.y = Math.max(doc.y, currentY) + 5;
       
       doc.moveDown(0.3);
-    }
+    });
     
     // Procesar las tablas avanzadas después de todas las secciones
     if (advancedTables.length > 0) {

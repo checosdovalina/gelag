@@ -1093,7 +1093,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const { generatePDFFallback } = await import('./pdf-generator-fallback');
           
           // Generar el PDF usando PDFKit
-          const pdfBuffer = await generatePDFFallback(entry, template, creator, storage);
+          const pdfBuffer = await generatePDFFallback(entry, template, creator);
           
           // Configurar la respuesta y enviar el PDF
           res.setHeader('Content-Type', 'application/pdf');
