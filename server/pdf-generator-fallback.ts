@@ -791,7 +791,9 @@ async function generatePDFContent(
     });
     
     // Imprimir cada sección con formato mejorado
-    Object.keys(sections).forEach((sectionName, sectionIndex) => {
+    const sectionNames = Object.keys(sections);
+    for (let sectionIndex = 0; sectionIndex < sectionNames.length; sectionIndex++) {
+      const sectionName = sectionNames[sectionIndex];
       // Añadir un espacio extra entre secciones, excepto la primera
       if (sectionIndex > 0) {
         doc.moveDown(0.5);
@@ -1090,7 +1092,7 @@ async function generatePDFContent(
       doc.y = Math.max(doc.y, currentY) + 5;
       
       doc.moveDown(0.3);
-    });
+    }
     
     // Procesar las tablas avanzadas después de todas las secciones
     if (advancedTables.length > 0) {
