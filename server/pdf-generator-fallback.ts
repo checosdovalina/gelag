@@ -456,9 +456,10 @@ function generatePRPR02Content(doc: any, entry: FormEntry): void {
 export async function generatePDFFallback(
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User
+  creator?: User,
+  storage?: any
 ): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
       console.log("Generando PDF para formulario (usando fallback):", template.name);
       // Depuración para ver qué valores tienen los campos
@@ -530,7 +531,7 @@ export async function generatePDFFallback(
       }
       
       // Generar el contenido del PDF
-      generatePDFContent(doc, entry, template, creator);
+      await generatePDFContent(doc, entry, template, creator, storage);
       
       // Finalizar el documento
       doc.end();
@@ -542,12 +543,13 @@ export async function generatePDFFallback(
 }
 
 // Función para generar el contenido del PDF
-function generatePDFContent(
+async function generatePDFContent(
   doc: any, // Usar any en lugar de PDFKit.PDFDocument para evitar errores de tipado
   entry: FormEntry, 
   template: FormTemplate, 
-  creator?: User
-): void {
+  creator?: User,
+  storage?: any
+): Promise<void> {
   // Fecha de creación formateada
   const createdAt = new Date(entry.createdAt).toLocaleDateString('es-MX');
   
@@ -829,7 +831,9 @@ function generatePDFContent(
       
       // Primera columna
       let currentY = doc.y;
-      fieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
+      const firstColumnFields = fieldsInSection.slice(0, middleIndex);
+      for (let fieldIndex = 0; fieldIndex < firstColumnFields.length; fieldIndex++) {
+        const field = firstColumnFields[fieldIndex];
         const fieldId = field.id;
         const fieldLabel = field.displayName || field.label;
         let fieldValue = entry.data[fieldId];
@@ -878,6 +882,19 @@ function generatePDFContent(
             } catch (e) {
               console.error("Error al formatear fecha:", e);
             }
+          }
+        } else if (field.type === 'employee') {
+          // Resolver ID de empleado a nombre
+          if (fieldValue && storage) {
+            try {
+              const employee = await storage.getEmployee(Number(fieldValue));
+              fieldValue = employee ? employee.name : `Usuario ID: ${fieldValue}`;
+            } catch (e) {
+              console.error("Error al obtener empleado:", e);
+              fieldValue = `Usuario ID: ${fieldValue}`;
+            }
+          } else {
+            fieldValue = fieldValue || '';
           }
         } else if (field.type === 'advancedTable') {
           // Para campos de tabla avanzada, se maneja de manera especial
@@ -938,7 +955,7 @@ function generatePDFContent(
         if (fieldIndex === middleIndex - 1) {
           currentY = doc.y;
         }
-      });
+      }
       
       // Reiniciar la posición Y para la segunda columna
       doc.y = currentY - ((middleIndex - 1) * 15);
@@ -947,7 +964,9 @@ function generatePDFContent(
       if (fieldsInSection.length > middleIndex) {
         const startY = doc.y;
         
-        fieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
+        const secondColumnFields = fieldsInSection.slice(middleIndex);
+        for (let fieldIndex = 0; fieldIndex < secondColumnFields.length; fieldIndex++) {
+          const field = secondColumnFields[fieldIndex];
           const fieldId = field.id;
           const fieldLabel = field.displayName || field.label;
           let fieldValue = entry.data[fieldId];
@@ -996,6 +1015,19 @@ function generatePDFContent(
               } catch (e) {
                 console.error("Error al formatear fecha:", e);
               }
+            }
+          } else if (field.type === 'employee') {
+            // Resolver ID de empleado a nombre
+            if (fieldValue && storage) {
+              try {
+                const employee = await storage.getEmployee(Number(fieldValue));
+                fieldValue = employee ? employee.name : `Usuario ID: ${fieldValue}`;
+              } catch (e) {
+                console.error("Error al obtener empleado:", e);
+                fieldValue = `Usuario ID: ${fieldValue}`;
+              }
+            } else {
+              fieldValue = fieldValue || '';
             }
           } else if (field.type === 'advancedTable') {
             // Para campos de tabla avanzada, se maneja de manera especial
@@ -1051,7 +1083,7 @@ function generatePDFContent(
           // Valor a continuación
           doc.font('Helvetica')
             .text(` ${fieldValue}`);
-        });
+        }
       }
       
       // Avanzar a la siguiente sección
