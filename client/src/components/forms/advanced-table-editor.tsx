@@ -1199,12 +1199,21 @@ const AdvancedTableEditor: React.FC<AdvancedTableEditorProps> = ({
     const litrosValue = parseFloat(data[0]?.[litrosColumn.id] || '0');
     
     console.log("updateMateriaPrimasByProductoLitros", { productoValue, litrosValue });
+    console.log("PRODUCT_MATERIALS keys:", Object.keys(PRODUCT_MATERIALS));
+    console.log("productoValue type:", typeof productoValue);
+    console.log("productoValue in PRODUCT_MATERIALS:", productoValue in PRODUCT_MATERIALS);
     
     // Solo proceder si tenemos un producto válido y valor de litros positivo
     if (!productoValue || 
         litrosValue <= 0 || 
         typeof productoValue !== 'string' || 
         !(productoValue in PRODUCT_MATERIALS)) {
+      console.warn("No se pudo actualizar materias primas:", {
+        hasProducto: !!productoValue,
+        litrosValue,
+        isString: typeof productoValue === 'string',
+        inPRODUCT_MATERIALS: productoValue ? productoValue in PRODUCT_MATERIALS : false
+      });
       return;
     }
     

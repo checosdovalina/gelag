@@ -2311,14 +2311,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   normalizedQuantity = 1; // Fallback seguro
                 }
                 
-                // Para recetas base de 3800L, usar cantidades directas sin escalado
+                // Escalar cantidades según litros solicitados (base 100L)
                 let finalQuantity;
-                let calculatedQuantity;
-                if (liters === 3800) {
-                  calculatedQuantity = normalizedQuantity;
-                } else {
-                  calculatedQuantity = normalizedQuantity * liters / 100;
-                }
+                const calculatedQuantity = (normalizedQuantity * liters) / 100;
                 
                 // Formatear sin decimales si es un número entero
                 if (calculatedQuantity % 1 === 0) {
