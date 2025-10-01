@@ -19,12 +19,12 @@ export const productFormulas: ProductFormula[] = [
     baseUnit: "litros",
     ingredients: [
       { name: "Leche de Vaca", amount: 0, unit: "kg" },
-      { name: "Leche de Cabra", amount: 1, unit: "kg" }, // 500kg / 500L = 1kg por litro
-      { name: "Azúcar", amount: 0.18, unit: "kg" }, // 90kg / 500L = 0.18kg por litro
+      { name: "Leche de Cabra", amount: 1, unit: "kg" }, // 100kg / 100L = 1kg por litro
+      { name: "Azúcar", amount: 0.20, unit: "kg" }, // 20kg / 100L = 0.20kg por litro
       { name: "Glucosa", amount: 0, unit: "kg" },
       { name: "Malto", amount: 0, unit: "kg" },
-      { name: "Bicarbonato", amount: 0.0016, unit: "kg" }, // 0.80kg / 500L = 0.0016kg por litro
-      { name: "Sorbato", amount: 0.00062, unit: "kg" }, // 0.31kg / 500L = 0.00062kg por litro
+      { name: "Bicarbonato", amount: 0.0016, unit: "kg" }, // 0.16kg / 100L = 0.0016kg por litro
+      { name: "Sorbato", amount: 0.000626, unit: "kg" }, // 0.0626kg / 100L = 0.000626kg por litro
       { name: "Lecitina", amount: 0, unit: "kg" },
       { name: "Carragenina", amount: 0, unit: "kg" },
       { name: "Grasa", amount: 0, unit: "kg" },

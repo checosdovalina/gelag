@@ -2369,9 +2369,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           12: { // Mielmex 65° Brix
             ingredients: [
               { name: "Leche de Cabra", baseQuantity: 100, unit: "kg" },
-              { name: "Azúcar", baseQuantity: 18, unit: "kg" },
+              { name: "Azúcar", baseQuantity: 20, unit: "kg" },
               { name: "Bicarbonato", baseQuantity: 0.16, unit: "kg" },
-              { name: "Sorbato", baseQuantity: 0.06, unit: "kg" }
+              { name: "Sorbato", baseQuantity: 0.0626, unit: "kg" }
             ]
           },
           16: { // Cajeton Esp Chepo

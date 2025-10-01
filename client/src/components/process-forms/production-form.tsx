@@ -81,15 +81,15 @@ const PRODUCTS: ProductRecipe[] = [
     id: "mielmex",
     name: "Mielmex 65° Brix",
     ingredients: [
-      { name: "Leche de Vaca", quantity: 300, unit: "kg", factor: 0.6 },
-      { name: "Leche de Cabra", quantity: 200, unit: "kg", factor: 0.4 },
-      { name: "Azúcar", quantity: 150, unit: "kg", factor: 0.3 },
-      { name: "Glucosa", quantity: 80, unit: "kg", factor: 0.16 },
-      { name: "Malto", quantity: 20, unit: "kg", factor: 0.04 },
-      { name: "Bicarbonato", quantity: 0.75, unit: "kg", factor: 0.0015 },
-      { name: "Sorbato", quantity: 0.25, unit: "kg", factor: 0.0005 },
-      { name: "Lecitina", quantity: 0.2, unit: "kg", factor: 0.0004 },
-      { name: "Carragenina", quantity: 0.1, unit: "kg", factor: 0.0002 },
+      { name: "Leche de Vaca", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Leche de Cabra", quantity: 100, unit: "kg", factor: 1.0 }, // 100kg/100L = 1kg por litro
+      { name: "Azúcar", quantity: 20, unit: "kg", factor: 0.20 }, // 20kg/100L = 0.20kg por litro
+      { name: "Glucosa", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Malto", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Bicarbonato", quantity: 0.16, unit: "kg", factor: 0.0016 }, // 0.16kg/100L = 0.0016kg por litro
+      { name: "Sorbato", quantity: 0.0626, unit: "kg", factor: 0.000626 }, // 0.0626kg/100L = 0.000626kg por litro
+      { name: "Lecitina", quantity: 0, unit: "kg", factor: 0 },
+      { name: "Carragenina", quantity: 0, unit: "kg", factor: 0 },
       { name: "Grasa", quantity: 0, unit: "kg", factor: 0 },
       { name: "Pasta", quantity: 0, unit: "kg", factor: 0 },
       { name: "Antiespumante", quantity: 0, unit: "kg", factor: 0 },

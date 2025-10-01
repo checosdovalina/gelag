@@ -123,11 +123,11 @@ const PRODUCT_MATERIALS = {
   "Mielmex 65° Brix": {
     "Leche de Vaca": 0,
     "Leche de Cabra": 1.0,  // 100/100 litros
-    "Azúcar": 0.18,         // 18/100 litros
+    "Azúcar": 0.20,         // 20/100 litros
     "Glucosa": 0,
     "Malto": 0,
     "Bicarbonato": 0.0016,  // 0.16/100 litros
-    "Sorbato": 0.0005,      // 0.05/100 litros
+    "Sorbato": 0.000626,    // 0.0626/100 litros
     "Lecitina": 0,
     "Carragenina": 0,
     "Grasa": 0,
