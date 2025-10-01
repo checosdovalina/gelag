@@ -459,7 +459,7 @@ export async function generatePDFFallback(
   creator?: User,
   storage?: any
 ): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
       console.log("Generando PDF para formulario (usando fallback):", template.name);
       // Depuración para ver qué valores tienen los campos
