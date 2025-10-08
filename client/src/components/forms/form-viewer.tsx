@@ -1644,6 +1644,11 @@ export default function FormViewer({
               <FormLabel className="text-lg font-semibold">
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </FormLabel>
+              {field.advancedTableConfig?.sections?.[0]?.columns && (
+                <div className="text-sm text-muted-foreground italic border-l-4 border-primary pl-3 py-1 bg-muted/30">
+                  {field.advancedTableConfig.sections[0].columns.map((col, idx) => col.label).join(' | ')}
+                </div>
+              )}
               <div className="border rounded-lg overflow-hidden">
                 <AdvancedTableViewer
                   field={field}
