@@ -1148,7 +1148,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       <Input
                         type="text"
                         value={rowData[column.id] || ''}
-                        onChange={(e) => updateCellLocally(rowIndex, column.id, e.target.value)}
+                        onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
                         className="h-8 w-full"
                         onKeyDown={(e) => {
@@ -1191,7 +1191,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       <Input
                         type="number"
                         value={rowData[column.id] || ''}
-                        onChange={(e) => updateCellLocally(rowIndex, column.id, e.target.value)}
+                        onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
                         className="h-8 w-full"
                         min={column.validation?.min}
@@ -1235,7 +1235,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     {column.type === 'select' && !(column.options?.some(opt => opt.value === 'SI' || opt.value === 'NO')) && !column.id.includes('revision_visual') && (
                       <Select
                         defaultValue={rowData[column.id] || ''}
-                        onValueChange={(val) => updateCellLocally(rowIndex, column.id, val)}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={readOnly || column.readOnly}
                       >
                         <SelectTrigger className="h-8 w-full border-muted min-w-[80px]">
@@ -1339,7 +1339,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                       <Input
                         type="date"
                         value={rowData[column.id] || ''}
-                        onChange={(e) => updateCellLocally(rowIndex, column.id, e.target.value)}
+                        onChange={(e) => updateCell(rowIndex, column.id, e.target.value)}
                         readOnly={readOnly || column.readOnly}
                         className="h-8 w-full"
                       />
@@ -1347,7 +1347,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                     {column.type === 'employee' && (
                       <Select
                         defaultValue={rowData[column.id] || ''}
-                        onValueChange={(val) => updateCellLocally(rowIndex, column.id, val)}
+                        onValueChange={(val) => updateCell(rowIndex, column.id, val)}
                         disabled={readOnly || column.readOnly || loadingEmployees}
                       >
                         <SelectTrigger className="h-8 w-full border-muted min-w-[80px]">
