@@ -23,10 +23,6 @@ externalPort = 3001
 localPort = 41667
 externalPort = 3000
 
-[[ports]]
-localPort = 41995
-externalPort = 3002
-
 [workflows]
 runButton = "Project"
 
