@@ -1242,10 +1242,12 @@ async function generatePDFContent(
         // Detectar si es la tabla de microbiología
         const isMicrobiologiaTable = tableLabel.toLowerCase().includes("microbiologia") || 
                                   (config.sections.length === 1 && 
-                                   config.sections[0].columns.some(col => 
-                                     col.header.includes("Hongos") || 
-                                     col.header.includes("Coliformes") || 
-                                     col.header.includes("Salmonella")));
+                                   config.sections[0].columns.some(col => {
+                                     const colHeader = (col as any).label || col.header || '';
+                                     return colHeader.includes("Hongos") || 
+                                            colHeader.includes("Coliformes") || 
+                                            colHeader.includes("Salmonella");
+                                   }));
                                      
         console.log("¿Es tabla de microbiología?", isMicrobiologiaTable);
                                      
@@ -1291,7 +1293,7 @@ async function generatePDFContent(
               // Columnas de esta sección
               section.columns.forEach((column, colIndex) => {
                 const columnId = column.id;
-                const columnHeader = column.header;
+                const columnHeader = (column as any).label || column.header;
                 let cellValue = row[columnId] || '';
                 
                 // Calcular posición X e Y
@@ -1458,7 +1460,7 @@ async function generatePDFContent(
         
         section.columns.forEach(column => {
           // Obtener tipo de columna por su encabezado
-          const columnType = getColumnType(column.header);
+          const columnType = getColumnType((column as any).label || column.header);
           const widthFactor = columnWidthMap[columnType] || defaultColumnWidthFactor;
           
           // Calcular ancho proporcional para esta columna
@@ -1506,7 +1508,7 @@ async function generatePDFContent(
           
           // Dibujar el texto del encabezado
           doc.fillColor('#000000').fontSize(isLandscape ? 7 : 8).font('Helvetica-Bold')
-             .text(column.header, x + 3, y + 8, { 
+             .text((column as any).label || column.header, x + 3, y + 8, { 
                width: colWidth - 6,
                align: 'center',
                height: headerHeight - 10
