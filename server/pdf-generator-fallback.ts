@@ -791,6 +791,18 @@ async function generatePDFContent(
     fields.forEach(field => {
       console.log(`Campo: ${field.label} (${field.id}), tipo: ${field.type}`);
       
+      // Los campos "heading" y "divider" se procesan de manera especial
+      if (field.type === 'heading' || field.type === 'divider') {
+        console.log(`  - Encontrado campo visual: ${field.type}`);
+        // Se procesarán directamente en el render, no en secciones
+        const sectionName = 'Visual';
+        if (!sections[sectionName]) {
+          sections[sectionName] = [];
+        }
+        sections[sectionName].push(field);
+        return;
+      }
+      
       // Si es un campo de tabla avanzada, lo guardamos para procesarlo después
       if (field.type === 'advancedTable') {
         console.log(`  - Encontrado campo advancedTable: ${field.label}`);
@@ -851,6 +863,33 @@ async function generatePDFContent(
       // Primera columna
       let currentY = doc.y;
       fieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
+        // Renderizar campos visuales (heading y divider) de manera especial
+        if (field.type === 'heading') {
+          doc.moveDown(0.5);
+          doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000');
+          doc.text(field.label, col1X, doc.y);
+          if (field.description) {
+            doc.fontSize(9).font('Helvetica').fillColor('#666666');
+            doc.text(field.description, col1X, doc.y + 2);
+          }
+          doc.moveDown(0.5);
+          doc.fillColor('#000000');
+          return;
+        }
+        
+        if (field.type === 'divider') {
+          doc.moveDown(0.5);
+          const divY = doc.y;
+          doc.moveTo(col1X, divY).lineTo(col1X + colWidth, divY).stroke();
+          if (field.label) {
+            doc.fontSize(10).font('Helvetica').fillColor('#666666');
+            doc.text(field.label, col1X, divY + 5, { align: 'center', width: colWidth });
+          }
+          doc.moveDown(0.5);
+          doc.fillColor('#000000');
+          return;
+        }
+        
         const fieldId = field.id;
         const fieldLabel = field.displayName || field.label;
         let fieldValue = entry.data[fieldId];
@@ -972,6 +1011,33 @@ async function generatePDFContent(
         const startY = doc.y;
         
         fieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
+          // Renderizar campos visuales (heading y divider) de manera especial
+          if (field.type === 'heading') {
+            doc.moveDown(0.5);
+            doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000');
+            doc.text(field.label, col2X, doc.y);
+            if (field.description) {
+              doc.fontSize(9).font('Helvetica').fillColor('#666666');
+              doc.text(field.description, col2X, doc.y + 2);
+            }
+            doc.moveDown(0.5);
+            doc.fillColor('#000000');
+            return;
+          }
+          
+          if (field.type === 'divider') {
+            doc.moveDown(0.5);
+            const divY = doc.y;
+            doc.moveTo(col2X, divY).lineTo(col2X + colWidth, divY).stroke();
+            if (field.label) {
+              doc.fontSize(10).font('Helvetica').fillColor('#666666');
+              doc.text(field.label, col2X, divY + 5, { align: 'center', width: colWidth });
+            }
+            doc.moveDown(0.5);
+            doc.fillColor('#000000');
+            return;
+          }
+          
           const fieldId = field.id;
           const fieldLabel = field.displayName || field.label;
           let fieldValue = entry.data[fieldId];

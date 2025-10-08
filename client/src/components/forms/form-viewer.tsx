@@ -314,6 +314,11 @@ export default function FormViewer({
       (formTemplate.sections ? formTemplate.sections.flatMap(section => section.fields || []) : []);
     
     allFields.forEach((field) => {
+      // Los campos de tipo "heading" y "divider" son solo visuales, no necesitan validación
+      if (field.type === "heading" || field.type === "divider") {
+        return;
+      }
+      
       let fieldSchema: z.ZodTypeAny;
       
       switch (field.type) {
@@ -1952,6 +1957,39 @@ export default function FormViewer({
   // Render field based on its type
   const renderField = (field: IFormField) => {
     switch (field.type) {
+      case "heading":
+        return (
+          <div key={field.id} className="col-span-full my-4">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 border-b-2 border-primary pb-2">
+              {field.label}
+            </h3>
+            {field.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{field.description}</p>
+            )}
+          </div>
+        );
+        
+      case "divider":
+        return (
+          <div key={field.id} className="col-span-full my-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              </div>
+              {field.label && (
+                <div className="relative flex justify-center">
+                  <span className="bg-white dark:bg-gray-950 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {field.label}
+                  </span>
+                </div>
+              )}
+            </div>
+            {field.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">{field.description}</p>
+            )}
+          </div>
+        );
+      
       case "evaluationMatrix":
         return renderEvaluationMatrix(field);
         

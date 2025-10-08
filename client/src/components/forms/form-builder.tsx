@@ -426,6 +426,12 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                 <Button variant="outline" onClick={() => addField("group")}>
                   Grupo
                 </Button>
+                <Button variant="outline" onClick={() => addField("heading")}>
+                  Encabezado
+                </Button>
+                <Button variant="outline" onClick={() => addField("divider")}>
+                  Separador
+                </Button>
                 
                 <Button
                   variant="outline"
@@ -904,6 +910,8 @@ export default function FormBuilder({ initialFormData, onSave, isLoading = false
                                           <SelectItem value="evaluationMatrix">Matriz de Evaluación</SelectItem>
                                           <SelectItem value="advancedTable">Tabla Avanzada</SelectItem>
                                           <SelectItem value="group">Grupo</SelectItem>
+                                          <SelectItem value="heading">Encabezado</SelectItem>
+                                          <SelectItem value="divider">Separador</SelectItem>
                                         </SelectContent>
                                       </Select>
                                       <FormMessage />

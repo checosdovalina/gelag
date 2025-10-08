@@ -211,7 +211,9 @@ export const fieldTypes = [
   "employeeByType", // Campo para seleccionar un empleado filtrado por tipo
   "userByRole", // Campo para seleccionar un usuario filtrado por rol
   "product",   // Campo para seleccionar un producto
-  "advancedTable" // Tabla avanzada con múltiples columnas y filas, diseño personalizable
+  "advancedTable", // Tabla avanzada con múltiples columnas y filas, diseño personalizable
+  "heading", // Encabezado de sección para organizar el formulario
+  "divider" // Separador visual con texto opcional
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];
