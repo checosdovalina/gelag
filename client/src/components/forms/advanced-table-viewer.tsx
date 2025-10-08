@@ -1119,7 +1119,7 @@ const AdvancedTableViewer: React.FC<AdvancedTableViewerProps> = ({
                   }}
                   className="text-center bg-muted border border-border"
                 >
-                  <div className="py-2 px-2 whitespace-normal text-sm">{column.header}</div>
+                  <div className="py-2 px-2 whitespace-normal text-sm font-semibold">{(column as any).label || column.header}</div>
                 </TableHead>
               ))}
               {config.dynamicRows && !readOnly && (
