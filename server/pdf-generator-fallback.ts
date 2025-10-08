@@ -791,18 +791,6 @@ async function generatePDFContent(
     fields.forEach(field => {
       console.log(`Campo: ${field.label} (${field.id}), tipo: ${field.type}`);
       
-      // Los campos "heading" y "divider" se procesan de manera especial
-      if (field.type === 'heading' || field.type === 'divider') {
-        console.log(`  - Encontrado campo visual: ${field.type}`);
-        // Se procesarán directamente en el render, no en secciones
-        const sectionName = 'Visual';
-        if (!sections[sectionName]) {
-          sections[sectionName] = [];
-        }
-        sections[sectionName].push(field);
-        return;
-      }
-      
       // Si es un campo de tabla avanzada, lo guardamos para procesarlo después
       if (field.type === 'advancedTable') {
         console.log(`  - Encontrado campo advancedTable: ${field.label}`);
@@ -812,8 +800,10 @@ async function generatePDFContent(
           field,
           data: entry.data[field.id]
         });
+        return;
       }
       
+      // Los campos visuales y normales se agregan a sus secciones
       const sectionName = field.section || 'General';
       if (!sections[sectionName]) {
         sections[sectionName] = [];
@@ -856,39 +846,47 @@ async function generatePDFContent(
       const col1X = 60;
       const col2X = col1X + colWidth + colPadding;
       
-      // Iterar sobre los campos - aquí hacemos la distribución en 2 columnas
+      // Separar campos visuales de campos normales
       const fieldsInSection = sections[sectionName];
-      const middleIndex = Math.ceil(fieldsInSection.length / 2);
+      const visualFieldsInSection = fieldsInSection.filter((f: any) => f.type === 'heading' || f.type === 'divider');
+      const normalFieldsInSection = fieldsInSection.filter((f: any) => f.type !== 'heading' && f.type !== 'divider');
       
-      // Primera columna
-      let currentY = doc.y;
-      fieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
-        // Renderizar campos visuales (heading y divider) de manera especial
+      // Renderizar primero todos los campos visuales con todo el ancho
+      visualFieldsInSection.forEach((field: any) => {
         if (field.type === 'heading') {
           doc.moveDown(0.5);
           doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000');
-          doc.text(field.label, col1X, doc.y);
+          doc.text(field.label, 60, doc.y, { width: pageWidth - 120, align: 'center' });
           if (field.description) {
             doc.fontSize(9).font('Helvetica').fillColor('#666666');
-            doc.text(field.description, col1X, doc.y + 2);
+            doc.text(field.description, 60, doc.y + 2, { width: pageWidth - 120, align: 'center' });
           }
           doc.moveDown(0.5);
           doc.fillColor('#000000');
-          return;
-        }
-        
-        if (field.type === 'divider') {
+        } else if (field.type === 'divider') {
           doc.moveDown(0.5);
           const divY = doc.y;
-          doc.moveTo(col1X, divY).lineTo(col1X + colWidth, divY).stroke();
+          doc.moveTo(60, divY).lineTo(pageWidth - 60, divY).stroke();
           if (field.label) {
-            doc.fontSize(10).font('Helvetica').fillColor('#666666');
-            doc.text(field.label, col1X, divY + 5, { align: 'center', width: colWidth });
+            doc.fontSize(10).font('Helvetica-Bold').fillColor('#333333');
+            doc.text(field.label, 60, divY + 5, { align: 'center', width: pageWidth - 120 });
           }
-          doc.moveDown(0.5);
+          doc.moveDown(0.8);
           doc.fillColor('#000000');
-          return;
         }
+      });
+      
+      // Si no hay campos normales, continuar con la siguiente sección
+      if (normalFieldsInSection.length === 0) {
+        return;
+      }
+      
+      // Iterar sobre los campos normales - aquí hacemos la distribución en 2 columnas
+      const middleIndex = Math.ceil(normalFieldsInSection.length / 2);
+      
+      // Primera columna
+      let currentY = doc.y;
+      normalFieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
         
         const fieldId = field.id;
         const fieldLabel = field.displayName || field.label;
@@ -1007,36 +1005,10 @@ async function generatePDFContent(
       doc.y = currentY - ((middleIndex - 1) * 15);
       
       // Segunda columna (si hay campos suficientes)
-      if (fieldsInSection.length > middleIndex) {
+      if (normalFieldsInSection.length > middleIndex) {
         const startY = doc.y;
         
-        fieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
-          // Renderizar campos visuales (heading y divider) de manera especial
-          if (field.type === 'heading') {
-            doc.moveDown(0.5);
-            doc.fontSize(14).font('Helvetica-Bold').fillColor('#000000');
-            doc.text(field.label, col2X, doc.y);
-            if (field.description) {
-              doc.fontSize(9).font('Helvetica').fillColor('#666666');
-              doc.text(field.description, col2X, doc.y + 2);
-            }
-            doc.moveDown(0.5);
-            doc.fillColor('#000000');
-            return;
-          }
-          
-          if (field.type === 'divider') {
-            doc.moveDown(0.5);
-            const divY = doc.y;
-            doc.moveTo(col2X, divY).lineTo(col2X + colWidth, divY).stroke();
-            if (field.label) {
-              doc.fontSize(10).font('Helvetica').fillColor('#666666');
-              doc.text(field.label, col2X, divY + 5, { align: 'center', width: colWidth });
-            }
-            doc.moveDown(0.5);
-            doc.fillColor('#000000');
-            return;
-          }
+        normalFieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
           
           const fieldId = field.id;
           const fieldLabel = field.displayName || field.label;
