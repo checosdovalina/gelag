@@ -799,13 +799,20 @@ export default function ProductionForm({
                   
                   <div>
                     <Label htmlFor="marmita">Marmita</Label>
-                    <Input
-                      id="marmita"
+                    <Select
                       value={formData.marmita || ""}
-                      onChange={(e) => handleChange("marmita", e.target.value)}
-                      placeholder="Número de marmita"
+                      onValueChange={(value) => handleChange("marmita", value)}
                       disabled={!canEditSection("general-info") || readOnly}
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar marmita" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Marmita 1</SelectItem>
+                        <SelectItem value="2">Marmita 2</SelectItem>
+                        <SelectItem value="3">Marmita 3</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 
