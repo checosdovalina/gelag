@@ -315,6 +315,63 @@ export default function ProductionForm({
     }
   }, [formData.productId, formData.liters]);
   
+  // Obtener productos para la lógica de antiespumante
+  const { products } = useProducts();
+  
+  // Efecto para actualizar antiespumante automáticamente según marmita y proceso
+  useEffect(() => {
+    if (!formData.marmita || !formData.productId || !formData.ingredients || formData.ingredients.length === 0) {
+      return;
+    }
+    
+    // Obtener el nombre del producto actual
+    const currentProduct = products?.find(p => p.id.toString() === formData.productId);
+    if (!currentProduct) return;
+    
+    const productName = currentProduct.name;
+    const marmita = formData.marmita;
+    
+    // Determinar la cantidad de antiespumante según proceso y marmita
+    let antiespumanteQuantity = 0;
+    
+    if (marmita === "1") {
+      if (productName.toLowerCase().includes("mielmex")) {
+        antiespumanteQuantity = 1; // 1 litro para Mielmex en Marmita 1
+      } else if (productName.toLowerCase().includes("horneable")) {
+        antiespumanteQuantity = 0.7; // 0.7 litros para Horneable en Marmita 1
+      }
+    } else if (marmita === "2" || marmita === "3") {
+      antiespumanteQuantity = 0.25; // 0.25 litros para cualquier proceso en Marmita 2 o 3
+    }
+    
+    // Si hay una cantidad definida, actualizar el ingrediente antiespumante
+    if (antiespumanteQuantity > 0) {
+      setFormData((prev: any) => {
+        const updatedIngredients = [...prev.ingredients];
+        const antiespumanteIndex = updatedIngredients.findIndex(
+          ing => ing.name.toLowerCase() === "antiespumante"
+        );
+        
+        if (antiespumanteIndex !== -1) {
+          updatedIngredients[antiespumanteIndex] = {
+            ...updatedIngredients[antiespumanteIndex],
+            quantity: antiespumanteQuantity,
+            unit: "L"
+          };
+          
+          console.log(`✅ Antiespumante actualizado: ${antiespumanteQuantity}L para ${productName} en Marmita ${marmita}`);
+          
+          return {
+            ...prev,
+            ingredients: updatedIngredients
+          };
+        }
+        
+        return prev;
+      });
+    }
+  }, [formData.marmita, formData.productId, formData.ingredients, products]);
+  
   // Limpiar timeout al desmontar el componente
   useEffect(() => {
     return () => {
