@@ -9,6 +9,7 @@ import {
   getSortedRowModel,
   ColumnFiltersState,
   getFilteredRowModel,
+  PaginationState,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Button } from "./button";
@@ -32,7 +33,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const table = useReactTable({
     data,
@@ -43,19 +47,16 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
-      pagination: {
-        pageIndex: 0,
-        pageSize: rowsPerPage,
-      },
+      pagination,
     },
   });
 
   return (
     <div className="space-y-4">
-      {/* Filter input */}
       {searchColumn && (
         <div className="flex items-center py-4">
           <Input
@@ -112,17 +113,18 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <p className="text-sm text-gray-500">
             Mostrando
             <Select
-              value={rowsPerPage.toString()}
-              onValueChange={(value) => setRowsPerPage(Number(value))}
+              value={pagination.pageSize.toString()}
+              onValueChange={(value) => {
+                setPagination(prev => ({ ...prev, pageSize: Number(value), pageIndex: 0 }));
+              }}
             >
               <SelectTrigger className="h-8 w-[70px] mx-2">
-                <SelectValue placeholder={rowsPerPage.toString()} />
+                <SelectValue placeholder={pagination.pageSize.toString()} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="5">5</SelectItem>
@@ -135,6 +137,9 @@ export function DataTable<TData, TValue>({
           </p>
         </div>
         <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">
+            Página {pagination.pageIndex + 1} de {table.getPageCount()}
+          </span>
           <Button
             variant="outline"
             size="sm"
