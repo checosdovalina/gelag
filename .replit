@@ -15,14 +15,6 @@ run = ["sh", "-c", "npm run db:push && npm run dev"]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 33423
-externalPort = 3001
-
-[[ports]]
-localPort = 41667
-externalPort = 3000
-
 [workflows]
 runButton = "Project"
 
@@ -45,4 +37,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_websocket==1.0.0", "javascript_stripe==1.0.0"]
+integrations = ["javascript_websocket:1.0.0", "javascript_stripe:1.0.0"]

@@ -988,7 +988,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("=== GET FORM ENTRIES ===");
       console.log("Usuario autenticado:", !!req.user);
       
-      // Check if user is authenticated
       if (!req.user) {
         console.log("Usuario no autenticado");
         return res.status(401).json({ message: "No autenticado" });
@@ -996,13 +995,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Usuario:", req.user.username, "Rol:", req.user.role);
 
-      // Get regular form entries
+      const templateId = req.query.templateId ? parseInt(req.query.templateId as string) : null;
+
       let entries = [];
       let productionForms = [];
       
       try {
         entries = await storage.getAllFormEntries();
-        console.log("Entradas de formularios obtenidas:", entries.length);
+        if (templateId) {
+          entries = entries.filter((e: any) => e.formTemplateId === templateId);
+          console.log(`Entradas filtradas por templateId=${templateId}:`, entries.length);
+        } else {
+          console.log("Entradas de formularios obtenidas:", entries.length);
+        }
       } catch (error) {
         console.error("Error al obtener entradas de formularios:", error);
         entries = [];
