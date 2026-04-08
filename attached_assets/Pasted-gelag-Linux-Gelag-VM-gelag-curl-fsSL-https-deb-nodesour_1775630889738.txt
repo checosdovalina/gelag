@@ -1,0 +1,47 @@
+gelag@Linux-Gelag-VM:~/gelag$ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs -y
+
+
+2026-04-08 00:39:20 - Installing pre-requisites
+Obj:1 http://mx.archive.ubuntu.com/ubuntu jammy InRelease
+Obj:2 http://mx.archive.ubuntu.com/ubuntu jammy-updates InRelease              
+Obj:3 http://security.ubuntu.com/ubuntu jammy-security InRelease               
+Obj:4 http://mx.archive.ubuntu.com/ubuntu jammy-backports InRelease            
+Obj:5 https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease            
+Des:6 https://deb.anydesk.com all InRelease [7 386 B]                          
+Err:6 https://deb.anydesk.com all InRelease    
+  Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+Leyendo lista de paquetes... Hecho
+N: Omitiendo el uso del fichero configurado «main/binary-i386/Packages» ya que el repositorio «https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease» no admite la arquitectura «i386»
+W: Error de GPG: https://deb.anydesk.com all InRelease: Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+E: El repositorio «https://deb.anydesk.com all InRelease» no está firmado.
+N: No se puede actualizar de un repositorio como este de forma segura y por tanto está deshabilitado por omisión.
+N: Vea la página de manual apt-secure(8) para los detalles sobre la creación de repositorios y la configuración de usuarios.
+2026-04-08 00:39:26 - Error: Failed to run 'apt update' (Exit Code: 0)
+
+
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias... Hecho
+Leyendo la información de estado... Hecho
+nodejs ya está en su versión más reciente (12.22.9~dfsg-1ubuntu3.6).
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 333 no actualizados.
+gelag@Linux-Gelag-VM:~/gelag$ node --version
+v12.22.9
+gelag@Linux-Gelag-VM:~/gelag$ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+2026-04-08 00:46:16 - Installing pre-requisites
+Obj:1 http://mx.archive.ubuntu.com/ubuntu jammy InRelease
+Obj:2 http://security.ubuntu.com/ubuntu jammy-security InRelease               
+Obj:3 https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease            
+Obj:4 http://mx.archive.ubuntu.com/ubuntu jammy-updates InRelease              
+Obj:5 http://mx.archive.ubuntu.com/ubuntu jammy-backports InRelease      
+Des:6 https://deb.anydesk.com all InRelease [7 386 B]                    
+Err:6 https://deb.anydesk.com all InRelease
+  Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+Leyendo lista de paquetes... Hecho
+N: Omitiendo el uso del fichero configurado «main/binary-i386/Packages» ya que el repositorio «https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease» no admite la arquitectura «i386»
+W: Error de GPG: https://deb.anydesk.com all InRelease: Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+E: El repositorio «https://deb.anydesk.com all InRelease» no está firmado.
+N: No se puede actualizar de un repositorio como este de forma segura y por tanto está deshabilitado por omisión.
+N: Vea la página de manual apt-secure(8) para los detalles sobre la creación de repositorios y la configuración de usuarios.
+2026-04-08 00:46:31 - Error: Failed to run 'apt update' (Exit Code: 0)
+gelag@Linux-Gelag-VM:~/gelag$ 
