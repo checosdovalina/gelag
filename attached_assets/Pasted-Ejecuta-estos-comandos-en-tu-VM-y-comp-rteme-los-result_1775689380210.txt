@@ -1,0 +1,76 @@
+Ejecuta estos comandos en tu VM y compárteme los resultados. Mientras tanto, basándome en el historial, aquí hay posibles causas y soluciones rápidas:
+🔴 Posibles Causas del Problema
+1. La importación de la base de datos no incluyó las contraseñas correctamente
+Cuando importaste desde Neon, las contraseñas hasheadas pueden haberse truncado o no importado correctamente.
+Solución rápida - Resetear contraseña del admin:
+bash
+Copy
+# Conectar a PostgreSQL local
+sudo -u postgres psql -d gelag
+
+# O si prefieres usar la conexión con usuario gelag_owner:
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag"
+Luego ejecuta:
+sql
+Copy
+-- Ver qué usuarios admin existen
+SELECT id, username, role FROM users WHERE role IN ('admin', 'superadmin');
+
+-- Resetear contraseña del admin (asumiendo que el username es 'admin' o 'gelag')
+-- La contraseña hasheada es para 'admin123' (bcrypt)
+UPDATE users SET password = '$2a$10$YourHashedPasswordHere' WHERE username = 'admin';
+
+-- O si usas texto plano (no recomendado para producción pero útil para prueba):
+-- Primero necesitamos ver el esquema de la tabla
+\d users
+2. El SESSION_SECRET cambió o no está configurado
+Verifica que el .env tenga el SESSION_SECRET:
+bash
+Copy
+cat /home/gelag/gelag/.env
+Debe contener:
+plain
+Copy
+DATABASE_URL=postgresql://gelag_owner:gelag123@localhost:5432/gelag
+NODE_ENV=production
+PORT=5000
+SESSION_SECRET=un_secreto_largo_aqui_123456x
+3. Error en el código de routes.ts
+Si el cambio que hiciste en routes.ts tiene un error de sintaxis, la aplicación podría no estar funcionando correctamente.
+🛠️ Pasos de Emergencia para Recuperar Acceso
+Paso 1: Verificar logs
+bash
+Copy
+pm2 logs gelag --lines 100
+Paso 2: Si la app está corriendo pero no acepta login, verificar la tabla users
+bash
+Copy
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -c "SELECT id, username, role, created_at FROM users ORDER BY id LIMIT 10;"
+Paso 3: Si los usuarios no existen, la importación falló
+Vuelve a importar los datos:
+bash
+Copy
+# Limpiar y reimportar
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS gelag;"
+sudo -u postgres psql -c "CREATE DATABASE gelag OWNER gelag_owner;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE gelag TO gelag_owner;"
+
+# Reimportar
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -f /tmp/gelag_schema.sql
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -f /tmp/gelag_data.sql
+Paso 4: Crear un usuario admin de emergencia (si todo lo demás falla)
+sql
+Copy
+-- Conectar a la base de datos
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag"
+
+-- Insertar usuario admin temporal (contraseña: admin123)
+-- Nota: Necesitamos saber el esquema exacto de la tabla users
+INSERT INTO users (username, password, role, full_name, email, department_id, created_at)
+VALUES ('admin_temp', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'superadmin', 'Admin Temporal', 'admin@temp.com', NULL, NOW());
+(La contraseña hasheada corresponde a "password" usando bcrypt)
+Por favor, ejecuta estos comandos y dime qué errores ves:
+pm2 logs gelag --lines 50 - para ver el error exacto
+cat /home/gelag/gelag/.env - para verificar configuración
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -c "SELECT username, role FROM users WHERE role IN ('admin', 'superadmin');"
+Con esa información podré darte la solución exacta.
