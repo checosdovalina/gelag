@@ -1,0 +1,89 @@
+gelag@Linux-Gelag-VM:~/gelag$ cd /home/gelag/gelag
+git pull
+npm install
+npm run build
+npm run db:push
+pm2 restart gelag
+pm2 logs gelag --lines 15
+remote: Enumerating objects: 16, done.
+remote: Counting objects: 100% (16/16), done.
+remote: Compressing objects: 100% (4/4), done.
+remote: Total 11 (delta 8), reused 10 (delta 7), pack-reused 0 (from 0)
+Desempaquetando objetos: 100% (11/11), 3.33 KiB | 69.00 KiB/s, listo.
+Desde https://github.com/checosdovalina/gelag
+   07aef1b..5afa7a6  main       -> origin/main
+Actualizando 07aef1b..5afa7a6
+Fast-forward
+ .replit                                            |   2 +-
+ ...an-500-kB-after-minification-_1775679817722.txt | 102 ++++++++++++++++
+ ...error-log-last-20-lines-0-gel_1775680386430.txt | 135 +++++++++++++++++++++
+ server/storage.ts                                  |   5 +-
+ 4 files changed, 239 insertions(+), 5 deletions(-)
+ create mode 100644 attached_assets/Pasted--Some-chunks-are-larger-than-500-kB-after-minification-_1775679817722.txt
+ create mode 100644 attached_assets/Pasted-home-gelag-pm2-logs-gelag-error-log-last-20-lines-0-gel_1775680386430.txt
+
+up to date, audited 723 packages in 8s
+
+82 packages are looking for funding
+  run `npm fund` for details
+
+19 vulnerabilities (2 low, 9 moderate, 8 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+vite v5.4.21 building for production...
+✓ 3615 modules transformed.
+../dist/public/index.html                          0.63 kB │ gzip:   0.38 kB
+../dist/public/assets/gelag-logo-CEAnWPju.png     13.00 kB
+../dist/public/assets/index-CdZasJaK.css          76.22 kB │ gzip:  13.09 kB
+../dist/public/assets/index-BfcRgUuJ.js        1,644.55 kB │ gzip: 445.37 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 21.59s
+
+  dist/index.js  272.6kb
+
+⚡ Done in 241ms
+
+> rest-express@1.0.0 db:push
+> drizzle-kit push
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/home/gelag/gelag/drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] Pulling schema from database...
+· You're about to add employees_employee_id_unique unique constraint to the table, which contains 5 items. If this statement fails, you will receive an error from the database. Do you want to truncate employees table?
+
+· You're about to add folio_counters_form_template_id_unique unique constraint to the table, which contains 26 items. If this statement fails, you will receive an error from the database. Do you want to truncate folio_counters table?
+
+· You're about to add products_code_unique unique constraint to the table, which contains 37 items. If this statement fails, you will receive an error from the database. Do you want to truncate products table?
+
+· You're about to add users_username_unique unique constraint to the table, which contains 15 items. If this statement fails, you will receive an error from the database. Do you want to truncate users table?
+
+ Warning  Found data-loss statements:
+· You're about to delete presentaciones table with 11 items
+· You're about to delete session table with 13 items
+· You're about to change details column type from jsonb to json with 12464 items
+· You're about to change data column type from jsonb to json with 4825 items
+· You're about to change structure column type from jsonb to json with 32 items
+
+THIS ACTION WILL CAUSE DATA LOSS AND CANNOT BE REVERTED
+
+Do you still want to push changes?
+❯ No, abort
+  Yes, I want to remove 2 tables, truncate 3 tables 
