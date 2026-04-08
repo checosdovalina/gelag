@@ -464,14 +464,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     try {
       const users = await storage.getAllUsers();
-      // Filter users suitable for dropdown (have department, exclude viewer role)
-      const suitableUsers = users.filter(user => 
-        user.department && 
-        user.department.trim() !== '' && 
-        user.role !== 'viewer'
-      );
+      const currentUser = req.user as any;
+      const isAdminOrSuperAdmin = currentUser?.role === UserRole.SUPERADMIN || currentUser?.role === UserRole.ADMIN;
+
+      let resultUsers;
+      if (isAdminOrSuperAdmin) {
+        // Admins see all users (for user management page)
+        resultUsers = users;
+      } else {
+        // Others only see users suitable for dropdowns (have department, exclude viewer role)
+        resultUsers = users.filter(user => 
+          user.department && 
+          user.department.trim() !== '' && 
+          user.role !== 'viewer'
+        );
+      }
+
       // Return users without passwords for security
-      const usersWithoutPasswords = suitableUsers.map(user => {
+      const usersWithoutPasswords = resultUsers.map(user => {
         const { password, ...userWithoutPassword } = user;
         return userWithoutPassword;
       });
