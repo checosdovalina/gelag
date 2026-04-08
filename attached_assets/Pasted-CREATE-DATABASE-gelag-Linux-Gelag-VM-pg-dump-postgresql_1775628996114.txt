@@ -1,0 +1,126 @@
+CREATE DATABASE
+gelag@Linux-Gelag-VM:~$ pg_dump "postgresql://gelag_owner:npg_Rf9ozNix8gcj@ep-hidden-glade-a4brbxhz.us-east-1.aws.neon.tech/gelag?sslmode=require&channel_binding=require" --no-owner --no-acl -Fc -f /home/gelag/gelag_backup.dump
+pg_dump: error: connection to server at "ep-hidden-glade-a4brbxhz.us-east-1.aws.neon.tech" (34.196.24.162), port 5432 failed: ERROR:  Your project has exceeded the data transfer quota. Upgrade your plan to increase limits.
+gelag@Linux-Gelag-VM:~$ pg_dump "postgresql://gelag_owner:npg_Rf9ozNix8gcj@ep-hidden-glade-a4brbxhz.us-east-1.aws.neon.tech/gelag?sslmode=require&channel_binding=require" --no-owner --no-acl -Fc -f /home/gelag/gelag_backup.dump
+pg_dump: error: server version: 17.8 (a48d9ca); pg_dump version: 14.22 (Ubuntu 14.22-0ubuntu0.22.04.1)
+pg_dump: error: aborting because of server version mismatch
+gelag@Linux-Gelag-VM:~$ # Agrega el repositorio oficial de PostgreSQL
+sudo apt install curl ca-certificates -y
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+# Actualiza e instala PostgreSQL 17
+sudo apt update
+sudo apt install postgresql-17 -y
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias... Hecho
+Leyendo la información de estado... Hecho
+ca-certificates ya está en su versión más reciente (20240203~22.04.1).
+fijado ca-certificates como instalado manualmente.
+curl ya está en su versión más reciente (7.81.0-1ubuntu1.23).
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 330 no actualizados.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  4812  100  4812    0     0   4648      0  0:00:01  0:00:01 --:--:--  4653
+Obj:1 http://mx.archive.ubuntu.com/ubuntu jammy InRelease
+Obj:2 http://security.ubuntu.com/ubuntu jammy-security InRelease               
+Obj:3 http://mx.archive.ubuntu.com/ubuntu jammy-updates InRelease              
+Obj:4 http://mx.archive.ubuntu.com/ubuntu jammy-backports InRelease            
+Des:5 https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease [180 kB]   
+Des:6 https://deb.anydesk.com all InRelease [7 386 B]                         
+Err:6 https://deb.anydesk.com all InRelease                      
+  Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+Des:7 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 Packages [466 kB]
+Leyendo lista de paquetes... Hecho
+W: Error de GPG: https://deb.anydesk.com all InRelease: Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+E: El repositorio «https://deb.anydesk.com all InRelease» no está firmado.
+N: No se puede actualizar de un repositorio como este de forma segura y por tanto está deshabilitado por omisión.
+N: Vea la página de manual apt-secure(8) para los detalles sobre la creación de repositorios y la configuración de usuarios.
+N: Omitiendo el uso del fichero configurado «main/binary-i386/Packages» ya que el repositorio «https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease» no admite la arquitectura «i386»
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias... Hecho
+Leyendo la información de estado... Hecho
+Se instalarán los siguientes paquetes adicionales:
+  libpq5 postgresql-client-17 postgresql-client-common postgresql-common
+Paquetes sugeridos:
+  libpq-oauth postgresql-doc-17
+Se instalarán los siguientes paquetes NUEVOS:
+  postgresql-17 postgresql-client-17
+Se actualizarán los siguientes paquetes:
+  libpq5 postgresql-client-common postgresql-common
+3 actualizados, 2 nuevos se instalarán, 0 para eliminar y 333 no actualizados.
+Se necesita descargar 21.4 MB de archivos.
+Se utilizarán 72.8 MB de espacio de disco adicional después de esta operación.
+Des:1 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-common all 290.pgdg22.04+1 [184 kB]
+Des:2 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-client-common all 290.pgdg22.04+1 [107 kB]
+Des:3 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 libpq5 amd64 18.3-1.pgdg22.04+1 [255 kB]
+Des:4 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-client-17 amd64 17.9-1.pgdg22.04+1 [2 027 kB]
+Des:5 https://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 postgresql-17 amd64 17.9-1.pgdg22.04+1 [18.8 MB]
+Descargados 21.4 MB en 3s (6 481 kB/s)      
+Preconfigurando paquetes ...
+(Leyendo la base de datos ... 201168 ficheros o directorios instalados actualmen
+te.)
+Preparando para desempaquetar .../postgresql-common_290.pgdg22.04+1_all.deb ...
+Dejando `desviación de /usr/bin/pg_config a /usr/bin/pg_config.libpq-dev por pos
+tgresql-common'
+Desempaquetando postgresql-common (290.pgdg22.04+1) sobre (238) ...
+dpkg: atención: no se puede borrar el directorio antiguo `/usr/share/postgresql-
+common/pgdg': El directorio no está vacío
+Preparando para desempaquetar .../postgresql-client-common_290.pgdg22.04+1_all.d
+eb ...
+Desempaquetando postgresql-client-common (290.pgdg22.04+1) sobre (238) ...
+Preparando para desempaquetar .../libpq5_18.3-1.pgdg22.04+1_amd64.deb ...
+Desempaquetando libpq5:amd64 (18.3-1.pgdg22.04+1) sobre (14.22-0ubuntu0.22.04.1)
+ ...
+Seleccionando el paquete postgresql-client-17 previamente no seleccionado.
+Preparando para desempaquetar .../postgresql-client-17_17.9-1.pgdg22.04+1_amd64.
+deb ...
+Desempaquetando postgresql-client-17 (17.9-1.pgdg22.04+1) ...
+Seleccionando el paquete postgresql-17 previamente no seleccionado.
+Preparando para desempaquetar .../postgresql-17_17.9-1.pgdg22.04+1_amd64.deb ...
+Desempaquetando postgresql-17 (17.9-1.pgdg22.04+1) ...
+Configurando postgresql-client-common (290.pgdg22.04+1) ...
+Removing obsolete conffile /etc/postgresql-common/supported_versions ...
+Configurando libpq5:amd64 (18.3-1.pgdg22.04+1) ...
+Configurando postgresql-common (290.pgdg22.04+1) ...
+Replacing config file /etc/postgresql-common/createcluster.conf with new version
+Merging postmaster.1.gz alternatives into psql.1.gz link group ...
+update-alternatives: actualizando la alternativa /usr/share/postgresql/14/man/ma
+n1/psql.1.gz porque han cambiando los enlaces esclavos del grupo de enlaces psql
+.1.gz
+update-alternatives: utilizando /usr/share/postgresql/17/man/man1/psql.1.gz para
+ proveer /usr/share/man/man1/psql.1.gz (psql.1.gz) en modo automático
+Configurando postgresql-client-17 (17.9-1.pgdg22.04+1) ...
+Configurando postgresql-17 (17.9-1.pgdg22.04+1) ...
+Procesando disparadores para man-db (2.10.2-1) ...
+Procesando disparadores para libc-bin (2.35-0ubuntu3.8) ...
+gelag@Linux-Gelag-VM:~$ pg_dump --version
+pg_dump (PostgreSQL) 14.22 (Ubuntu 14.22-0ubuntu0.22.04.1)
+gelag@Linux-Gelag-VM:~$ sudo apt update
+sudo apt install postgresql-17 -y
+
+
+Obj:1 http://mx.archive.ubuntu.com/ubuntu jammy InRelease
+Obj:2 http://mx.archive.ubuntu.com/ubuntu jammy-updates InRelease              
+Obj:3 http://security.ubuntu.com/ubuntu jammy-security InRelease               
+Obj:4 https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease            
+Obj:5 http://mx.archive.ubuntu.com/ubuntu jammy-backports InRelease            
+Des:6 https://deb.anydesk.com all InRelease [7 386 B]                    
+Err:6 https://deb.anydesk.com all InRelease    
+  Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+Leyendo lista de paquetes... Hecho
+N: Omitiendo el uso del fichero configurado «main/binary-i386/Packages» ya que el repositorio «https://apt.postgresql.org/pub/repos/apt jammy-pgdg InRelease» no admite la arquitectura «i386»
+W: Error de GPG: https://deb.anydesk.com all InRelease: Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY A2FB21D5A8772835
+E: El repositorio «https://deb.anydesk.com all InRelease» no está firmado.
+N: No se puede actualizar de un repositorio como este de forma segura y por tanto está deshabilitado por omisión.
+N: Vea la página de manual apt-secure(8) para los detalles sobre la creación de repositorios y la configuración de usuarios.
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias... Hecho
+Leyendo la información de estado... Hecho
+postgresql-17 ya está en su versión más reciente (17.9-1.pgdg22.04+1).
+0 actualizados, 0 nuevos se instalarán, 0 para eliminar y 333 no actualizados.
+gelag@Linux-Gelag-VM:~$ pg_dump "postgresql://gelag_owner:npg_Rf9ozNix8gcj@ep-hidden-glade-a4brbxhz.us-east-1.aws.neon.tech/gelag?sslmode=require&channel_binding=require" --no-owner --no-acl -Fc -f /home/gelag/gelag_backup.dump
+pg_dump: error: server version: 17.8 (a48d9ca); pg_dump version: 14.22 (Ubuntu 14.22-0ubuntu0.22.04.1)
+pg_dump: error: aborting because of server version mismatch
+gelag@Linux-Gelag-VM:~$ 
