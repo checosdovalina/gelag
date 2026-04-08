@@ -1,0 +1,184 @@
+elag@Linux-Gelag-VM:~/gelag$ psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -f /tmp/gelag_schema.sql
+psql "postgresql://gelag_owner:gelag123@localhost:5432/gelag" -f /tmp/gelag_data.sql
+SET
+SET
+SET
+psql:/tmp/gelag_schema.sql:13: ERROR:  unrecognized configuration parameter "transaction_timeout"
+SET
+SET
+ set_config 
+------------
+ 
+(1 fila)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ALTER TABLE
+ALTER TABLE
+SET
+SET
+SET
+psql:/tmp/gelag_data.sql:13: ERROR:  unrecognized configuration parameter "transaction_timeout"
+SET
+SET
+ set_config 
+------------
+ 
+(1 fila)
+
+SET
+SET
+SET
+SET
+COPY 12572
+COPY 5
+COPY 26
+COPY 4894
+COPY 32
+COPY 11
+COPY 37
+COPY 18
+COPY 670
+COPY 93
+COPY 0
+COPY 8
+COPY 15
+ setval 
+--------
+  12572
+(1 fila)
+
+ setval 
+--------
+      5
+(1 fila)
+
+ setval 
+--------
+     26
+(1 fila)
+
+ setval 
+--------
+   4924
+(1 fila)
+
+ setval 
+--------
+     56
+(1 fila)
+
+ setval 
+--------
+     11
+(1 fila)
+
+ setval 
+--------
+     18
+(1 fila)
+
+ setval 
+--------
+    741
+(1 fila)
+
+ setval 
+--------
+     51
+(1 fila)
+
+ setval 
+--------
+    154
+(1 fila)
+
+ setval 
+--------
+      1
+(1 fila)
+
+ setval 
+--------
+     15
+(1 fila)
+
+gelag@Linux-Gelag-VM:~/gelag$ 
+
