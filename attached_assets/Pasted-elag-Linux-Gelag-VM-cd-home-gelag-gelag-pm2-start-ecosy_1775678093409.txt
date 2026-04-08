@@ -1,0 +1,76 @@
+elag@Linux-Gelag-VM:~$ cd /home/gelag/gelag
+pm2 start ecosystem.config.cjs
+pm2 save
+[PM2][WARN] Applications gelag not running, starting...
+[PM2] App [gelag] launched (1 instances)
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ gelag              │ fork     │ 0    │ online    │ 0%       │ 28.1mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/gelag/.pm2/dump.pm2
+gelag@Linux-Gelag-VM:~/gelag$ pm2 logs gelag --lines 15
+[TAILING] Tailing last 15 lines for [gelag] process (change the value with --lines option)
+/home/gelag/.pm2/logs/gelag-error.log last 15 lines:
+0|gelag    |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag    |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag    |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag    | }
+0|gelag    | Error en el servidor: {
+0|gelag    |   url: '/api/login',
+0|gelag    |   method: 'POST',
+0|gelag    |   error: 'connect ECONNREFUSED 127.0.0.1:443',
+0|gelag    |   stack: 'Error: connect ECONNREFUSED 127.0.0.1:443\n' +
+0|gelag    |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag    |     '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+0|gelag    |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag    |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag    |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag    | }
+
+/home/gelag/.pm2/logs/gelag-out.log last 15 lines:
+0|gelag    | > NODE_ENV=production node dist/index.js
+0|gelag    | 
+0|gelag    | 1:20:59 AM [express] serving on port 5000 - Updated 2026-04-08T07:20:59.417Z
+0|gelag    | 1:22:36 AM [express] GET /api/user 401 in 9ms :: {"message":"No autenticado"}
+0|gelag    | 1:23:47 AM [express] POST /api/login 500 in 426ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:05 AM [express] POST /api/login 500 in 56ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:29 AM [express] POST /api/login 500 in 38ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:39 AM [express] POST /api/login 500 in 50ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:46 AM [express] POST /api/login 500 in 34ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:25:40 AM [express] GET /api/user 401 in 9ms :: {"message":"No autenticado"}
+0|gelag    | 
+0|gelag    | > rest-express@1.0.0 start
+0|gelag    | > NODE_ENV=production node dist/index.js
+0|gelag    | 
+0|gelag    | 1:48:17 PM [express] serving on port 5000 - Updated 2026-04-08T19:48:17.299Z
+
+0|gelag  | 1:52:41 PM [express] GET /api/user 401 in 6ms :: {"message":"No autenticado"}
+0|gelag  | Error en el servidor: {
+0|gelag  |   url: '/api/login',
+0|gelag  |   method: 'POST',
+0|gelag  |   error: 'connect ECONNREFUSED 127.0.0.1:443',
+0|gelag  |   stack: 'Error: connect ECONNREFUSED 127.0.0.1:443\n' +
+0|gelag  |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag  |     '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+0|gelag  |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag  |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag  |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag  | }
+0|gelag  | 1:52:55 PM [express] POST /api/login 500 in 266ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag  | Error en el servidor: {
+0|gelag  |   url: '/api/login',
+0|gelag  |   method: 'POST',
+0|gelag  |   error: 'connect ECONNREFUSED 127.0.0.1:443',
+0|gelag  |   stack: 'Error: connect ECONNREFUSED 127.0.0.1:443\n' +
+0|gelag  |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag  |     '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+0|gelag  |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag  |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag  |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag  | }
+0|gelag  | 1:53:12 PM [express] POST /api/login 500 in 23ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag  | 1:53:49 PM [express] GET /api/user 401 in 1ms :: {"message":"No autenticado"}
+
+
