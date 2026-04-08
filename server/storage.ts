@@ -14,9 +14,8 @@ import {
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { Pool } from '@neondatabase/serverless';
 
 const MemoryStore = createMemoryStore(session);
 const PostgresSessionStore = connectPgSimple(session);
@@ -121,8 +120,6 @@ export class DatabaseStorage implements IStorage {
   sessionStore: session.SessionStore;
 
   constructor() {
-    // Create session store using PostgreSQL
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
     this.sessionStore = new PostgresSessionStore({ 
       pool, 
       createTableIfMissing: true,

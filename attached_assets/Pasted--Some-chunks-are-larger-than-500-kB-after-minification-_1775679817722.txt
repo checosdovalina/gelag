@@ -1,0 +1,102 @@
+!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 24.41s
+
+  dist/index.js  272.8kb
+
+⚡ Done in 47ms
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [gelag](ids: [ 0 ])
+[PM2] [gelag](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ gelag              │ fork     │ 2    │ online    │ 0%       │ 21.9mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[TAILING] Tailing last 20 lines for [gelag] process (change the value with --lines option)
+/home/gelag/.pm2/logs/gelag-error.log last 20 lines:
+0|gelag    |   method: 'POST',
+0|gelag    |   error: 'connect ECONNREFUSED 127.0.0.1:443',
+0|gelag    |   stack: 'Error: connect ECONNREFUSED 127.0.0.1:443\n' +
+0|gelag    |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag    |     '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+0|gelag    |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag    |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag    |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag    | }
+0|gelag    | Error en el servidor: {
+0|gelag    |   url: '/api/login',
+0|gelag    |   method: 'POST',
+0|gelag    |   error: 'connect ECONNREFUSED 127.0.0.1:443',
+0|gelag    |   stack: 'Error: connect ECONNREFUSED 127.0.0.1:443\n' +
+0|gelag    |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag    |     '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+0|gelag    |     '    at async NeonPreparedQuery.execute (file:///home/gelag/gelag/node_modules/drizzle-orm/neon-serverless/session.js:76:20)\n' +
+0|gelag    |     '    at async DatabaseStorage.getUserByUsername (file:///home/gelag/gelag/dist/index.js:3525:20)\n' +
+0|gelag    |     '    at async Strategy._verify (file:///home/gelag/gelag/dist/index.js:3983:22)'
+0|gelag    | }
+
+/home/gelag/.pm2/logs/gelag-out.log last 20 lines:
+0|gelag    | 1:23:47 AM [express] POST /api/login 500 in 426ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:05 AM [express] POST /api/login 500 in 56ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:29 AM [express] POST /api/login 500 in 38ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:39 AM [express] POST /api/login 500 in 50ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:24:46 AM [express] POST /api/login 500 in 34ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:25:40 AM [express] GET /api/user 401 in 9ms :: {"message":"No autenticado"}
+0|gelag    | 
+0|gelag    | > rest-express@1.0.0 start
+0|gelag    | > NODE_ENV=production node dist/index.js
+0|gelag    | 
+0|gelag    | 1:48:17 PM [express] serving on port 5000 - Updated 2026-04-08T19:48:17.299Z
+0|gelag    | 1:52:41 PM [express] GET /api/user 401 in 6ms :: {"message":"No autenticado"}
+0|gelag    | 1:52:55 PM [express] POST /api/login 500 in 266ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:53:12 PM [express] POST /api/login 500 in 23ms :: {"message":"connect ECONNREFUSED 127.0.0.1:443"}
+0|gelag    | 1:53:49 PM [express] GET /api/user 401 in 1ms :: {"message":"No autenticado"}
+0|gelag    | 
+0|gelag    | > rest-express@1.0.0 start
+0|gelag    | > NODE_ENV=production node dist/index.js
+0|gelag    | 
+0|gelag    | 2:17:41 PM [express] serving on port 5000 - Updated 2026-04-08T20:17:41.141Z
+
+0|gelag  | > rest-express@1.0.0 start
+0|gelag  | > NODE_ENV=production node dist/index.js
+0|gelag  | ◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+0|gelag  | 2:20:35 PM [express] serving on port 5000 - Updated 2026-04-08T20:20:35.385Z
+0|gelag  | 2:20:54 PM [express] GET /api/user 401 in 48ms :: {"message":"No autenticado"}
+0|gelag  | 2:21:00 PM [express] GET /api/user 401 in 3ms :: {"message":"No autenticado"}
+0|gelag  | 2:21:14 PM [express] POST /api/login 401 in 624ms :: {"message":"Credenciales inválidas"}
+0|gelag  | Error en el servidor: {
+0|gelag  |   url: '/api/login',
+0|gelag  |   method: 'POST',
+0|gelag  |   error: 'All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed',
+0|gelag  |   stack: 'Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed\n' +
+0|gelag  |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag  |     '    at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)\n' +
+0|gelag  |     '    at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)\n' +
+0|gelag  |     '    at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)'
+0|gelag  | }
+0|gelag  | 2:21:29 PM [express] POST /api/login 500 in 440ms :: {"message":"All attempts to open a WebSocket to…
+0|gelag  | Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+0|gelag  |     at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74
+0|gelag  |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)
+0|gelag  |     at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)
+0|gelag  |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)
+0|gelag  | Error en el servidor: {
+0|gelag  |   url: '/api/login',
+0|gelag  |   method: 'POST',
+0|gelag  |   error: 'All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed',
+0|gelag  |   stack: 'Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed\n' +
+0|gelag  |     '    at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74\n' +
+0|gelag  |     '    at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)\n' +
+0|gelag  |     '    at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)\n' +
+0|gelag  |     '    at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)'
+0|gelag  | }
+0|gelag  | 2:21:51 PM [express] POST /api/login 500 in 288ms :: {"message":"All attempts to open a WebSocket to…
+0|gelag  | Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+0|gelag  |     at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74
+0|gelag  |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)
+0|gelag  |     at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)
+0|gelag  |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)
+
