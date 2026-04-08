@@ -1,0 +1,241 @@
+elag@Linux-Gelag-VM:~$ cd /home/gelag
+git clone https://github.com/checosdovalina/gelag.git
+cd gelag
+nano .env
+Clonando en 'gelag'...
+remote: Enumerating objects: 6292, done.
+remote: Counting objects: 100% (70/70), done.
+remote: Compressing objects: 100% (42/42), done.
+remote: Total 6292 (delta 41), reused 48 (delta 28), pack-reused 6222 (from 1)
+Recibiendo objetos: 100% (6292/6292), 42.50 MiB | 3.20 MiB/s, listo.
+Resolviendo deltas: 100% (4609/4609), listo.
+gelag@Linux-Gelag-VM:~/gelag$ npm install
+npm run build
+pm2 start npm --name "gelag" -- start
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@puppeteer/browsers@2.10.2',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@vitejs/plugin-react@4.3.3',
+npm WARN EBADENGINE   required: { node: '^14.18.0 || >=16.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'agent-base@7.1.3',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'connect-pg-simple@10.0.0',
+npm WARN EBADENGINE   required: { node: '^18.18.0 || ^20.9.0 || >=22.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'cosmiconfig@9.0.0',
+npm WARN EBADENGINE   required: { node: '>=14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'data-uri-to-buffer@6.0.2',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'degenerator@5.0.1',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'esbuild@0.25.0',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'foreground-child@3.3.0',
+npm WARN EBADENGINE   required: { node: '>=14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'get-uri@6.0.4',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'http-proxy-agent@7.0.2',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'https-proxy-agent@7.0.6',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'lilconfig@3.1.3',
+npm WARN EBADENGINE   required: { node: '>=14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'minimatch@9.0.5',
+npm WARN EBADENGINE   required: { node: '>=16 || 14 >=14.17' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'minipass@7.1.2',
+npm WARN EBADENGINE   required: { node: '>=16 || 14 >=14.17' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'pac-proxy-agent@7.2.0',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'pac-resolver@7.0.1',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'path-scurry@1.11.1',
+npm WARN EBADENGINE   required: { node: '>=16 || 14 >=14.18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'postcss-import@15.1.0',
+npm WARN EBADENGINE   required: { node: '>=14.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'postcss-load-config@4.0.2',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'proxy-agent@6.5.0',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'puppeteer@24.7.2',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'puppeteer-core@24.7.2',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'react-hook-form@7.55.0',
+npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'recharts@2.15.2',
+npm WARN EBADENGINE   required: { node: '>=14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'rollup@4.24.4',
+npm WARN EBADENGINE   required: { node: '>=18.0.0', npm: '>=8.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'signal-exit@4.1.0',
+npm WARN EBADENGINE   required: { node: '>=14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'socks-proxy-agent@8.0.5',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sucrase@3.35.0',
+npm WARN EBADENGINE   required: { node: '>=16 || 14 >=14.17' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'tailwindcss@3.4.17',
+npm WARN EBADENGINE   required: { node: '>=14.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'tmp@0.2.3',
+npm WARN EBADENGINE   required: { node: '>=14.14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'tsx@4.19.2',
+npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'esbuild@0.23.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'typescript@5.6.3',
+npm WARN EBADENGINE   required: { node: '>=14.17' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'vite@5.4.14',
+npm WARN EBADENGINE   required: { node: '^18.0.0 || >=20.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'yaml@2.6.0',
+npm WARN EBADENGINE   required: { node: '>= 14' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'zod-validation-error@3.4.0',
+npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+npm WARN EBADENGINE   current: { node: 'v12.22.9', npm: '8.5.1' }
+npm WARN EBADENGINE }
+npm WARN deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm WARN deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated fstream@1.0.12: This package is no longer supported.
+npm WARN deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+npm ERR! code 1
+npm ERR! path /home/gelag/gelag/node_modules/puppeteer
+npm ERR! command failed
+npm ERR! command sh -c node install.mjs
+npm ERR! file:///home/gelag/gelag/node_modules/puppeteer/install.mjs:39
+npm ERR!   const {downloadBrowsers} = await importInstaller();
+npm ERR!                              ^^^^^
+npm ERR! 
+npm ERR! SyntaxError: Unexpected reserved word
+npm ERR!     at Loader.moduleStrategy (internal/modules/esm/translators.js:133:18)
+npm ERR!     at async link (internal/modules/esm/module_job.js:42:21)
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/gelag/.npm/_logs/2026-04-08T06_34_26_871Z-debug-0.log
+
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+sh: 1: vite: not found
+Orden «pm2» no encontrada. Quizá quiso decir:
+  la orden «pmi» del paquete deb «powermanagement-interface (0.3.21)»
+  la orden «tpm2» del paquete deb «tpm2-tools (5.2-1build1)»
+  la orden «wm2» del paquete deb «wm2 (4+svn20090216-4build1)»
+  la orden «pm» del paquete deb «powerman (2.3.5-1build2)»
+  la orden «pom2» del paquete deb «libpod-pom-perl (2.01-3)»
+  la orden «pmg» del paquete deb «python3-pymatgen (2022.0.17+dfsg1-1build1)»
+  la orden «pmc» del paquete deb «linuxptp (3.1.1-3)»
+  la orden «pmw» del paquete deb «pmw (1:4.50-1)»
+  la orden «pms» del paquete deb «pms (0.42-1build4)»
+  la orden «gm2» del paquete deb «gm2 (4:11.2.0-1ubuntu1)»
+Pruebe con: sudo apt install <nombre del paquete deb>
+gelag@Linux-Gelag-VM:~/gelag$ 
