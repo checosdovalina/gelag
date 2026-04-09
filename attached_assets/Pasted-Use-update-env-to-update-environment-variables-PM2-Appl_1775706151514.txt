@@ -1,0 +1,34 @@
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [gelag](ids: [ 0 ])
+[PM2] [gelag](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ gelag              │ fork     │ 1    │ online    │ 0%       │ 24.8mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+gelag@Linux-Gelag-VM:~/gelag$ pm2 logs gelag --lines 10
+[TAILING] Tailing last 10 lines for [gelag] process (change the value with --lines option)
+/home/gelag/.pm2/logs/gelag-error.log last 10 lines:
+0|gelag    | Failed to prune sessions: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+0|gelag    |     at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74
+0|gelag    |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)
+0|gelag    |     at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)
+0|gelag    |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)
+0|gelag    | Failed to prune sessions: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+0|gelag    |     at file:///home/gelag/gelag/node_modules/@neondatabase/serverless/index.mjs:1345:74
+0|gelag    |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:322:21)
+0|gelag    |     at async PGStore._rawEnsureSessionStoreTable (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:177:19)
+0|gelag    |     at async PGStore._asyncQuery (/home/gelag/gelag/node_modules/connect-pg-simple/index.js:315:7)
+
+/home/gelag/.pm2/logs/gelag-out.log last 10 lines:
+0|gelag    | 9:36:37 PM [express] POST /api/login 401 in 272ms :: {"message":"Credenciales inválidas"}
+0|gelag    | 9:36:44 PM [express] GET /api/user 401 in 3ms :: {"message":"No autenticado"}
+0|gelag    | 9:37:45 PM [express] POST /api/login 200 in 379ms :: {"id":6,"username":"mtovar","name":"Marcela  To…
+0|gelag    | 9:37:45 PM [express] GET /api/activity 401 in 15ms :: {"message":"No autenticado"}
+0|gelag    | 9:37:45 PM [express] GET /api/dashboard/stats 200 in 112ms :: {"users":15,"templates":32,"entries":0…
+0|gelag    | 9:37:45 PM [express] GET /api/form-templates 200 in 100ms :: [{"id":9,"name":"CA-RE-15-01 - REGISTRO…
+0|gelag    | === GET PRODUCTION FORMS ===
+0|gelag    | Usuario autenticado: false
+0|gelag    | Usuario: undefined
+0|gelag    | 9:37:53 PM [express] GET /api/production-forms 401 in 35ms :: {"message":"No autenticado"}
+

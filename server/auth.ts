@@ -66,7 +66,9 @@ export function setupAuth(app: Express) {
     store: storage.sessionStore,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-      secure: process.env.NODE_ENV === "production",
+      // Solo usar secure=true si se está usando HTTPS explícitamente
+      // En VM local con HTTP, COOKIE_SECURE debe ser "false" o no estar definido
+      secure: process.env.COOKIE_SECURE === "true",
       sameSite: "lax",
       httpOnly: true
     },
