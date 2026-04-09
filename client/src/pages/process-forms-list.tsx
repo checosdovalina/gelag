@@ -61,18 +61,33 @@ export default function ProcessFormsList() {
   const canEditForms = user && userRole && ["superadmin", "admin", "produccion", "calidad", "gerente_produccion", "gerente_calidad"].includes(userRole);
   const canDeleteForms = user && userRole && ["superadmin", "admin", "gerente_produccion", "gerente_calidad"].includes(userRole);
   
+  // Normaliza cualquier formato de fecha a YYYY-MM-DD para comparación
+  const normalizeDateForFilter = (dateStr: string): string => {
+    if (!dateStr) return '';
+    // Si es DD/MM/YYYY -> YYYY-MM-DD
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const [d, m, y] = dateStr.split('/');
+      return `${y}-${m}-${d}`;
+    }
+    // Si es timestamp ISO o YYYY-MM-DD, toma los primeros 10 caracteres
+    return dateStr.substring(0, 10);
+  };
+
   const filteredForms = useMemo(() => {
     if (!forms) return [];
     return forms.filter((form) => {
       if (folioFilter && !form.folio?.toLowerCase().includes(folioFilter.toLowerCase())) {
         return false;
       }
-      const formDate = form.date ? form.date.substring(0, 10) : '';
-      if (dateFromFilter && formDate < dateFromFilter) {
-        return false;
-      }
-      if (dateToFilter && formDate > dateToFilter) {
-        return false;
+      // Solo aplica filtro de fecha si el formulario tiene fecha
+      const formDate = normalizeDateForFilter(form.date || '');
+      if (formDate) {
+        if (dateFromFilter && formDate < dateFromFilter) {
+          return false;
+        }
+        if (dateToFilter && formDate > dateToFilter) {
+          return false;
+        }
       }
       return true;
     });
