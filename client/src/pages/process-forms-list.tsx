@@ -178,7 +178,7 @@ export default function ProcessFormsList() {
           {!isLoading && forms && forms.length > 0 && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { label: "Total", value: forms.length, color: "text-blue-600 bg-blue-50" },
+                { label: "Total", value: forms.length, color: "text-[#E8195A] bg-pink-50" },
                 { label: "En Progreso", value: statusCounts.inProgress, color: "text-amber-600 bg-amber-50" },
                 { label: "En Revisión", value: statusCounts.pendingReview, color: "text-violet-600 bg-violet-50" },
                 { label: "Completados", value: statusCounts.completed, color: "text-emerald-600 bg-emerald-50" },

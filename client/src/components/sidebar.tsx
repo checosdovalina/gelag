@@ -80,22 +80,28 @@ export default function Sidebar({ className }: { className?: string }) {
   const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
   return (
-    <aside className={cn("flex flex-col w-64 bg-white border-r border-gray-100 shadow-sm z-10", className)}>
+    <aside className={cn(
+      "flex flex-col w-64 z-10",
+      "bg-[#E8195A] text-white shadow-xl",
+      className
+    )}>
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-gray-100 flex flex-col items-center">
-        <img src={gelagLogo} alt="GELAG Logo" className="h-10 mb-2 object-contain" />
-        <h1 className="text-sm font-semibold text-primary tracking-wide">GELAG S.A. DE C.V.</h1>
+      <div className="px-4 py-5 border-b border-white/20 flex flex-col items-center">
+        <div className="bg-white rounded-xl px-3 py-2 mb-2 shadow-sm">
+          <img src={gelagLogo} alt="GELAG Logo" className="h-8 object-contain" />
+        </div>
+        <h1 className="text-xs font-semibold text-white/80 tracking-wider uppercase">GELAG S.A. DE C.V.</h1>
       </div>
 
       {/* Usuario */}
-      <div className="px-4 py-4 border-b border-gray-50 bg-gradient-to-br from-blue-50 to-white">
+      <div className="px-4 py-4 border-b border-white/20 bg-black/10">
         <div className="flex items-center gap-3">
-          <div className="bg-primary rounded-full h-9 w-9 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+          <div className="bg-[#E8891A] rounded-full h-9 w-9 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md">
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-sm text-foreground truncate">{user.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
+            <p className="font-semibold text-sm text-white truncate">{user.name}</p>
+            <p className="text-xs text-white/70 truncate">{roleLabel}</p>
           </div>
         </div>
       </div>
@@ -108,7 +114,7 @@ export default function Sidebar({ className }: { className?: string }) {
           return (
             <div key={gi} className="mb-4">
               {group.label && (
-                <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-white/50">
                   {group.label}
                 </p>
               )}
@@ -122,11 +128,11 @@ export default function Sidebar({ className }: { className?: string }) {
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
                           isActive
-                            ? "bg-primary text-white font-medium shadow-sm"
-                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                            ? "bg-white text-[#E8195A] font-semibold shadow-md"
+                            : "text-white/85 hover:bg-white/15 hover:text-white"
                         )}
                       >
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <item.icon className={cn("h-4 w-4 flex-shrink-0", isActive ? "text-[#E8195A]" : "")} />
                         <span className="truncate">{item.title}</span>
                       </Link>
                     </li>
@@ -139,11 +145,11 @@ export default function Sidebar({ className }: { className?: string }) {
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-gray-100">
+      <div className="p-3 border-t border-white/20">
         <Button
           variant="ghost"
           size="sm"
-          className="flex w-full items-center justify-start gap-3 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+          className="flex w-full items-center justify-start gap-3 text-white/80 hover:text-white hover:bg-white/15 transition-colors"
           onClick={() => logoutMutation.mutate()}
           disabled={logoutMutation.isPending}
         >

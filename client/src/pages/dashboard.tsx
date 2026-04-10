@@ -123,7 +123,7 @@ export default function Dashboard() {
       title: "Usuarios Activos",
       value: stats.users,
       icon: Users,
-      color: "bg-blue-500",
+      color: "bg-[#E8195A]",
       show: isAdmin,
     },
     {

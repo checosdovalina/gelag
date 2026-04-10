@@ -105,38 +105,38 @@ export default function MobileNav({ className }: MobileNavProps) {
 
   return (
     <div className={cn("md:hidden sticky top-0 z-50 w-full", className)}>
-      <div className="flex items-center justify-between p-4 bg-primary text-white">
+      <div className="flex items-center justify-between p-4 bg-[#E8195A] text-white shadow-md">
         <div className="flex items-center space-x-2">
           <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-medium">FormCapture</h1>
+          <h1 className="text-xl font-semibold tracking-wide">GELAG</h1>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-white">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
               <Menu className="h-6 w-6" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72">
-            <div className="p-4 bg-primary text-white flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+          <SheetContent side="left" className="p-0 w-72 bg-[#E8195A] border-none">
+            <div className="p-4 border-b border-white/20 flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-white">
                 <FileText className="h-5 w-5" />
-                <h1 className="text-xl font-medium">FormCapture</h1>
+                <h1 className="text-xl font-semibold">GELAG</h1>
               </div>
               <X 
-                className="h-5 w-5 cursor-pointer"
+                className="h-5 w-5 cursor-pointer text-white"
                 onClick={() => setOpen(false)}
               />
             </div>
             
-            <div className="p-4 bg-neutral-50">
+            <div className="p-4 bg-black/10 border-b border-white/20">
               <div className="flex items-center space-x-3">
-                <div className="bg-primary rounded-full h-10 w-10 flex items-center justify-center text-white">
-                  <span className="font-medium">{user.name.charAt(0).toUpperCase()}</span>
+                <div className="bg-[#E8891A] rounded-full h-10 w-10 flex items-center justify-center text-white font-bold shadow-md">
+                  <span>{user.name.charAt(0).toUpperCase()}</span>
                 </div>
                 <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-neutral-500">{user.role}</p>
+                  <p className="font-semibold text-white">{user.name}</p>
+                  <p className="text-sm text-white/70">{user.role}</p>
                 </div>
               </div>
             </div>
@@ -150,17 +150,17 @@ export default function MobileNav({ className }: MobileNavProps) {
                       <Link href={item.href}>
                         <a
                           className={cn(
-                            "flex items-center space-x-3 p-3 rounded-md hover:bg-neutral-100",
-                            location === item.href && "bg-blue-50 border-l-4 border-primary"
+                            "flex items-center space-x-3 p-3 rounded-lg transition-all",
+                            location === item.href
+                              ? "bg-white text-[#E8195A] font-semibold shadow-md"
+                              : "text-white/85 hover:bg-white/15"
                           )}
                           onClick={handleNavigation}
                         >
-                          <span className={cn("text-primary", location === item.href ? "text-primary" : "text-gray-500")}>
+                          <span className={location === item.href ? "text-[#E8195A]" : "text-white/85"}>
                             {item.icon}
                           </span>
-                          <span className={cn(location === item.href ? "font-medium" : "")}>
-                            {item.title}
-                          </span>
+                          <span>{item.title}</span>
                         </a>
                       </Link>
                     </li>
@@ -168,10 +168,10 @@ export default function MobileNav({ className }: MobileNavProps) {
               </ul>
             </nav>
             
-            <div className="p-4 border-t">
+            <div className="p-4 border-t border-white/20">
               <Button
                 variant="ghost"
-                className="flex w-full items-center justify-start space-x-2 text-neutral-700 hover:text-primary"
+                className="flex w-full items-center justify-start space-x-2 text-white/80 hover:text-white hover:bg-white/15"
                 onClick={handleLogout}
                 disabled={logoutMutation.isPending}
               >
