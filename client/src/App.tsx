@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { UserRole } from "@shared/schema";
-import MainLayout from "@/components/layout/main-layout";
 import { useToast } from "@/hooks/use-toast";
 
 // Pages
@@ -29,10 +28,6 @@ import ProcessFormsList from "@/pages/process-forms-list";
 import DulcesFormPage from "@/pages/dulces-form-page";
 import FormViewerPage from "@/pages/form-viewer-page";
 
-function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  return <MainLayout>{children}</MainLayout>;
-}
-
 function ProtectedRouteWithLayout(props: {
   path: string;
   component: (params?: any) => React.JSX.Element;
@@ -42,11 +37,7 @@ function ProtectedRouteWithLayout(props: {
     <ProtectedRoute
       path={props.path}
       allowedRoles={props.allowedRoles}
-      component={(params?: any) => (
-        <ProtectedLayout>
-          <props.component {...params} />
-        </ProtectedLayout>
-      )}
+      component={(params?: any) => <props.component {...params} />}
     />
   );
 }
