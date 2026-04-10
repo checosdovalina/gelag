@@ -346,16 +346,16 @@ export default function CapturedFormsPage() {
           workflowStatusFilter === "all" || 
           entry.workflowStatus === workflowStatusFilter;
         
-        // User filter
+        // User filter — usar Number() para evitar problemas de tipo
         const passesUserFilter = 
           userFilter === "all" || 
-          entry.createdBy === userFilter;
+          Number(entry.createdBy) === Number(userFilter);
         
-        // Template filter
+        // Template filter — usar Number() para evitar problemas de tipo string vs number en diferentes versiones de PostgreSQL
         const passesTemplateFilter = 
           templateFilter === "all" || 
           (templateFilter === "production" && entry.formType === "production") ||
-          (typeof templateFilter === "number" && entry.formTemplateId === templateFilter);
+          (templateFilter !== "all" && templateFilter !== "production" && Number(entry.formTemplateId) === Number(templateFilter));
         
         // Date range filter
         let passesDateFilter = true;

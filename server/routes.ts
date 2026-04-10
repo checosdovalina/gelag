@@ -1000,7 +1000,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         entries = await storage.getAllFormEntries();
         if (templateId) {
-          entries = entries.filter((e: any) => e.formTemplateId === templateId);
+          entries = entries.filter((e: any) => Number(e.formTemplateId) === Number(templateId));
           console.log(`Entradas filtradas por templateId=${templateId}:`, entries.length);
         } else {
           console.log("Entradas de formularios obtenidas:", entries.length);
