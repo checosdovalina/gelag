@@ -14,24 +14,28 @@ import {
   PlusSquare,
   ClipboardCheck,
   Package,
-  UserCircle
+  UserCircle,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import gelagLogo from '@/assets/gelag-logo.png';
 
-interface SidebarProps {
-  className?: string;
-}
+const ROLE_LABELS: Record<string, string> = {
+  superadmin: "Super Administrador",
+  admin: "Administrador",
+  produccion: "Producción",
+  calidad: "Calidad",
+  gerente_produccion: "Gerente Producción",
+  gerente_calidad: "Gerente Calidad",
+  viewer: "Visor",
+};
 
-export default function Sidebar({ className }: SidebarProps) {
+export default function Sidebar({ className }: { className?: string }) {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
-  // Usamos strings directamente para comparar los roles, normalizando a minúsculas para evitar problemas
   const userRole = user.role.toLowerCase();
   const isAdmin = userRole === "admin";
   const isSuperAdmin = userRole === "superadmin";
@@ -42,138 +46,109 @@ export default function Sidebar({ className }: SidebarProps) {
   const isViewer = userRole === "viewer";
   const canCaptureData = isAdmin || isProduction || isQuality || isSuperAdmin || isProductionManager || isQualityManager;
 
-  const navItems = [
+  const navGroups = [
     {
-      title: "Dashboard",
-      href: "/",
-      icon: <LayoutDashboard className="h-5 w-5" />,
-      show: true,
+      label: null,
+      items: [
+        { title: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+      ],
     },
     {
-      title: "Gestión de Usuarios",
-      href: "/users",
-      icon: <Users className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager,
+      label: "Gestión",
+      items: [
+        { title: "Formularios", href: "/forms", icon: FileText, show: true },
+        { title: "Formularios de Proceso", href: "/process-forms", icon: ClipboardCheck, show: isAdmin || isSuperAdmin || isProduction || isQuality || isProductionManager || isQualityManager },
+        { title: "Capturar Datos", href: "/form-capture", icon: PenLine, show: canCaptureData },
+        { title: "Formularios Capturados", href: "/captured-forms", icon: CheckSquare, show: true },
+      ],
     },
     {
-      title: "Crear Formularios",
-      href: "/form-editor",
-      icon: <PlusSquare className="h-5 w-5" />,
-      show: isSuperAdmin,
-    },
-    {
-      title: "Importar Formularios",
-      href: "/form-import",
-      icon: <FileText className="h-5 w-5" />,
-      show: isSuperAdmin,
-    },
-    {
-      title: "Formularios",
-      href: "/forms",
-      icon: <FileText className="h-5 w-5" />,
-      show: true,
-    },
-    {
-      title: "Formularios de Proceso",
-      href: "/process-forms",
-      icon: <ClipboardCheck className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || isProduction || isQuality || isProductionManager || isQualityManager,
-    },
-    {
-      title: "Capturar Datos",
-      href: "/form-capture",
-      icon: <PenLine className="h-5 w-5" />,
-      show: canCaptureData,
-    },
-    {
-      title: "Formularios Capturados",
-      href: "/captured-forms",
-      icon: <ClipboardCheck className="h-5 w-5" />,
-      show: true,
-    },
-    {
-      title: "Reportes",
-      href: "/reports",
-      icon: <BarChart3 className="h-5 w-5" />,
-      show: isSuperAdmin || user.role === UserRole.VIEWER,
-    },
-    {
-      title: "Productos",
-      href: "/products",
-      icon: <Package className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin,
-    },
-    {
-      title: "Empleados",
-      href: "/employees",
-      icon: <UserCircle className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager,
-    },
-    {
-      title: "Configuración",
-      href: "/settings",
-      icon: <Settings className="h-5 w-5" />,
-      show: isAdmin || isSuperAdmin,
+      label: "Administración",
+      items: [
+        { title: "Gestión de Usuarios", href: "/users", icon: Users, show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager },
+        { title: "Productos", href: "/products", icon: Package, show: isAdmin || isSuperAdmin || isProductionManager },
+        { title: "Empleados", href: "/employees", icon: UserCircle, show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager },
+        { title: "Crear Formularios", href: "/form-editor", icon: PlusSquare, show: isSuperAdmin },
+        { title: "Importar Formularios", href: "/form-import", icon: Upload, show: isSuperAdmin },
+        { title: "Reportes", href: "/reports", icon: BarChart3, show: isSuperAdmin || isViewer || isAdmin || isProductionManager || isQualityManager },
+        { title: "Configuración", href: "/settings", icon: Settings, show: isAdmin || isSuperAdmin },
+      ],
     },
   ];
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
+  const roleLabel = ROLE_LABELS[userRole] || user.role;
+  const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
   return (
-    <aside className={cn("flex flex-col w-64 bg-white shadow-md z-10", className)}>
-      <div className="p-4 bg-white flex flex-col items-center justify-center">
-        <img src={gelagLogo} alt="GELAG Logo" className="h-10 mb-2" />
-        <h1 className="text-lg font-medium text-primary">GELAG S.A DE C.V.</h1>
+    <aside className={cn("flex flex-col w-64 bg-white border-r border-gray-100 shadow-sm z-10", className)}>
+      {/* Logo */}
+      <div className="px-4 py-5 border-b border-gray-100 flex flex-col items-center">
+        <img src={gelagLogo} alt="GELAG Logo" className="h-10 mb-2 object-contain" />
+        <h1 className="text-sm font-semibold text-primary tracking-wide">GELAG S.A. DE C.V.</h1>
       </div>
-      
-      <div className="p-4 bg-neutral-50">
-        <div className="flex items-center space-x-3">
-          <div className="bg-primary rounded-full h-10 w-10 flex items-center justify-center text-white">
-            <span className="font-medium">{user.name.charAt(0).toUpperCase()}</span>
+
+      {/* Usuario */}
+      <div className="px-4 py-4 border-b border-gray-50 bg-gradient-to-br from-blue-50 to-white">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary rounded-full h-9 w-9 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+            {initials}
           </div>
-          <div>
-            <p className="font-medium">{user.name}</p>
-            <p className="text-sm text-neutral-500">{user.role}</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm text-foreground truncate">{user.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
           </div>
         </div>
       </div>
-      
-      <nav className="flex-1 overflow-y-auto p-2">
-        <ul>
-          {navItems
-            .filter((item) => item.show)
-            .map((item) => (
-              <li key={item.href} className="mt-1">
-                <Link 
-                  href={item.href}
-                  className={cn(
-                    "flex items-center space-x-3 p-3 rounded-md hover:bg-neutral-100",
-                    location === item.href && "bg-blue-50 border-l-4 border-primary"
-                  )}
-                >
-                  <span className={cn("text-primary", location === item.href ? "text-primary" : "text-gray-500")}>
-                    {item.icon}
-                  </span>
-                  <span className={cn(location === item.href ? "font-medium" : "")}>
-                    {item.title}
-                  </span>
-                </Link>
-              </li>
-            ))}
-        </ul>
+
+      {/* Navegación */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2">
+        {navGroups.map((group, gi) => {
+          const visibleItems = group.items.filter(item => item.show);
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={gi} className="mb-4">
+              {group.label && (
+                <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                  {group.label}
+                </p>
+              )}
+              <ul className="space-y-0.5">
+                {visibleItems.map((item) => {
+                  const isActive = location === item.href || (item.href !== '/' && location.startsWith(item.href));
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
+                          isActive
+                            ? "bg-primary text-white font-medium shadow-sm"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        )}
+                      >
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
-      
-      <div className="p-4 border-t">
+
+      {/* Logout */}
+      <div className="p-3 border-t border-gray-100">
         <Button
           variant="ghost"
-          className="flex w-full items-center justify-start space-x-2 text-neutral-700 hover:text-primary"
-          onClick={handleLogout}
+          size="sm"
+          className="flex w-full items-center justify-start gap-3 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+          onClick={() => logoutMutation.mutate()}
           disabled={logoutMutation.isPending}
         >
-          <LogOut className="h-5 w-5" />
-          <span>Cerrar sesión</span>
+          <LogOut className="h-4 w-4 flex-shrink-0" />
+          <span>{logoutMutation.isPending ? "Cerrando sesión..." : "Cerrar sesión"}</span>
         </Button>
       </div>
     </aside>

@@ -9,8 +9,19 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 The GELAG system utilizes a modern web architecture. The frontend is built with **React 18 and TypeScript**, using **shadcn/ui** for components and **Tailwind CSS** for styling. **TanStack Query** manages server state, and **Wouter** handles client-side routing, emphasizing a modular component structure. The backend is a **Node.js Express.js server** written in **TypeScript**, providing a **RESTful API** with **session-based authentication** via **Passport.js**. **Drizzle ORM** ensures type-safe database operations with **PostgreSQL** (hosted on Neon). File operations, including uploads and Excel parsing, are managed by **Multer** and **XLSX**. Key design patterns include **role-based access control** (SuperAdmin, Admin, Production, Quality, etc.), a **dynamic form builder** supporting various field types and advanced tables, and robust **workflow management** with digital signatures. Data is stored in a well-structured relational schema, with session data potentially stored in PostgreSQL for production. PDF generation is primarily handled by **Puppeteer**, with **PDFKit** as a fallback.
 
+## Session & Cookie Configuration
+- `server/auth.ts`: Session cookie uses `secure: process.env.COOKIE_SECURE === "true"`. On VM with HTTP, ensure `COOKIE_SECURE` is not set (defaults to false). For HTTPS deployments, set `COOKIE_SECURE=true`.
+- Session store uses `connect-pg-simple` with the standard `pg` pool from `server/db.ts`.
+
+## VM Deployment Notes
+- VM: 192.168.0.48, PostgreSQL 17 local, user: gelag_owner, DB: gelag
+- App managed via PM2: `pm2 start ecosystem.config.cjs && pm2 save`
+- After git pull: `npm run build && pm2 restart gelag`
+- Do NOT run `npm run db:push` on VM (will truncate data)
+- Workflow command: `env -u REPL_ID NODE_ENV=development npx --yes tsx server/index.ts`
+
 ## External Dependencies
-- **@neondatabase/serverless**: PostgreSQL database connectivity.
+- **pg**: Standard PostgreSQL driver (replaces @neondatabase/serverless for local DB compatibility).
 - **drizzle-orm**: Type-safe database operations.
 - **express**: Web server framework.
 - **passport**: Authentication middleware.
@@ -24,3 +35,14 @@ The GELAG system utilizes a modern web architecture. The frontend is built with 
 - **typescript**: Type checking and compilation.
 - **tailwindcss**: Utility-first CSS framework.
 - **drizzle-kit**: Database schema management.
+
+## Recent Improvements (2026-04)
+- Fixed session persistence on VM: cookie `secure` flag now controlled by `COOKIE_SECURE` env var
+- Removed duplicate `/api/dashboard/stats` route; improved with real production forms counts and month-over-month trend
+- Added client-side pagination (25/page) to process forms list
+- Added status summary cards (Total, En Progreso, En Revisión, Completados) to forms list
+- Added session expiry detection with toast notification and auto-redirect
+- Redesigned dashboard with real stats, quick access buttons, and better activity feed
+- Redesigned sidebar with grouped navigation and role labels in Spanish
+- Removed excessive debug console.logs from production code
+- Deleted unused files: routes_backup.ts, routes_clean.ts, employees-page.tsx, products-page.tsx

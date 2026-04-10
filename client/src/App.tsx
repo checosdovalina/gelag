@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { UserRole } from "@shared/schema";
 import MainLayout from "@/components/layout/main-layout";
+import { useToast } from "@/hooks/use-toast";
 
 // Pages
 import NotFound from "@/pages/not-found";
@@ -28,16 +29,10 @@ import ProcessFormsList from "@/pages/process-forms-list";
 import DulcesFormPage from "@/pages/dulces-form-page";
 import FormViewerPage from "@/pages/form-viewer-page";
 
-// Componente wrapper para rutas protegidas
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <MainLayout>
-      {children}
-    </MainLayout>
-  );
+  return <MainLayout>{children}</MainLayout>;
 }
 
-// Versión modificada del ProtectedRoute que incluye el layout
 function ProtectedRouteWithLayout(props: {
   path: string;
   component: (params?: any) => React.JSX.Element;
@@ -54,6 +49,30 @@ function ProtectedRouteWithLayout(props: {
       )}
     />
   );
+}
+
+function SessionGuard({ children }: { children: React.ReactNode }) {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      queryClient.clear();
+      toast({
+        title: "Sesión expirada",
+        description: "Tu sesión ha expirado. Por favor inicia sesión nuevamente.",
+        variant: "destructive",
+        duration: 5000,
+      });
+      setTimeout(() => {
+        window.location.href = "/auth";
+      }, 1500);
+    };
+
+    window.addEventListener('session-expired', handleSessionExpired);
+    return () => window.removeEventListener('session-expired', handleSessionExpired);
+  }, [toast]);
+
+  return <>{children}</>;
 }
 
 function Router() {
@@ -103,18 +122,9 @@ function Router() {
         component={EmployeesPage} 
         allowedRoles={[UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]} 
       />
-      <ProtectedRouteWithLayout 
-        path="/production-form/:id" 
-        component={ProductionFormPage} 
-      />
-      <ProtectedRouteWithLayout 
-        path="/production-form" 
-        component={ProductionFormPage} 
-      />
-      <ProtectedRouteWithLayout 
-        path="/process-forms" 
-        component={ProcessFormsList} 
-      />
+      <ProtectedRouteWithLayout path="/production-form/:id" component={ProductionFormPage} />
+      <ProtectedRouteWithLayout path="/production-form" component={ProductionFormPage} />
+      <ProtectedRouteWithLayout path="/process-forms" component={ProcessFormsList} />
       <ProtectedRouteWithLayout 
         path="/form-viewer/new/19" 
         component={() => <DulcesFormPage />} 
@@ -134,30 +144,22 @@ function Router() {
 }
 
 function App() {
-  // Agregar metaetiquetas para optimizar la visualización en dispositivos móviles
   useEffect(() => {
-    // Crear o actualizar la metaetiqueta viewport
     let viewportMeta = document.querySelector('meta[name="viewport"]');
-    
     if (!viewportMeta) {
       viewportMeta = document.createElement('meta');
       viewportMeta.setAttribute('name', 'viewport');
       document.head.appendChild(viewportMeta);
     }
-    
-    // Configurar para iPhone y otros dispositivos móviles
     viewportMeta.setAttribute('content', 
       'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
-    
-    // Crear o actualizar metaetiqueta para el color del tema
+
     let themeColorMeta = document.querySelector('meta[name="theme-color"]');
-    
     if (!themeColorMeta) {
       themeColorMeta = document.createElement('meta');
       themeColorMeta.setAttribute('name', 'theme-color');
       document.head.appendChild(themeColorMeta);
     }
-    
     themeColorMeta.setAttribute('content', '#2563EB');
   }, []);
 
@@ -166,7 +168,9 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <SessionGuard>
+            <Router />
+          </SessionGuard>
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

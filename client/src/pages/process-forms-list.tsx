@@ -31,8 +31,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, Plus, MoreHorizontal, FileEdit, Trash2, Search, X } from "lucide-react";
+import { Loader2, Plus, MoreHorizontal, FileEdit, Trash2, Search, X, ChevronLeft, ChevronRight, ClipboardList } from "lucide-react";
 import { ProductionFormStatus } from "@shared/schema";
+
+const PAGE_SIZE = 25;
 
 interface ProcessForm {
   id: number;
@@ -54,7 +56,8 @@ export default function ProcessFormsList() {
   const [folioFilter, setFolioFilter] = useState("");
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
-  
+  const [currentPage, setCurrentPage] = useState(1);
+
   const userRole = user?.role.toLowerCase();
 
   const canCreateForms = user && userRole && ["superadmin", "admin", "produccion", "gerente_produccion", "gerente_calidad"].includes(userRole);
@@ -97,9 +100,24 @@ export default function ProcessFormsList() {
     setFolioFilter("");
     setDateFromFilter("");
     setDateToFilter("");
+    setCurrentPage(1);
   };
 
   const hasActiveFilters = folioFilter || dateFromFilter || dateToFilter;
+
+  const totalPages = Math.ceil(filteredForms.length / PAGE_SIZE);
+  const paginatedForms = filteredForms.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  // Estadísticas rápidas
+  const statusCounts = useMemo(() => {
+    if (!forms) return { draft: 0, inProgress: 0, pendingReview: 0, completed: 0 };
+    return {
+      draft: forms.filter(f => f.status === ProductionFormStatus.DRAFT).length,
+      inProgress: forms.filter(f => f.status === ProductionFormStatus.IN_PROGRESS).length,
+      pendingReview: forms.filter(f => f.status === ProductionFormStatus.PENDING_REVIEW).length,
+      completed: forms.filter(f => f.status === ProductionFormStatus.COMPLETED).length,
+    };
+  }, [forms]);
 
   const handleCreate = () => {
     navigate("/production-form");
@@ -155,13 +173,33 @@ export default function ProcessFormsList() {
           <TabsTrigger value="dulces">Ficha Técnica Dulces</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="production">
+        <TabsContent value="production" className="space-y-4">
+          {/* Tarjetas de estadísticas */}
+          {!isLoading && forms && forms.length > 0 && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { label: "Total", value: forms.length, color: "text-blue-600 bg-blue-50" },
+                { label: "En Progreso", value: statusCounts.inProgress, color: "text-amber-600 bg-amber-50" },
+                { label: "En Revisión", value: statusCounts.pendingReview, color: "text-violet-600 bg-violet-50" },
+                { label: "Completados", value: statusCounts.completed, color: "text-emerald-600 bg-emerald-50" },
+              ].map(stat => (
+                <div key={stat.label} className={`rounded-lg px-4 py-3 flex items-center gap-3 ${stat.color}`}>
+                  <ClipboardList className="h-5 w-5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xl font-bold">{stat.value.toLocaleString('es-MX')}</p>
+                    <p className="text-xs font-medium opacity-80">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div>
                 <CardTitle>Formularios de Producción</CardTitle>
                 <CardDescription>
-                  Gestione formularios de producción con diferentes secciones para cada rol de usuario.
+                  Gestión de formularios de proceso con seguimiento por secciones y roles.
                 </CardDescription>
               </div>
               {canCreateForms && (
@@ -172,7 +210,8 @@ export default function ProcessFormsList() {
               )}
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap items-end gap-3 mb-4 p-3 bg-muted/50 rounded-lg">
+              {/* Filtros */}
+              <div className="flex flex-wrap items-end gap-3 mb-4 p-3 bg-muted/40 rounded-lg border border-muted">
                 <div className="flex-1 min-w-[180px]">
                   <Label htmlFor="prod-folio-filter" className="text-xs text-muted-foreground mb-1 block">Buscar por Folio</Label>
                   <div className="relative">
@@ -181,7 +220,7 @@ export default function ProcessFormsList() {
                       id="prod-folio-filter"
                       placeholder="Ej: A-3010"
                       value={folioFilter}
-                      onChange={(e) => setFolioFilter(e.target.value)}
+                      onChange={(e) => { setFolioFilter(e.target.value); setCurrentPage(1); }}
                       className="pl-9 h-9"
                     />
                   </div>
@@ -192,7 +231,7 @@ export default function ProcessFormsList() {
                     id="prod-date-from"
                     type="date"
                     value={dateFromFilter}
-                    onChange={(e) => setDateFromFilter(e.target.value)}
+                    onChange={(e) => { setDateFromFilter(e.target.value); setCurrentPage(1); }}
                     className="h-9"
                   />
                 </div>
@@ -202,104 +241,146 @@ export default function ProcessFormsList() {
                     id="prod-date-to"
                     type="date"
                     value={dateToFilter}
-                    onChange={(e) => setDateToFilter(e.target.value)}
+                    onChange={(e) => { setDateToFilter(e.target.value); setCurrentPage(1); }}
                     className="h-9"
                   />
                 </div>
                 {hasActiveFilters && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9">
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 text-muted-foreground hover:text-foreground">
                     <X className="mr-1 h-4 w-4" />
-                    Limpiar
+                    Limpiar filtros
                   </Button>
                 )}
               </div>
 
-          {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : !filteredForms || filteredForms.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="mb-4 text-muted-foreground">
-                {hasActiveFilters 
-                  ? "No se encontraron formularios con los filtros seleccionados." 
-                  : "No hay formularios de producción disponibles."}
-              </p>
-              {hasActiveFilters ? (
-                <Button variant="outline" onClick={clearFilters}>
-                  <X className="mr-2 h-4 w-4" />
-                  Limpiar filtros
-                </Button>
-              ) : canCreateForms ? (
-                <Button variant="outline" onClick={handleCreate}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Crear primer formulario
-                </Button>
-              ) : null}
-            </div>
-          ) : (
-            <>
-              {hasActiveFilters && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  Mostrando {filteredForms.length} de {forms?.length || 0} formularios
-                </p>
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Cargando formularios...</p>
+                </div>
+              ) : filteredForms.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <ClipboardList className="h-12 w-12 text-muted-foreground/30 mb-3" />
+                  <p className="font-medium text-muted-foreground mb-1">
+                    {hasActiveFilters ? "Sin resultados" : "No hay formularios"}
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {hasActiveFilters
+                      ? "No se encontraron formularios con los filtros aplicados."
+                      : "Aún no se han creado formularios de producción."}
+                  </p>
+                  {hasActiveFilters ? (
+                    <Button variant="outline" size="sm" onClick={clearFilters}>
+                      <X className="mr-2 h-4 w-4" />
+                      Limpiar filtros
+                    </Button>
+                  ) : canCreateForms ? (
+                    <Button variant="outline" size="sm" onClick={handleCreate}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Crear primer formulario
+                    </Button>
+                  ) : null}
+                </div>
+              ) : (
+                <>
+                  {/* Contador */}
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm text-muted-foreground">
+                      {hasActiveFilters
+                        ? `${filteredForms.length} resultado${filteredForms.length !== 1 ? 's' : ''} de ${forms?.length || 0} total`
+                        : `${forms?.length || 0} formularios en total`}
+                    </p>
+                    {totalPages > 1 && (
+                      <p className="text-sm text-muted-foreground">
+                        Página {currentPage} de {totalPages}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg border overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/30 hover:bg-muted/30">
+                          <TableHead className="font-semibold">Folio</TableHead>
+                          <TableHead className="font-semibold">Proceso</TableHead>
+                          <TableHead className="font-semibold text-right">Litros</TableHead>
+                          <TableHead className="font-semibold">Fecha</TableHead>
+                          <TableHead className="font-semibold">Responsable</TableHead>
+                          <TableHead className="font-semibold">Estado</TableHead>
+                          <TableHead className="text-right font-semibold">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginatedForms.map((form) => (
+                          <TableRow key={form.id} className="hover:bg-muted/20 cursor-pointer" onClick={() => handleEdit(form.id)}>
+                            <TableCell className="font-semibold text-primary">{form.folio}</TableCell>
+                            <TableCell className="max-w-[180px] truncate" title={form.productId}>{form.productId}</TableCell>
+                            <TableCell className="text-right tabular-nums">{form.liters?.toLocaleString('es-MX')}</TableCell>
+                            <TableCell className="text-sm">{formatDate(form.date)}</TableCell>
+                            <TableCell className="max-w-[140px] truncate" title={form.responsible}>{form.responsible}</TableCell>
+                            <TableCell>{getStatusBadge(form.status)}</TableCell>
+                            <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  {canEditForms && (
+                                    <DropdownMenuItem onClick={() => handleEdit(form.id)}>
+                                      <FileEdit className="mr-2 h-4 w-4" />
+                                      Editar
+                                    </DropdownMenuItem>
+                                  )}
+                                  {canDeleteForms && (
+                                    <DropdownMenuItem
+                                      onClick={() => handleDelete(form.id)}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Eliminar
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Paginación */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <p className="text-sm text-muted-foreground">
+                        Mostrando {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredForms.length)} de {filteredForms.length}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                          Anterior
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          disabled={currentPage === totalPages}
+                        >
+                          Siguiente
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Folio</TableHead>
-                      <TableHead>Proceso</TableHead>
-                      <TableHead>Litros</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Responsable</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredForms.map((form) => (
-                      <TableRow key={form.id}>
-                        <TableCell className="font-medium">{form.folio}</TableCell>
-                        <TableCell>{form.productId}</TableCell>
-                        <TableCell>{form.liters}</TableCell>
-                        <TableCell>{formatDate(form.date)}</TableCell>
-                        <TableCell>{form.responsible}</TableCell>
-                        <TableCell>{getStatusBadge(form.status)}</TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Acciones</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {canEditForms && (
-                                <DropdownMenuItem onClick={() => handleEdit(form.id)}>
-                                  <FileEdit className="mr-2 h-4 w-4" />
-                                  Editar
-                                </DropdownMenuItem>
-                              )}
-                              {canDeleteForms && (
-                                <DropdownMenuItem 
-                                  onClick={() => handleDelete(form.id)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Eliminar
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -44,11 +44,6 @@ export function useProductionForms() {
   // Actualizar un formulario existente
   const updateFormMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      console.log("=== MUTATION ENVIANDO AL SERVIDOR ===");
-      console.log("data.startTime en mutation:", data.startTime);
-      console.log("data.endTime en mutation:", data.endTime);
-      console.log("data completo en mutation:", JSON.stringify(data, null, 2));
-      
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, data);
       return await res.json();
     },
@@ -192,32 +187,6 @@ export function useProductionForm(id?: number) {
       if (data.foreignMaterial !== undefined) finalData.foreignMaterial = data.foreignMaterial;
       if (data.statusCheck !== undefined) finalData.statusCheck = data.statusCheck;
       if (data.qualityNotes !== undefined) finalData.qualityNotes = data.qualityNotes;
-      
-      console.log("=== DATOS FINALES ENVIADOS AL SERVIDOR ===");
-      console.log("data.startTime:", data.startTime);
-      console.log("data.endTime:", data.endTime);
-      console.log("data.ingredientTimes:", data.ingredientTimes);
-      console.log("finalData.temperature:", finalData.temperature);
-      console.log("finalData.pressure:", finalData.pressure);
-      console.log("finalData.hour_tracking:", finalData.hour_tracking);
-      console.log("finalData.startTime:", finalData.startTime);
-      console.log("finalData.endTime:", finalData.endTime);
-      console.log("=== VERIFICACIÓN DE TIPO DE DATOS ===");
-      console.log("typeof data.startTime:", typeof data.startTime);
-      console.log("typeof data.endTime:", typeof data.endTime);
-      console.log("data.startTime === null:", data.startTime === null);
-      console.log("data.endTime === null:", data.endTime === null);
-      console.log("finalData.ingredientTimes:", finalData.ingredientTimes);
-      console.log("finalData.brix:", finalData.brix);
-      console.log("finalData.qualityTemp:", finalData.qualityTemp);
-      console.log("finalData.texture:", finalData.texture);
-      console.log("finalData.color:", finalData.color);
-      console.log("finalData.viscosity:", finalData.viscosity);
-      console.log("finalData.smell:", finalData.smell);
-      console.log("finalData.taste:", finalData.taste);
-      console.log("finalData.foreignMaterial:", finalData.foreignMaterial);
-      console.log("finalData.statusCheck:", finalData.statusCheck);
-      console.log("Objeto completo finalData:", JSON.stringify(finalData, null, 2));
       
       const res = await apiRequest('PUT', `/api/production-forms/${id}`, finalData);
       return await res.json();

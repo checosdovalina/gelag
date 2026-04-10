@@ -3,9 +3,8 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
-    // Si el texto parece ser HTML, extraer mensaje más legible
     if (text.includes('<!DOCTYPE') || text.includes('<html>')) {
-      throw new Error(`Error del servidor (${res.status}): Respuesta HTML recibida - posible error de ruta`);
+      throw new Error(`Error del servidor (${res.status}): Respuesta HTML recibida`);
     }
     throw new Error(`${res.status}: ${text}`);
   }
@@ -24,6 +23,11 @@ export async function apiRequest(
     credentials: "include",
   });
 
+  // Detectar sesión expirada en mutaciones
+  if (res.status === 401) {
+    window.dispatchEvent(new CustomEvent('session-expired'));
+  }
+
   await throwIfResNotOk(res);
   return res;
 }
@@ -38,8 +42,14 @@ export const getQueryFn: <T>(options: {
       credentials: "include",
     });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+    if (res.status === 401) {
+      if (unauthorizedBehavior === "returnNull") {
+        return null;
+      }
+      // Solo emitir el evento si no es la ruta de verificación de usuario
+      if (queryKey[0] !== '/api/user') {
+        window.dispatchEvent(new CustomEvent('session-expired'));
+      }
     }
 
     await throwIfResNotOk(res);
@@ -51,8 +61,8 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: true, // Activamos la recarga al volver a enfocar la ventana
-      staleTime: 60000, // 1 minuto (en lugar de Infinity) para permitir recargas más frecuentes
+      refetchOnWindowFocus: true,
+      staleTime: 60000,
       retry: false,
     },
     mutations: {

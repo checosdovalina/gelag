@@ -135,14 +135,6 @@ function checkRoleTimeAccess(userRole: UserRole): TimeAccessResult {
  */
 async function generateAutoFolios(formData: any, templateStructure: any, templateId: number): Promise<any> {
   const updatedData = { ...formData };
-  
-  console.log(`[FOLIO-GEN] Verificando folios para template ${templateId}`);
-  console.log(`[FOLIO-GEN] Datos recibidos:`, formData);
-  
-  // No generar folios automáticamente - permitir entrada manual
-  // Los usuarios deben proporcionar sus propios folios
-  console.log(`[FOLIO-GEN] Folio manual requerido - no se generará automáticamente`);
-  
   return updatedData;
 }
 
@@ -371,15 +363,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users", authorize([UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.PRODUCTION_MANAGER, UserRole.QUALITY_MANAGER]), async (req, res, next) => {
     try {
-      console.log("[UserCreation] Datos recibidos:", JSON.stringify(req.body, null, 2));
-      
       const userData = insertUserSchema.parse(req.body);
-      console.log("[UserCreation] Datos después de validación:", JSON.stringify(userData, null, 2));
       
       // Check if username already exists
       const existingUser = await storage.getUserByUsername(userData.username);
       if (existingUser) {
-        console.log("[UserCreation] Usuario ya existe:", userData.username);
         return res.status(400).json({ message: "El nombre de usuario ya existe" });
       }
       
@@ -391,7 +379,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...userData,
         password: hashedPassword
       });
-      console.log("[UserCreation] Usuario creado exitosamente:", user.id);
       
       // Log activity
       await storage.createActivityLog({
@@ -1598,25 +1585,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard stats route
-  app.get("/api/dashboard/stats", async (req, res, next) => {
-    try {
-      const users = await storage.getAllUsers();
-      const templates = await storage.getAllFormTemplates();
-      const entries = (await storage.getFormEntriesByUser(0)).length; // This is just a workaround for demo
-      
-      res.json({
-        users: users.length,
-        templates: templates.length,
-        entries: entries,
-        // Mocking exports count as it's not tracked in our storage
-        exports: 0
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-  
   // Ruta de prueba para crear un formulario con folio (solo para desarrollo)
   app.get("/api/test/create-form-entry", async (req, res, next) => {
     try {
@@ -2728,56 +2696,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Endpoint simplificado para estadísticas del dashboard
+  // Estadísticas del dashboard con datos reales
   app.get("/api/dashboard/stats", async (req, res) => {
     try {
-      console.log("[DASHBOARD] === OBTENIENDO ESTADÍSTICAS ===");
-      
-      // Obtener estadísticas básicas de forma segura
-      let stats = {
-        users: 0,
-        templates: 0,
-        entries: 0,
+      const now = new Date();
+      const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+      const [users, templates, entries, productionFormsResult, lastMonthFormsResult] = await Promise.all([
+        storage.getAllUsers(),
+        storage.getAllFormTemplates(),
+        storage.getAllFormEntries(),
+        db.execute(sql`
+          SELECT COUNT(*) as count FROM production_forms
+          WHERE created_at >= ${startOfThisMonth.toISOString()}
+        `),
+        db.execute(sql`
+          SELECT COUNT(*) as count FROM production_forms
+          WHERE created_at >= ${startOfLastMonth.toISOString()}
+            AND created_at < ${startOfThisMonth.toISOString()}
+        `)
+      ]);
+
+      const thisMonthForms = parseInt(productionFormsResult.rows[0]?.count as string || '0');
+      const lastMonthForms = parseInt(lastMonthFormsResult.rows[0]?.count as string || '0');
+
+      let formsTrend = 0;
+      if (lastMonthForms > 0) {
+        formsTrend = Math.round(((thisMonthForms - lastMonthForms) / lastMonthForms) * 100);
+      }
+
+      res.json({
+        users: users.length,
+        templates: templates.length,
+        entries: entries.length,
+        productionForms: thisMonthForms,
+        formsTrend,
         exports: 0
-      };
-      
-      // Contar usuarios
-      try {
-        const users = await storage.getAllUsers();
-        stats.users = users.length;
-        console.log("[DASHBOARD] Usuarios contados:", stats.users);
-      } catch (userError) {
-        console.log("[DASHBOARD] Error contando usuarios:", userError);
-      }
-      
-      // Contar plantillas
-      try {
-        const templates = await storage.getAllFormTemplates();
-        stats.templates = templates.length;
-        console.log("[DASHBOARD] Plantillas contadas:", stats.templates);
-      } catch (templateError) {
-        console.log("[DASHBOARD] Error contando plantillas:", templateError);
-      }
-      
-      // Contar entradas
-      try {
-        const entries = await storage.getAllFormEntries();
-        stats.entries = entries.length;
-        console.log("[DASHBOARD] Entradas contadas:", stats.entries);
-      } catch (entryError) {
-        console.log("[DASHBOARD] Error contando entradas:", entryError);
-      }
-      
-      console.log("[DASHBOARD] Estadísticas finales:", stats);
-      res.json(stats);
-      
-    } catch (error) {
-      console.error("[DASHBOARD] Error crítico:", error);
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-      res.status(500).json({ 
-        message: "Error obteniendo estadísticas",
-        details: errorMessage
       });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      res.status(500).json({ message: "Error obteniendo estadísticas", details: errorMessage });
     }
   });
 
