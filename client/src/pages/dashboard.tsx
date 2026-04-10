@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import MainLayout from "@/layouts/main-layout";
@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { 
   Users, FileText, ClipboardCheck, Activity,
   TrendingUp, TrendingDown, Minus, ArrowRight,
-  Plus, BarChart3, Clock, CheckCircle2
+  Clock, CheckCircle2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -188,35 +188,6 @@ export default function Dashboard() {
             isLoading={isLoadingStats}
           />
         ))}
-      </div>
-
-      {/* Accesos rápidos */}
-      <div className="mb-8">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Accesos rápidos</h3>
-        <div className="flex flex-wrap gap-3">
-          {['produccion', 'gerente_produccion', 'admin', 'superadmin'].includes(userRole) && (
-            <Button onClick={() => navigate('/production-form')} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nuevo Formulario de Proceso
-            </Button>
-          )}
-          {['produccion', 'calidad', 'gerente_produccion', 'gerente_calidad', 'admin', 'superadmin'].includes(userRole) && (
-            <Button variant="outline" onClick={() => navigate('/form-capture')} className="gap-2">
-              <ClipboardCheck className="h-4 w-4" />
-              Capturar Formulario
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => navigate('/process-forms')} className="gap-2">
-            <FileText className="h-4 w-4" />
-            Ver Formularios de Proceso
-          </Button>
-          {['admin', 'superadmin', 'viewer', 'gerente_produccion', 'gerente_calidad'].includes(userRole) && (
-            <Button variant="outline" onClick={() => navigate('/reports')} className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Reportes
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* Actividad reciente y plantillas */}
