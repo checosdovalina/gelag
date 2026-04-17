@@ -914,6 +914,9 @@ async function generatePDFContent(
         } else if (field.type === 'select' || field.type === 'radio') {
           if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
             fieldValue = fieldValue.label;
+          } else if (typeof fieldValue === 'string' && field.options && Array.isArray(field.options)) {
+            const matchedOption = field.options.find((opt: any) => opt.value === fieldValue);
+            if (matchedOption) fieldValue = matchedOption.label;
           }
         } else if (field.type === 'checkbox') {
           // Los campos de buenas prácticas pueden ser de tipo checkbox pero tienen valores diferentes
@@ -1036,6 +1039,9 @@ async function generatePDFContent(
           } else if (field.type === 'select' || field.type === 'radio') {
             if (fieldValue && typeof fieldValue === 'object' && 'label' in fieldValue) {
               fieldValue = fieldValue.label;
+            } else if (typeof fieldValue === 'string' && field.options && Array.isArray(field.options)) {
+              const matchedOption = field.options.find((opt: any) => opt.value === fieldValue);
+              if (matchedOption) fieldValue = matchedOption.label;
             }
           } else if (field.type === 'checkbox') {
             // Los campos de buenas prácticas pueden ser de tipo checkbox pero tienen valores diferentes

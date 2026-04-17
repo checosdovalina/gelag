@@ -8,5 +8,14 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+export const pool = new pg.Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+});
+
+pool.on('error', (err) => {
+  console.error('Unexpected pg pool error (connection dropped by server):', err.message);
+});
+
 export const db = drizzle({ client: pool, schema });
