@@ -889,7 +889,7 @@ async function generatePDFContent(
       normalFieldsInSection.slice(0, middleIndex).forEach((field, fieldIndex) => {
         
         const fieldId = field.id;
-        const fieldLabel = field.displayName || field.label;
+        const fieldLabel = field.label || field.displayName;
         let fieldValue = entry.data[fieldId];
         
         // Identificar campos específicos de buenas prácticas por su ID
@@ -1011,7 +1011,7 @@ async function generatePDFContent(
         normalFieldsInSection.slice(middleIndex).forEach((field, fieldIndex) => {
           
           const fieldId = field.id;
-          const fieldLabel = field.displayName || field.label;
+          const fieldLabel = field.label || field.displayName;
           let fieldValue = entry.data[fieldId];
           
           // Identificar campos específicos de buenas prácticas por su ID
@@ -1201,7 +1201,7 @@ async function generatePDFContent(
         }
         
         // Título de la tabla (etiqueta del campo), ajustado 10px a la izquierda
-        const tableLabel = field.displayName || field.label;
+        const tableLabel = field.label || field.displayName;
         // Calculamos el centro de la página menos 10px
         const centerTextX = (pageWidth / 2) - 10;
         doc.fontSize(12).font('Helvetica-Bold')
