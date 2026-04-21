@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, FileText, PenLine, BarChart3,
   Settings, LogOut, Menu, X, PlusSquare, ClipboardCheck,
-  CheckSquare, Package, UserCircle, Upload
+  CheckSquare, Package, UserCircle, Upload, Megaphone
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import gelagLogo from "@/assets/gelag-logo.png";
@@ -60,9 +60,10 @@ export default function MobileNav({ className }: { className?: string }) {
         { title: "Gestión de Usuarios",    href: "/users",       icon: Users,       show: isAdmin || isSuperAdmin || isProdMgr || isQualMgr },
         { title: "Productos",              href: "/products",    icon: Package,     show: isAdmin || isSuperAdmin || isProdMgr },
         { title: "Empleados",              href: "/employees",   icon: UserCircle,  show: isAdmin || isSuperAdmin || isProdMgr || isQualMgr },
-        { title: "Crear Formularios",      href: "/form-editor", icon: PlusSquare,  show: isSuperAdmin },
-        { title: "Importar Formularios",   href: "/form-import", icon: Upload,      show: isSuperAdmin },
-        { title: "Reportes",               href: "/reports",     icon: BarChart3,   show: isSuperAdmin || isViewer || isAdmin || isProdMgr || isQualMgr },
+        { title: "Crear Formularios",      href: "/form-editor",   icon: PlusSquare,  show: isSuperAdmin },
+        { title: "Importar Formularios",   href: "/form-import",   icon: Upload,      show: isSuperAdmin },
+        { title: "Avisos del Sistema",     href: "/announcements", icon: Megaphone,   show: isSuperAdmin },
+        { title: "Reportes",               href: "/reports",       icon: BarChart3,   show: isSuperAdmin || isViewer || isAdmin || isProdMgr || isQualMgr },
         { title: "Configuración",          href: "/settings",    icon: Settings,    show: isAdmin || isSuperAdmin },
       ],
     },

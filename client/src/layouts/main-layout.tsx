@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
 import MobileNav from "@/components/mobile-nav";
+import AnnouncementDisplay from "@/components/announcement-display";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
@@ -40,6 +41,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
       <div className="flex flex-col flex-1 min-h-0 min-w-0">
         {/* Barra de navegación móvil */}
         <MobileNav />
+
+        {/* Avisos del sistema */}
+        <AnnouncementDisplay />
 
         {/* Contenido de la página */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-neutral-50">

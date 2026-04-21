@@ -9,13 +9,14 @@ import {
   employees, Employee, InsertEmployee,
   productRecipes, ProductRecipe, InsertProductRecipe,
   recipeIngredients, RecipeIngredient, InsertRecipeIngredient,
+  systemAnnouncements, SystemAnnouncement, InsertAnnouncement,
   UserRole 
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, lte, gte } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 const PostgresSessionStore = connectPgSimple(session);
@@ -97,6 +98,14 @@ export interface IStorage {
   // Recetas methods
   getProductRecipe(id: number): Promise<ProductRecipe | undefined>;
   getProductRecipesByProductId(productId: number): Promise<ProductRecipe[]>;
+
+  // Announcements methods
+  getActiveAnnouncements(userRole?: string): Promise<SystemAnnouncement[]>;
+  getAllAnnouncements(): Promise<SystemAnnouncement[]>;
+  getAnnouncement(id: number): Promise<SystemAnnouncement | undefined>;
+  createAnnouncement(data: InsertAnnouncement, createdBy: number): Promise<SystemAnnouncement>;
+  updateAnnouncement(id: number, data: Partial<InsertAnnouncement>): Promise<SystemAnnouncement | undefined>;
+  deleteAnnouncement(id: number): Promise<void>;
   createProductRecipe(recipe: InsertProductRecipe): Promise<ProductRecipe>;
   updateProductRecipe(id: number, data: Partial<InsertProductRecipe>): Promise<ProductRecipe | undefined>;
   deleteProductRecipe(id: number): Promise<void>;
@@ -782,6 +791,59 @@ export class DatabaseStorage implements IStorage {
       .from(productionForms)
       .where(eq(productionForms.createdBy, userId))
       .orderBy(desc(productionForms.createdAt));
+  }
+
+  // Announcements methods
+  async getActiveAnnouncements(userRole?: string): Promise<SystemAnnouncement[]> {
+    const now = new Date();
+    const rows = await db
+      .select()
+      .from(systemAnnouncements)
+      .where(
+        and(
+          eq(systemAnnouncements.isActive, true),
+          lte(systemAnnouncements.startDate, now),
+          gte(systemAnnouncements.endDate, now)
+        )
+      )
+      .orderBy(desc(systemAnnouncements.createdAt));
+    if (!userRole) return rows;
+    return rows.filter(a =>
+      !a.targetRoles || a.targetRoles.length === 0 || a.targetRoles.includes(userRole)
+    );
+  }
+
+  async getAllAnnouncements(): Promise<SystemAnnouncement[]> {
+    return await db
+      .select()
+      .from(systemAnnouncements)
+      .orderBy(desc(systemAnnouncements.createdAt));
+  }
+
+  async getAnnouncement(id: number): Promise<SystemAnnouncement | undefined> {
+    const [row] = await db.select().from(systemAnnouncements).where(eq(systemAnnouncements.id, id));
+    return row;
+  }
+
+  async createAnnouncement(data: InsertAnnouncement, createdBy: number): Promise<SystemAnnouncement> {
+    const [row] = await db
+      .insert(systemAnnouncements)
+      .values({ ...data, createdBy })
+      .returning();
+    return row;
+  }
+
+  async updateAnnouncement(id: number, data: Partial<InsertAnnouncement>): Promise<SystemAnnouncement | undefined> {
+    const [row] = await db
+      .update(systemAnnouncements)
+      .set(data)
+      .where(eq(systemAnnouncements.id, id))
+      .returning();
+    return row;
+  }
+
+  async deleteAnnouncement(id: number): Promise<void> {
+    await db.delete(systemAnnouncements).where(eq(systemAnnouncements.id, id));
   }
 }
 

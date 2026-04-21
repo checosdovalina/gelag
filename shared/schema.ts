@@ -483,3 +483,28 @@ export const insertProductionFormSchema = createInsertSchema(productionForms).om
 
 export type ProductionForm = typeof productionForms.$inferSelect;
 export type InsertProductionForm = z.infer<typeof insertProductionFormSchema>;
+
+// System Announcements schema
+export const systemAnnouncements = pgTable("system_announcements", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: text("type").notNull().default("banner"), // banner | modal | toast
+  variant: text("variant").notNull().default("info"), // info | warning | success | error
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  targetRoles: text("target_roles").array(), // null = all roles
+  displayFrequency: text("display_frequency").notNull().default("daily"), // always | once_per_session | hourly | daily
+  isActive: boolean("is_active").default(true),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAnnouncementSchema = createInsertSchema(systemAnnouncements).omit({
+  id: true,
+  createdAt: true,
+  createdBy: true,
+});
+
+export type SystemAnnouncement = typeof systemAnnouncements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;

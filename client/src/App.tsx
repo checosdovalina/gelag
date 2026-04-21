@@ -27,6 +27,7 @@ import ProductionFormPage from "@/pages/production-form-page";
 import ProcessFormsList from "@/pages/process-forms-list";
 import DulcesFormPage from "@/pages/dulces-form-page";
 import FormViewerPage from "@/pages/form-viewer-page";
+import AnnouncementsPage from "@/pages/announcements-page";
 
 function ProtectedRouteWithLayout(props: {
   path: string;
@@ -127,6 +128,11 @@ function Router() {
       <ProtectedRouteWithLayout 
         path="/form-viewer/:entryId" 
         component={(props: any) => <DulcesFormPage params={props.params} />} 
+      />
+      <ProtectedRouteWithLayout
+        path="/announcements"
+        component={AnnouncementsPage}
+        allowedRoles={[UserRole.SUPERADMIN]}
       />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />

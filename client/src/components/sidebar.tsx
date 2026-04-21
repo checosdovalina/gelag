@@ -15,7 +15,8 @@ import {
   ClipboardCheck,
   Package,
   UserCircle,
-  Upload
+  Upload,
+  Megaphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import gelagLogo from '@/assets/gelag-logo.png';
@@ -70,6 +71,7 @@ export default function Sidebar({ className }: { className?: string }) {
         { title: "Empleados", href: "/employees", icon: UserCircle, show: isAdmin || isSuperAdmin || isProductionManager || isQualityManager },
         { title: "Crear Formularios", href: "/form-editor", icon: PlusSquare, show: isSuperAdmin },
         { title: "Importar Formularios", href: "/form-import", icon: Upload, show: isSuperAdmin },
+        { title: "Avisos del Sistema", href: "/announcements", icon: Megaphone, show: isSuperAdmin },
         { title: "Reportes", href: "/reports", icon: BarChart3, show: isSuperAdmin || isViewer || isAdmin || isProductionManager || isQualityManager },
         { title: "Configuración", href: "/settings", icon: Settings, show: isAdmin || isSuperAdmin },
       ],

@@ -46,3 +46,4 @@ The GELAG system utilizes a modern web architecture. The frontend is built with 
 - Redesigned sidebar with grouped navigation and role labels in Spanish
 - Removed excessive debug console.logs from production code
 - Deleted unused files: routes_backup.ts, routes_clean.ts, employees-page.tsx, products-page.tsx
+- Added Announcements system: SuperAdmin can create/manage system-wide announcements (banner/modal/toast) with role targeting, date ranges, and display frequency. AnnouncementDisplay renders in MainLayout. Route: `/announcements`. Table: `system_announcements`.

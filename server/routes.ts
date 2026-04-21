@@ -15,7 +15,8 @@ import {
   ProductionFormStatus,
   insertProductionFormSchema,
   productionForms,
-  users
+  users,
+  insertAnnouncementSchema
 } from "@shared/schema";
 import { 
   getProductionForms,
@@ -2818,6 +2819,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error en exportación de formulario de producción:", error);
       next(error);
+    }
+  });
+
+  // ── Announcements ──────────────────────────────────────────────────────────
+  // GET active announcements (all authenticated users)
+  app.get("/api/announcements", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    try {
+      const userRole = (req.user as any)?.role;
+      const announcements = await storage.getActiveAnnouncements(userRole);
+      res.json(announcements);
+    } catch (error) {
+      console.error("Error al obtener avisos:", error);
+      res.status(500).json({ message: "Error al obtener avisos" });
+    }
+  });
+
+  // GET all announcements (SuperAdmin only)
+  app.get("/api/admin/announcements", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    if ((req.user as any)?.role !== UserRole.SUPERADMIN) return res.status(403).json({ message: "No autorizado" });
+    try {
+      const announcements = await storage.getAllAnnouncements();
+      res.json(announcements);
+    } catch (error) {
+      console.error("Error al obtener avisos:", error);
+      res.status(500).json({ message: "Error al obtener avisos" });
+    }
+  });
+
+  // POST create announcement (SuperAdmin only)
+  app.post("/api/admin/announcements", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    if ((req.user as any)?.role !== UserRole.SUPERADMIN) return res.status(403).json({ message: "No autorizado" });
+    try {
+      const parsed = insertAnnouncementSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ message: "Datos inválidos", errors: parsed.error.errors });
+      const announcement = await storage.createAnnouncement(parsed.data, (req.user as any).id);
+      res.status(201).json(announcement);
+    } catch (error) {
+      console.error("Error al crear aviso:", error);
+      res.status(500).json({ message: "Error al crear aviso" });
+    }
+  });
+
+  // PATCH update announcement (SuperAdmin only)
+  app.patch("/api/admin/announcements/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    if ((req.user as any)?.role !== UserRole.SUPERADMIN) return res.status(403).json({ message: "No autorizado" });
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
+      const updated = await storage.updateAnnouncement(id, req.body);
+      if (!updated) return res.status(404).json({ message: "Aviso no encontrado" });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error al actualizar aviso:", error);
+      res.status(500).json({ message: "Error al actualizar aviso" });
+    }
+  });
+
+  // DELETE announcement (SuperAdmin only)
+  app.delete("/api/admin/announcements/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    if ((req.user as any)?.role !== UserRole.SUPERADMIN) return res.status(403).json({ message: "No autorizado" });
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
+      await storage.deleteAnnouncement(id);
+      res.json({ message: "Aviso eliminado" });
+    } catch (error) {
+      console.error("Error al eliminar aviso:", error);
+      res.status(500).json({ message: "Error al eliminar aviso" });
     }
   });
 
