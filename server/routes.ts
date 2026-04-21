@@ -2871,7 +2871,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
-      const updated = await storage.updateAnnouncement(id, req.body);
+      const body = { ...req.body };
+      if (body.startDate) body.startDate = new Date(body.startDate);
+      if (body.endDate) body.endDate = new Date(body.endDate);
+      const updated = await storage.updateAnnouncement(id, body);
       if (!updated) return res.status(404).json({ message: "Aviso no encontrado" });
       res.json(updated);
     } catch (error) {

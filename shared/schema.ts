@@ -504,6 +504,9 @@ export const insertAnnouncementSchema = createInsertSchema(systemAnnouncements).
   id: true,
   createdAt: true,
   createdBy: true,
+}).extend({
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
 });
 
 export type SystemAnnouncement = typeof systemAnnouncements.$inferSelect;
