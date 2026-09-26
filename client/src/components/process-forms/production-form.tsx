@@ -21,6 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Info, AlertTriangle, Clock, Edit2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { withPastaIngredient } from "./production-ingredients";
 
 // Definiciones de tipos
 export type UserRole = "production_manager" | "operator" | "quality_manager" | null;
@@ -208,6 +209,9 @@ export default function ProductionForm({
   const [formData, setFormData] = useState<any>({
     // Inicializar campos base
     ...initialData,
+    ingredients: Array.isArray(initialData.ingredients) && initialData.ingredients.length > 0
+      ? withPastaIngredient(initialData.ingredients)
+      : initialData.ingredients,
     // Asegurar que los campos de tiempo existan - mantener valores como strings
     startTime: initialData.startTime || "",
     endTime: initialData.endTime || "",
@@ -236,6 +240,9 @@ export default function ProductionForm({
         
         const newData = {
           ...initialData,
+          ingredients: Array.isArray(initialData.ingredients) && initialData.ingredients.length > 0
+            ? withPastaIngredient(initialData.ingredients)
+            : initialData.ingredients,
           // Preservar valores locales de tiempo si el servidor no tiene valores válidos
           startTime: shouldUpdateStartTime ? initialData.startTime : (prevData.startTime || ""),
           endTime: shouldUpdateEndTime ? initialData.endTime : (prevData.endTime || ""),
@@ -292,7 +299,7 @@ export default function ProductionForm({
         setFormData((prev: any) => ({
           ...prev,
           ...materialsUpdate,
-          ingredients: formattedIngredients
+          ingredients: withPastaIngredient(formattedIngredients)
         }));
         
         console.log(`✅ Ingredientes actualizados para ${liters}L:`, formattedIngredients);
@@ -309,7 +316,8 @@ export default function ProductionForm({
 
   // Efecto para auto-cargar receta cuando cambie producto o litros
   useEffect(() => {
-    if (formData.productId && formData.liters && formData.liters > 0) {
+    // No recalcular un reporte existente al abrirlo: puede contener cantidades capturadas a mano.
+    if (!initialData.id && formData.productId && formData.liters && formData.liters > 0) {
       console.log(`🔄 Recargando receta: ${formData.productId}, ${formData.liters}L`);
       loadProductRecipe(formData.productId, formData.liters);
     }
@@ -421,7 +429,7 @@ export default function ProductionForm({
         
         setFormData((prev: any) => ({
           ...prev,
-          ingredients: updatedIngredients
+          ingredients: withPastaIngredient(updatedIngredients)
         }));
       }
     }
@@ -961,6 +969,9 @@ export default function ProductionForm({
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <p className="mb-3 text-sm text-muted-foreground">
+                Capture los kilos reales de leche o pasta. Si no utilizó alguno, deje su cantidad en 0 kg.
+              </p>
               <div className="border rounded-md overflow-hidden">
                 <table className="w-full">
                   <thead className="bg-muted">
@@ -973,11 +984,41 @@ export default function ProductionForm({
                   <tbody>
                     {formData.ingredients ? (
                       formData.ingredients
-                        .filter((ingredient: any) => ingredient.quantity > 0) // Ocultar ingredientes con cantidad cero
-                        .map((ingredient: any, index: number) => (
-                        <tr key={index} className="border-t">
+                        .map((ingredient: any, index: number) => ({ ingredient, index }))
+                        .filter(({ ingredient }: any) =>
+                          Number(ingredient.quantity) > 0 ||
+                          ["pasta", "leche de cabra", "leche de vaca", "leche", "leche base"].includes(ingredient.name.toLowerCase())
+                        )
+                        .map(({ ingredient, index }: any) => (
+                        <tr key={`${ingredient.name}-${index}`} className="border-t">
                           <td className="px-4 py-3">{ingredient.name}</td>
-                          <td className="px-4 py-3">{ingredient.quantity.toFixed(3)}</td>
+                          <td className="px-4 py-3">
+                            {["pasta", "leche de cabra", "leche de vaca", "leche", "leche base"].includes(ingredient.name.toLowerCase()) ? (
+                              <Input
+                                type="number"
+                                min="0"
+                                step="any"
+                                aria-label={`Kilos de ${ingredient.name}`}
+                                value={ingredient.quantity}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (value !== "" && (!Number.isFinite(Number(value)) || Number(value) < 0)) return;
+                                  const ingredients = [...formData.ingredients];
+                                  ingredients[index] = { ...ingredient, quantity: value === "" ? "" : Number(value) };
+                                  handleChange("ingredients", ingredients);
+                                }}
+                                onBlur={() => {
+                                  if (ingredient.quantity === "") {
+                                    const ingredients = [...formData.ingredients];
+                                    ingredients[index] = { ...ingredient, quantity: 0 };
+                                    handleChange("ingredients", ingredients);
+                                  }
+                                }}
+                                disabled={!canEditSection("raw-materials") || readOnly}
+                                className="h-8 w-28"
+                              />
+                            ) : Number(ingredient.quantity).toFixed(3)}
+                          </td>
                           <td className="px-4 py-3">
                             <Input
                               type="time"
