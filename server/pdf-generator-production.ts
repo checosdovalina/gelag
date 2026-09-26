@@ -129,7 +129,9 @@ function drawIngredientsTable(doc: any, form: ProductionForm, y: number): number
   const processData = form as any;
   
   form.ingredients.forEach((ingredient: any, index: number) => {
-    if (ingredient.quantity > 0) {
+    const materialName = String(ingredient.name || '').trim().toLowerCase();
+    if (Number(ingredient.quantity) > 0 ||
+        ['pasta', 'leche de cabra', 'leche de vaca', 'leche', 'leche base'].includes(materialName)) {
       const time = processData.ingredientTimes?.[index] || 'No registrada';
       
       // Fondo alternado
