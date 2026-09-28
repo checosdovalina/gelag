@@ -31,6 +31,7 @@ export function useProductionForms() {
         description: "El formulario ha sido creado correctamente.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
     },
     onError: (error: Error) => {
       toast({
@@ -53,6 +54,7 @@ export function useProductionForms() {
         description: "El formulario ha sido actualizado correctamente.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
     },
     onError: (error: Error) => {
       toast({
@@ -75,6 +77,7 @@ export function useProductionForms() {
         description: "El estado del formulario ha sido actualizado correctamente.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
     },
     onError: (error: Error) => {
       toast({
@@ -96,6 +99,7 @@ export function useProductionForms() {
         description: "El formulario ha sido eliminado correctamente.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
     },
     onError: (error: Error) => {
       toast({
@@ -199,6 +203,7 @@ export function useProductionForm(id?: number) {
       // Invalidar tanto la consulta específica como la lista general
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms', id] });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
       // También actualizar directamente la cache con los nuevos datos
       queryClient.setQueryData(['/api/production-forms', id], updatedForm);
     },
@@ -224,6 +229,7 @@ export function useProductionForm(id?: number) {
         description: "El estado del formulario ha sido actualizado correctamente.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/production-forms', id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/form-entries'] });
     },
     onError: (error: Error) => {
       toast({

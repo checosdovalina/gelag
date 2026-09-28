@@ -53,7 +53,7 @@ interface ProductionFormSection {
 
 interface ProductionFormProps {
   initialData?: any;
-  onSave: (data: any) => void;
+  onSave: (data: any) => Promise<void> | void;
   readOnly?: boolean;
 }
 
@@ -497,7 +497,7 @@ export default function ProductionForm({
   };
   
   // Manejar guardado del formulario con cambio automático de estado
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       // Debug: verificar rol actual
       console.log("Rol actual del usuario:", currentUserRole);
@@ -538,7 +538,7 @@ export default function ProductionForm({
       console.log("formData.ingredientTimes:", formData.ingredientTimes);
       console.log("formData completo:", JSON.stringify(formData, null, 2));
       
-      onSave({
+      await onSave({
         ...formData,
         ingredients: formData.ingredients?.map((ingredient: any) => ({
           ...ingredient,

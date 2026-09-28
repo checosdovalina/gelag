@@ -151,6 +151,7 @@ export default function CapturedFormsPage() {
   }>({
     queryKey: ["/api/form-entries"],
     enabled: !!user,
+    refetchOnMount: "always",
   });
 
   const entries = formData?.entries || [];
@@ -386,7 +387,8 @@ export default function CapturedFormsPage() {
     : [];
   
   // State for production form viewing
-  const [selectedProductionForm, setSelectedProductionForm] = useState<any>(null);
+  const [selectedProductionFormId, setSelectedProductionFormId] = useState<number | null>(null);
+  const selectedProductionForm = productionForms.find(form => form.id === selectedProductionFormId);
   const [productionDetailsOpen, setProductionDetailsOpen] = useState(false);
 
   // View form details
@@ -394,7 +396,7 @@ export default function CapturedFormsPage() {
     // Check if it's a production form
     if ((entry as any).formType === "production") {
       // For production forms, show in modal with production form viewer
-      setSelectedProductionForm(entry.data);
+      setSelectedProductionFormId(entry.id);
       setProductionDetailsOpen(true);
     } else {
       // For regular forms, find the template and show in modal

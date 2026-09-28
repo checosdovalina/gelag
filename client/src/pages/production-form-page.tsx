@@ -107,6 +107,7 @@ export default function ProductionFormPage() {
       }
     } catch (error) {
       console.error("Error al guardar el formulario:", error);
+      throw error;
     }
   };
   
