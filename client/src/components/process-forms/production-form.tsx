@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Info, AlertTriangle, Clock, Edit2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { withPastaIngredient } from "./production-ingredients";
+import { withPastaIngredient, withPastaGlucose, withRecipeGlucose } from "./production-ingredients";
 
 // Definiciones de tipos
 export type UserRole = "production_manager" | "operator" | "quality_manager" | null;
@@ -264,6 +264,9 @@ export default function ProductionForm({
   );
   const [autoCalculatedIngredients, setAutoCalculatedIngredients] = useState<any[]>([]);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isRestoringGlucose, setIsRestoringGlucose] = useState(false);
+  const [glucoseRestoreFailed, setGlucoseRestoreFailed] = useState(false);
+  const glucoseRestoreRequest = useRef(0);
   
   // Referencia para el timeout del debounce de auto-guardado
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -299,7 +302,7 @@ export default function ProductionForm({
         setFormData((prev: any) => ({
           ...prev,
           ...materialsUpdate,
-          ingredients: withPastaIngredient(formattedIngredients)
+          ingredients: withPastaGlucose(withPastaIngredient(formattedIngredients))
         }));
         
         console.log(`✅ Ingredientes actualizados para ${liters}L:`, formattedIngredients);
@@ -464,6 +467,48 @@ export default function ProductionForm({
     // Auto-guardado desactivado para mejorar estabilidad del sistema
     // Los usuarios pueden guardar manualmente usando el botón "Guardar"
   };
+
+  const handlePastaChange = (ingredients: any[]) => {
+    const pasta = ingredients.find(ingredient => ingredient.name.trim().toLowerCase() === "pasta");
+    const kilos = Number(pasta?.quantity);
+    const request = ++glucoseRestoreRequest.current;
+    setGlucoseRestoreFailed(false);
+    setIsRestoringGlucose(false);
+    handleChange("ingredients", withPastaGlucose(ingredients));
+
+    // When pasta is cleared, restore glucose from this product's original recipe.
+    // A saved form may already contain the overridden quantity, so its own value is not a baseline.
+    if (kilos > 0 || !formData.productId || !formData.liters ||
+        !ingredients.some(ingredient => ingredient.name.trim().toLowerCase() === "glucosa")) return;
+    const productId = formData.productId;
+    const liters = formData.liters;
+    setIsRestoringGlucose(true);
+    fetch(`/api/products/${productId}/recipe?liters=${liters}`, { credentials: "include" })
+      .then(async response => {
+        if (!response.ok) throw new Error("No se pudo cargar la receta original");
+        const recipe = await response.json();
+        const glucose = recipe.ingredients?.find(
+          (ingredient: any) => ingredient.name.trim().toLowerCase() === "glucosa"
+        );
+        const quantity = Number(glucose?.quantity);
+        if (!glucose || !Number.isFinite(quantity)) throw new Error("La receta no incluye glucosa");
+        if (request !== glucoseRestoreRequest.current) return;
+        setFormData((prev: any) => {
+          if (prev.productId !== productId || prev.liters !== liters ||
+              Number(prev.ingredients?.find((ingredient: any) => ingredient.name.trim().toLowerCase() === "pasta")?.quantity) > 0) return prev;
+          return { ...prev, ingredients: withRecipeGlucose(prev.ingredients, quantity) };
+        });
+      })
+      .catch(error => {
+        if (request !== glucoseRestoreRequest.current) return;
+        console.error("Error al restaurar la glucosa:", error);
+        setGlucoseRestoreFailed(true);
+        toast({ title: "No se pudo recuperar la glucosa original", description: "Vuelva a capturar la cantidad de Pasta para reintentar.", variant: "destructive" });
+      })
+      .finally(() => {
+        if (request === glucoseRestoreRequest.current) setIsRestoringGlucose(false);
+      });
+  };
   
   // Función para auto-actualizar estado según el workflow
   const autoUpdateStatus = (field: string, value: any) => {
@@ -499,6 +544,11 @@ export default function ProductionForm({
   // Manejar guardado del formulario con cambio automático de estado
   const handleSave = async () => {
     try {
+      if (isRestoringGlucose || glucoseRestoreFailed) {
+        toast({ title: "No se ha recuperado la glucosa de la receta", description: "Vuelva a capturar la cantidad de Pasta para reintentar.", variant: "destructive" });
+        return;
+      }
+      setIsAutoSaving(true);
       // Debug: verificar rol actual
       console.log("Rol actual del usuario:", currentUserRole);
       console.log("Estado actual:", status);
@@ -538,14 +588,19 @@ export default function ProductionForm({
       console.log("formData.ingredientTimes:", formData.ingredientTimes);
       console.log("formData completo:", JSON.stringify(formData, null, 2));
       
+      const ingredients = formData.ingredients ? withPastaGlucose(formData.ingredients) : undefined;
       await onSave({
         ...formData,
-        ingredients: formData.ingredients?.map((ingredient: any) => ({
+        ingredients: ingredients?.map((ingredient: any) => ({
           ...ingredient,
           quantity: Number(ingredient.quantity) || 0,
         })),
         status: newStatus,
       });
+      if (ingredients) setFormData((prev: any) => ({
+        ...prev,
+        ingredients: withPastaGlucose(prev.ingredients),
+      }));
       
       // Mostrar mensaje apropiado
       let message = "Los cambios han sido guardados correctamente";
@@ -571,17 +626,23 @@ export default function ProductionForm({
         description: "Hubo un problema al guardar el formulario",
         variant: "destructive"
       });
+    } finally {
+      setIsAutoSaving(false);
     }
   };
   
   // Manejar cambio de estado
   const handleStatusChange = (newStatus: ProductionFormStatus) => {
+    if (isRestoringGlucose || glucoseRestoreFailed) {
+      toast({ title: "Espere a que se recupere la glucosa de la receta", variant: "destructive" });
+      return;
+    }
     setStatus(newStatus);
     
     // También guardamos el formulario con el nuevo estado
     onSave({
       ...formData,
-      ingredients: formData.ingredients?.map((ingredient: any) => ({
+      ingredients: formData.ingredients && withPastaGlucose(formData.ingredients).map((ingredient: any) => ({
         ...ingredient,
         quantity: Number(ingredient.quantity) || 0,
       })),
@@ -625,8 +686,8 @@ export default function ProductionForm({
               <span>Guardando...</span>
             </div>
           )}
-          <Button onClick={handleSave} disabled={readOnly || isAutoSaving}>
-            {isAutoSaving ? "Guardando..." : "Guardar"}
+          <Button onClick={handleSave} disabled={readOnly || isAutoSaving || isRestoringGlucose}>
+            {isAutoSaving || isRestoringGlucose ? "Guardando..." : "Guardar"}
           </Button>
           
           {/* Botones de cambio de estado según el rol del usuario */}
@@ -979,6 +1040,7 @@ export default function ProductionForm({
             <CardContent>
               <p className="mb-3 text-sm text-muted-foreground">
                 Capture los kilos reales de leche o pasta. Si no utilizó alguno, deje su cantidad en 0 kg.
+                Al usar Pasta, la glucosa total se calcula como el 20 % de sus kilos.
               </p>
               <div className="border rounded-md overflow-hidden">
                 <table className="w-full">
@@ -1012,7 +1074,11 @@ export default function ProductionForm({
                                   if (value !== "" && !/^\d+(?:\.\d*)?$/.test(value)) return;
                                   const ingredients = [...formData.ingredients];
                                   ingredients[index] = { ...ingredient, quantity: value };
-                                  handleChange("ingredients", ingredients);
+                                  if (ingredient.name.trim().toLowerCase() === "pasta") {
+                                    handlePastaChange(ingredients);
+                                  } else {
+                                    handleChange("ingredients", ingredients);
+                                  }
                                 }}
                                 onBlur={() => {
                                   if (typeof ingredient.quantity === "string") {
