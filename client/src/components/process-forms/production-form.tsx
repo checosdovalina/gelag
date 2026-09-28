@@ -540,6 +540,10 @@ export default function ProductionForm({
       
       onSave({
         ...formData,
+        ingredients: formData.ingredients?.map((ingredient: any) => ({
+          ...ingredient,
+          quantity: Number(ingredient.quantity) || 0,
+        })),
         status: newStatus,
       });
       
@@ -577,6 +581,10 @@ export default function ProductionForm({
     // También guardamos el formulario con el nuevo estado
     onSave({
       ...formData,
+      ingredients: formData.ingredients?.map((ingredient: any) => ({
+        ...ingredient,
+        quantity: Number(ingredient.quantity) || 0,
+      })),
       status: newStatus,
       lastUpdatedBy: user?.id,
       lastUpdatedAt: new Date().toISOString()
@@ -995,22 +1003,21 @@ export default function ProductionForm({
                           <td className="px-4 py-3">
                             {["pasta", "leche de cabra", "leche de vaca", "leche", "leche base"].includes(ingredient.name.toLowerCase()) ? (
                               <Input
-                                type="number"
-                                min="0"
-                                step="any"
+                                type="text"
+                                inputMode="decimal"
                                 aria-label={`Kilos de ${ingredient.name}`}
                                 value={ingredient.quantity}
                                 onChange={(e) => {
-                                  const value = e.target.value;
-                                  if (value !== "" && (!Number.isFinite(Number(value)) || Number(value) < 0)) return;
+                                  const value = e.target.value.replace(",", ".");
+                                  if (value !== "" && !/^\d+(?:\.\d*)?$/.test(value)) return;
                                   const ingredients = [...formData.ingredients];
-                                  ingredients[index] = { ...ingredient, quantity: value === "" ? "" : Number(value) };
+                                  ingredients[index] = { ...ingredient, quantity: value };
                                   handleChange("ingredients", ingredients);
                                 }}
                                 onBlur={() => {
-                                  if (ingredient.quantity === "") {
+                                  if (typeof ingredient.quantity === "string") {
                                     const ingredients = [...formData.ingredients];
-                                    ingredients[index] = { ...ingredient, quantity: 0 };
+                                    ingredients[index] = { ...ingredient, quantity: Number(ingredient.quantity) || 0 };
                                     handleChange("ingredients", ingredients);
                                   }
                                 }}
