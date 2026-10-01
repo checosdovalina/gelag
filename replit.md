@@ -17,6 +17,7 @@ The GELAG system utilizes a modern web architecture. The frontend is built with 
 - VM: 192.168.0.48, PostgreSQL 17 local, user: gelag_owner, DB: gelag
 - App managed via PM2: `pm2 start ecosystem.config.cjs && pm2 save`
 - After git pull: `npm run build && pm2 restart gelag`
+- Safe repeatable VPS updater: `bash scripts/update-vps.sh` (see `UPDATE-VPS.md`). Schema changes must include reviewed additive SQL in `migrations/vps/`; never infer or force a destructive schema sync.
 - Do NOT run `npm run db:push` on VM (will truncate data)
 - Workflow command: `env -u REPL_ID NODE_ENV=development npx --yes tsx server/index.ts`
 
